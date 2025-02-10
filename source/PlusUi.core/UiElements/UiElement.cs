@@ -3,12 +3,37 @@ using SkiaSharp;
 
 namespace PlusUi.core.UiElements;
 
+public abstract class UiElement<T> : UiElement where T : UiElement<T>
+{
+    public new T SetBackgroundColor(SKColor color)
+    {
+        base.SetBackgroundColor(color);
+        return (T)this;
+    }
+    public new T BindBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        base.BindBackgroundColor(propertyName, propertyGetter);
+        return (T)this;
+    }
+
+    public new T SetMargin(Margin margin)
+    {
+        base.SetMargin(margin);
+        return (T)this;
+    }
+    public new T BindMargin(string propertyName, Func<Margin> propertyGetter)
+    {
+        base.BindMargin(propertyName, propertyGetter);
+        return (T)this;
+    }
+}
 public abstract class UiElement
 {
+    private bool _needsMeasure = true;
     private readonly Dictionary<string, List<Action>> _bindings = [];
 
-    #region Background Color
-    protected SKColor BackgroundColor
+    #region BackgroundColor
+    public SKColor BackgroundColor
     {
         get => field;
         set
@@ -29,14 +54,14 @@ public abstract class UiElement
     }
     #endregion
 
-    #region margin
-    protected Margin Margin
+    #region Margin
+    public Margin Margin
     {
         get => field;
         set
         {
             field = value;
-            Measure();
+            InvalidateMeasure();
         }
     }
     public UiElement SetMargin(Margin margin)
@@ -63,6 +88,7 @@ public abstract class UiElement
     }
     #endregion
 
+    public UiElement? Parent { get; set; }
     public Size Size { get; private set; }
 
     /// <summary>
@@ -84,7 +110,6 @@ public abstract class UiElement
 
     public void UpdateBindings(string propertyName)
     {
-        //TODO: called too often => stack overflow 
         if (_bindings.TryGetValue(propertyName, out var updateActions))
         {
             foreach (var update in updateActions)
@@ -97,12 +122,21 @@ public abstract class UiElement
     }
     protected virtual void UpdateBindingsInternal(string propertyName) { }
 
-    public Size Measure()
+    public Size Measure(Size availableSize)
     {
-        Size = MeasureInternal() + Margin;
+        if (_needsMeasure)
+        {
+            Size = MeasureInternal(availableSize) + Margin;
+            _needsMeasure = false;
+        }
         return Size;
     }
-    protected abstract Size MeasureInternal();
+    protected void InvalidateMeasure()
+    {
+        _needsMeasure = true;
+        Parent?.InvalidateMeasure();
+    }
+    protected abstract Size MeasureInternal(Size availableSize);
 
     public virtual void Render(SKCanvas canvas, SKPoint location)
     {

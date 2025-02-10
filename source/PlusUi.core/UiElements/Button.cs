@@ -3,16 +3,16 @@ using SkiaSharp;
 
 namespace PlusUi.core.UiElements;
 
-public class Button : UiTextElement
+public class Button : UiTextElement<Button>
 {
-    #region padding
+    #region Padding
     public Margin Padding
     {
         get => field;
         set
         {
             field = value;
-            Measure();
+            InvalidateMeasure();
         }
     }
     public Button SetPadding(Margin padding)
@@ -33,13 +33,6 @@ public class Button : UiTextElement
         TextSize = 25;
         HorizontalAlignment = SKTextAlign.Center;
     }
-
-    public new Button SetText(string text)
-    {
-        base.SetText(text);
-        return this;
-    }
-
 
     public override void Render(SKCanvas canvas, SKPoint location)
     {
@@ -68,8 +61,9 @@ public class Button : UiTextElement
 
     }
 
-    protected override Size MeasureInternal()
-    {
+    protected override Size MeasureInternal(Size availableSize)
+    {//TODO: inclue availableSize
+        //we need to cut or wrap if the text is too long
         return new Size(Font.MeasureText(Text), TextSize) + Padding;
     }
 }

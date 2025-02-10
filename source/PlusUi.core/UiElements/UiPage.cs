@@ -12,7 +12,8 @@ public abstract class UiPage(ViewModelBase vm) : UiElement
     public void BuildPage()
     {
         _tree = Build();
-        Measure();
+        _tree.Parent = this;
+        InvalidateMeasure();
     }
 
     protected override void UpdateBindingsInternal(string propertyName)
@@ -25,8 +26,8 @@ public abstract class UiPage(ViewModelBase vm) : UiElement
         _tree.Render(canvas, location);
     }
 
-    protected override Size MeasureInternal()
+    protected override Size MeasureInternal(Size availableSize)
     {
-        return _tree.Measure();
+        return _tree.Measure(availableSize);
     }
 }

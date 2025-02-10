@@ -85,7 +85,12 @@ internal class WindowManager(
 
         _window = Window.Create(options);
         _window.Closing += HandleWindowClosing;
-        _window.Render += (d) => renderService.Render(_glContext!, _canvas!, _grContext!);
+        _window.Render += (d)
+            => renderService.Render(
+                _glContext!,
+                _canvas!,
+                _grContext!,
+                _window.Size);
 
         _window.Load += () =>
         {
@@ -138,7 +143,7 @@ internal class WindowManager(
 
 internal class RenderService(CurrentPage rootPage)
 {
-    public void Render(GL gl, SKCanvas canvas, GRContext grContext)
+    public void Render(GL gl, SKCanvas canvas, GRContext grContext, Vector2D<int> canvasSize)
     {
         // Clear the OpenGL buffer
         gl.Clear((uint)ClearBufferMask.ColorBufferBit);
@@ -146,6 +151,7 @@ internal class RenderService(CurrentPage rootPage)
         canvas.Clear(SKColors.Black);
 
         // Render the UI
+        rootPage.Page.Measure(new Size(canvasSize.X, canvasSize.Y));
         rootPage.Page.Render(canvas, new SKPoint(0, 0));
 
 

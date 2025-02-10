@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace PlusUi.core.UiElements;
 
-public class VStack : UiElement
+public class VStack : UiElement<VStack>
 {
     private readonly List<UiElement> _children = [];
 
@@ -14,7 +14,7 @@ public class VStack : UiElement
         set
         {
             field = value;
-            Measure();
+            InvalidateMeasure();
         }
     }
     public VStack SetSpacing(float spacing)
@@ -29,15 +29,16 @@ public class VStack : UiElement
     }
     #endregion
 
+    //TODO: horizontal alignment
+    //TODO: vertical alignment
+
     public VStack(params UiElement[] elements)
     {
+        foreach (var element in elements)
+        {
+            element.Parent = this;
+        }
         _children.AddRange(elements);
-    }
-
-    public new VStack SetMargin(Margin margin)
-    {
-        base.SetMargin(margin);
-        return this;
     }
 
     protected override void UpdateBindingsInternal(string propertyName)
@@ -57,13 +58,13 @@ public class VStack : UiElement
         }
     }
 
-    protected override Size MeasureInternal()
+    protected override Size MeasureInternal(Size availableSize)
     {
         var width = 0f;
         var height = 0f;
         foreach (var child in _children)
         {
-            var size = child.Measure();
+            var size = child.Measure(availableSize);
             width = Math.Max(width, size.Width);
             height += size.Height;
         }

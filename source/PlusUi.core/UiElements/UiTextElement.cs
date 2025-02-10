@@ -2,16 +2,59 @@
 
 namespace PlusUi.core.UiElements;
 
+public abstract class UiTextElement<T> : UiTextElement where T : UiTextElement<T>
+{
+    public new T SetText(string text)
+    {
+        base.SetText(text);
+        return (T)this;
+    }
+    public new T BindText(string propertyName, Func<string> propertyGetter)
+    {
+        base.BindText(propertyName, propertyGetter);
+        return (T)this;
+    }
+    public new T SetTextSize(float fontSize)
+    {
+        base.SetTextSize(fontSize);
+        return (T)this;
+    }
+    public new T BindTextSize(string propertyName, Func<float> propertyGetter)
+    {
+        base.BindTextSize(propertyName, propertyGetter);
+        return (T)this;
+    }
+    public new T SetTextColor(SKColor color)
+    {
+        base.SetTextColor(color);
+        return (T)this;
+    }
+    public new T BindTextColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        base.BindTextColor(propertyName, propertyGetter);
+        return (T)this;
+    }
+    public new T SetHorizontalAlignment(SKTextAlign alignment)
+    {
+        base.SetHorizontalAlignment(alignment);
+        return (T)this;
+    }
+    public new T BindHorizontalAlignment(string propertyName, Func<SKTextAlign> propertyGetter)
+    {
+        base.BindHorizontalAlignment(propertyName, propertyGetter);
+        return (T)this;
+    }
+}
 public abstract class UiTextElement : UiElement
 {
     #region Text
-    protected string? Text
+    public string? Text
     {
         get => field;
         set
         {
             field = value;
-            Measure();
+            InvalidateMeasure();
         }
     }
     public UiTextElement SetText(string text)
@@ -27,7 +70,7 @@ public abstract class UiTextElement : UiElement
     #endregion
 
     #region TextSize
-    protected float TextSize
+    public float TextSize
     {
         get => field;
         set
@@ -48,8 +91,8 @@ public abstract class UiTextElement : UiElement
     }
     #endregion
 
-    #region FontColor
-    protected SKColor TextColor
+    #region TextColor
+    public SKColor TextColor
     {
         get => field;
         set
@@ -70,8 +113,8 @@ public abstract class UiTextElement : UiElement
     }
     #endregion
 
-    #region Alignment
-    protected SKTextAlign HorizontalAlignment
+    #region HorizontalAlignment
+    public SKTextAlign HorizontalAlignment
     {
         get => field;
         set
