@@ -1,6 +1,7 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Enumerations;
+using SkiaSharp;
 
-namespace PlusUi.core.UiElements;
+namespace PlusUi.core.CoreElements;
 
 public abstract class UiTextElement<T> : UiTextElement where T : UiTextElement<T>
 {
@@ -34,12 +35,12 @@ public abstract class UiTextElement<T> : UiTextElement where T : UiTextElement<T
         base.BindTextColor(propertyName, propertyGetter);
         return (T)this;
     }
-    public new T SetHorizontalAlignment(SKTextAlign alignment)
+    public new T SetHorizontalAlignment(TextAlignment alignment)
     {
         base.SetHorizontalAlignment(alignment);
         return (T)this;
     }
-    public new T BindHorizontalAlignment(string propertyName, Func<SKTextAlign> propertyGetter)
+    public new T BindHorizontalAlignment(string propertyName, Func<TextAlignment> propertyGetter)
     {
         base.BindHorizontalAlignment(propertyName, propertyGetter);
         return (T)this;
@@ -113,8 +114,8 @@ public abstract class UiTextElement : UiElement
     }
     #endregion
 
-    #region HorizontalAlignment
-    public SKTextAlign HorizontalAlignment
+    #region TextAlignment
+    public TextAlignment TextAlignment
     {
         get => field;
         set
@@ -122,15 +123,15 @@ public abstract class UiTextElement : UiElement
             field = value;
 
         }
-    } = SKTextAlign.Left;
-    public UiTextElement SetHorizontalAlignment(SKTextAlign alignment)
+    } = TextAlignment.Left;
+    public UiTextElement SetHorizontalAlignment(TextAlignment alignment)
     {
-        HorizontalAlignment = alignment;
+        TextAlignment = alignment;
         return this;
     }
-    public UiTextElement BindHorizontalAlignment(string propertyName, Func<SKTextAlign> propertyGetter)
+    public UiTextElement BindHorizontalAlignment(string propertyName, Func<TextAlignment> propertyGetter)
     {
-        RegisterBinding(propertyName, () => HorizontalAlignment = propertyGetter());
+        RegisterBinding(propertyName, () => TextAlignment = propertyGetter());
         return this;
     }
     #endregion

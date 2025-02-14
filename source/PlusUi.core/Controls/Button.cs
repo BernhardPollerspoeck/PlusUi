@@ -1,7 +1,9 @@
-﻿using PlusUi.core.Structures;
+﻿using PlusUi.core.CoreElements;
+using PlusUi.core.Enumerations;
+using PlusUi.core.Structures;
 using SkiaSharp;
 
-namespace PlusUi.core.UiElements;
+namespace PlusUi.core.Controls;
 
 public class Button : UiTextElement<Button>
 {
@@ -31,10 +33,10 @@ public class Button : UiTextElement<Button>
     public Button()
     {
         TextSize = 25;
-        HorizontalAlignment = SKTextAlign.Center;
+        TextAlignment = TextAlignment.Center;
     }
 
-    public override void Render(SKCanvas canvas, SKPoint location)
+    public override void Render(SKCanvas canvas)
     {
         var textWidth = Font.MeasureText(Text);
 
@@ -45,26 +47,27 @@ public class Button : UiTextElement<Button>
             IsAntialias = true,
         };
         canvas.DrawRect(
-            location.X + Padding.Left,
-            location.Y + Padding.Top,
+            Position.X + Padding.Left,
+            Position.Y + Padding.Top,
             Margin.Left + textWidth + Margin.Right,
             Margin.Top + TextSize + Margin.Bottom,
             paint);
 
         canvas.DrawText(
             Text,
-            Padding.Left + Margin.Left + location.X + (textWidth / 2),
-            Padding.Left + Margin.Left + location.Y + TextSize,
-            HorizontalAlignment,
+            Padding.Left + Margin.Left + Position.X + (textWidth / 2),
+            Padding.Left + Margin.Left + Position.Y + TextSize,
+            (SKTextAlign)TextAlignment,
             Font,
             Paint);
 
     }
 
     protected override Size MeasureInternal(Size availableSize)
-    {//TODO: inclue availableSize
-        //we need to cut or wrap if the text is too long
-        return new Size(Font.MeasureText(Text), TextSize) + Padding;
+    {
+     //we need to cut or wrap if the text is too long
+        return new Size(
+            Math.Min(Font.MeasureText(Text), availableSize.Width),
+            Math.Min(TextSize, availableSize.Height));
     }
 }
-

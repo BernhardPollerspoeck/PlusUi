@@ -1,12 +1,10 @@
-﻿using PlusUi.core.Structures;
-using SkiaSharp;
+﻿using PlusUi.core.CoreElements;
+using PlusUi.core.Structures;
 
-namespace PlusUi.core.UiElements;
+namespace PlusUi.core.Controls;
 
-public class VStack : UiElement<VStack>
+public class VStack : UiLayoutElement<VStack>
 {
-    private readonly List<UiElement> _children = [];
-
     #region Spacing
     public float Spacing
     {
@@ -29,9 +27,6 @@ public class VStack : UiElement<VStack>
     }
     #endregion
 
-    //TODO: horizontal alignment
-    //TODO: vertical alignment
-
     public VStack(params UiElement[] elements)
     {
         foreach (var element in elements)
@@ -48,26 +43,20 @@ public class VStack : UiElement<VStack>
             child.UpdateBindings(propertyName);
         }
     }
-    public override void Render(SKCanvas canvas, SKPoint location)
+
+
+    public override UiElement? HitTest(Point point)
     {
-        var offset = 0f;
         foreach (var child in _children)
         {
-            child.Render(canvas, new(location.X + Margin.Left, location.Y + Margin.Top + offset));
-            offset += child.Size.Height + Spacing;
+            var result = child.HitTest(point);
+            if (result is not null)
+            {
+                return result;
+            }
         }
+        return base.HitTest(point);
     }
 
-    protected override Size MeasureInternal(Size availableSize)
-    {
-        var width = 0f;
-        var height = 0f;
-        foreach (var child in _children)
-        {
-            var size = child.Measure(availableSize);
-            width = Math.Max(width, size.Width);
-            height += size.Height;
-        }
-        return new Size(width, height);
-    }
+    
 }

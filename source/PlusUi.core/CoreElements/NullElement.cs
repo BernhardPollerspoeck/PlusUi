@@ -1,10 +1,11 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Structures;
+using SkiaSharp;
 
-namespace PlusUi.core.UiElements;
+namespace PlusUi.core.CoreElements;
 
 public class NullElement : UiElement
 {
-    public override void Render(SKCanvas canvas, SKPoint location)
+    public override void Render(SKCanvas canvas)
     {
     }
 
