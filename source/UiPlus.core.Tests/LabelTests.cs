@@ -1,6 +1,6 @@
-﻿using PlusUi.core.Enumerations;
+﻿using PlusUi.core.Controls;
+using PlusUi.core.Enumerations;
 using PlusUi.core.Structures;
-using PlusUi.core.UiElements;
 
 namespace UiPlus.core.Tests;
 /// <summary>
@@ -32,7 +32,7 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(50 - (label.Size.Width / 2), label.Position.X);
+        Assert.AreEqual(50 - (label.ElementSize.Width / 2), label.Position.X);
         Assert.AreEqual(0, label.Position.Y);
     }
     [TestMethod]
@@ -45,7 +45,7 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(100 - label.Size.Width, label.Position.X);
+        Assert.AreEqual(100 - label.ElementSize.Width, label.Position.X);
         Assert.AreEqual(0, label.Position.Y);
     }
     [TestMethod]
@@ -59,7 +59,7 @@ public sealed class LabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
         Assert.AreEqual(0, label.Position.X);
-        Assert.AreEqual(25 - (label.Size.Height / 2), label.Position.Y);
+        Assert.AreEqual(25 - (label.ElementSize.Height / 2), label.Position.Y);
     }
     [TestMethod]
     public void TestLabelMeasureAndArrange_NoMargin_CenterCenterAligned()
@@ -71,8 +71,8 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(50 - (label.Size.Width / 2), label.Position.X);
-        Assert.AreEqual(25 - (label.Size.Height / 2), label.Position.Y);
+        Assert.AreEqual(50 - (label.ElementSize.Width / 2), label.Position.X);
+        Assert.AreEqual(25 - (label.ElementSize.Height / 2), label.Position.Y);
     }
     [TestMethod]
     public void TestLabelMeasureAndArrange_NoMargin_RightCenterAligned()
@@ -84,8 +84,8 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(100 - label.Size.Width, label.Position.X);
-        Assert.AreEqual(25 - (label.Size.Height / 2), label.Position.Y);
+        Assert.AreEqual(100 - label.ElementSize.Width, label.Position.X);
+        Assert.AreEqual(25 - (label.ElementSize.Height / 2), label.Position.Y);
     }
     [TestMethod]
     public void TestLabelMeasureAndArrange_NoMargin_LeftBottomAligned()
@@ -98,7 +98,7 @@ public sealed class LabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
         Assert.AreEqual(0, label.Position.X);
-        Assert.AreEqual(50 - label.Size.Height, label.Position.Y);
+        Assert.AreEqual(50 - label.ElementSize.Height, label.Position.Y);
     }
     [TestMethod]
     public void TestLabelMeasureAndArrange_NoMargin_CenterBottomAligned()
@@ -110,8 +110,8 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(50 - (label.Size.Width / 2), label.Position.X);
-        Assert.AreEqual(50 - label.Size.Height, label.Position.Y);
+        Assert.AreEqual(50 - (label.ElementSize.Width / 2), label.Position.X);
+        Assert.AreEqual(50 - label.ElementSize.Height, label.Position.Y);
     }
     [TestMethod]
     public void TestLabelMeasureAndArrange_NoMargin_RightBottomAligned()
@@ -123,8 +123,8 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(100 - label.Size.Width, label.Position.X);
-        Assert.AreEqual(50 - label.Size.Height, label.Position.Y);
+        Assert.AreEqual(100 - label.ElementSize.Width, label.Position.X);
+        Assert.AreEqual(50 - label.ElementSize.Height, label.Position.Y);
     }
 
     [TestMethod]
@@ -152,7 +152,7 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(50 - (label.Size.Width / 2), label.Position.X);
+        Assert.AreEqual(50 - (label.ElementSize.Width / 2), label.Position.X);
         Assert.AreEqual(10, label.Position.Y);
     }
     [TestMethod]
@@ -165,7 +165,7 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(100 - label.Size.Width - 10, label.Position.X);
+        Assert.AreEqual(100 - label.ElementSize.Width - 10, label.Position.X);
         Assert.AreEqual(10, label.Position.Y);
     }
     [TestMethod]
@@ -179,7 +179,7 @@ public sealed class LabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
         Assert.AreEqual(10, label.Position.X);
-        Assert.AreEqual(25 - (label.Size.Height / 2), label.Position.Y);
+        Assert.AreEqual(25 - (label.ElementSize.Height / 2), label.Position.Y);
     }
     [TestMethod]
     public void TestLabelMeasureAndArrange_WithMargin_CenterCenterAligned()
@@ -191,8 +191,8 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(50 - (label.Size.Width / 2), label.Position.X);
-        Assert.AreEqual(25 - (label.Size.Height / 2), label.Position.Y);
+        Assert.AreEqual(50 - (label.ElementSize.Width / 2), label.Position.X);
+        Assert.AreEqual(25 - (label.ElementSize.Height / 2), label.Position.Y);
     }
     [TestMethod]
     public void TestLabelMeasureAndArrange_WithMargin_RightCenterAligned()
@@ -204,8 +204,8 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(100 - label.Size.Width - 10, label.Position.X);
-        Assert.AreEqual(25 - (label.Size.Height / 2), label.Position.Y);
+        Assert.AreEqual(100 - label.ElementSize.Width - 10, label.Position.X);
+        Assert.AreEqual(25 - (label.ElementSize.Height / 2), label.Position.Y);
     }
     [TestMethod]
     public void TestLabelMeasureAndArrange_WithMargin_LeftBottomAligned()
@@ -218,7 +218,7 @@ public sealed class LabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
         Assert.AreEqual(10, label.Position.X);
-        Assert.AreEqual(50 - label.Size.Height - 10, label.Position.Y);
+        Assert.AreEqual(50 - label.ElementSize.Height - 10, label.Position.Y);
     }
     [TestMethod]
     public void TestLabelMeasureAndArrange_WithMargin_CenterBottomAligned()
@@ -230,8 +230,8 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(50 - (label.Size.Width / 2), label.Position.X);
-        Assert.AreEqual(50 - label.Size.Height - 10, label.Position.Y);
+        Assert.AreEqual(50 - (label.ElementSize.Width / 2), label.Position.X);
+        Assert.AreEqual(50 - label.ElementSize.Height - 10, label.Position.Y);
     }
     [TestMethod]
     public void TestLabelMeasureAndArrange_WithMargin_RightBottomAligned()
@@ -243,8 +243,8 @@ public sealed class LabelTests
         label.Measure(availableSize);
         label.Arrange(new Rect(new Point(0, 0), availableSize));
         // Assert
-        Assert.AreEqual(100 - label.Size.Width - 10, label.Position.X);
-        Assert.AreEqual(50 - label.Size.Height - 10, label.Position.Y);
+        Assert.AreEqual(100 - label.ElementSize.Width - 10, label.Position.X);
+        Assert.AreEqual(50 - label.ElementSize.Height - 10, label.Position.Y);
     }
 
 }
