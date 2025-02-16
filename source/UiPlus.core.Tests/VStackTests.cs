@@ -25,7 +25,6 @@ public sealed class VStackTests
         Assert.AreEqual(0, stack.Children[0].Position.X);
         Assert.AreEqual(0, stack.Children[0].Position.Y);
     }
-
     [TestMethod]
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_TopCenterAligned()
     {
@@ -132,7 +131,7 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_CenterBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Bottom });
+        var stack = new VStack(new Solid(10, 10)) { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Bottom };
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -149,7 +148,7 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_RightBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom });
+        var stack = new VStack(new Solid(10, 10)) { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom };
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -315,160 +314,6 @@ public sealed class VStackTests
         Assert.AreEqual(10, stack.ElementSize.Height);
         Assert.AreEqual(85, stack.Children[0].Position.X);
         Assert.AreEqual(85, stack.Children[0].Position.Y);
-    }
-
-    [TestMethod]
-    public void TestVStackMeasureAndArrange_NoMargin_WithSpacing_LeftTopAligned()
-    {
-        //Arrange
-        var stack = new VStack(new Solid(10, 10), new Solid(10, 10)) { Spacing = 5 };
-        var availableSize = new Size(100, 100);
-        //Act
-        stack.Measure(availableSize);
-        stack.Arrange(new Rect(0, 0, 100, 100));
-        //Assert
-        Assert.AreEqual(0, stack.Position.X);
-        Assert.AreEqual(0, stack.Position.Y);
-        Assert.AreEqual(10, stack.ElementSize.Width);
-        Assert.AreEqual(25, stack.ElementSize.Height);
-        Assert.AreEqual(0, stack.Children[1].Position.X);
-        Assert.AreEqual(15, stack.Children[1].Position.Y);
-    }
-    [TestMethod]
-    public void TestVStackMeasureAndArrange_NoMargin_WithSpacing_TopCenterAligned()
-    {
-        //Arrange
-        var stack = new VStack(new Solid(10, 10), new Solid(10, 10)) { Spacing = 5, HorizontalAlignment = HorizontalAlignment.Center };
-        var availableSize = new Size(100, 100);
-        //Act
-        stack.Measure(availableSize);
-        stack.Arrange(new Rect(0, 0, 100, 100));
-        //Assert
-        Assert.AreEqual(45, stack.Position.X);
-        Assert.AreEqual(0, stack.Position.Y);
-        Assert.AreEqual(10, stack.ElementSize.Width);
-        Assert.AreEqual(25, stack.ElementSize.Height);
-        Assert.AreEqual(45, stack.Children[1].Position.X);
-        Assert.AreEqual(15, stack.Children[1].Position.Y);
-    }
-    [TestMethod]
-    public void TestVStackMeasureAndArrange_NoMargin_WithSpacing_TopRightAligned()
-    {
-        //Arrange
-        var stack = new VStack(new Solid(10, 10), new Solid(10, 10)) { Spacing = 5, HorizontalAlignment = HorizontalAlignment.Right };
-        var availableSize = new Size(100, 100);
-        //Act
-        stack.Measure(availableSize);
-        stack.Arrange(new Rect(0, 0, 100, 100));
-        //Assert
-        Assert.AreEqual(90, stack.Position.X);
-        Assert.AreEqual(0, stack.Position.Y);
-        Assert.AreEqual(10, stack.ElementSize.Width);
-        Assert.AreEqual(25, stack.ElementSize.Height);
-        Assert.AreEqual(90, stack.Children[1].Position.X);
-        Assert.AreEqual(15, stack.Children[1].Position.Y);
-    }
-    [TestMethod]
-    public void TestVStackMeasureAndArrange_NoMargin_WithSpacing_LeftCenterAligned()
-    {
-        //Arrange
-        var stack = new VStack(new Solid(10, 10), new Solid(10, 10)) { Spacing = 5, VerticalAlignment = VerticalAlignment.Center };
-        var availableSize = new Size(100, 100);
-        //Act
-        stack.Measure(availableSize);
-        stack.Arrange(new Rect(0, 0, 100, 100));
-        //Assert
-        Assert.AreEqual(0, stack.Position.X);
-        Assert.AreEqual(37.5, stack.Position.Y);
-        Assert.AreEqual(10, stack.ElementSize.Width);
-        Assert.AreEqual(25, stack.ElementSize.Height);
-        Assert.AreEqual(0, stack.Children[1].Position.X);
-        Assert.AreEqual(37.5, stack.Children[1].Position.Y);
-    }
-    [TestMethod]
-    public void TestVStackMeasureAndArrange_NoMargin_WithSpacing_CenterCenterAligned()
-    {
-        //Arrange
-        var stack = new VStack(new Solid(10, 10), new Solid(10, 10)) { Spacing = 5, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-        var availableSize = new Size(100, 100);
-        //Act
-        stack.Measure(availableSize);
-        stack.Arrange(new Rect(0, 0, 100, 100));
-        //Assert
-        Assert.AreEqual(45, stack.Position.X);
-        Assert.AreEqual(37.5, stack.Position.Y);
-        Assert.AreEqual(10, stack.ElementSize.Width);
-        Assert.AreEqual(25, stack.ElementSize.Height);
-        Assert.AreEqual(45, stack.Children[1].Position.X);
-        Assert.AreEqual(37.5, stack.Children[1].Position.Y);
-    }
-    [TestMethod]
-    public void TestVStackMeasureAndArrange_NoMargin_WithSpacing_RightCenterAligned()
-    {
-        //Arrange
-        var stack = new VStack(new Solid(10, 10), new Solid(10, 10)) { Spacing = 5, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
-        var availableSize = new Size(100, 100);
-        //Act
-        stack.Measure(availableSize);
-        stack.Arrange(new Rect(0, 0, 100, 100));
-        //Assert
-        Assert.AreEqual(90, stack.Position.X);
-        Assert.AreEqual(37.5, stack.Position.Y);
-        Assert.AreEqual(10, stack.ElementSize.Width);
-        Assert.AreEqual(25, stack.ElementSize.Height);
-        Assert.AreEqual(90, stack.Children[1].Position.X);
-        Assert.AreEqual(37.5, stack.Children[1].Position.Y);
-    }
-    [TestMethod]
-    public void TestVStackMeasureAndArrange_NoMargin_WithSpacing_LeftBottomAligned()
-    {
-        //Arrange
-        var stack = new VStack(new Solid(10, 10), new Solid(10, 10)) { Spacing = 5, VerticalAlignment = VerticalAlignment.Bottom };
-        var availableSize = new Size(100, 100);
-        //Act
-        stack.Measure(availableSize);
-        stack.Arrange(new Rect(0, 0, 100, 100));
-        //Assert
-        Assert.AreEqual(0, stack.Position.X);
-        Assert.AreEqual(90, stack.Position.Y);
-        Assert.AreEqual(10, stack.ElementSize.Width);
-        Assert.AreEqual(25, stack.ElementSize.Height);
-        Assert.AreEqual(0, stack.Children[1].Position.X);
-        Assert.AreEqual(90, stack.Children[1].Position.Y);
-    }
-    [TestMethod]
-    public void TestVStackMeasureAndArrange_NoMargin_WithSpacing_CenterBottomAligned()
-    {
-        //Arrange
-        var stack = new VStack(new Solid(10, 10), new Solid(10, 10)) { Spacing = 5, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Bottom };
-        var availableSize = new Size(100, 100);
-        //Act
-        stack.Measure(availableSize);
-        stack.Arrange(new Rect(0, 0, 100, 100));
-        //Assert
-        Assert.AreEqual(45, stack.Position.X);
-        Assert.AreEqual(90, stack.Position.Y);
-        Assert.AreEqual(10, stack.ElementSize.Width);
-        Assert.AreEqual(25, stack.ElementSize.Height);
-        Assert.AreEqual(45, stack.Children[1].Position.X);
-        Assert.AreEqual(90, stack.Children[1].Position.Y);
-    }
-    [TestMethod]
-    public void TestVStackMeasureAndArrange_NoMargin_WithSpacing_RightBottomAligned()
-    {
-        //Arrange
-        var stack = new VStack(new Solid(10, 10), new Solid(10, 10)) { Spacing = 5, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom };
-        var availableSize = new Size(100, 100);
-        //Act
-        stack.Measure(availableSize);
-        stack.Arrange(new Rect(0, 0, 100, 100));
-        //Assert
-        Assert.AreEqual(90, stack.Position.X);
-        Assert.AreEqual(90, stack.Position.Y);
-        Assert.AreEqual(10, stack.ElementSize.Width);
-        Assert.AreEqual(25, stack.ElementSize.Height);
-        Assert.AreEqual(90, stack.Children[1].Position.X);
-        Assert.AreEqual(90, stack.Children[1].Position.Y);
     }
 
     [TestMethod]
@@ -742,4 +587,27 @@ public sealed class VStackTests
         Assert.AreEqual(85, stack.Children[0].Position.X);
         Assert.AreEqual(85, stack.Children[0].Position.Y);
     }
+
+    [TestMethod]
+    public void TestVStackMeasureAndArrange_ForMultibleChildren_WithUnregularMargins()
+    {
+        //Arrange
+        var stack = new VStack(
+            new Solid(10, 10) { Margin = new(0, 5, 0, 10) },
+            new Solid(10, 10) { Margin = new(0, 15, 0, 20) });
+        var availableSize = new Size(100, 100);
+        //Act
+        stack.Measure(availableSize);
+        stack.Arrange(new Rect(0, 0, 100, 100));
+        //Assert
+        Assert.AreEqual(0, stack.Position.X);
+        Assert.AreEqual(0, stack.Position.Y);
+        Assert.AreEqual(10, stack.ElementSize.Width);
+        Assert.AreEqual(70, stack.ElementSize.Height);
+        Assert.AreEqual(0, stack.Children[0].Position.X);
+        Assert.AreEqual(5, stack.Children[0].Position.Y);
+        Assert.AreEqual(0, stack.Children[1].Position.X);
+        Assert.AreEqual(40, stack.Children[1].Position.Y);
+    }
+
 }

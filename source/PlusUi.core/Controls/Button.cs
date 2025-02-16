@@ -32,7 +32,6 @@ public class Button : UiTextElement<Button>
 
     public Button()
     {
-        TextSize = 25;
         TextAlignment = TextAlignment.Center;
     }
 
@@ -65,9 +64,9 @@ public class Button : UiTextElement<Button>
 
     protected override Size MeasureInternal(Size availableSize)
     {
-     //we need to cut or wrap if the text is too long
+        //we need to cut or wrap if the text is too long
         return new Size(
-            Math.Min(Font.MeasureText(Text), availableSize.Width),
-            Math.Min(TextSize, availableSize.Height));
+            Math.Min(Font.MeasureText(Text) + Padding.Left + Padding.Right, availableSize.Width),
+            Math.Min(TextSize + Padding.Top + Padding.Bottom, availableSize.Height));
     }
 }

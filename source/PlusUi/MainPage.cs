@@ -24,22 +24,21 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
         return new VStack(
             new Solid(height: 10, color: SKColors.Green)
                 .BindDesiredWidth(nameof(vm.Count), () => vm.Count * 3)
-                .SetMargin(new Margin(0, 10, 0, 0)),
+                .SetMargin(new(0, 10, 0, 0)),
             new Solid(50, 10, SKColors.Red),
             new VStack(
                 new Solid(10, 10, SKColors.Blue),
                 new Solid(10, 10, SKColors.Purple)
                 )
-                .SetSpacing(10)
-                .SetHorizontalAlignment(HorizontalAlignment.Right)//TODO: this does not yet work.
-                .SetMargin(new Margin(10, 0, 0, 0)),
+                .SetHorizontalAlignment(HorizontalAlignment.Right)
+                .SetMargin(new(10, 0, 0, 0)),
             new Label()
                 .SetText("Hello World !"),
             new Label()
                 .BindText(nameof(vm.Count), () => vm.Count.ToString())
                 .SetTextColor(SKColors.Black)
                 .SetBackgroundColor(SKColors.Aqua))
-            .SetMargin(new Margin(10, 0, 0, 0)
+            .SetMargin(new(10, 0, 0, 0)
 
 
             );

@@ -6,28 +6,6 @@ namespace PlusUi.core.Controls;
 
 public class VStack : UiLayoutElement<VStack>
 {
-    #region Spacing
-    public float Spacing
-    {
-        get => field;
-        set
-        {
-            field = value;
-            InvalidateMeasure();
-        }
-    }
-    public VStack SetSpacing(float spacing)
-    {
-        Spacing = spacing;
-        return this;
-    }
-    public VStack BindSpacing(string propertyName, Func<float> propertyGetter)
-    {
-        RegisterBinding(propertyName, () => Spacing = propertyGetter());
-        return this;
-    }
-    #endregion
-
     public VStack(params UiElement[] elements)
     {
         foreach (var element in elements)
@@ -50,42 +28,47 @@ public class VStack : UiLayoutElement<VStack>
         var height = VerticalAlignment switch
         {
             VerticalAlignment.Stretch => availableSize.Height,
-            _ => Children.Sum(c => c.ElementSize.Height) + (Spacing * (Children.Count - 1)),
+            _ => Children.Sum(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom),
         };
         return new Size(width, height);
     }
 
     protected override Point ArrangeInternal(Rect bounds)
     {
-        //TODO: rework!!!
-        //arrange children
-        var y = bounds.Top + Margin.Top;
-        var x = bounds.Left + Margin.Left;
+        var positionX = HorizontalAlignment switch
+        {
+            HorizontalAlignment.Center => bounds.Left + ((bounds.Width - ElementSize.Width) / 2),
+            HorizontalAlignment.Right => bounds.Right - ElementSize.Width - Margin.Right,
+            _ => bounds.Left + Margin.Left,
+        };
+        var positionY = VerticalAlignment switch
+        {
+            VerticalAlignment.Center => bounds.Top + ((bounds.Height - ElementSize.Height) / 2),
+            VerticalAlignment.Bottom => bounds.Bottom - ElementSize.Height - Margin.Bottom,
+            _ => bounds.Top + Margin.Top,
+        };
+
+        var y = positionY;
+        var x = positionX;
+
         foreach (var child in Children)
         {
-            var size = child.ElementSize;
-            var childX = x;
-
-            switch (child.HorizontalAlignment)
+            var childLeftBound = child.HorizontalAlignment switch
             {
-                case HorizontalAlignment.Center:
-                    childX = x + (bounds.Width - size.Width) / 2;
-                    break;
-                case HorizontalAlignment.Right:
-                    childX = x + (bounds.Width - size.Width) - child.Margin.Right;
-                    break;
-                case HorizontalAlignment.Stretch:
-                    size = new Size(bounds.Width, size.Height);
-                    break;
-            }
-
-            var childBounds = new Rect(childX, y, size.Width, size.Height);
-            child.Arrange(childBounds);
-            y += size.Height + child.Margin.Top + child.Margin.Bottom;
+                HorizontalAlignment.Center => x + ((ElementSize.Width - child.ElementSize.Width) / 2),
+                HorizontalAlignment.Right => x + ElementSize.Width - child.ElementSize.Width ,
+                _ => x,
+            };
+            var childTopBound = child.VerticalAlignment switch
+            {
+                VerticalAlignment.Center => y + ((ElementSize.Height - child.ElementSize.Height) / 2),
+                VerticalAlignment.Bottom => y + ElementSize.Height - child.ElementSize.Height,
+                _ => y,
+            };
+            child.Arrange(new Rect(childLeftBound, childTopBound, child.ElementSize.Width, child.ElementSize.Height));
+            y += child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom;
         }
-
-        //return own final position
-        return new Point(bounds.Left, bounds.Top);
+        return new(positionX, positionY);
     }
     #endregion
 

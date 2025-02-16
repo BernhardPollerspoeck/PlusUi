@@ -178,7 +178,7 @@ public abstract class UiElement
                 ? new Size(
                     Math.Min(DesiredSize.Value.Width, availableSize.Width),
                     Math.Min(DesiredSize.Value.Height, availableSize.Height))
-                : MeasureInternal(availableSize) + Margin;
+                : MeasureInternal(availableSize);
             _needsMeasure = false;
         }
         return ElementSize;
