@@ -71,23 +71,20 @@ public class Button : UiTextElement<Button>, IInputControl
     {
         var textWidth = Font.MeasureText(Text);
 
+        Font.GetFontMetrics(out var fontMetrics);
+        var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
-        using var paint = new SKPaint
-        {
-            Color = SKColors.Blue,
-            IsAntialias = true,
-        };
         canvas.DrawRect(
-            Position.X + Padding.Left,
-            Position.Y + Padding.Top,
+            Position.X,
+            Position.Y,
             Margin.Left + textWidth + Margin.Right,
-            Margin.Top + TextSize + Margin.Bottom,
-            paint);
+            Margin.Top + textHeight + Margin.Bottom,
+            BackgroundPaint);
 
         canvas.DrawText(
             Text,
-            Padding.Left + Position.X + (ElementSize.Width / 2),
-            Padding.Top + Position.Y + TextSize,
+            Position.X + (ElementSize.Width / 2),
+            Position.Y + TextSize,
             (SKTextAlign)TextAlignment,
             Font,
             Paint);
@@ -96,9 +93,13 @@ public class Button : UiTextElement<Button>, IInputControl
 
     protected override Size MeasureInternal(Size availableSize)
     {
+        var textWidth = Font.MeasureText(Text);
+        Font.GetFontMetrics(out var fontMetrics);
+        var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
+
         //we need to cut or wrap if the text is too long
         return new Size(
-            Math.Min(Font.MeasureText(Text) + Padding.Left + Padding.Right, availableSize.Width),
-            Math.Min(TextSize + Padding.Top + Padding.Bottom, availableSize.Height));
+            Math.Min(textWidth + Padding.Left + Padding.Right, availableSize.Width),
+            Math.Min(textHeight + Padding.Top + Padding.Bottom, availableSize.Height));
     }
 }

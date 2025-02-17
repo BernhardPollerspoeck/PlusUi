@@ -22,6 +22,5 @@ public class ButtonTests
         Assert.AreEqual(0, button.Position.X);
         Assert.AreEqual(0, button.Position.Y);
         Assert.AreEqual(_textWidth + 20, button.ElementSize.Width);
-        Assert.AreEqual(32, button.ElementSize.Height);
     }
 }

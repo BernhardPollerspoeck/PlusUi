@@ -22,7 +22,7 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
             }
         });
 
-        return new Label()
+        return new Button()
             .SetText("Hello World !")
             .SetTextSize(50)
             .SetBackgroundColor(SKColors.Aqua)
