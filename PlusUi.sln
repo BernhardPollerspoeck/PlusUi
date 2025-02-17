@@ -9,11 +9,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.core", "source\PlusU
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UiPlus.core.Tests", "source\UiPlus.core.Tests\UiPlus.core.Tests.csproj", "{EA96D405-BFB9-4182-936A-4EFFA520F3A2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0_Solution Items", "0_Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		obj.log = obj.log
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.desktop", "source\PlusUi.desktop\PlusUi.desktop.csproj", "{5ED91092-A0FC-48EB-B7BC-F8AC2E601D65}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1_TestProjects", "1_TestProjects", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2_Core Lib", "2_Core Lib", "{A6F2765B-2FE3-4448-BD84-D656E66466C2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3_Head Libs", "3_Head Libs", "{E0DFC523-7D7B-4C94-968B-98C31B06AEF6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "9_Unit Tests", "9_Unit Tests", "{9424FE2F-EA7C-49CB-9873-0F157F4C0B71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +43,19 @@ Global
 		{EA96D405-BFB9-4182-936A-4EFFA520F3A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA96D405-BFB9-4182-936A-4EFFA520F3A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA96D405-BFB9-4182-936A-4EFFA520F3A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ED91092-A0FC-48EB-B7BC-F8AC2E601D65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ED91092-A0FC-48EB-B7BC-F8AC2E601D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ED91092-A0FC-48EB-B7BC-F8AC2E601D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ED91092-A0FC-48EB-B7BC-F8AC2E601D65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B86C1A8B-4FB8-40D4-A32A-7359804DBAD7} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{D45F4DF6-5438-4486-B6CE-A43BFB55B772} = {A6F2765B-2FE3-4448-BD84-D656E66466C2}
+		{EA96D405-BFB9-4182-936A-4EFFA520F3A2} = {9424FE2F-EA7C-49CB-9873-0F157F4C0B71}
+		{5ED91092-A0FC-48EB-B7BC-F8AC2E601D65} = {E0DFC523-7D7B-4C94-968B-98C31B06AEF6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {001A04BF-110B-43E3-8C60-7D81403E4146}

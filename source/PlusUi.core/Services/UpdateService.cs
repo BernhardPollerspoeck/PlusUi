@@ -2,7 +2,7 @@
 
 namespace PlusUi.core.Services;
 
-internal class UpdateService(CurrentPage rootPage)
+public class UpdateService(CurrentPage rootPage)
 {
     private bool _isPressed;
     public void Update(IMouse mouse)

@@ -4,7 +4,7 @@ using SkiaSharp;
 
 namespace PlusUi.core.Services;
 
-internal class RenderService(CurrentPage rootPage)
+public class RenderService(CurrentPage rootPage)
 {
     public void Render(GL gl, SKCanvas canvas, GRContext grContext, Vector2D<int> canvasSize)
     {

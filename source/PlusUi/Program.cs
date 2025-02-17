@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using PlusUi;
 using PlusUi.core;
+using PlusUi.desktop;
 
 var builder = Host.CreateApplicationBuilder(args);
 

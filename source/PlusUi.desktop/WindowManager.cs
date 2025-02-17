@@ -1,17 +1,20 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using PlusUi.core;
+using PlusUi.core.Services;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using SkiaSharp;
 
-namespace PlusUi.core.Services;
+namespace PlusUi.desktop;
 
 internal class WindowManager(
     IOptions<PlusUiConfiguration> uiOptions,
     RenderService renderService,
     UpdateService updateService,
-    CurrentPage currentPage)
+    CurrentPage currentPage,
+    IHostApplicationLifetime appLifetime)
     : IHostedService
 {
     private IWindow? _window;
@@ -96,5 +99,6 @@ internal class WindowManager(
     {
         _surface?.Dispose();
         _grContext?.Dispose();
+        appLifetime.StopApplication();
     }
 }

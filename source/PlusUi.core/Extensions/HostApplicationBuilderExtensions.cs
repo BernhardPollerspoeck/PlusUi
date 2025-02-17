@@ -6,12 +6,7 @@ namespace PlusUi.core;
 
 public static class HostApplicationBuilderExtensions
 {
-    public static HostApplicationBuilder UsePlusUi<TRootPage>(this HostApplicationBuilder builder)
-        where TRootPage : UiPageElement
-    {
-        return builder.UsePlusUi<TRootPage>(_ => { });
-    }
-    public static HostApplicationBuilder UsePlusUi<TRootPage>(
+    public static HostApplicationBuilder UsePlusUiInternal<TRootPage>(
         this HostApplicationBuilder builder,
         Action<PlusUiConfiguration> configurationAction)
         where TRootPage : UiPageElement
@@ -20,8 +15,6 @@ public static class HostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<RenderService>();
         builder.Services.AddSingleton<UpdateService>();
-
-        builder.Services.AddHostedService<WindowManager>();
 
         builder.Services.AddSingleton(sp => new CurrentPage
         {
