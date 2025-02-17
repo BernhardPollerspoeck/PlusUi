@@ -41,10 +41,7 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
                 .BindText(nameof(vm.Count), () => vm.Count.ToString())
                 .SetTextColor(SKColors.Black)
                 .SetBackgroundColor(SKColors.Aqua))
-            .SetMargin(new(10, 0, 0, 0)
-
-
-            );
+            .SetMargin(new(10, 0, 0, 0));
     }
 
 
