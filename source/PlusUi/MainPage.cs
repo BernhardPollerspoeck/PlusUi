@@ -1,9 +1,9 @@
 ﻿using PlusUi.core.Controls;
 using PlusUi.core.CoreElements;
-using PlusUi.core.Structures;
 using PlusUi.core.ViewModel;
 using PlusUi.core.Enumerations;
 using SkiaSharp;
+using PlusUi.core.Interfaces;
 
 namespace PlusUi;
 
@@ -28,12 +28,15 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
             new Solid(50, 10, SKColors.Red),
             new VStack(
                 new Solid(10, 10, SKColors.Blue),
-                new Solid(10, 10, SKColors.Purple)
-                )
+                new Solid(10, 10, SKColors.Purple))
                 .SetHorizontalAlignment(HorizontalAlignment.Right)
                 .SetMargin(new(10, 0, 0, 0)),
             new Label()
                 .SetText("Hello World !"),
+            new Button()
+                .SetCommand(new SyncCommand(() => vm.Count = 0))
+                .SetText("Click me")
+                .SetMargin(new(10, 0, 0, 0)),
             new Label()
                 .BindText(nameof(vm.Count), () => vm.Count.ToString())
                 .SetTextColor(SKColors.Black)
@@ -50,19 +53,16 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
 
 public class MainViewModel : ViewModelBase
 {
-    private string _text = "Hello World";
     public string Text
     {
-        get => _text;
-        set => SetProperty(ref _text, value);
-    }
-
-    private int _count = 0;
+        get;
+        set => SetProperty(ref field, value);
+    } = "Hello World";
     public int Count
     {
-        get => _count;
-        set => SetProperty(ref _count, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = 0;
 }
 
 

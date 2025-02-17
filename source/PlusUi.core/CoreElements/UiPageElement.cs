@@ -19,7 +19,7 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
 
     protected override void UpdateBindingsInternal(string propertyName)
     {
-        _tree!.UpdateBindings(propertyName);
+        _tree.UpdateBindings(propertyName);
     }
 
     public override void Render(SKCanvas canvas)
@@ -34,6 +34,10 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
     protected override Point ArrangeInternal(Rect bounds)
     {
         return _tree.Arrange(bounds);
+    }
+    public override UiElement? HitTest(Point point)
+    {
+        return _tree.HitTest(point);
     }
 
 }

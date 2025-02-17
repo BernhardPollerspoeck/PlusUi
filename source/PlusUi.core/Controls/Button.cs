@@ -1,11 +1,13 @@
 ﻿using PlusUi.core.CoreElements;
 using PlusUi.core.Enumerations;
+using PlusUi.core.Interfaces;
 using PlusUi.core.Structures;
 using SkiaSharp;
+using System.Windows.Input;
 
 namespace PlusUi.core.Controls;
 
-public class Button : UiTextElement<Button>
+public class Button : UiTextElement<Button>, IInputControl
 {
     #region Padding
     public Margin Padding
@@ -27,13 +29,43 @@ public class Button : UiTextElement<Button>
         RegisterBinding(propertyName, () => Padding = propertyGetter());
         return this;
     }
+    #endregion
 
+    #region command
+    public ICommand? Command { get; set; }
+    public Button SetCommand(ICommand command)
+    {
+        Command = command;
+        return this;
+    }
+
+    public object? CommandParameter { get; set; }
+    public Button SetCommandParameter(object parameter)
+    {
+        CommandParameter = parameter;
+        return this;
+    }
+    public Button BindCommandParameter(string propertyName, Func<object> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => CommandParameter = propertyGetter());
+        return this;
+    }
     #endregion
 
     public Button()
     {
         TextAlignment = TextAlignment.Center;
     }
+
+    #region IInputControl
+    public void InvokeCommand()
+    {
+        if (Command?.CanExecute(CommandParameter) ?? false)
+        {
+            Command.Execute(CommandParameter);
+        }
+    }
+    #endregion
 
     public override void Render(SKCanvas canvas)
     {
@@ -54,8 +86,8 @@ public class Button : UiTextElement<Button>
 
         canvas.DrawText(
             Text,
-            Padding.Left + Margin.Left + Position.X + (textWidth / 2),
-            Padding.Left + Margin.Left + Position.Y + TextSize,
+            Padding.Left + Position.X + (ElementSize.Width / 2),
+            Padding.Top + Position.Y + TextSize,
             (SKTextAlign)TextAlignment,
             Font,
             Paint);
