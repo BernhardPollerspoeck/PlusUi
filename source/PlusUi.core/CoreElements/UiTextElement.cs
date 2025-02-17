@@ -1,7 +1,6 @@
-﻿using PlusUi.core.Enumerations;
-using SkiaSharp;
+﻿using SkiaSharp;
 
-namespace PlusUi.core.CoreElements;
+namespace PlusUi.core;
 
 public abstract class UiTextElement<T> : UiTextElement where T : UiTextElement<T>
 {

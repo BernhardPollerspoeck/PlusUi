@@ -1,4 +1,4 @@
-﻿namespace PlusUi.core.Structures;
+﻿namespace PlusUi.core;
 
 public readonly struct Rect(float x, float y, float width, float height)
 {

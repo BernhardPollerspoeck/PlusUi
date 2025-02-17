@@ -1,4 +1,4 @@
-﻿namespace PlusUi.core.Enumerations;
+﻿namespace PlusUi.core;
 
 public enum HorizontalAlignment
 {

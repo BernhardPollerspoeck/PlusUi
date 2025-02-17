@@ -1,6 +1,4 @@
-﻿using PlusUi.core.Extensions;
-using PlusUi.core.Interfaces;
-using Silk.NET.Input;
+﻿using Silk.NET.Input;
 
 namespace PlusUi.core.Services;
 

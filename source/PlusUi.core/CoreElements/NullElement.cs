@@ -1,7 +1,6 @@
-﻿using PlusUi.core.Structures;
-using SkiaSharp;
+﻿using SkiaSharp;
 
-namespace PlusUi.core.CoreElements;
+namespace PlusUi.core;
 
 public class NullElement : UiElement
 {

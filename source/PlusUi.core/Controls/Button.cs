@@ -1,11 +1,7 @@
-﻿using PlusUi.core.CoreElements;
-using PlusUi.core.Enumerations;
-using PlusUi.core.Interfaces;
-using PlusUi.core.Structures;
-using SkiaSharp;
+﻿using SkiaSharp;
 using System.Windows.Input;
 
-namespace PlusUi.core.Controls;
+namespace PlusUi.core;
 
 public class Button : UiTextElement<Button>, IInputControl
 {

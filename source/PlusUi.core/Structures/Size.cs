@@ -1,4 +1,4 @@
-﻿namespace PlusUi.core.Structures;
+﻿namespace PlusUi.core;
 
 public readonly struct Size(float width, float height)
 {

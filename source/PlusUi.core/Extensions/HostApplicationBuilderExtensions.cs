@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PlusUi.core.CoreElements;
 using PlusUi.core.Services;
-using PlusUi.core.ViewModel;
 
-namespace PlusUi.core.Extensions;
+namespace PlusUi.core;
 
 public static class HostApplicationBuilderExtensions
 {

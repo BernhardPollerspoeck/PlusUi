@@ -1,9 +1,6 @@
-﻿using PlusUi.core.Controls;
-using PlusUi.core.CoreElements;
-using PlusUi.core.ViewModel;
-using PlusUi.core.Enumerations;
+﻿
 using SkiaSharp;
-using PlusUi.core.Interfaces;
+using PlusUi.core;
 
 namespace PlusUi;
 

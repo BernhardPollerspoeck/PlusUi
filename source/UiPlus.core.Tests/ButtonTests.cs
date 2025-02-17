@@ -1,5 +1,4 @@
-﻿using PlusUi.core.Controls;
-using PlusUi.core.Structures;
+﻿using PlusUi.core;
 using SkiaSharp;
 
 namespace UiPlus.core.Tests;

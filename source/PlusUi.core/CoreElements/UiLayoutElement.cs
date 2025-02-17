@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace PlusUi.core.CoreElements;
+namespace PlusUi.core;
 
 public abstract class UiLayoutElement<T> : UiLayoutElement where T : UiLayoutElement<T>
 {

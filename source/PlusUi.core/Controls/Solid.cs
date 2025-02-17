@@ -1,9 +1,6 @@
-﻿using PlusUi.core.CoreElements;
-using PlusUi.core.Structures;
-using PlusUi.core.Enumerations;
-using SkiaSharp;
+﻿using SkiaSharp;
 
-namespace PlusUi.core.Controls;
+namespace PlusUi.core;
 
 public class Solid : UiElement<Solid>
 {

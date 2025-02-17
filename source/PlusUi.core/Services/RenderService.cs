@@ -1,6 +1,4 @@
-﻿using PlusUi.core.Extensions;
-using PlusUi.core.Structures;
-using Silk.NET.Maths;
+﻿using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using SkiaSharp;
 

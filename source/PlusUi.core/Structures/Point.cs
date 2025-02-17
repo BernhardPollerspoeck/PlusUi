@@ -1,4 +1,4 @@
-﻿namespace PlusUi.core.Structures;
+﻿namespace PlusUi.core;
 
 public readonly struct Point(float x, float y)
 {

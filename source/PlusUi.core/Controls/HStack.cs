@@ -1,8 +1,8 @@
 ﻿namespace PlusUi.core;
 
-public class VStack : UiLayoutElement<VStack>
+public class HStack : UiLayoutElement<HStack>
 {
-    public VStack(params UiElement[] elements)
+    public HStack(params UiElement[] elements)
     {
         foreach (var element in elements)
         {
@@ -15,16 +15,15 @@ public class VStack : UiLayoutElement<VStack>
     protected override Size MeasureInternal(Size availableSize)
     {
         Children.ForEach(c => c.Measure(availableSize));
-
         var width = HorizontalAlignment switch
         {
             HorizontalAlignment.Stretch => availableSize.Width,
-            _ => Children.Max(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right),
+            _ => Children.Sum(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right),
         };
         var height = VerticalAlignment switch
         {
             VerticalAlignment.Stretch => availableSize.Height,
-            _ => Children.Sum(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom),
+            _ => Children.Max(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom),
         };
         return new Size(width, height);
     }
@@ -43,31 +42,23 @@ public class VStack : UiLayoutElement<VStack>
             VerticalAlignment.Bottom => bounds.Bottom - ElementSize.Height - Margin.Bottom,
             _ => bounds.Top + Margin.Top,
         };
-
         var y = positionY;
         var x = positionX;
-
         foreach (var child in Children)
         {
-            var childLeftBound = child.HorizontalAlignment switch
-            {
-                HorizontalAlignment.Center => x + ((ElementSize.Width - child.ElementSize.Width) / 2),
-                HorizontalAlignment.Right => x + ElementSize.Width - child.ElementSize.Width ,
-                _ => x,
-            };
             var childTopBound = child.VerticalAlignment switch
             {
                 VerticalAlignment.Center => y + ((ElementSize.Height - child.ElementSize.Height) / 2),
                 VerticalAlignment.Bottom => y + ElementSize.Height - child.ElementSize.Height,
                 _ => y,
             };
-            child.Arrange(new Rect(childLeftBound, childTopBound, child.ElementSize.Width, child.ElementSize.Height));
-            y += child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom;
+            child.Arrange(new Rect(x, childTopBound, child.ElementSize.Width, child.ElementSize.Height));
+            x += child.ElementSize.Width + child.Margin.Left + child.Margin.Right;
         }
-        return new(positionX, positionY);
+        return new Point(positionX, positionY);
     }
-    #endregion
 
+    #endregion
 
     public override UiElement? HitTest(Point point)
     {
@@ -81,6 +72,5 @@ public class VStack : UiLayoutElement<VStack>
         }
         return base.HitTest(point);
     }
-
 
 }

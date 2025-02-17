@@ -1,8 +1,6 @@
-﻿using PlusUi.core.Structures;
-using PlusUi.core.ViewModel;
-using SkiaSharp;
+﻿using SkiaSharp;
 
-namespace PlusUi.core.CoreElements;
+namespace PlusUi.core;
 
 public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageElement>
 {

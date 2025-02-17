@@ -1,4 +1,4 @@
-﻿namespace PlusUi.core.Structures;
+﻿namespace PlusUi.core;
 
 public struct Margin(float left, float top, float right, float bottom)
 {
