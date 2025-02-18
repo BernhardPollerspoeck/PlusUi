@@ -2,9 +2,9 @@
 using Silk.NET.OpenGL;
 using SkiaSharp;
 
-namespace PlusUi.core.Services;
+namespace PlusUi.core;
 
-public class RenderService(CurrentPage rootPage)
+public class RenderService(NavigationContainer navigationContainer)
 {
     public void Render(GL gl, SKCanvas canvas, GRContext grContext, Vector2D<int> canvasSize)
     {
@@ -15,10 +15,10 @@ public class RenderService(CurrentPage rootPage)
 
         // Render the UI
 
-        rootPage.Page.Measure(new Size(canvasSize.X, canvasSize.Y));
-        rootPage.Page.Arrange(new Rect(0, 0, canvasSize.X, canvasSize.Y));
+        navigationContainer.Page.Measure(new Size(canvasSize.X, canvasSize.Y));
+        navigationContainer.Page.Arrange(new Rect(0, 0, canvasSize.X, canvasSize.Y));
 
-        rootPage.Page.Render(canvas);
+        navigationContainer.Page.Render(canvas);
 
         // Flush the surface
         canvas.Flush();

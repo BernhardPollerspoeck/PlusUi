@@ -69,13 +69,15 @@ public class Button : UiTextElement<Button>, IInputControl
 
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
-
-        canvas.DrawRect(
-            Position.X,
-            Position.Y,
-            Margin.Left + textWidth + Margin.Right,
-            Margin.Top + textHeight + Margin.Bottom,
-            BackgroundPaint);
+        if (BackgroundPaint is not null)
+        {
+            canvas.DrawRect(
+                Position.X,
+                Position.Y,
+                Margin.Left + textWidth + Margin.Right,
+                Margin.Top + textHeight + Margin.Bottom,
+                BackgroundPaint);
+        }
 
         canvas.DrawText(
             Text,

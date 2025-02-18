@@ -9,6 +9,7 @@ builder.UsePlusUi<MainPage>();
 
 
 builder.AddPage<MainPage>().WithViewModel<MainViewModel>();
+builder.AddPage<SecondPage>().WithViewModel<SecondPageViewModel>();
 
 var app = builder.Build();
 

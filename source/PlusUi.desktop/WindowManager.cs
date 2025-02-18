@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using PlusUi.core;
-using PlusUi.core.Services;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
@@ -13,7 +12,7 @@ internal class WindowManager(
     IOptions<PlusUiConfiguration> uiOptions,
     RenderService renderService,
     UpdateService updateService,
-    CurrentPage currentPage,
+    NavigationContainer navigationContainer,
     IHostApplicationLifetime appLifetime)
     : IHostedService
 {
@@ -65,14 +64,15 @@ internal class WindowManager(
                 GRSurfaceOrigin.BottomLeft,
                 SKColorType.Rgba8888);
                 _canvas = _surface.Canvas;
-                currentPage.Page.ViewModel.PropertyChanged += (o, e) =>
+
+                navigationContainer.Page.ViewModel.PropertyChanged += (o, e) =>
                 {
                     if (e.PropertyName is not null)
                     {
-                        currentPage.Page.UpdateBindings(e.PropertyName);
+                        navigationContainer.Page.UpdateBindings(e.PropertyName);
                     }
                 };
-                currentPage.Page.BuildPage();
+                navigationContainer.Page.BuildPage();
 
                 var input = _window.CreateInput();
                 if (input is not null)

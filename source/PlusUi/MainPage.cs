@@ -1,6 +1,7 @@
 ﻿
 using SkiaSharp;
 using PlusUi.core;
+using System.Windows.Input;
 
 namespace PlusUi;
 
@@ -33,7 +34,13 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
                 .SetDesiredWidth(400)
                 .SetBackgroundColor(SKColors.Blue)
                 .SetHorizontalAlignment(HorizontalAlignment.Center)
-                .SetVerticalAlignment(VerticalAlignment.Center));
+                .SetVerticalAlignment(VerticalAlignment.Center),
+            new Button()
+                .SetText("NAV")
+                .SetTextSize(20)
+                .SetCommand(vm.NavCommand))
+            .SetHorizontalAlignment(HorizontalAlignment.Center)
+            .SetVerticalAlignment(VerticalAlignment.Center);
 
         //return new VStack(
         //    new Solid(height: 10, color: SKColors.Green)
@@ -64,6 +71,8 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
 
 public class MainViewModel : ViewModelBase
 {
+    private readonly INavigationService _navigationService;
+
     public string Text
     {
         get;
@@ -74,11 +83,15 @@ public class MainViewModel : ViewModelBase
         get;
         set => SetProperty(ref field, value);
     } = 0;
+
+    public ICommand NavCommand { get; }
+
+    public MainViewModel(INavigationService navigationService)
+    {
+        _navigationService = navigationService;
+        NavCommand = new SyncCommand(() => _navigationService.NavigateTo<SecondPage>());
+    }
 }
-
-
-
-
 
 
 

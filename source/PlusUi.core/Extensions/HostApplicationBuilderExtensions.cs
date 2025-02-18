@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PlusUi.core.Services;
 
 namespace PlusUi.core;
 
@@ -16,11 +15,10 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<RenderService>();
         builder.Services.AddSingleton<UpdateService>();
 
-        builder.Services.AddSingleton(sp => new CurrentPage
-        {
-            Page = sp.GetRequiredService<TRootPage>()
-        });
+        builder.Services.AddSingleton(sp => new PlusUiNavigationService(sp));
+        builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
+        builder.Services.AddSingleton(sp => new NavigationContainer(sp.GetRequiredService<TRootPage>()));
         return builder;
     }
 

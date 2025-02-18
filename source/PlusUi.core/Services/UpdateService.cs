@@ -1,8 +1,8 @@
 ﻿using Silk.NET.Input;
 
-namespace PlusUi.core.Services;
+namespace PlusUi.core;
 
-public class UpdateService(CurrentPage rootPage)
+public class UpdateService(NavigationContainer navigationContainer)
 {
     private bool _isMousePressed;
     private IKeyboard? _keyboard;
@@ -37,7 +37,7 @@ public class UpdateService(CurrentPage rootPage)
 
             var location = mouse.Position;
 
-            var hitControl = rootPage.Page.HitTest(new(location.X, location.Y));
+            var hitControl = navigationContainer.Page.HitTest(new(location.X, location.Y));
             if (hitControl is IInputControl inputControl)
             {
                 inputControl.InvokeCommand();
