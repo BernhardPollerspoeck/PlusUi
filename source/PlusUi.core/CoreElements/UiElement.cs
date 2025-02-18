@@ -143,22 +143,22 @@ public abstract class UiElement
     }
     public UiElement SetDesiredWidth(float width)
     {
-        DesiredSize = new Size(width, DesiredSize?.Height ?? 0);
+        DesiredSize = new Size(width, DesiredSize?.Height ?? -1);
         return this;
     }
     public UiElement SetDesiredHeight(float height)
     {
-        DesiredSize = new Size(DesiredSize?.Width ?? 0, height);
+        DesiredSize = new Size(DesiredSize?.Width ?? -1, height);
         return this;
     }
     public UiElement BindDesiredWidth(string propertyName, Func<float> propertyGetter)
     {
-        RegisterBinding(propertyName, () => DesiredSize = new Size(propertyGetter(), DesiredSize?.Height ?? 0));
+        RegisterBinding(propertyName, () => DesiredSize = new Size(propertyGetter(), DesiredSize?.Height ?? -10));
         return this;
     }
     public UiElement BindDesiredHeight(string propertyName, Func<float> propertyGetter)
     {
-        RegisterBinding(propertyName, () => DesiredSize = new Size(DesiredSize?.Width ?? 0, propertyGetter()));
+        RegisterBinding(propertyName, () => DesiredSize = new Size(DesiredSize?.Width ?? -1, propertyGetter()));
         return this;
     }
     #endregion
@@ -172,11 +172,14 @@ public abstract class UiElement
     {
         if (_needsMeasure)
         {
-            ElementSize = DesiredSize.HasValue
-                ? new Size(
-                    Math.Min(DesiredSize.Value.Width, availableSize.Width),
-                    Math.Min(DesiredSize.Value.Height, availableSize.Height))
-                : MeasureInternal(availableSize);
+            var measuredSize = MeasureInternal(availableSize);
+
+            var desiredWidth = DesiredSize?.Width >= 0 ? DesiredSize.Value.Width : measuredSize.Width;
+            var desiredHeight = DesiredSize?.Height >= 0 ? DesiredSize.Value.Height : measuredSize.Height;
+            ElementSize = new Size(
+                Math.Min(desiredWidth, availableSize.Width),
+                Math.Min(desiredHeight, availableSize.Height));
+
             _needsMeasure = false;
         }
         return ElementSize;
@@ -204,14 +207,14 @@ public abstract class UiElement
     {
         var x = HorizontalAlignment switch
         {
-            HorizontalAlignment.Center => bounds.CenterX - ElementSize.Width / 2 + Margin.Left - Margin.Right,
+            HorizontalAlignment.Center => bounds.CenterX - (ElementSize.Width / 2) + Margin.Left - Margin.Right,
             HorizontalAlignment.Right => bounds.Right - ElementSize.Width - Margin.Right,
             _ => bounds.X + Margin.Left,
         };
 
         var y = VerticalAlignment switch
         {
-            VerticalAlignment.Center => bounds.CenterY - ElementSize.Height / 2 + Margin.Top - Margin.Bottom,
+            VerticalAlignment.Center => bounds.CenterY - (ElementSize.Height / 2) + Margin.Top - Margin.Bottom,
             VerticalAlignment.Bottom => bounds.Bottom - ElementSize.Height - Margin.Bottom,
             _ => bounds.Y + Margin.Top,
         };

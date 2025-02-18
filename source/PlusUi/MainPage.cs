@@ -19,12 +19,21 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
             }
         });
 
-        return new Button()
-            .SetText("Hello World !")
-            .SetTextSize(50)
-            .SetBackgroundColor(SKColors.Aqua)
-            .SetHorizontalAlignment(HorizontalAlignment.Center)
-            .SetVerticalAlignment(VerticalAlignment.Center);
+        return new VStack(
+            new Entry()
+                .SetText("Hello World !")
+                .SetTextSize(50)
+                .SetDesiredWidth(400)
+                .SetBackgroundColor(SKColors.Aqua)
+                .SetHorizontalAlignment(HorizontalAlignment.Center)
+                .SetVerticalAlignment(VerticalAlignment.Center),
+            new Entry()
+                .SetText("Hello World !")
+                .SetTextSize(12)
+                .SetDesiredWidth(400)
+                .SetBackgroundColor(SKColors.Blue)
+                .SetHorizontalAlignment(HorizontalAlignment.Center)
+                .SetVerticalAlignment(VerticalAlignment.Center));
 
         //return new VStack(
         //    new Solid(height: 10, color: SKColors.Green)

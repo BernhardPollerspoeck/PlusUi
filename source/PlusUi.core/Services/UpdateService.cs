@@ -4,20 +4,36 @@ namespace PlusUi.core.Services;
 
 public class UpdateService(CurrentPage rootPage)
 {
-    private bool _isPressed;
+    private bool _isMousePressed;
+    private IKeyboard? _keyboard;
+    private ITextInputControl? _textInputControl;
+
+    public void SetKeyboard(IKeyboard keyboard)
+    {
+        if (_keyboard != null)
+        {
+            _keyboard.KeyDown -= HandleKeyboardInput;
+            _keyboard.KeyChar -= HandleKeyCharInput;
+        }
+
+        _keyboard = keyboard;
+        _keyboard.KeyDown += HandleKeyboardInput;
+        _keyboard.KeyChar += HandleKeyCharInput;
+    }
+
     public void Update(IMouse mouse)
     {
         if (mouse.IsButtonPressed(MouseButton.Left))
         {
-            _isPressed = true;
+            _isMousePressed = true;
             return;
         }
 
-        var isReleased = _isPressed && !mouse.IsButtonPressed(MouseButton.Left);
+        var isReleased = _isMousePressed && !mouse.IsButtonPressed(MouseButton.Left);
 
         if (isReleased)
         {
-            _isPressed = false;
+            _isMousePressed = false;
 
             var location = mouse.Position;
 
@@ -26,7 +42,35 @@ public class UpdateService(CurrentPage rootPage)
             {
                 inputControl.InvokeCommand();
             }
+
+
+
+
+
+            if (hitControl is ITextInputControl textInputControl
+                && textInputControl != _textInputControl)
+            {
+                _textInputControl?.SetSelectionStatus(false);
+                _textInputControl = textInputControl;
+                _textInputControl.SetSelectionStatus(true);
+                _keyboard?.BeginInput();
+            }
+            else if (_textInputControl != null && _textInputControl != hitControl)
+            {
+                _keyboard?.EndInput();
+                _textInputControl.SetSelectionStatus(false);
+                _textInputControl = null;
+            }
         }
     }
 
+
+    private void HandleKeyboardInput(IKeyboard keyboard, Key key, int keyCode)
+    {
+        _textInputControl?.HandleInput(key);
+    }
+    private void HandleKeyCharInput(IKeyboard keyboard, char chr)
+    {
+        _textInputControl?.HandleInput(chr);
+    }
 }

@@ -74,14 +74,18 @@ internal class WindowManager(
                 };
                 currentPage.Page.BuildPage();
 
-
-                var mouse = _window.CreateInput().Mice.FirstOrDefault();
-                if (mouse is not null)
+                var input = _window.CreateInput();
+                if (input is not null)
                 {
-                    _window.Update += (d)
-                        => updateService.Update(mouse);
+                    var mouse = input.Mice.Count > 0 ? input.Mice[0] : null;
+                    var keyboard = input.Keyboards.Count > 0 ? input.Keyboards[0] : null;
+                    if (mouse is not null && keyboard is not null)
+                    {
+                        updateService.SetKeyboard(keyboard);
+                        _window.Update += (d)
+                            => updateService.Update(mouse);
+                    }
                 }
-
             };
 
         _window.Run();
