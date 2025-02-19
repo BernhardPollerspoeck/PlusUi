@@ -1,5 +1,9 @@
-﻿namespace PlusUi.core;
+﻿using System.Diagnostics;
 
+namespace PlusUi.core;
+
+
+[DebuggerDisplay("Margin: Left = {Left}, Top = {Top}, Right = {Right}, Bottom = {Bottom}")]
 public struct Margin(float left, float top, float right, float bottom)
 {
     public float Left { get; set; } = left;

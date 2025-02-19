@@ -1,5 +1,9 @@
-﻿namespace PlusUi.core;
+﻿using System.Diagnostics;
 
+namespace PlusUi.core;
+
+
+[DebuggerDisplay("Size: Width = {Width}, Height = {Height}")]
 public readonly struct Size(float width, float height)
 {
     public static readonly Size Empty = new(0, 0);

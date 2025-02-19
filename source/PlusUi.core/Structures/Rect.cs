@@ -1,5 +1,9 @@
-﻿namespace PlusUi.core;
+﻿using System.Diagnostics;
 
+namespace PlusUi.core;
+
+
+[DebuggerDisplay("Rect: X = {X}, Y = {Y}, Width = {Width}, Height = {Height}")]
 public readonly struct Rect(float x, float y, float width, float height)
 {
     public static readonly Rect Empty = new(0, 0, 0, 0);

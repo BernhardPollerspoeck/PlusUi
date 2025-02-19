@@ -1,4 +1,5 @@
 ﻿using PlusUi.core;
+using SkiaSharp;
 using System.Windows.Input;
 
 namespace PlusUi;
@@ -11,7 +12,9 @@ public class SecondPage(SecondPageViewModel vm) : UiPageElement(vm)
            new Button()
                .SetText("Back")
                .SetTextSize(20)
-               .SetCommand(vm.NavCommand))
+               .SetCommand(vm.NavCommand)
+               .SetTextColor(SKColors.Black)
+               .SetBackgroundColor(SKColors.White))
            .SetHorizontalAlignment(HorizontalAlignment.Center)
            .SetVerticalAlignment(VerticalAlignment.Center);
     }

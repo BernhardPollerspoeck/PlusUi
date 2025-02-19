@@ -207,14 +207,14 @@ public abstract class UiElement
     {
         var x = HorizontalAlignment switch
         {
-            HorizontalAlignment.Center => bounds.CenterX - (ElementSize.Width / 2) + Margin.Left - Margin.Right,
+            HorizontalAlignment.Center => bounds.CenterX - (ElementSize.Width / 2),
             HorizontalAlignment.Right => bounds.Right - ElementSize.Width - Margin.Right,
             _ => bounds.X + Margin.Left,
         };
 
         var y = VerticalAlignment switch
         {
-            VerticalAlignment.Center => bounds.CenterY - (ElementSize.Height / 2) + Margin.Top - Margin.Bottom,
+            VerticalAlignment.Center => bounds.CenterY - (ElementSize.Height / 2),
             VerticalAlignment.Bottom => bounds.Bottom - ElementSize.Height - Margin.Bottom,
             _ => bounds.Y + Margin.Top,
         };

@@ -52,16 +52,14 @@ public class VStack : UiLayoutElement<VStack>
             var childLeftBound = child.HorizontalAlignment switch
             {
                 HorizontalAlignment.Center => x + ((ElementSize.Width - child.ElementSize.Width) / 2),
-                HorizontalAlignment.Right => x + ElementSize.Width - child.ElementSize.Width ,
+                HorizontalAlignment.Right => x + ElementSize.Width - child.ElementSize.Width,
                 _ => x,
             };
-            var childTopBound = child.VerticalAlignment switch
-            {
-                VerticalAlignment.Center => y + ((ElementSize.Height - child.ElementSize.Height) / 2),
-                VerticalAlignment.Bottom => y + ElementSize.Height - child.ElementSize.Height,
-                _ => y,
-            };
-            child.Arrange(new Rect(childLeftBound, childTopBound, child.ElementSize.Width, child.ElementSize.Height));
+            child.Arrange(new Rect(
+                childLeftBound,
+                y,
+                child.ElementSize.Width,
+                child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom));
             y += child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom;
         }
         return new(positionX, positionY);

@@ -38,9 +38,8 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
             new Button()
                 .SetText("NAV")
                 .SetTextSize(20)
-                .SetCommand(vm.NavCommand))
-            .SetHorizontalAlignment(HorizontalAlignment.Center)
-            .SetVerticalAlignment(VerticalAlignment.Center);
+                .SetCommand(vm.NavCommand)
+                .SetBackgroundColor(SKColors.Red));
 
         //return new VStack(
         //    new Solid(height: 10, color: SKColors.Green)
