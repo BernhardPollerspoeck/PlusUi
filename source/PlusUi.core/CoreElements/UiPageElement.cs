@@ -13,6 +13,14 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
         _tree = Build();
         _tree.Parent = this;
         InvalidateMeasure();
+        Appearing();
+    }
+
+    public virtual void Appearing()
+    {
+    }
+    public virtual void Disappearing()
+    {
     }
 
     protected override void UpdateBindingsInternal(string propertyName)
