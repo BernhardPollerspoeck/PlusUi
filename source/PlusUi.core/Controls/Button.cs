@@ -74,8 +74,8 @@ public class Button : UiTextElement<Button>, IInputControl
             canvas.DrawRect(
                 Position.X,
                 Position.Y,
-                Margin.Left + textWidth + Margin.Right,
-                Margin.Top + textHeight + Margin.Bottom,
+                textWidth,
+                textHeight,
                 BackgroundPaint);
         }
 
