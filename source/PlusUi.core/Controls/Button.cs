@@ -74,15 +74,15 @@ public class Button : UiTextElement<Button>, IInputControl
             canvas.DrawRect(
                 Position.X,
                 Position.Y,
-                textWidth,
-                textHeight,
+                ElementSize.Width,
+                ElementSize.Height,
                 BackgroundPaint);
         }
 
         canvas.DrawText(
             Text,
             Position.X + (ElementSize.Width / 2),
-            Position.Y + TextSize,
+            Position.Y + textHeight,
             (SKTextAlign)TextAlignment,
             Font,
             Paint);
