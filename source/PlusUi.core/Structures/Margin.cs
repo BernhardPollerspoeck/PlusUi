@@ -14,4 +14,7 @@ public struct Margin(float left, float top, float right, float bottom)
     public Margin(float size) : this(size, size, size, size)
     {
     }
+    public Margin(float horizontal, float vertical) : this(horizontal, vertical, horizontal, vertical)
+    {
+    }
 }
