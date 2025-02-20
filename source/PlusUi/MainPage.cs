@@ -38,8 +38,14 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
             new Button()
                 .SetText("NAV")
                 .SetTextSize(20)
-                .SetCommand(vm.NavCommand)
-                .SetBackgroundColor(SKColors.Red));
+                .SetCommand(vm.NavCommand),
+            //.SetMargin(new(5))
+            //.SetBackgroundColor(SKColors.Red)
+
+            new Label()
+                .SetText("I am a label")
+                .SetMargin(new(10))
+                );
 
         //return new VStack(
         //    new Solid(height: 10, color: SKColors.Green)

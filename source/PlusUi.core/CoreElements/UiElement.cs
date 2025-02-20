@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
@@ -162,6 +163,12 @@ public abstract class UiElement
         return this;
     }
     #endregion
+
+    protected UiElement()
+    {
+        var style = ServiceProviderService.ServiceProvider?.GetRequiredService<Style>();
+        style?.ApplyStyle(this);
+    }
 
     public Size ElementSize { get; private set; }
     public UiElement? Parent { get; set; }

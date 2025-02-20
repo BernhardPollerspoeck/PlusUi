@@ -24,8 +24,3 @@ public class SecondPageViewModel(INavigationService navigationService) : ViewMod
 {
     public ICommand NavCommand { get; } = new SyncCommand(navigationService.NavigateTo<MainPage>);
 }
-
-
-
-
-

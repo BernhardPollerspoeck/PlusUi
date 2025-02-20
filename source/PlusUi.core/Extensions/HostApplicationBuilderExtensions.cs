@@ -12,8 +12,14 @@ public static class HostApplicationBuilderExtensions
     {
         builder.Services.Configure(configurationAction);
 
+        builder.Services.AddSingleton<ServiceProviderService>();
+
         builder.Services.AddSingleton<RenderService>();
         builder.Services.AddSingleton<UpdateService>();
+
+        builder.Services.AddSingleton<Style>();
+        builder.Services.AddSingleton<IThemeService, ThemeService>();
+        builder.Services.AddHostedService<StartupStyleService>();
 
         builder.Services.AddSingleton(sp => new PlusUiNavigationService(sp));
         builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
@@ -33,6 +39,13 @@ public static class HostApplicationBuilderExtensions
         where TViewModel : ViewModelBase
     {
         builder.Services.AddTransient<TViewModel>();
+        return builder;
+    }
+
+    public static HostApplicationBuilder StylePlusUi<TApplicationStyle>(this HostApplicationBuilder builder)
+        where TApplicationStyle : class, IApplicationStyle
+    {
+        builder.Services.AddSingleton<IApplicationStyle, TApplicationStyle>();
         return builder;
     }
 }
