@@ -65,7 +65,7 @@ public class Button : UiTextElement<Button>, IInputControl
 
     public override void Render(SKCanvas canvas)
     {
-        var textWidth = Font.MeasureText(Text);
+        var textWidth = Font.MeasureText(Text ?? string.Empty);
 
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
@@ -80,7 +80,7 @@ public class Button : UiTextElement<Button>, IInputControl
         }
 
         canvas.DrawText(
-            Text,
+            Text ?? string.Empty,
             Position.X + (ElementSize.Width / 2),
             Position.Y + textHeight,
             (SKTextAlign)HorizontalTextAlignment,
@@ -91,7 +91,7 @@ public class Button : UiTextElement<Button>, IInputControl
 
     protected override Size MeasureInternal(Size availableSize)
     {
-        var textWidth = Font.MeasureText(Text);
+        var textWidth = Font.MeasureText(Text ?? string.Empty);
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 

@@ -9,7 +9,7 @@ public class Label : UiTextElement<Label>
     {
         base.Render(canvas);
         canvas.DrawText(
-            Text,
+            Text ?? string.Empty,
             Position.X,
             Position.Y + TextSize,
             (SKTextAlign)HorizontalTextAlignment,

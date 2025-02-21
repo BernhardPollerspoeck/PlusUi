@@ -8,12 +8,20 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
     private bool _isSelected;
     private DateTime _selectionTime;
 
+    public Entry BindText(string propertyName, Func<string?> propertyGetter, Action<string> propertySetter)
+    {
+        base.BindText(propertyName, propertyGetter);
+        RegisterSetter(nameof(Text), propertySetter);
+        return this;
+    }
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
 
+
         canvas.DrawText(
-            Text,
+            Text ?? string.Empty,
             Position.X,
             Position.Y + TextSize,
             (SKTextAlign)HorizontalTextAlignment,
@@ -28,7 +36,7 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
                 Font.GetFontMetrics(out var fontMetrics);
                 var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
-                var cursorX = Position.X + Font.MeasureText(Text);
+                var cursorX = Position.X + Font.MeasureText(Text ?? string.Empty);
                 var cursorYStart = Position.Y + (textHeight * 0.1f);
                 var cursorYEnd = Position.Y + textHeight - (textHeight * 0.1f);
 
@@ -54,12 +62,26 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
             if (Text?.Length > 0)
             {
                 Text = Text[..^1];
+                if (_setter.TryGetValue(nameof(Text), out var textSetter))
+                {
+                    foreach (var setter in textSetter)
+                    {
+                        setter(Text);
+                    }
+                }
             }
         }
     }
     public void HandleInput(char chr)
     {
         Text += chr;
+        if (_setter.TryGetValue(nameof(Text), out var textSetter))
+        {
+            foreach (var setter in textSetter)
+            {
+                setter(Text);
+            }
+        }
     }
 
 }

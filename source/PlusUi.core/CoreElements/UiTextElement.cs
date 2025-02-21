@@ -9,7 +9,7 @@ public abstract class UiTextElement<T> : UiTextElement where T : UiTextElement<T
         base.SetText(text);
         return (T)this;
     }
-    public new T BindText(string propertyName, Func<string> propertyGetter)
+    public new T BindText(string propertyName, Func<string?> propertyGetter)
     {
         base.BindText(propertyName, propertyGetter);
         return (T)this;
@@ -62,7 +62,7 @@ public abstract class UiTextElement : UiElement
         Text = text;
         return this;
     }
-    public UiTextElement BindText(string propertyName, Func<string> propertyGetter)
+    public UiTextElement BindText(string propertyName, Func<string?> propertyGetter)
     {
         RegisterBinding(propertyName, () => Text = propertyGetter());
         return this;
@@ -145,7 +145,7 @@ public abstract class UiTextElement : UiElement
 
     protected override Size MeasureInternal(Size availableSize)
     {
-        var textWidth = Font.MeasureText(Text);
+        var textWidth = Font.MeasureText(Text ?? string.Empty);
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 

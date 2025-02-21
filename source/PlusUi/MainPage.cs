@@ -1,4 +1,6 @@
 ﻿using PlusUi.core;
+using SkiaSharp;
+using System.Diagnostics;
 using System.Windows.Input;
 
 namespace PlusUi;
@@ -14,27 +16,17 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
                 .SetText("I have been clicked {vm.Count} times")
                 .SetTextSize(20)
                 .SetHorizontalAlignment(HorizontalAlignment.Center),
-            new Button()
-                .SetText("Light")
+            new Entry()
+                .BindText(nameof(vm.Text), () => vm.Text, v => vm.Text = v)
                 .SetTextSize(20)
-                .SetPadding(new(10, 5))
-                .SetCommand(vm.ThemeCommand)
-                .SetCommandParameter(Theme.Light)
+                .SetDesiredWidth(300)
+                .SetBackgroundColor(SKColors.Green)
                 .SetHorizontalAlignment(HorizontalAlignment.Center),
-            new Button()
-                .SetText("Dark")
+            new Label()
+                .SetText("I have been clicked {vm.Count} times")
                 .SetTextSize(20)
-                .SetPadding(new(10, 5))
-                .SetCommand(vm.ThemeCommand)
-                .SetCommandParameter(Theme.Dark)
-                .SetHorizontalAlignment(HorizontalAlignment.Center),
-            new Button()
-                .SetText("Blue")
-                .SetTextSize(20)
-                .SetPadding(new(10, 5))
-                .SetCommand(vm.ThemeCommand)
-                .SetCommandParameter("Blue")
-                .SetHorizontalAlignment(HorizontalAlignment.Center))
+                .SetHorizontalAlignment(HorizontalAlignment.Center)
+            )
             .SetHorizontalAlignment(HorizontalAlignment.Center)
             .SetVerticalAlignment(VerticalAlignment.Center);
     }
@@ -43,23 +35,16 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
 
 public class MainViewModel : ViewModelBase
 {
-
-    public ICommand ThemeCommand { get; }
-
-    public MainViewModel(IThemeService themeService)
+    public string? Text
     {
-        ThemeCommand = new SyncCommand((p) =>
+        get => field;
+        set
         {
-            if (p is Theme theme)
-            {
-                themeService.SetTheme(theme);
-            }
-            else if (p is string color)
-            {
-                themeService.SetTheme(color);
-            }
-        });
+            SetProperty(ref field, value);
+            Debug.WriteLine(value);
+        }
     }
+
 }
 
 

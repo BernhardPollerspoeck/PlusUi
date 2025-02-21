@@ -31,6 +31,7 @@ public abstract class UiElement
 {
     private bool _needsMeasure = true;
     private readonly Dictionary<string, List<Action>> _bindings = [];
+    protected readonly Dictionary<string, List<Action<string>>> _setter = [];
 
     #region BackgroundColor
     public SKColor BackgroundColor
@@ -259,6 +260,15 @@ public abstract class UiElement
         updateActions.Add(updateAction);
 
         UpdateBindings(propertyName);
+    }
+    protected void RegisterSetter(string propertyName, Action<string> setter)
+    {
+        if (!_setter.TryGetValue(propertyName, out var setterActions))
+        {
+            setterActions = [];
+            _setter.Add(propertyName, setterActions);
+        }
+        setterActions.Add(setter);
     }
     public void UpdateBindings(string propertyName)
     {
