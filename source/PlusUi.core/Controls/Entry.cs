@@ -16,7 +16,7 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
             Text,
             Position.X,
             Position.Y + TextSize,
-            (SKTextAlign)TextAlignment,
+            (SKTextAlign)HorizontalTextAlignment,
             Font,
             Paint);
 

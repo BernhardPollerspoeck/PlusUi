@@ -50,7 +50,7 @@ public class Button : UiTextElement<Button>, IInputControl
 
     public Button()
     {
-        TextAlignment = TextAlignment.Center;
+        HorizontalTextAlignment = HorizontalTextAlignment.Center;
     }
 
     #region IInputControl
@@ -83,7 +83,7 @@ public class Button : UiTextElement<Button>, IInputControl
             Text,
             Position.X + (ElementSize.Width / 2),
             Position.Y + textHeight,
-            (SKTextAlign)TextAlignment,
+            (SKTextAlign)HorizontalTextAlignment,
             Font,
             Paint);
 

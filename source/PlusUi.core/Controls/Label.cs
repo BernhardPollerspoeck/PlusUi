@@ -12,7 +12,7 @@ public class Label : UiTextElement<Label>
             Text,
             Position.X,
             Position.Y + TextSize,
-            (SKTextAlign)TextAlignment,
+            (SKTextAlign)HorizontalTextAlignment,
             Font,
             Paint);
 

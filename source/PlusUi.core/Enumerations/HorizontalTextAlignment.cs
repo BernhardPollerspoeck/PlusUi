@@ -1,6 +1,6 @@
 ﻿namespace PlusUi.core;
 
-public enum TextAlignment
+public enum HorizontalTextAlignment
 {
     Left,
     Center,
