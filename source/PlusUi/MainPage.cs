@@ -11,18 +11,29 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
     {
         return new VStack(
             new Label()
-                .SetText("Hello World !")
-                .SetTextSize(50)
-                .SetHorizontalAlignment(HorizontalAlignment.Center),
-            new Label()
-                .BindText(nameof(vm.Count), () => $"I have been clicked {vm.Count} times")
-                .SetTextSize(30)
+                .SetText("I have been clicked {vm.Count} times")
+                .SetTextSize(20)
                 .SetHorizontalAlignment(HorizontalAlignment.Center),
             new Button()
-                .SetText("Click me")
+                .SetText("Light")
                 .SetTextSize(20)
-                .SetPadding(new(10,5))
-                .SetCommand(vm.CountIncrementCommand)
+                .SetPadding(new(10, 5))
+                .SetCommand(vm.ThemeCommand)
+                .SetCommandParameter(Theme.Light)
+                .SetHorizontalAlignment(HorizontalAlignment.Center),
+            new Button()
+                .SetText("Dark")
+                .SetTextSize(20)
+                .SetPadding(new(10, 5))
+                .SetCommand(vm.ThemeCommand)
+                .SetCommandParameter(Theme.Dark)
+                .SetHorizontalAlignment(HorizontalAlignment.Center),
+            new Button()
+                .SetText("Blue")
+                .SetTextSize(20)
+                .SetPadding(new(10, 5))
+                .SetCommand(vm.ThemeCommand)
+                .SetCommandParameter("Blue")
                 .SetHorizontalAlignment(HorizontalAlignment.Center))
             .SetHorizontalAlignment(HorizontalAlignment.Center)
             .SetVerticalAlignment(VerticalAlignment.Center);
@@ -32,17 +43,22 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
 
 public class MainViewModel : ViewModelBase
 {
-    public int Count
-    {
-        get;
-        set => SetProperty(ref field, value);
-    } = 0;
 
-    public ICommand CountIncrementCommand { get; }
+    public ICommand ThemeCommand { get; }
 
-    public MainViewModel()
+    public MainViewModel(IThemeService themeService)
     {
-        CountIncrementCommand = new SyncCommand(() => Count++);
+        ThemeCommand = new SyncCommand((p) =>
+        {
+            if (p is Theme theme)
+            {
+                themeService.SetTheme(theme);
+            }
+            else if (p is string color)
+            {
+                themeService.SetTheme(color);
+            }
+        });
     }
 }
 

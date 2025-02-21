@@ -85,6 +85,7 @@ public abstract class UiElement
         {
             field = value;
             UpdateBindings(nameof(HorizontalAlignment));
+            InvalidateMeasure();
         }
     } = HorizontalAlignment.Left;
     public UiElement SetHorizontalAlignment(HorizontalAlignment alignment)
@@ -107,6 +108,7 @@ public abstract class UiElement
         {
             field = value;
             UpdateBindings(nameof(VerticalAlignment));
+            InvalidateMeasure();
         }
     } = VerticalAlignment.Top;
     public UiElement SetVerticalAlignment(VerticalAlignment alignment)
@@ -166,8 +168,7 @@ public abstract class UiElement
 
     protected UiElement()
     {
-        var style = ServiceProviderService.ServiceProvider?.GetRequiredService<Style>();
-        style?.ApplyStyle(this);
+        ApplyStyles();
     }
 
     public Size ElementSize { get; private set; }
@@ -298,5 +299,11 @@ public abstract class UiElement
             : null;
     }
     #endregion
+
+    public virtual void ApplyStyles()
+    {
+        var style = ServiceProviderService.ServiceProvider?.GetRequiredService<Style>();
+        style?.ApplyStyle(this);
+    }
 }
 

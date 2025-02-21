@@ -13,6 +13,13 @@ public class DefaultStyle : IApplicationStyle
                 .SetMargin(new Margin(5))
             )
             .AddStyle<Label>(element => element
-                .SetTextColor(SKColors.Red));
+                .SetTextColor(SKColors.Red))
+            .AddStyle<Label>(Theme.Light, element => element
+                .SetTextSize(30))
+            .AddStyle<Label>(Theme.Dark, element => element
+                .SetTextSize(40))
+            .AddStyle<Label>("Blue", element => element
+                .SetTextSize(50));
+
     }
 }

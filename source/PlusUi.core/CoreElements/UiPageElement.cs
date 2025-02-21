@@ -45,5 +45,10 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
     {
         return _tree.HitTest(point);
     }
+    public override void ApplyStyles()
+    {
+        base.ApplyStyles();
+        _tree.ApplyStyles();
+    }
 
 }

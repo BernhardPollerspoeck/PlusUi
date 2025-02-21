@@ -77,6 +77,7 @@ public abstract class UiTextElement : UiElement
         {
             field = value;
             Font = CreateFont();
+            InvalidateMeasure();
         }
     } = 12;
     public UiTextElement SetTextSize(float fontSize)
@@ -120,7 +121,7 @@ public abstract class UiTextElement : UiElement
         set
         {
             field = value;
-
+            InvalidateMeasure();
         }
     } = HorizontalTextAlignment.Left;
     public UiTextElement SetHorizontalTextAlignment(HorizontalTextAlignment alignment)

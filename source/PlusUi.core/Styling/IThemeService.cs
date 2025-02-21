@@ -3,6 +3,6 @@
 public interface IThemeService
 {
     string CurrentTheme { get; }
-    bool SetStyle(Theme theme);
-    bool SetStyle(string theme);
+    bool SetTheme(Theme theme);
+    bool SetTheme(string theme);
 }

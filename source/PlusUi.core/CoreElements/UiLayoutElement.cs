@@ -32,16 +32,19 @@ public abstract class UiLayoutElement : UiElement
     {
         child.Parent = this;
         Children.Add(child);
+        InvalidateMeasure();
         return this;
     }
     public UiElement RemoveChild(UiElement child)
     {
         Children.Remove(child);
+        InvalidateMeasure();
         return this;
     }
     public UiElement ClearChildren()
     {
         Children.Clear();
+        InvalidateMeasure();
         return this;
     }
     #endregion
@@ -64,5 +67,14 @@ public abstract class UiLayoutElement : UiElement
             child.UpdateBindings(propertyName);
         }
     }
-    #endregion    
+    #endregion
+
+    public override void ApplyStyles()
+    {
+        base.ApplyStyles();
+        foreach (var child in Children)
+        {
+            child.ApplyStyles();
+        }
+    }
 }
