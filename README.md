@@ -2,7 +2,6 @@
 
 PlusUi is a cutting-edge, fully cross-platform UI Framework designed to deliver a seamless and consistent user experience across iOS, Android, Windows, Mac, and Linux. Leveraging OpenGL hardware acceleration through Silk.NET and utilizing SkiaSharp as the rendering layer, PlusUi ensures that all platforms look, feel, and behave exactly the same. This approach guarantees high performance and visual fidelity, making PlusUi an ideal choice for modern, responsive applications.
 
-
 ## Releases
 Will be here in a few days. Stay patient.
 
@@ -21,6 +20,11 @@ The following is a list of some of the features currently available in PlusUi. T
 - Modern UI components (TODO)
 - Customizable themes
 
+## Documentation
+
+All the controls, samples, and project setup instructions can be found in the [GitHub Wiki](https://github.com/BernhardPollerspoeck/PlusUi/wiki). For more detailed information, including advanced usage and troubleshooting, please refer to the comprehensive guides and FAQs available in the wiki.
+
+
 ## Contributing
 
 We welcome contributions! Please open an issue to discuss any planned changes before submitting a pull request. This helps us ensure that your contribution aligns with the project's goals and avoids duplication of effort. 
@@ -32,3 +36,4 @@ Thank you for your interest in contributing to PlusUi!
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. The MIT License was chosen for its permissiveness and simplicity, allowing for wide usage and contribution. It ensures that the project remains open and accessible to developers while protecting the original authors.
+
