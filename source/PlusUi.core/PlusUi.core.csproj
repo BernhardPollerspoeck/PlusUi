@@ -5,6 +5,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>PlusUi.core</PackageId>
+    <Authors>Bernhard Pollerspöck</Authors>
+    <Company>PlusUi</Company>
+    <Product>PlusUi.core</Product>
+    <Description>The Core PlusiUi Package</Description>
+    <PackageTags>PlusUi;UiFramework;Silk.net;Skiasharp</PackageTags>
+    <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/BernhardPollerspoeck/PlusUi/blob/7e93e9d31d62ffee5b5b4af8605eb94968e5d61f/gfx/plusui.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

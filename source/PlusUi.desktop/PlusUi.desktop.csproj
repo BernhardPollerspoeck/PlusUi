@@ -1,17 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">  
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+  <PropertyGroup>  
+    <TargetFramework>net9.0</TargetFramework>  
+    <ImplicitUsings>enable</ImplicitUsings>  
+    <Nullable>enable</Nullable>  
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>  
+    <PackageId>PlusUi.desktop</PackageId>  
+    <Authors>Bernhard Pollerspöck</Authors>  
+    <Company>PlusUi</Company>  
+    <Product>PlusUi.desktop</Product>  
+    <Description>The Desktop PlusUi Package</Description>  
+    <PackageTags>PlusUi;UiFramework;Silk.net;Skiasharp</PackageTags>  
+    <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>  
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>  
+    <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>  
+    <PackageIconUrl>https://github.com/BernhardPollerspoeck/PlusUi/blob/7e93e9d31d62ffee5b5b4af8605eb94968e5d61f/gfx/plusui.png</PackageIconUrl>  
+  </PropertyGroup>  
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
-  </ItemGroup>
+  <ItemGroup>  
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />  
+  </ItemGroup>  
 
-  <ItemGroup>
-    <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />
-  </ItemGroup>
-  
+  <ItemGroup>  
+    <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />  
+  </ItemGroup>  
+
 </Project>
