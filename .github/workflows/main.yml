@@ -1,15 +1,12 @@
 name: nuget
 
 on:
-  push:
-    tags:
-      - "v*.*.*.*"
   workflow_dispatch:
     inputs:
       version:
-        description: "Version (z. B. v1.2.3.4)"
+        description: "Version (e.g., 1.2.3.4)"
         required: true
-        default: "v1.0.0.0"
+        default: "1.0.0.0"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,13 +17,13 @@ jobs:
     - name: Verify commit exists in origin/master
       run: |
         git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
-        git branch --remote --contains | grep origin/master
+        git branch --remote --contains $(git rev-parse HEAD) | grep origin/master
     - name: Setup .NET 9
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: '9.0.x'
-    - name: Set VERSION variable from tag
-      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+    - name: Set VERSION variable from input
+      run: echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
     
     - name: Restore
       run: dotnet restore nuget.sln -f
