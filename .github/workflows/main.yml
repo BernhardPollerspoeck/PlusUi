@@ -21,7 +21,15 @@ jobs:
         dotnet-version: '9.0.x'
     - name: Set VERSION variable from tag
       run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+    
+    - name: Restore
+      run: dotnet restore nuget.sln --configuration Release /p:Version=${VERSION} -f
+    
+    - name: Build
+      run: dotnet build nuget.sln --no-restore --configuration Release /p:Version=${VERSION} --output .
+    
     - name: Pack
-      run: dotnet pack nuget.sln --configuration Release /p:Version=${VERSION} --output .
+      run: dotnet pack nuget.sln --no-build --no-restore --configuration Release /p:Version=${VERSION} --output .
+    
     - name: Push
       run: dotnet nuget push **.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
