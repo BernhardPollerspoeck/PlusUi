@@ -1,39 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="background: black">
   <!-- Background circle -->
-  <circle cx="100" cy="100" r="90" fill="#f5f7fa" stroke="#3b82f6" stroke-width="8"/>
+  <circle cx="100" cy="100" r="90" fill="#000" stroke="#fff" stroke-width="8"/>
   
   <!-- Central plus -->
-  <path d="M100 40 L100 160 M40 100 L160 100" stroke="#3b82f6" stroke-width="15" stroke-linecap="round"/>
+  <path d="M100 40 L100 160 M40 100 L160 100" stroke="#fff" stroke-width="15" stroke-linecap="round"/>
   
   <!-- Platform icons precisely equally spaced (72 degrees apart) -->
   
   <!-- Windows-->
   <g transform="translate(100, 100)">
     <circle cx="0" cy="0" r="25" fill="#00adef"/>
-    <text x="0" y="7" font-family="Arial" font-size="18" font-weight="bold" fill="white" text-anchor="middle">Win</text>
+    <text x="0" y="7" font-family="Arial" font-size="18" font-weight="bold" fill="000" text-anchor="middle">Win</text>
   </g>
   
   <!-- Android -->
   <g transform="translate(100, 40)">
     <circle cx="0" cy="0" r="25" fill="#3ddc84"/>
-    <text x="0" y="4" font-family="Arial" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Android</text>
+    <text x="0" y="4" font-family="Arial" font-size="12" font-weight="bold" fill="000" text-anchor="middle">Android</text>
   </g>
   
   <!-- iOS -->
   <g transform="translate(100, 160)">
-    <circle cx="0" cy="0" r="25" fill="#000000"/>
-    <text x="0" y="7" font-family="Arial" font-size="18" font-weight="bold" fill="white" text-anchor="middle">iOS</text>
+    <circle cx="0" cy="0" r="25" fill="#ef4500"/>
+    <text x="0" y="7" font-family="Arial" font-size="18" font-weight="bold" fill="000" text-anchor="middle">iOS</text>
   </g>
   
   <!-- macOS -->
   <g transform="translate(160, 100)">
     <circle cx="0" cy="0" r="25" fill="#7d7d7d"/>
-    <text x="0" y="7" font-family="Arial" font-size="18" font-weight="bold" fill="white" text-anchor="middle">mac</text>
+    <text x="0" y="7" font-family="Arial" font-size="18" font-weight="bold" fill="000" text-anchor="middle">mac</text>
   </g>
   
   <!-- Linux -->
   <g transform="translate(40, 100)">
     <circle cx="0" cy="0" r="25" fill="#f8c300"/>
-    <text x="0" y="4" font-family="Arial" font-size="18" font-weight="bold" fill="white" text-anchor="middle">Linux</text>
+    <text x="0" y="4" font-family="Arial" font-size="18" font-weight="bold" fill="000" text-anchor="middle">Linux</text>
   </g>
 </svg>
