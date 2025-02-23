@@ -3,7 +3,9 @@
 PlusUi is a cutting-edge, fully cross-platform UI Framework designed to deliver a seamless and consistent user experience across iOS, Android, Windows, Mac, and Linux. Leveraging OpenGL hardware acceleration through Silk.NET and utilizing SkiaSharp as the rendering layer, PlusUi ensures that all platforms look, feel, and behave exactly the same. This approach guarantees high performance and visual fidelity, making PlusUi an ideal choice for modern, responsive applications.
 
 ## Releases
-Will be here in a few days. Stay patient.
+- Build: [![nuget](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml/badge.svg)](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml)
+- Core: ![NuGet Version](https://img.shields.io/nuget/v/PlusUi.core)
+- Desktop: ![NuGet Version](https://img.shields.io/nuget/v/PlusUi.desktop)
 
 ## Features
 
