@@ -15,8 +15,12 @@
     <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/BernhardPollerspoeck/PlusUi/blob/7e93e9d31d62ffee5b5b4af8605eb94968e5d61f/gfx/plusui.png</PackageIconUrl>
+    <PackageIcon>plusui.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\gfx\plusui.png" Link="plusui.png" Pack="true" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
