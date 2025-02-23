@@ -4,8 +4,9 @@ PlusUi is a cutting-edge, fully cross-platform UI Framework designed to deliver 
 
 ## Releases
 - Build: [![nuget](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml/badge.svg)](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml)
-- Core: ![NuGet Version](https://img.shields.io/nuget/v/PlusUi.core)
-- Desktop: ![NuGet Version](https://img.shields.io/nuget/v/PlusUi.desktop)
+- ![NuGet Version](https://img.shields.io/nuget/v/PlusUi.core?label=PlusUi.core&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FPlusUi.core)
+- ![NuGet Version](https://img.shields.io/nuget/v/PlusUi.desktop?&label=PlusUi.desktop&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FPlusUi.desktop)
+
 
 ## Features
 
