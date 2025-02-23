@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\..\gfx\plusui.png" Link="plusui.png" Pack="true" />
+    <None  Include="..\..\gfx\plusui.png" Link="plusui.png" Pack="true" PackagePath="plusui.png" />
   </ItemGroup>
 
   <ItemGroup>
