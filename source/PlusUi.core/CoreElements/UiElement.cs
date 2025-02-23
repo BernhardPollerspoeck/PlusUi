@@ -244,6 +244,10 @@ public abstract class UiElement
     }
     #endregion
 
+    public virtual void BuildContent()
+    {
+    }
+
     #region bindings
     /// <summary>
     /// This one should get called by the elements binding methods to register value setters

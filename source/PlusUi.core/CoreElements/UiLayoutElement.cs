@@ -49,6 +49,15 @@ public abstract class UiLayoutElement : UiElement
     }
     #endregion
 
+    public override void BuildContent()
+    {
+        base.BuildContent();
+        foreach (var child in Children)
+        {
+            child.BuildContent();
+        }
+    }
+
     #region rendering
     public override void Render(SKCanvas canvas)
     {

@@ -11,6 +11,7 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
     public void BuildPage()
     {
         _tree = Build();
+        _tree.BuildContent();
         _tree.Parent = this;
         InvalidateMeasure();
         Appearing();

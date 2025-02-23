@@ -1,7 +1,6 @@
 ﻿using PlusUi.core;
 using SkiaSharp;
 using System.Diagnostics;
-using System.Windows.Input;
 
 namespace PlusUi;
 
@@ -16,6 +15,7 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
                 .SetText("I have been clicked {vm.Count} times")
                 .SetTextSize(20)
                 .SetHorizontalAlignment(HorizontalAlignment.Center),
+            new TestControl(),
             new Entry()
                 .BindText(nameof(vm.Text), () => vm.Text, v => vm.Text = v)
                 .SetTextSize(20)
