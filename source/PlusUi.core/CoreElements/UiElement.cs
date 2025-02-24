@@ -317,8 +317,8 @@ public abstract class UiElement
         if (BackgroundColor != SKColors.Transparent)
         {
             var rect = new SKRect(
-                Position.X,
-                Position.Y,
+                Position.X, 
+                Position.Y, 
                 Position.X + ElementSize.Width, 
                 Position.Y + ElementSize.Height);
             if (CornerRadius > 0)

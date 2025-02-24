@@ -8,6 +8,28 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
     private bool _isSelected;
     private DateTime _selectionTime;
 
+    #region Padding
+    public Margin Padding
+    {
+        get => field;
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    }
+    public Entry SetPadding(Margin padding)
+    {
+        Padding = padding;
+        return this;
+    }
+    public Entry BindPadding(string propertyName, Func<Margin> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => Padding = propertyGetter());
+        return this;
+    }
+    #endregion
+
     public Entry BindText(string propertyName, Func<string?> propertyGetter, Action<string> propertySetter)
     {
         base.BindText(propertyName, propertyGetter);
@@ -40,8 +62,8 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
 
         canvas.DrawText(
             Text ?? string.Empty,
-            Position.X,
-            Position.Y + TextSize,
+            Position.X + Padding.Left,
+            Position.Y + textHeight,
             (SKTextAlign)HorizontalTextAlignment,
             Font,
             Paint);
@@ -51,12 +73,10 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
             var elapsedMilliseconds = (DateTime.Now - _selectionTime).TotalMilliseconds;
             if ((elapsedMilliseconds % 1600) < 800)
             {
-                Font.GetFontMetrics(out var fontMetrics);
-                var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
-                var cursorX = Position.X + Font.MeasureText(Text ?? string.Empty);
-                var cursorYStart = Position.Y + (textHeight * 0.1f);
-                var cursorYEnd = Position.Y + textHeight - (textHeight * 0.1f);
+                var cursorX = Position.X + Padding.Left + Font.MeasureText(Text ?? string.Empty)+2;
+                var cursorYStart = Position.Y + Padding.Top + (textHeight * 0.1f);
+                var cursorYEnd = Position.Y + Padding.Top + textHeight - (textHeight * 0.1f);
 
                 var strokeWidth = Paint.StrokeWidth;
                 Paint.StrokeWidth = Math.Max(2, textHeight * 0.04f);
@@ -64,6 +84,18 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
                 Paint.StrokeWidth = strokeWidth;
             }
         }
+    }
+
+    protected override Size MeasureInternal(Size availableSize)
+    {
+        var textWidth = Font.MeasureText(Text ?? string.Empty);
+        Font.GetFontMetrics(out var fontMetrics);
+        var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
+
+        //we need to cut or wrap if the text is too long
+        return new Size(
+            Math.Min(textWidth + Padding.Left + Padding.Right, availableSize.Width),
+            Math.Min(textHeight + Padding.Top + Padding.Bottom, availableSize.Height));
     }
     public void SetSelectionStatus(bool isSelected)
     {
