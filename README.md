@@ -27,6 +27,14 @@ The following is a list of some of the features currently available in PlusUi. T
 
 All the controls, samples, and project setup instructions can be found in the [GitHub Wiki](https://github.com/BernhardPollerspoeck/PlusUi/wiki). For more detailed information, including advanced usage and troubleshooting, please refer to the comprehensive guides and FAQs available in the wiki.
 
+## Example
+This quick Example shows a simple Sample on how the code written for this framework translates into UI.
+![image](https://github.com/user-attachments/assets/5ad0c960-35c1-409a-878e-1237d8c32925)
+![image](https://github.com/user-attachments/assets/cdb360c7-e6ed-440e-981e-fb62fb0eacab)
+![image](https://github.com/user-attachments/assets/d01227b8-b556-4316-887d-ecd5aba9f54c)
+![image](https://github.com/user-attachments/assets/f96d219c-9a22-416b-9e6e-4e8ba3fc8ea0)
+
+
 
 ## Contributing
 
