@@ -6,16 +6,11 @@ using PlusUi.desktop;
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.UsePlusUi<MainPage>();
-
-
 builder.StylePlusUi<DefaultStyle>();
 
-
 builder.AddPage<MainPage>().WithViewModel<MainViewModel>();
-builder.AddPage<SecondPage>().WithViewModel<SecondPageViewModel>();
 
 var app = builder.Build();
-
 
 app.Run();
 

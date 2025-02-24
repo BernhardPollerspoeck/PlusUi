@@ -8,16 +8,27 @@ public class DefaultStyle : IApplicationStyle
     public void ConfigureStyle(Style style)
     {
         style
-            .AddStyle<Label>(element => element
-                .SetTextColor(SKColors.Red))
+            .AddStyle<UiElement>(element => element
+                .SetMargin(new(5))
+                .SetCornerRadius(10))
 
-            .AddStyle<Label>(Theme.Light, element => element
-                .SetTextSize(30))
-            .AddStyle<Label>(Theme.Dark, element => element
-                .SetTextSize(40))
+            .AddStyle<HStack>(element => element
+                .SetMargin(new(0)))
+            .AddStyle<VStack>(element => element
+                .SetMargin(new(0)))
 
-            .AddStyle<Label>("Blue", element => element
-                .SetTextSize(50));
+            .AddStyle<Solid>(element => element
+                .SetDesiredWidth(50)
+                .SetDesiredHeight(50))
+
+            .AddStyle<Entry>(element => element
+                .SetPadding(new(10, 5))
+                .SetTextColor(SKColors.White)
+                .SetBackgroundColor(SKColors.SlateGray)
+                .SetDesiredWidth(200))
+
+            .AddStyle<Button>(element => element
+                .SetBackgroundColor(SKColors.Green));
 
     }
 }
