@@ -64,7 +64,7 @@ public class Style(IThemeService themeService)
         {
             return;
         }
-        foreach (var style in value.Where(a => a.Key == element.GetType())
+        foreach (var style in value.Where(a => a.Key.IsAssignableFrom(element.GetType()))
             .Select(a => a.Value as Action<TElement>))
         {
             style(element);
