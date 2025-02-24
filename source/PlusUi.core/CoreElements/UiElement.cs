@@ -124,6 +124,28 @@ public abstract class UiElement
     }
     #endregion
 
+    #region CornerRadius
+    public float CornerRadius
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdateBindings(nameof(CornerRadius));
+        }
+    } = 0;
+    public UiElement SetCornerRadius(float radius)
+    {
+        CornerRadius = radius;
+        return this;
+    }
+    public UiElement BindCornerRadius(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => CornerRadius = propertyGetter());
+        return this;
+    }
+    #endregion
+
     #region size
     public Size? DesiredSize
     {
@@ -294,12 +316,19 @@ public abstract class UiElement
     {
         if (BackgroundColor != SKColors.Transparent)
         {
-            canvas.DrawRect(
+            var rect = new SKRect(
                 Position.X,
                 Position.Y,
-                ElementSize.Width,
-                ElementSize.Height,
-                BackgroundPaint);
+                Position.X + ElementSize.Width, 
+                Position.Y + ElementSize.Height);
+            if (CornerRadius > 0)
+            {
+                canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
+            }
+            else
+            {
+                canvas.DrawRect(rect, BackgroundPaint);
+            }
         }
     }
     #endregion

@@ -71,12 +71,19 @@ public class Button : UiTextElement<Button>, IInputControl
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
         if (BackgroundPaint is not null)
         {
-            canvas.DrawRect(
+            var rect = new SKRect(
                 Position.X,
                 Position.Y,
-                ElementSize.Width,
-                ElementSize.Height,
-                BackgroundPaint);
+                Position.X + ElementSize.Width,
+                Position.Y + ElementSize.Height);
+            if (CornerRadius > 0)
+            {
+                canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
+            }
+            else
+            {
+                canvas.DrawRect(rect, BackgroundPaint);
+            }
         }
 
         canvas.DrawText(

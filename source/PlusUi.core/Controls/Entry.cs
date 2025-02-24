@@ -17,8 +17,26 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
 
     public override void Render(SKCanvas canvas)
     {
-        base.Render(canvas);
+        var textWidth = Font.MeasureText(Text ?? string.Empty);
 
+        Font.GetFontMetrics(out var fontMetrics);
+        var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
+        if (BackgroundPaint is not null)
+        {
+            var rect = new SKRect(
+                Position.X,
+                Position.Y,
+                Position.X + ElementSize.Width,
+                Position.Y + ElementSize.Height);
+            if (CornerRadius > 0)
+            {
+                canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
+            }
+            else
+            {
+                canvas.DrawRect(rect, BackgroundPaint);
+            }
+        }
 
         canvas.DrawText(
             Text ?? string.Empty,
