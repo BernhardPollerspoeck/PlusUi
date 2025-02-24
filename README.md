@@ -5,7 +5,8 @@ PlusUi is a cutting-edge, fully cross-platform UI Framework designed to deliver 
 ----
 ### To get in touch regarding Support, Feedback or just a quick chat about your experiences the discord server would be the best place. See you there!
 
-![Discord Banner 3](https://discord.com/api/guilds/1342509628948484287/widget.png?style=banner3)
+[![Discord Banner 3](https://discord.com/api/guilds/1342509628948484287/widget.png?style=banner3)](https://discord.gg/DyFam7aB)
+
 
 ## Releases
 - [![nuget](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml/badge.svg)](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml)
