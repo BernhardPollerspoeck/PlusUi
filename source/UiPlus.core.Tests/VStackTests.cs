@@ -27,7 +27,8 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_TopCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { HorizontalAlignment = HorizontalAlignment.Center };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetHorizontalAlignment(HorizontalAlignment.Center);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -44,7 +45,8 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_TopRightAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { HorizontalAlignment = HorizontalAlignment.Right };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetHorizontalAlignment(HorizontalAlignment.Right);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -61,7 +63,8 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_LeftCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { VerticalAlignment = VerticalAlignment.Center };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetVerticalAlignment(VerticalAlignment.Center);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -78,7 +81,9 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_CenterCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetHorizontalAlignment(HorizontalAlignment.Center)
+            .SetVerticalAlignment(VerticalAlignment.Center);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -95,7 +100,9 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_RightCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetHorizontalAlignment(HorizontalAlignment.Right)
+            .SetVerticalAlignment(VerticalAlignment.Center);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -112,7 +119,8 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_LeftBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { VerticalAlignment = VerticalAlignment.Bottom };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetVerticalAlignment(VerticalAlignment.Bottom);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -129,7 +137,9 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_CenterBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Bottom };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetHorizontalAlignment(HorizontalAlignment.Center)
+            .SetVerticalAlignment(VerticalAlignment.Bottom);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -146,7 +156,9 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_NoMargin_NoSpacing_RightBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetHorizontalAlignment(HorizontalAlignment.Right)
+            .SetVerticalAlignment(VerticalAlignment.Bottom);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -164,7 +176,8 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_WithMargin_NoSpacing_LeftTopAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { Margin = new(5) };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetMargin(new(5));
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -181,7 +194,9 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_WithMargin_NoSpacing_TopCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Center };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetMargin(new(5))
+            .SetHorizontalAlignment(HorizontalAlignment.Center);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -198,7 +213,9 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_WithMargin_NoSpacing_TopRightAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Right };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetMargin(new(5))
+            .SetHorizontalAlignment(HorizontalAlignment.Right);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -215,7 +232,9 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_WithMargin_NoSpacing_LeftCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { Margin = new(5), VerticalAlignment = VerticalAlignment.Center };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetMargin(new(5))
+            .SetVerticalAlignment(VerticalAlignment.Center);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -232,7 +251,10 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_WithMargin_NoSpacing_CenterCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetMargin(new(5))
+            .SetHorizontalAlignment(HorizontalAlignment.Center)
+            .SetVerticalAlignment(VerticalAlignment.Center);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -249,7 +271,10 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_WithMargin_NoSpacing_RightCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetMargin(new(5))
+            .SetHorizontalAlignment(HorizontalAlignment.Right)
+            .SetVerticalAlignment(VerticalAlignment.Center);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -266,7 +291,9 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_WithMargin_NoSpacing_LeftBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { Margin = new(5), VerticalAlignment = VerticalAlignment.Bottom };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetMargin(new(5))
+            .SetVerticalAlignment(VerticalAlignment.Bottom);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -283,7 +310,10 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_WithMargin_NoSpacing_CenterBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Bottom };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetMargin(new(5))
+            .SetHorizontalAlignment(HorizontalAlignment.Center)
+            .SetVerticalAlignment(VerticalAlignment.Bottom);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -300,7 +330,10 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_WithMargin_NoSpacing_RightBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetMargin(new(5))
+            .SetHorizontalAlignment(HorizontalAlignment.Right)
+            .SetVerticalAlignment(VerticalAlignment.Bottom);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -318,7 +351,9 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithNoMargin_LeftTopAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(new Solid(10, 10))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -333,15 +368,11 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithNoMargin_TopCenterAligned()
     {
         //Arrange
-        var stack = new VStack(
+        var stack = (VStack)new VStack(
             new Solid(10, 10)
-            {
-                HorizontalAlignment = HorizontalAlignment.Center
-            })
-        {
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch
-        };
+                .SetHorizontalAlignment(HorizontalAlignment.Center))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -356,7 +387,11 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithNoMargin_TopRightAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { HorizontalAlignment = HorizontalAlignment.Right }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetHorizontalAlignment(HorizontalAlignment.Right))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -371,15 +406,11 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithNoMargin_LeftCenterAligned()
     {
         //Arrange
-        var stack = new VStack(
+        var stack = (VStack)new VStack(
             new Solid(10, 10)
-            {
-                VerticalAlignment = VerticalAlignment.Center
-            })
-        {
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch
-        };
+                .SetVerticalAlignment(VerticalAlignment.Center))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -394,7 +425,12 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithNoMargin_CenterCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetHorizontalAlignment(HorizontalAlignment.Center)
+                .SetVerticalAlignment(VerticalAlignment.Center))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -409,7 +445,12 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithNoMargin_RightCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetHorizontalAlignment(HorizontalAlignment.Right)
+                .SetVerticalAlignment(VerticalAlignment.Center))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -424,7 +465,11 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithNoMargin_LeftBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { VerticalAlignment = VerticalAlignment.Bottom }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetVerticalAlignment(VerticalAlignment.Bottom))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -439,7 +484,12 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithNoMargin_CenterBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Bottom }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetHorizontalAlignment(HorizontalAlignment.Center)
+                .SetVerticalAlignment(VerticalAlignment.Bottom))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -454,7 +504,12 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithNoMargin_RightBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetHorizontalAlignment(HorizontalAlignment.Right)
+                .SetVerticalAlignment(VerticalAlignment.Bottom))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -470,7 +525,11 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithMargin_LeftTopAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { Margin = new(5) }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetMargin(new(5)))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -485,7 +544,12 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithMargin_TopCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Center }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetMargin(new(5))
+                .SetHorizontalAlignment(HorizontalAlignment.Center))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -500,7 +564,12 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithMargin_TopRightAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Right }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetMargin(new(5))
+                .SetHorizontalAlignment(HorizontalAlignment.Right))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -515,16 +584,12 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithMargin_LeftCenterAligned()
     {
         //Arrange
-        var stack = new VStack(
+        var stack = (VStack)new VStack(
             new Solid(10, 10)
-            {
-                Margin = new(5),
-                VerticalAlignment = VerticalAlignment.Center
-            })
-        {
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch
-        };
+                .SetMargin(new(5))
+                .SetVerticalAlignment(VerticalAlignment.Center))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -539,7 +604,13 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithMargin_CenterCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetMargin(new(5))
+                .SetHorizontalAlignment(HorizontalAlignment.Center)
+                .SetVerticalAlignment(VerticalAlignment.Center))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -554,7 +625,13 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithMargin_RightCenterAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetMargin(new(5))
+                .SetHorizontalAlignment(HorizontalAlignment.Right)
+                .SetVerticalAlignment(VerticalAlignment.Center))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -569,7 +646,12 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithMargin_LeftBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { Margin = new(5), VerticalAlignment = VerticalAlignment.Bottom }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetMargin(new(5))
+                .SetVerticalAlignment(VerticalAlignment.Bottom))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -584,16 +666,13 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithMargin_CenterBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10)
-        {
-            Margin = new(5),
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Bottom
-        })
-        {
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch
-        };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetMargin(new(5))
+                .SetHorizontalAlignment(HorizontalAlignment.Center)
+                .SetVerticalAlignment(VerticalAlignment.Bottom))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -608,7 +687,13 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForChild_WithMargin_RightBottomAligned()
     {
         //Arrange
-        var stack = new VStack(new Solid(10, 10) { Margin = new(5), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom }) { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
+        var stack = (VStack)new VStack(
+            new Solid(10, 10)
+                .SetMargin(new(5))
+                .SetHorizontalAlignment(HorizontalAlignment.Right)
+                .SetVerticalAlignment(VerticalAlignment.Bottom))
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch);
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);
@@ -624,9 +709,9 @@ public sealed class VStackTests
     public void TestVStackMeasureAndArrange_ForMultibleChildren_WithUnregularMargins()
     {
         //Arrange
-        var stack = new VStack(
-            new Solid(10, 10) { Margin = new(0, 5, 0, 10) },
-            new Solid(10, 10) { Margin = new(0, 15, 0, 20) });
+        var stack = (VStack)new VStack(
+            new Solid(10, 10).SetMargin(new(0, 5, 0, 10)),
+            new Solid(10, 10).SetMargin(new(0, 15, 0, 20)));
         var availableSize = new Size(100, 100);
         //Act
         stack.Measure(availableSize);

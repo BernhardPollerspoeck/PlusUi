@@ -12,7 +12,7 @@ public class ButtonTests
     public void TestButtonPadding_CorrectSizing()
     {
         //Arrange
-        var button = new Button() { Text = "Test Button", Padding = new(10) };
+        var button = new Button().SetText("Test Button").SetPadding(new(10));
         var availableSize = new Size(100, 100);
         //Act
         button.Measure(availableSize);

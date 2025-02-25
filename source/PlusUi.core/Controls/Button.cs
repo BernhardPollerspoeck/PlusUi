@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace PlusUi.core;
@@ -6,10 +7,11 @@ namespace PlusUi.core;
 public class Button : UiTextElement<Button>, IInputControl
 {
     #region Padding
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public Margin Padding
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             InvalidateMeasure();
@@ -28,14 +30,16 @@ public class Button : UiTextElement<Button>, IInputControl
     #endregion
 
     #region command
-    public ICommand? Command { get; set; }
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public ICommand? Command { get; protected set; }
     public Button SetCommand(ICommand command)
     {
         Command = command;
         return this;
     }
 
-    public object? CommandParameter { get; set; }
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public object? CommandParameter { get; protected set; }
     public Button SetCommandParameter(object parameter)
     {
         CommandParameter = parameter;
@@ -65,8 +69,6 @@ public class Button : UiTextElement<Button>, IInputControl
 
     public override void Render(SKCanvas canvas)
     {
-        var textWidth = Font.MeasureText(Text ?? string.Empty);
-
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
         if (BackgroundPaint is not null)

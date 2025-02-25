@@ -38,15 +38,6 @@ public class WrongUiFixTests
         Assert.AreEqual(0, control.Children[0].Position.Y);
         Assert.AreEqual(66.50390625, control.Children[1].Position.Y);
         Assert.AreEqual(82.46484375, control.Children[2].Position.Y);
-
-        //TODO:
-        //- stack position looks okay 0-0
-        //- stack size looks okay 400-109.066406
-
-        //- entry1 position y should be 0?
-
-
-
     }
 
 }

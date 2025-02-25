@@ -1,5 +1,6 @@
 ﻿using Silk.NET.Input;
 using SkiaSharp;
+using System.ComponentModel;
 
 namespace PlusUi.core;
 
@@ -9,10 +10,11 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
     private DateTime _selectionTime;
 
     #region Padding
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public Margin Padding
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             InvalidateMeasure();
@@ -39,8 +41,6 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
 
     public override void Render(SKCanvas canvas)
     {
-        var textWidth = Font.MeasureText(Text ?? string.Empty);
-
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
         if (BackgroundPaint is not null)

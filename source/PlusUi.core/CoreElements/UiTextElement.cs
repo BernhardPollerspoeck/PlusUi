@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using System.ComponentModel;
 
 namespace PlusUi.core;
 
@@ -48,10 +49,11 @@ public abstract class UiTextElement<T> : UiTextElement where T : UiTextElement<T
 public abstract class UiTextElement : UiElement
 {
     #region Text
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public string? Text
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             InvalidateMeasure();
@@ -70,10 +72,11 @@ public abstract class UiTextElement : UiElement
     #endregion
 
     #region TextSize
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public float TextSize
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             Font = CreateFont();
@@ -93,10 +96,11 @@ public abstract class UiTextElement : UiElement
     #endregion
 
     #region TextColor
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public SKColor TextColor
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             Paint = CreatePaint();
@@ -115,10 +119,11 @@ public abstract class UiTextElement : UiElement
     #endregion
 
     #region HorizontalTextAlignment
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public HorizontalTextAlignment HorizontalTextAlignment
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             InvalidateMeasure();

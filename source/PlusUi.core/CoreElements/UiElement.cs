@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
+using System.ComponentModel;
 
 namespace PlusUi.core;
 
@@ -34,10 +35,11 @@ public abstract class UiElement
     protected readonly Dictionary<string, List<Action<string>>> _setter = [];
 
     #region BackgroundColor
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public SKColor BackgroundColor
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             BackgroundPaint = CreateBackgroundPaint();
@@ -56,10 +58,11 @@ public abstract class UiElement
     #endregion
 
     #region Margin
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public Margin Margin
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             UpdateBindings(nameof(Margin));
@@ -79,10 +82,11 @@ public abstract class UiElement
     #endregion
 
     #region HorizontalAlignment
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public HorizontalAlignment HorizontalAlignment
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             UpdateBindings(nameof(HorizontalAlignment));
@@ -102,10 +106,11 @@ public abstract class UiElement
     #endregion
 
     #region VerticalAlignment
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public VerticalAlignment VerticalAlignment
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             UpdateBindings(nameof(VerticalAlignment));
@@ -125,10 +130,11 @@ public abstract class UiElement
     #endregion
 
     #region CornerRadius
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public float CornerRadius
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             UpdateBindings(nameof(CornerRadius));
@@ -147,10 +153,11 @@ public abstract class UiElement
     #endregion
 
     #region size
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public Size? DesiredSize
     {
         get => field;
-        set
+        protected set
         {
             field = value;
             UpdateBindings(nameof(DesiredSize));
@@ -194,9 +201,12 @@ public abstract class UiElement
         ApplyStyles();
     }
 
-    public Size ElementSize { get; private set; }
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Size ElementSize { get; protected set; }
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public UiElement? Parent { get; set; }
-    public Point Position { get; set; }
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Point Position { get; protected set; }
 
     #region Measuring
     public Size Measure(Size availableSize)
