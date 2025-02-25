@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\..\gfx\plusui.png" Link="plusui.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\source\PlusUi.desktop\PlusUi.desktop.csproj" />
   </ItemGroup>
 

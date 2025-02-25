@@ -32,7 +32,21 @@ internal class MainPage(MainViewModel vm) : UiPageElement(vm)
             new Button()
                 .SetText("Hello World!")
                 .SetPadding(new(10, 5))
-                .SetCommand(vm.SetColorCommand));
+                .SetCommand(vm.SetColorCommand),
+            new HStack(
+                new Image()
+                    .SetAspect(Aspect.AspectFit)
+                    .SetImageSource("plusui.png")
+                    .SetDesiredWidth(300)
+                    .SetDesiredHeight(250),
+                new Image()
+                    .SetAspect(Aspect.AspectFit)
+                    .SetImageSource("plusui.png")
+                    .SetVerticalAlignment(VerticalAlignment.Bottom)
+                    .SetDesiredWidth(100)
+                    .SetDesiredHeight(100))
+
+                );
     }
 
     public override void Appearing()
