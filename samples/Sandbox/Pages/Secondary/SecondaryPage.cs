@@ -1,10 +1,9 @@
 ﻿using PlusUi.core;
 using SkiaSharp;
-using System.Windows.Input;
 
-namespace PlusUi;
+namespace Sandbox.Pages.Secondary;
 
-public class SecondPage(SecondPageViewModel vm) : UiPageElement(vm)
+internal class SecondaryPage(SecondPageViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {
@@ -18,9 +17,4 @@ public class SecondPage(SecondPageViewModel vm) : UiPageElement(vm)
            .SetHorizontalAlignment(HorizontalAlignment.Center)
            .SetVerticalAlignment(VerticalAlignment.Center);
     }
-}
-
-public class SecondPageViewModel(INavigationService navigationService) : ViewModelBase
-{
-    public ICommand NavCommand { get; } = new SyncCommand(navigationService.NavigateTo<MainPage>);
 }

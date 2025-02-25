@@ -1,9 +1,9 @@
 ﻿using PlusUi.core;
 using SkiaSharp;
 
-namespace PlusUi;
+namespace Sandbox.Services;
 
-public class DefaultStyle : IApplicationStyle
+internal class DefaultStyle : IApplicationStyle
 {
     public void ConfigureStyle(Style style)
     {

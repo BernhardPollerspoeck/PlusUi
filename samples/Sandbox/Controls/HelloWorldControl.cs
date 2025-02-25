@@ -1,11 +1,11 @@
 ﻿using PlusUi.core;
 using SkiaSharp;
 
-namespace PlusUi;
+namespace Sandbox.Controls;
 
-public class TestControl : UserControl
+internal class HelloWorldControl : UserControl
 {
-    public TestControl()
+    public HelloWorldControl()
     {
         SetBackgroundColor(SKColors.Red);
         SetHorizontalAlignment(HorizontalAlignment.Stretch);
@@ -19,6 +19,7 @@ public class TestControl : UserControl
             .SetHorizontalAlignment(HorizontalAlignment.Center);
     }
 }
+
 
 
 

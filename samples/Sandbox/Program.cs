@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Hosting;
-using PlusUi;
 using PlusUi.core;
 using PlusUi.desktop;
+using Sandbox.Pages.Main;
+using Sandbox.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -13,5 +14,3 @@ builder.AddPage<MainPage>().WithViewModel<MainViewModel>();
 var app = builder.Build();
 
 app.Run();
-
-

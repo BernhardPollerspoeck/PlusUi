@@ -1,10 +1,9 @@
 ﻿using PlusUi.core;
 using SkiaSharp;
-using System.Windows.Input;
 
-namespace PlusUi;
+namespace Sandbox.Pages.Main;
 
-public class MainPage(MainViewModel vm) : UiPageElement(vm)
+internal class MainPage(MainViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {
@@ -41,35 +40,6 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
         base.Appearing();
         vm.SetColorCommand.Execute(null);
     }
-}
-
-
-public class MainViewModel : ViewModelBase
-{
-    public string? Text
-    {
-        get => field;
-        set => SetProperty(ref field, value);
-    }
-
-    public SKColor Color
-    {
-        get => field;
-        set => SetProperty(ref field, value);
-    }
-
-    public ICommand SetColorCommand { get; }
-
-    public MainViewModel()
-    {
-        SetColorCommand = new SyncCommand(SetColor);
-    }
-
-    private void SetColor()
-    {
-        Color = new SKColor((uint)Random.Shared.Next(0xFF0000, 0xFFFFFF) | 0xFF000000);
-    }
-
 }
 
 
