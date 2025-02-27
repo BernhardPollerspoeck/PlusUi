@@ -18,6 +18,12 @@ internal class MainViewModel : ViewModelBase
         set => SetProperty(ref field, value);
     }
 
+    public bool Checked
+    {
+        get => field;
+        set => SetProperty(ref field, value);
+    }
+
     public ICommand SetColorCommand { get; }
 
     public MainViewModel()

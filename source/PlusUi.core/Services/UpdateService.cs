@@ -61,6 +61,12 @@ public class UpdateService(NavigationContainer navigationContainer)
                 _textInputControl.SetSelectionStatus(false);
                 _textInputControl = null;
             }
+
+            if (hitControl is IToggleButtonControl toggleButtonControl)
+            {
+                toggleButtonControl.Toggle();
+            }
+
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using PlusUi.core;
+using PlusUi.core.Controls;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -29,10 +30,18 @@ internal class MainPage(MainViewModel vm) : UiPageElement(vm)
             new Label()
                 .SetText("Hit the button below to Change my color")
                 .BindTextColor(nameof(vm.Color), () => vm.Color),
-            new Button()
-                .SetText("Hello World!")
-                .SetPadding(new(10, 5))
-                .SetCommand(vm.SetColorCommand),
+            new HStack(
+                new Button()
+                    .SetText("Hello World!")
+                    .SetPadding(new(10, 5))
+                    .SetCommand(vm.SetColorCommand),
+                new Checkbox()
+                    .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
+                    .SetBackgroundColor(new SKColor(255, 0, 0)),
+                new Checkbox()
+                    .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
+                    .SetBackgroundColor(new SKColor(0, 255, 0))
+                ),
             new HStack(
                 new Image()
                     .SetAspect(Aspect.AspectFit)

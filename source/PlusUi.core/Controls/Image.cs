@@ -5,10 +5,10 @@ namespace PlusUi.core;
 public class Image : UiElement<Image>
 {
     #region ImageSource
-    public string? ImageSource
+    internal string? ImageSource
     {
         get => field;
-        protected set
+        set
         {
             field = value;
             _image = CreateImage();
@@ -27,10 +27,10 @@ public class Image : UiElement<Image>
     #endregion
 
     #region Aspect
-    public Aspect Aspect
+    internal Aspect Aspect
     {
         get => field;
-        protected set
+        set
         {
             field = value;
         }
@@ -75,7 +75,6 @@ public class Image : UiElement<Image>
         return SKImage.FromBitmap(bitmap);
     }
     #endregion
-
 
     public override void Render(SKCanvas canvas)
     {

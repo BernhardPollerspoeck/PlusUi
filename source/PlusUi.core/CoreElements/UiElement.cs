@@ -32,14 +32,13 @@ public abstract class UiElement
 {
     private bool _needsMeasure = true;
     private readonly Dictionary<string, List<Action>> _bindings = [];
-    protected readonly Dictionary<string, List<Action<string>>> _setter = [];
+    protected readonly Dictionary<string, List<Action<object>>> _setter = [];
 
     #region BackgroundColor
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public SKColor BackgroundColor
+    internal SKColor BackgroundColor
     {
         get => field;
-        protected set
+        set
         {
             field = value;
             BackgroundPaint = CreateBackgroundPaint();
@@ -58,14 +57,12 @@ public abstract class UiElement
     #endregion
 
     #region Margin
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public Margin Margin
+    internal Margin Margin
     {
         get => field;
-        protected set
+        set
         {
             field = value;
-            UpdateBindings(nameof(Margin));
             InvalidateMeasure();
         }
     }
@@ -82,14 +79,12 @@ public abstract class UiElement
     #endregion
 
     #region HorizontalAlignment
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public HorizontalAlignment HorizontalAlignment
+    internal HorizontalAlignment HorizontalAlignment
     {
         get => field;
-        protected set
+        set
         {
             field = value;
-            UpdateBindings(nameof(HorizontalAlignment));
             InvalidateMeasure();
         }
     } = HorizontalAlignment.Left;
@@ -106,14 +101,12 @@ public abstract class UiElement
     #endregion
 
     #region VerticalAlignment
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public VerticalAlignment VerticalAlignment
+    internal VerticalAlignment VerticalAlignment
     {
         get => field;
-        protected set
+        set
         {
             field = value;
-            UpdateBindings(nameof(VerticalAlignment));
             InvalidateMeasure();
         }
     } = VerticalAlignment.Top;
@@ -130,14 +123,12 @@ public abstract class UiElement
     #endregion
 
     #region CornerRadius
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public float CornerRadius
+    internal float CornerRadius
     {
         get => field;
-        protected set
+        set
         {
             field = value;
-            UpdateBindings(nameof(CornerRadius));
         }
     } = 0;
     public UiElement SetCornerRadius(float radius)
@@ -153,14 +144,12 @@ public abstract class UiElement
     #endregion
 
     #region size
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public Size? DesiredSize
+    internal Size? DesiredSize
     {
         get => field;
-        protected set
+        set
         {
             field = value;
-            UpdateBindings(nameof(DesiredSize));
             InvalidateMeasure();
         }
     }
@@ -297,14 +286,14 @@ public abstract class UiElement
 
         UpdateBindings(propertyName);
     }
-    protected void RegisterSetter(string propertyName, Action<string> setter)
+    protected void RegisterSetter<TValue>(string propertyName, Action<TValue> setter)
     {
         if (!_setter.TryGetValue(propertyName, out var setterActions))
         {
             setterActions = [];
             _setter.Add(propertyName, setterActions);
         }
-        setterActions.Add(setter);
+        setterActions.Add(value => setter((TValue)value));
     }
     public void UpdateBindings(string propertyName)
     {
@@ -327,9 +316,9 @@ public abstract class UiElement
         if (BackgroundColor != SKColors.Transparent)
         {
             var rect = new SKRect(
-                Position.X, 
-                Position.Y, 
-                Position.X + ElementSize.Width, 
+                Position.X,
+                Position.Y,
+                Position.X + ElementSize.Width,
                 Position.Y + ElementSize.Height);
             if (CornerRadius > 0)
             {

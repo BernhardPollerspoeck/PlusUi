@@ -1,6 +1,5 @@
 ﻿using Silk.NET.Input;
 using SkiaSharp;
-using System.ComponentModel;
 
 namespace PlusUi.core;
 
@@ -10,11 +9,10 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
     private DateTime _selectionTime;
 
     #region Padding
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public Margin Padding
+    internal Margin Padding
     {
         get => field;
-        protected set
+        set
         {
             field = value;
             InvalidateMeasure();
