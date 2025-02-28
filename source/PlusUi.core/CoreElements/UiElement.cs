@@ -175,7 +175,7 @@ public abstract class UiElement
     }
     public UiElement BindDesiredWidth(string propertyName, Func<float> propertyGetter)
     {
-        RegisterBinding(propertyName, () => DesiredSize = new Size(propertyGetter(), DesiredSize?.Height ?? -10));
+        RegisterBinding(propertyName, () => DesiredSize = new Size(propertyGetter(), DesiredSize?.Height ?? -1));
         return this;
     }
     public UiElement BindDesiredHeight(string propertyName, Func<float> propertyGetter)
@@ -204,8 +204,21 @@ public abstract class UiElement
         {
             var measuredSize = MeasureInternal(availableSize);
 
-            var desiredWidth = DesiredSize?.Width >= 0 ? DesiredSize.Value.Width : measuredSize.Width;
-            var desiredHeight = DesiredSize?.Height >= 0 ? DesiredSize.Value.Height : measuredSize.Height;
+            // For width: Use DesiredSize if set, or stretch to available width if alignment is Stretch, otherwise use measured width
+            var desiredWidth = DesiredSize?.Width >= 0
+                ? DesiredSize.Value.Width
+                : HorizontalAlignment == HorizontalAlignment.Stretch 
+                    ? availableSize.Width 
+                    : measuredSize.Width;
+
+            // For height: Use DesiredSize if set, or stretch to available height if alignment is Stretch, otherwise use measured height
+            var desiredHeight = DesiredSize?.Height >= 0
+                ? DesiredSize.Value.Height
+                : VerticalAlignment == VerticalAlignment.Stretch 
+                    ? availableSize.Height 
+                    : measuredSize.Height;
+
+            // Constrain to available size
             ElementSize = new Size(
                 Math.Min(desiredWidth, availableSize.Width),
                 Math.Min(desiredHeight, availableSize.Height));

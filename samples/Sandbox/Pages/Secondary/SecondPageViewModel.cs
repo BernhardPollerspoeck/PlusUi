@@ -4,7 +4,25 @@ using System.Windows.Input;
 
 namespace Sandbox.Pages.Secondary;
 
-internal class SecondPageViewModel(INavigationService navigationService) : ViewModelBase
+internal class SecondPageViewModel : ViewModelBase
 {
-    public ICommand NavCommand { get; } = new SyncCommand(navigationService.NavigateTo<MainPage>);
+    public int RowHeight
+    {
+        get => field;
+        set => SetProperty(ref field, value);
+    } = 10;
+
+    public ICommand NavCommand { get; }
+    public ICommand IncrementCommand { get; }
+
+    public SecondPageViewModel(INavigationService navigationService)
+    {
+        NavCommand = new SyncCommand(() => navigationService.NavigateTo<MainPage>());
+        IncrementCommand = new SyncCommand(Increment);
+    }
+
+    private void Increment()
+    {
+        RowHeight += 10;
+    }
 }
