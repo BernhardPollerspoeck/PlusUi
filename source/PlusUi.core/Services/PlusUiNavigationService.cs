@@ -16,9 +16,15 @@ internal class PlusUiNavigationService(IServiceProvider serviceProvider) : INavi
         if (_navigationContainer.Page.GetType() != typeof(TPage))
         {
             _navigationContainer.Page?.Disappearing();
-
-            _navigationContainer.Page = serviceProvider.GetRequiredService<TPage>();
-            _navigationContainer.Page.BuildPage();
+            try
+            {
+                _navigationContainer.Page = serviceProvider.GetRequiredService<TPage>();
+                _navigationContainer.Page.BuildPage();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("You need to register your Page in Program.cs", e);
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace Sandbox.Pages.Secondary;
 
-internal class SecondaryPage(SecondPageViewModel vm) : UiPageElement(vm)
+internal class SecondaryPage(SecondaryPageViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {

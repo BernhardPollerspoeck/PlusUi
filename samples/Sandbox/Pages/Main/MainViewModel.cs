@@ -1,4 +1,5 @@
 ﻿using PlusUi.core;
+using Sandbox.Pages.Secondary;
 using SkiaSharp;
 using System.Windows.Input;
 
@@ -25,10 +26,12 @@ internal class MainViewModel : ViewModelBase
     }
 
     public ICommand SetColorCommand { get; }
+    public ICommand NavigateCommand { get; }
 
-    public MainViewModel()
+    public MainViewModel(INavigationService navigationService)
     {
         SetColorCommand = new SyncCommand(SetColor);
+        NavigateCommand = new SyncCommand(() => navigationService.NavigateTo<SecondaryPage>());
     }
 
     private void SetColor()

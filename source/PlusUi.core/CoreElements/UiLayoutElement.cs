@@ -27,7 +27,7 @@ public abstract class UiLayoutElement : UiElement
 {
 
     #region children
-    public List<UiElement> Children { get; } = [];
+    public virtual List<UiElement> Children { get; } = [];
     public UiElement AddChild(UiElement child)
     {
         child.Parent = this;

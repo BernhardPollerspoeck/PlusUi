@@ -30,9 +30,10 @@ public abstract class UiElement<T> : UiElement where T : UiElement<T>
 }
 public abstract class UiElement
 {
-    private bool _needsMeasure = true;
     private readonly Dictionary<string, List<Action>> _bindings = [];
     protected readonly Dictionary<string, List<Action<object>>> _setter = [];
+
+    protected virtual bool NeadsMeasure { get; set; } = true;
 
     #region BackgroundColor
     internal SKColor BackgroundColor
@@ -200,22 +201,22 @@ public abstract class UiElement
     #region Measuring
     public Size Measure(Size availableSize)
     {
-        if (_needsMeasure)
+        if (NeadsMeasure)
         {
             var measuredSize = MeasureInternal(availableSize);
 
             // For width: Use DesiredSize if set, or stretch to available width if alignment is Stretch, otherwise use measured width
             var desiredWidth = DesiredSize?.Width >= 0
                 ? DesiredSize.Value.Width
-                : HorizontalAlignment == HorizontalAlignment.Stretch 
-                    ? availableSize.Width 
+                : HorizontalAlignment == HorizontalAlignment.Stretch
+                    ? availableSize.Width
                     : measuredSize.Width;
 
             // For height: Use DesiredSize if set, or stretch to available height if alignment is Stretch, otherwise use measured height
             var desiredHeight = DesiredSize?.Height >= 0
                 ? DesiredSize.Value.Height
-                : VerticalAlignment == VerticalAlignment.Stretch 
-                    ? availableSize.Height 
+                : VerticalAlignment == VerticalAlignment.Stretch
+                    ? availableSize.Height
                     : measuredSize.Height;
 
             // Constrain to available size
@@ -223,7 +224,7 @@ public abstract class UiElement
                 Math.Min(desiredWidth, availableSize.Width),
                 Math.Min(desiredHeight, availableSize.Height));
 
-            _needsMeasure = false;
+            NeadsMeasure = false;
         }
         return ElementSize;
     }
@@ -233,9 +234,9 @@ public abstract class UiElement
             Math.Min(ElementSize.Width, availableSize.Width),
             Math.Min(ElementSize.Height, availableSize.Height));
     }
-    protected void InvalidateMeasure()
+    public void InvalidateMeasure()
     {
-        _needsMeasure = true;
+        NeadsMeasure = true;
         Parent?.InvalidateMeasure();
     }
     #endregion

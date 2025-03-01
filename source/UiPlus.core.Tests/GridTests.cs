@@ -341,10 +341,10 @@ public sealed class GridTests
     public void TestGridChildPositioning_WithSpanning_CorrectPositions()
     {
         //Arrange
-        var item1 = new Solid().SetDesiredSize(new Size(20, 20)); // Regular item
-        var item2 = new Solid().SetDesiredSize(new Size(20, 20)); // Spans 2 columns
-        var item3 = new Solid().SetDesiredSize(new Size(20, 20)); // Spans 2 rows
-        var item4 = new Solid().SetDesiredSize(new Size(20, 20)); // Regular item in bottom-right
+        var item1 = new Solid(); // Regular item
+        var item2 = new Solid(); // Spans 2 columns
+        var item3 = new Solid(); // Spans 2 rows
+        var item4 = new Solid(); // Regular item in bottom-right
 
         var grid = new Grid()
             .AddColumn(Column.Absolute, 40)
@@ -382,5 +382,164 @@ public sealed class GridTests
         // item4 is in the bottom-right cell
         Assert.AreEqual(40, item4.Position.X);
         Assert.AreEqual(30, item4.Position.Y);
+    }
+    [TestMethod]
+    public void TestGridWithMargin_MeasuresAndArrangesCorrectly()
+    {
+        //Arrange
+        var grid = new Grid()
+            .AddColumn(Column.Auto)
+            .AddRow(Row.Auto)
+            .AddChild(new Solid().SetDesiredSize(new(50, 30)))
+            .SetMargin(new(10, 15, 20, 25)) // Left, Top, Right, Bottom
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+
+        var availableSize = new Size(200, 200);
+
+        //Act
+        grid.Measure(availableSize);
+        grid.Arrange(new Rect(0, 0, 200, 200));
+
+        //Assert
+        Assert.AreEqual(50 + 10 + 20, grid.ElementSize.Width);  // Content + left margin + right margin
+        Assert.AreEqual(30 + 15 + 25, grid.ElementSize.Height); // Content + top margin + bottom margin
+        Assert.AreEqual(10, grid.Position.X);  // Left margin is the starting position
+        Assert.AreEqual(15, grid.Position.Y);  // Top margin is the starting position
+    }
+
+    [TestMethod]
+    public void TestGridChildWithMargin_PositionsCorrectly()
+    {
+        //Arrange
+        var child = new Solid()
+            .SetDesiredSize(new(40, 20))
+            .SetMargin(new(5, 10, 15, 20)); // Left, Top, Right, Bottom
+
+        var grid = new Grid()
+            .AddColumn(Column.Absolute, 100)
+            .AddRow(Row.Absolute, 100)
+            .AddChild(child)
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+
+        //Act
+        grid.Measure(new Size(200, 200));
+        grid.Arrange(new Rect(0, 0, 100, 100));
+
+        //Assert
+        Assert.AreEqual(5, child.Position.X);  // Left margin
+        Assert.AreEqual(10, child.Position.Y); // Top margin
+        Assert.AreEqual(40, child.ElementSize.Width);  // Original width
+        Assert.AreEqual(20, child.ElementSize.Height); // Original height
+    }
+
+    [TestMethod]
+    public void TestGridWithMultipleChildrenWithMargins_PositionsCorrectly()
+    {
+        //Arrange
+        var child1 = new Solid()
+            .SetDesiredSize(new(30, 30))
+            .SetMargin(new(5, 5, 5, 5));
+
+        var child2 = new Solid()
+            .SetDesiredSize(new(30, 30))
+            .SetMargin(new(10, 10, 10, 10));
+
+        var grid = new Grid()
+            .AddColumn(Column.Auto)
+            .AddColumn(Column.Auto)
+            .AddRow(Row.Auto)
+            .AddChild(child1, 0, 0)
+            .AddChild(child2, 0, 1)
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+
+        //Act
+        grid.Measure(new Size(200, 200));
+        grid.Arrange(new Rect(0, 0, 200, 200));
+
+        //Assert
+        // First column width includes child1 + margins
+        Assert.AreEqual(5, child1.Position.X);  // Left margin
+        Assert.AreEqual(5, child1.Position.Y);  // Top margin
+
+        // Second column starts after first column (30 + 5 + 5 = 40)
+        // Then add the left margin of child2 (10)
+        Assert.AreEqual(40 + 10, child2.Position.X);
+        Assert.AreEqual(10, child2.Position.Y);  // Top margin
+
+        // Total grid size accounts for all content + margins
+        Assert.AreEqual(40 + 50, grid.ElementSize.Width);  // (30+5+5) + (30+10+10)
+        Assert.AreEqual(50, grid.ElementSize.Height);      // Max(30+5+5, 30+10+10)
+    }
+
+    [TestMethod]
+    public void TestGridAndChildWithMargins_NestedPositioning()
+    {
+        //Arrange
+        var child = new Solid()
+            .SetDesiredSize(new(40, 30))
+            .SetMargin(new(5, 10, 15, 20));
+
+        var grid = new Grid()
+            .AddColumn(Column.Auto)
+            .AddRow(Row.Auto)
+            .AddChild(child)
+            .SetMargin(new(8, 12, 16, 20))
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+
+        //Act
+        grid.Measure(new Size(200, 200));
+        grid.Arrange(new Rect(0, 0, 200, 200));
+
+        //Assert
+        // Grid position is its own margin
+        Assert.AreEqual(8, grid.Position.X);
+        Assert.AreEqual(12, grid.Position.Y);
+
+        // Child position is relative to grid + its own margin
+        Assert.AreEqual(5, child.Position.X);  // Left margin within grid
+        Assert.AreEqual(10, child.Position.Y); // Top margin within grid
+
+        // Grid size includes content + child margins + grid margins
+        Assert.AreEqual(40 + 5 + 15 + 8 + 16, grid.ElementSize.Width);  // Child + child margins + grid margins
+        Assert.AreEqual(30 + 10 + 20 + 12 + 20, grid.ElementSize.Height);
+    }
+
+    [TestMethod]
+    public void TestGridRowColumnSpanWithMargins_SizesCorrectly()
+    {
+        //Arrange
+        var spannedChild = new Solid()
+            .SetDesiredSize(new(50, 40))
+            .SetMargin(new(5, 8, 10, 12));
+
+        var grid = new Grid()
+            .AddColumn(Column.Absolute, 60)
+            .AddColumn(Column.Absolute, 60)
+            .AddRow(Row.Absolute, 50)
+            .AddRow(Row.Absolute, 50)
+            .AddChild(spannedChild, 0, 0, 2, 2)  // Span 2 rows, 2 columns
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+
+        //Act
+        grid.Measure(new Size(200, 200));
+        grid.Arrange(new Rect(0, 0, 120, 100));
+
+        //Assert
+        // Child position includes its margins
+        Assert.AreEqual(5, spannedChild.Position.X);
+        Assert.AreEqual(8, spannedChild.Position.Y);
+
+        // Element should get the full size of the spanned area minus margins
+        Assert.AreEqual(50, spannedChild.ElementSize.Width);  // Original width
+        Assert.AreEqual(40, spannedChild.ElementSize.Height); // Original height
+
+        // Child's total allocated space is 120x100, minus margins
+        Assert.AreEqual(120, grid.ElementSize.Width);
+        Assert.AreEqual(100, grid.ElementSize.Height);
     }
 }

@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace Sandbox.Pages.Secondary;
 
-internal class SecondPageViewModel : ViewModelBase
+internal class SecondaryPageViewModel : ViewModelBase
 {
     public int RowHeight
     {
@@ -15,7 +15,7 @@ internal class SecondPageViewModel : ViewModelBase
     public ICommand NavCommand { get; }
     public ICommand IncrementCommand { get; }
 
-    public SecondPageViewModel(INavigationService navigationService)
+    public SecondaryPageViewModel(INavigationService navigationService)
     {
         NavCommand = new SyncCommand(() => navigationService.NavigateTo<MainPage>());
         IncrementCommand = new SyncCommand(Increment);

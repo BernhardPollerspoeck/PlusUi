@@ -17,9 +17,35 @@ public class Grid : UiLayoutElement<Grid>
         public int ColumnSpan { get; } = columnSpan;
     }
 
+    private class RowColumnItem<TType>(TType type, float? fixedSize = null, Func<float>? boundSize = null)
+        where TType : struct
+    {
+        public TType Type { get; } = type;
+
+        public float? FixedSize { get; } = fixedSize;
+        public Func<float>? BoundSize { get; } = boundSize;
+
+        public float MeasuredSize { get; set; }
+
+        public event Action? SizeChanged;
+
+        public float GetSize()
+        {
+            var newSize = FixedSize ?? BoundSize?.Invoke() ?? 0;
+            if (newSize != MeasuredSize)
+            {
+                MeasuredSize = newSize;
+                SizeChanged?.Invoke();
+            }
+            return MeasuredSize;
+        }
+    }
+
+    protected override bool NeadsMeasure => true;
+
     #region Children
     private readonly List<GridItem> _children = [];
-    public new List<UiElement> Children => [.. _children.Select(c => c.Element)];
+    public override List<UiElement> Children => [.. _children.Select(c => c.Element)];
 
     public Grid AddChild(UiElement child, int row = 0, int column = 0, int rowSpan = 1, int columnSpan = 1)
     {
@@ -44,50 +70,54 @@ public class Grid : UiLayoutElement<Grid>
     #endregion
 
     #region Columns
-    private readonly List<(Column Type, int Size)> _columns = [];
-    private readonly List<Func<int>> _boundColumns = [];
+    private readonly List<RowColumnItem<Column>> _columns = [];
 
-    public Grid AddColumn(Column column, int size = 1)
+    public Grid AddColumn(Column column, float size = 1)
     {
-        _columns.Add((column, size));
+        var columnItem = new RowColumnItem<Column>(column, size);
+        columnItem.SizeChanged += OnRowColumnSizeChanged;
+        _columns.Add(columnItem);
         return this;
     }
-    public Grid AddColumn(int size)
+    public Grid AddColumn(float size)
     {
         return AddColumn(Column.Absolute, size);
     }
-    public Grid AddBoundColumn(Column column, Func<int> sizeGetter)
+    public Grid AddBoundColumn(Column column, Func<float> sizeGetter)
     {
-        _columns.Add((column, 0));
-        _boundColumns.Add(sizeGetter);
+        var columnItem = new RowColumnItem<Column>(column, null, sizeGetter);
+        columnItem.SizeChanged += OnRowColumnSizeChanged;
+        _columns.Add(columnItem);
         return this;
     }
-    public Grid AddBoundColumn(Func<int> sizeGetter)
+    public Grid AddBoundColumn(Func<float> sizeGetter)
     {
         return AddBoundColumn(Column.Absolute, sizeGetter);
     }
     #endregion
 
     #region Rows
-    private readonly List<(Row Type, int Size)> _rows = [];
-    private readonly List<Func<int>> _boundRows = [];
+    private readonly List<RowColumnItem<Row>> _rows = [];
 
     public Grid AddRow(Row row, int size = 1)
     {
-        _rows.Add((row, size));
+        var rowItem = new RowColumnItem<Row>(row, size);
+        rowItem.SizeChanged += OnRowColumnSizeChanged;
+        _rows.Add(rowItem);
         return this;
     }
     public Grid AddRow(int size)
     {
         return AddRow(Row.Absolute, size);
     }
-    public Grid AddBoundRow(Row row, Func<int> sizeGetter)
+    public Grid AddBoundRow(Row row, Func<float> sizeGetter)
     {
-        _rows.Add((row, 0));
-        _boundRows.Add(sizeGetter);
+        var rowItem = new RowColumnItem<Row>(row, null, sizeGetter);
+        rowItem.SizeChanged += OnRowColumnSizeChanged;
+        _rows.Add(rowItem);
         return this;
     }
-    public Grid AddBoundRow(Func<int> sizeGetter)
+    public Grid AddBoundRow(Func<float> sizeGetter)
     {
         return AddBoundRow(Row.Absolute, sizeGetter);
     }
@@ -99,45 +129,53 @@ public class Grid : UiLayoutElement<Grid>
         VerticalAlignment = VerticalAlignment.Stretch;
     }
 
+    private void OnRowColumnSizeChanged()
+    {
+        foreach (var child in _children)
+        {
+            child.Element.InvalidateMeasure();
+        }
+    }
+
     protected override Size MeasureInternal(Size availableSize)
     {
-        // Create arrays to track sizes
-        var columnWidths = new float[_columns.Count];
-        var rowHeights = new float[_rows.Count];
-
         // Capture fixed row and column sizes
         for (var i = 0; i < _columns.Count; i++)
         {
-            var (type, size) = _columns[i];
-            if (type == Column.Absolute)
-            {
-                columnWidths[i] = size;
-            }
-        }
-
-        for (var i = 0; i < _rows.Count; i++)
-        {
-            var (type, size) = _rows[i];
-            if (type == Row.Absolute)
-            {
-                rowHeights[i] = size;
-            }
-        }
-
-        // Apply bound column/row sizes
-        for (var i = 0; i < _boundColumns.Count && i < _columns.Count; i++)
-        {
             if (_columns[i].Type == Column.Absolute)
             {
-                columnWidths[i] = _boundColumns[i]();
+                _columns[i].MeasuredSize = _columns[i].GetSize();
             }
         }
-
-        for (var i = 0; i < _boundRows.Count && i < _rows.Count; i++)
+        for (var i = 0; i < _rows.Count; i++)
         {
             if (_rows[i].Type == Row.Absolute)
             {
-                rowHeights[i] = _boundRows[i]();
+                _rows[i].MeasuredSize = _rows[i].GetSize();
+            }
+        }
+
+        // Pre-calculate star sizes for initial measure pass
+        // This allows us to have reasonable sizes for star columns/rows before child measurement
+        var totalFixedWidth = _columns.Where(c => c.Type == Column.Absolute).Sum(c => c.MeasuredSize);
+        var remainingWidthForStars = Math.Max(0, availableSize.Width - totalFixedWidth);
+        var totalStarWeight = _columns.Where(c => c.Type == Column.Star).Sum(c => c.FixedSize ?? 0);
+        if (totalStarWeight > 0)
+        {
+            foreach (var column in _columns.Where(c => c.Type == Column.Star))
+            {
+                column.MeasuredSize = remainingWidthForStars * (column.FixedSize ?? 0) / totalStarWeight;
+            }
+        }
+
+        var totalFixedHeight = _rows.Where(r => r.Type == Row.Absolute).Sum(r => r.MeasuredSize);
+        var remainingHeightForStars = Math.Max(0, availableSize.Height - totalFixedHeight);
+        var totalStarHeightWeight = _rows.Where(r => r.Type == Row.Star).Sum(r => r.FixedSize ?? 0);
+        if (totalStarHeightWeight > 0)
+        {
+            foreach (var row in _rows.Where(r => r.Type == Row.Star))
+            {
+                row.MeasuredSize = remainingHeightForStars * (row.FixedSize ?? 0) / totalStarHeightWeight;
             }
         }
 
@@ -157,10 +195,11 @@ public class Grid : UiLayoutElement<Grid>
                 if (_columns[columnIndex].Type == Column.Auto)
                 {
                     availableWidth = availableSize.Width;
+                    break; // If any column is Auto, give full width
                 }
                 else
                 {
-                    availableWidth += columnWidths[columnIndex];
+                    availableWidth += _columns[columnIndex].MeasuredSize;
                 }
             }
 
@@ -171,12 +210,17 @@ public class Grid : UiLayoutElement<Grid>
                 if (_rows[rowIndex].Type == Row.Auto)
                 {
                     availableHeight = availableSize.Height;
+                    break; // If any row is Auto, give full height
                 }
                 else
                 {
-                    availableHeight += rowHeights[rowIndex];
+                    availableHeight += _rows[rowIndex].MeasuredSize;
                 }
             }
+
+            // Adjust available size by the child's margin
+            availableWidth -= child.Element.Margin.Left + child.Element.Margin.Right;
+            availableHeight -= child.Element.Margin.Top + child.Element.Margin.Bottom;
 
             var childSize = child.Element.Measure(new Size(availableWidth, availableHeight));
 
@@ -187,134 +231,60 @@ public class Grid : UiLayoutElement<Grid>
                 if (_columns[columnIndex].Type == Column.Auto)
                 {
                     // For multi-column spanning, distribute proportionally (simple approach)
-                    var columnContribution = childSize.Width / child.ColumnSpan;
-                    columnWidths[columnIndex] = Math.Max(columnWidths[columnIndex], columnContribution);
+                    var columnContribution = (childSize.Width + child.Element.Margin.Left + child.Element.Margin.Right) / child.ColumnSpan;
+                    _columns[columnIndex].MeasuredSize = Math.Max(_columns[columnIndex].MeasuredSize, columnContribution);
                 }
             }
-
             for (var i = 0; i < child.RowSpan && i + child.Row < _rows.Count; i++)
             {
                 var rowIndex = child.Row + i;
                 if (_rows[rowIndex].Type == Row.Auto)
                 {
                     // For multi-row spanning, distribute proportionally (simple approach)
-                    var rowContribution = childSize.Height / child.RowSpan;
-                    rowHeights[rowIndex] = Math.Max(rowHeights[rowIndex], rowContribution);
+                    var rowContribution = (childSize.Height + child.Element.Margin.Top + child.Element.Margin.Bottom) / child.RowSpan;
+                    _rows[rowIndex].MeasuredSize = Math.Max(_rows[rowIndex].MeasuredSize, rowContribution);
                 }
             }
         }
 
-        // Calculate sizes for star columns
-        var totalWidth = columnWidths.Sum();
-        float totalStarWeight = 0;
-
-        for (var i = 0; i < _columns.Count; i++)
-        {
-            if (_columns[i].Type == Column.Star)
-            {
-                totalStarWeight += _columns[i].Size;
-            }
-        }
-
+        // Recalculate sizes for star columns with final measurements
+        totalFixedWidth = _columns.Where(c => c.Type != Column.Star).Sum(c => c.MeasuredSize);
         if (totalStarWeight > 0)
         {
-            var remainingWidth = availableSize.Width - columnWidths.Sum(w => w);
+            var remainingWidth = availableSize.Width - totalFixedWidth;
             if (remainingWidth > 0)
             {
-                for (var i = 0; i < _columns.Count; i++)
+                foreach (var column in _columns.Where(c => c.Type == Column.Star))
                 {
-                    if (_columns[i].Type == Column.Star)
-                    {
-                        columnWidths[i] = remainingWidth * (_columns[i].Size / totalStarWeight);
-                        totalWidth += columnWidths[i];
-                    }
+                    column.MeasuredSize = remainingWidth * (column.FixedSize ?? 0) / totalStarWeight;
                 }
             }
         }
 
-        // Calculate sizes for star rows
-        var totalHeight = rowHeights.Sum();
-        float totalStarHeightWeight = 0;
-
-        for (var i = 0; i < _rows.Count; i++)
-        {
-            if (_rows[i].Type == Row.Star)
-            {
-                totalStarHeightWeight += _rows[i].Size;
-            }
-        }
-
+        // Recalculate sizes for star rows with final measurements
+        totalFixedHeight = _rows.Where(r => r.Type != Row.Star).Sum(r => r.MeasuredSize);
         if (totalStarHeightWeight > 0)
         {
-            var remainingHeight = availableSize.Height - rowHeights.Sum(h => h);
+            var remainingHeight = availableSize.Height - totalFixedHeight;
             if (remainingHeight > 0)
             {
-                for (var i = 0; i < _rows.Count; i++)
+                foreach (var row in _rows.Where(r => r.Type == Row.Star))
                 {
-                    if (_rows[i].Type == Row.Star)
-                    {
-                        rowHeights[i] = remainingHeight * (_rows[i].Size / totalStarHeightWeight);
-                        totalHeight += rowHeights[i];
-                    }
+                    row.MeasuredSize = remainingHeight * (row.FixedSize ?? 0) / totalStarHeightWeight;
                 }
             }
         }
+
+        var totalWidth = _columns.Sum(c => c.MeasuredSize) + Margin.Left + Margin.Right;
+        var totalHeight = _rows.Sum(r => r.MeasuredSize) + Margin.Top + Margin.Bottom;
 
         return new Size(totalWidth, totalHeight);
     }
 
     protected override Point ArrangeInternal(Rect bounds)
     {
-        var columnWidths = new float[_columns.Count];
-        var rowHeights = new float[_rows.Count];
-
-        // Calculate column widths
-        for (var i = 0; i < _columns.Count; i++)
-        {
-            var (type, size) = _columns[i];
-            if (type == Column.Absolute)
-            {
-                columnWidths[i] = size;
-            }
-            else if (type == Column.Star)
-            {
-                columnWidths[i] = bounds.Width / _columns.Count;
-            }
-            else if (type == Column.Auto)
-            {
-                columnWidths[i] = 0;
-            }
-        }
-
-        // Apply bound column sizes
-        for (var i = 0; i < _boundColumns.Count; i++)
-        {
-            columnWidths[i] = _boundColumns[i]();
-        }
-
-        // Calculate row heights
-        for (var i = 0; i < _rows.Count; i++)
-        {
-            var (type, size) = _rows[i];
-            if (type == Row.Absolute)
-            {
-                rowHeights[i] = size;
-            }
-            else if (type == Row.Star)
-            {
-                rowHeights[i] = bounds.Height / _rows.Count;
-            }
-            else if (type == Row.Auto)
-            {
-                rowHeights[i] = 0;
-            }
-        }
-
-        // Apply bound row sizes
-        for (var i = 0; i < _boundRows.Count; i++)
-        {
-            rowHeights[i] = _boundRows[i]();
-        }
+        var columnWidths = _columns.Select(c => c.MeasuredSize).ToArray();
+        var rowHeights = _rows.Select(r => r.MeasuredSize).ToArray();
 
         // Arrange children
         foreach (var child in _children)
@@ -326,7 +296,19 @@ public class Grid : UiLayoutElement<Grid>
 
             child.Element.Arrange(new Rect(x, y, width, height));
         }
+        return base.ArrangeInternal(bounds);
+    }
 
-        return new Point(bounds.X, bounds.Y);
+    public override UiElement? HitTest(Point point)
+    {
+        foreach (var child in Children)
+        {
+            var result = child.HitTest(point);
+            if (result is not null)
+            {
+                return result;
+            }
+        }
+        return base.HitTest(point);
     }
 }
