@@ -50,7 +50,7 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
         }
     }
 
-    public override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         return _tree.Measure(availableSize);
     }

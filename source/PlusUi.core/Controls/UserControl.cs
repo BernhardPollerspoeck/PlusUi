@@ -25,9 +25,9 @@ public abstract class UserControl : UiElement<UserControl>
         base.Render(canvas);
         _content.Render(canvas);
     }
-    public override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        _content.Measure(availableSize);
+        _content.Measure(availableSize, dontStretch);
         var width = _content.ElementSize.Width + _content.Margin.Left + _content.Margin.Right;
         var height = _content.ElementSize.Height + _content.Margin.Top + _content.Margin.Bottom;
         return new Size(width, height);

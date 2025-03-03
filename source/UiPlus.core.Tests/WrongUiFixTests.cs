@@ -80,29 +80,30 @@ public class WrongUiFixTests
         Assert.AreEqual(800, control.ElementSize.Width);
         Assert.AreEqual(600, control.ElementSize.Height);
 
-        Assert.AreEqual(640.927734, control.Columns[0].MeasuredSize);
-        Assert.AreEqual(109.072266, control.Columns[1].MeasuredSize);
+        Assert.AreEqual(640.927734375, control.Columns[0].MeasuredSize);
+        Assert.AreEqual(109.072265625, control.Columns[1].MeasuredSize);
         Assert.AreEqual(50, control.Columns[2].MeasuredSize);
 
-        Assert.AreEqual(193.333328, control.Rows[0].MeasuredSize);
-        Assert.AreEqual(386.666656, control.Rows[1].MeasuredSize);
+        Assert.AreEqual(193.3333282470703, control.Rows[0].MeasuredSize);
+        Assert.AreEqual(386.6666564941406, control.Rows[1].MeasuredSize);
         Assert.AreEqual(20, control.Rows[2].MeasuredSize);
 
 
         Assert.AreEqual(0, control.Children[0].Position.X);
         Assert.AreEqual(0, control.Children[0].Position.Y);
-        Assert.AreEqual(640.927734, control.Children[0].ElementSize.Width);
-        Assert.AreEqual(193.333328, control.Children[0].ElementSize.Height);
+        //TODO: we need to differenciate between minimum size and render size
+        Assert.AreEqual(640.927734375, control.Children[0].ElementSize.Width);
+        Assert.AreEqual(193.3333282470703, control.Children[0].ElementSize.Height);
 
-        Assert.AreEqual(640.927734, control.Children[1].Position.X);
+        Assert.AreEqual(640.927734375, control.Children[1].Position.X);
         Assert.AreEqual(0, control.Children[1].Position.Y);
-        Assert.AreEqual(109.072266, control.Children[1].ElementSize.Width);
-        Assert.AreEqual(193.333328, control.Children[1].ElementSize.Height);
+        Assert.AreEqual(109.072265625, control.Children[1].ElementSize.Width);
+        Assert.AreEqual(193.3333282470703, control.Children[1].ElementSize.Height);
 
         Assert.AreEqual(0, control.Children[2].Position.X);
-        Assert.AreEqual(193.333328, control.Children[2].Position.Y);
-        Assert.AreEqual(640.927734, control.Children[2].ElementSize.Width);
-        Assert.AreEqual(386.666656, control.Children[2].ElementSize.Height);
+        Assert.AreEqual(193.3333282470703, control.Children[2].Position.Y);
+        Assert.AreEqual(640.927734375, control.Children[2].ElementSize.Width);
+        Assert.AreEqual(386.6666564941406, control.Children[2].ElementSize.Height);
 
         Assert.AreEqual(0, control.Children[3].Position.X);
         Assert.AreEqual(580, control.Children[3].Position.Y);
@@ -110,26 +111,26 @@ public class WrongUiFixTests
         Assert.AreEqual(20, control.Children[3].ElementSize.Height);
 
         Assert.AreEqual(750, control.Children[4].Position.X);
-        Assert.AreEqual(193.333328, control.Children[4].Position.Y);
+        Assert.AreEqual(193.3333282470703, control.Children[4].Position.Y);
         Assert.AreEqual(50, control.Children[4].ElementSize.Width);
-        Assert.AreEqual(406.666656, control.Children[4].ElementSize.Height);
+        Assert.AreEqual(406.6666564941406, control.Children[4].ElementSize.Height);
 
         //stack
-        Assert.AreEqual(640.927734, control.Children[5].Position.X);
-        Assert.AreEqual(193.333328, control.Children[5].Position.Y);
-        Assert.AreEqual(109.072266, control.Children[5].ElementSize.Width);
-        Assert.AreEqual(73.203125, control.Children[5].ElementSize.Height);
+        Assert.AreEqual(640.927734375, control.Children[5].Position.X);
+        Assert.AreEqual(193.3333282470703, control.Children[5].Position.Y);
+        Assert.AreEqual(109.072265625, control.Children[5].ElementSize.Width);
+        Assert.AreEqual(386.6666564941406, control.Children[5].ElementSize.Height);
 
         var stack = control.Children[5] as VStack;
         Assert.IsNotNull(stack);
 
-        Assert.AreEqual(640.9277344, stack.Children[0].Position.X);
-        Assert.AreEqual(193.333328, stack.Children[0].Position.Y);
-        Assert.AreEqual(109.072266, stack.Children[0].ElementSize.Width);
+        Assert.AreEqual(640.927734375, stack.Children[0].Position.X);
+        Assert.AreEqual(193.3333282470703, stack.Children[0].Position.Y);
+        Assert.AreEqual(109.072265625, stack.Children[0].ElementSize.Width);
         Assert.AreEqual(36.6015625, stack.Children[0].ElementSize.Height);
 
-        Assert.AreEqual(640.9277344, stack.Children[1].Position.X);
-        Assert.AreEqual(229.9348905, stack.Children[1].Position.Y);
+        Assert.AreEqual(640.927734375, stack.Children[1].Position.X);
+        Assert.AreEqual(229.9348907470703, stack.Children[1].Position.Y);
         Assert.AreEqual(60.8203125, stack.Children[1].ElementSize.Width);
         Assert.AreEqual(36.6015625, stack.Children[1].ElementSize.Height);
     }

@@ -100,132 +100,39 @@ public class Grid : UiLayoutElement<Grid>
         }
     }
 
-    public override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
+        // Dictionary to cache child natural sizes
+        var childNaturalSizes = new Dictionary<UiElement, Size>();
+
         // Capture fixed row and column sizes
         for (var i = 0; i < _columns.Count; i++)
         {
-            if (_columns[i].Type == Column.Absolute)
-            {
-                _columns[i].MeasuredSize = _columns[i].GetSize();
-            }
+            _columns[i].MeasuredSize = _columns[i].Type == Column.Absolute ? _columns[i].GetSize() : 0;
         }
+
         for (var i = 0; i < _rows.Count; i++)
         {
-            if (_rows[i].Type == Row.Absolute)
-            {
-                _rows[i].MeasuredSize = _rows[i].GetSize();
-            }
+            _rows[i].MeasuredSize = _rows[i].Type == Row.Absolute ? _rows[i].GetSize() : 0;
         }
 
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // Pre-calculate star sizes for initial measure pass
-        // This allows us to have reasonable sizes for star columns/rows before child measurement
-        var totalFixedWidth = _columns.Where(c => c.Type == Column.Absolute).Sum(c => c.MeasuredSize);
-        var remainingWidthForStars = Math.Max(0, availableSize.Width - totalFixedWidth);
-        var totalStarWeight = _columns.Where(c => c.Type == Column.Star).Sum(c => c.FixedSize ?? 0);
-        if (totalStarWeight > 0)
-        {
-            foreach (var column in _columns.Where(c => c.Type == Column.Star))
-            {
-                column.MeasuredSize = remainingWidthForStars * (column.FixedSize ?? 0) / totalStarWeight;
-            }
-        }
-
-        var totalFixedHeight = _rows.Where(r => r.Type == Row.Absolute).Sum(r => r.MeasuredSize);
-        var remainingHeightForStars = Math.Max(0, availableSize.Height - totalFixedHeight);
-        var totalStarHeightWeight = _rows.Where(r => r.Type == Row.Star).Sum(r => r.FixedSize ?? 0);
-        if (totalStarHeightWeight > 0)
-        {
-            foreach (var row in _rows.Where(r => r.Type == Row.Star))
-            {
-                row.MeasuredSize = remainingHeightForStars * (row.FixedSize ?? 0) / totalStarHeightWeight;
-            }
-        }
-
-        // Measure all children
+        // First pass: Measure children to determine Auto column/row sizes
+        // Use dontStretch=true to get natural sizes without stretching
         foreach (var child in _children)
         {
-            // Calculate the available size for this child
-            float availableWidth = 0;
-            float availableHeight = 0;
+            // Get the natural size without stretch
+            var childSize = child.Element.Measure(availableSize, true);
+            childNaturalSizes[child.Element] = childSize; // Store for later use
+        }
 
-            // For auto-sized columns/rows, pass through the available size
-            // For fixed/star, use the assigned size
+        // Determine Auto sizes based on children's natural sizes
+        foreach (var child in _children)
+        {
             var columnCount = Math.Min(child.ColumnSpan, _columns.Count - child.Column);
-            var hasAutoColumn = false;
-
-            for (var i = 0; i < columnCount; i++)
-            {
-                var columnIndex = child.Column + i;
-                if (columnIndex < _columns.Count) // Ensure we don't go out of bounds
-                {
-                    if (_columns[columnIndex].Type == Column.Auto)
-                    {
-                        hasAutoColumn = true;
-                    }
-                    else
-                    {
-                        availableWidth += _columns[columnIndex].MeasuredSize;
-                    }
-                }
-            }
-
-            if (hasAutoColumn)
-            {
-                availableWidth = availableSize.Width;
-            }
-
             var rowCount = Math.Min(child.RowSpan, _rows.Count - child.Row);
-            var hasAutoRow = false;
+            var childSize = childNaturalSizes[child.Element]; // Use cached size
 
-            for (var i = 0; i < rowCount; i++)
-            {
-                var rowIndex = child.Row + i;
-                if (rowIndex < _rows.Count) // Ensure we don't go out of bounds
-                {
-                    if (_rows[rowIndex].Type == Row.Auto)
-                    {
-                        hasAutoRow = true;
-                    }
-                    else
-                    {
-                        availableHeight += _rows[rowIndex].MeasuredSize;
-                    }
-                }
-            }
-
-            if (hasAutoRow)
-            {
-                availableHeight = availableSize.Height;
-            }
-
-            // Adjust available size by the child's margin
-            availableWidth -= child.Element.Margin.Left + child.Element.Margin.Right;
-            availableHeight -= child.Element.Margin.Top + child.Element.Margin.Bottom;
-
-            // Ensure we don't pass negative sizes to children
-            availableWidth = Math.Max(0, availableWidth);
-            availableHeight = Math.Max(0, availableHeight);
-
-            var childSize = child.Element.Measure(new Size(availableWidth, availableHeight));
-
-            // Calculate row and column sizes for auto
+            // Calculate column sizes for Auto columns
             if (child.ColumnSpan > 1)
             {
                 // For multi-column spanning with auto columns, distribute proportionally
@@ -265,6 +172,7 @@ public class Grid : UiLayoutElement<Grid>
                 }
             }
 
+            // Calculate row sizes for Auto rows
             if (child.RowSpan > 1)
             {
                 // For multi-row spanning with auto rows, distribute proportionally
@@ -305,26 +213,69 @@ public class Grid : UiLayoutElement<Grid>
             }
         }
 
-        // Recalculate sizes for star columns with final measurements
-        totalFixedWidth = _columns.Where(c => c.Type != Column.Star).Sum(c => c.MeasuredSize);
+        // Calculate star sizes - first pass
+        var totalFixedWidth = _columns.Where(c => c.Type != Column.Star).Sum(c => c.MeasuredSize);
+        var remainingWidthForStars = Math.Max(0, availableSize.Width - totalFixedWidth);
+        var totalStarWeight = _columns.Where(c => c.Type == Column.Star).Sum(c => c.FixedSize ?? 0);
+
         if (totalStarWeight > 0)
         {
-            var remainingWidth = Math.Max(0, availableSize.Width - totalFixedWidth);
             foreach (var column in _columns.Where(c => c.Type == Column.Star))
             {
-                column.MeasuredSize = remainingWidth * (column.FixedSize ?? 0) / totalStarWeight;
+                column.MeasuredSize = remainingWidthForStars * (column.FixedSize ?? 0) / totalStarWeight;
             }
         }
 
-        // Recalculate sizes for star rows with final measurements
-        totalFixedHeight = _rows.Where(r => r.Type != Row.Star).Sum(r => r.MeasuredSize);
+        var totalFixedHeight = _rows.Where(r => r.Type != Row.Star).Sum(r => r.MeasuredSize);
+        var remainingHeightForStars = Math.Max(0, availableSize.Height - totalFixedHeight);
+        var totalStarHeightWeight = _rows.Where(r => r.Type == Row.Star).Sum(r => r.FixedSize ?? 0);
+
         if (totalStarHeightWeight > 0)
         {
-            var remainingHeight = Math.Max(0, availableSize.Height - totalFixedHeight);
             foreach (var row in _rows.Where(r => r.Type == Row.Star))
             {
-                row.MeasuredSize = remainingHeight * (row.FixedSize ?? 0) / totalStarHeightWeight;
+                row.MeasuredSize = remainingHeightForStars * (row.FixedSize ?? 0) / totalStarHeightWeight;
             }
+        }
+
+        // Second pass: Measure children with final column/row sizes
+        // This time use the actual size constraints and respect stretch alignment
+        foreach (var child in _children)
+        {
+            // Calculate the available size for this child based on the grid columns/rows it spans
+            float availableWidth = 0;
+            float availableHeight = 0;
+
+            var columnCount = Math.Min(child.ColumnSpan, _columns.Count - child.Column);
+            for (var i = 0; i < columnCount; i++)
+            {
+                var columnIndex = child.Column + i;
+                if (columnIndex < _columns.Count)
+                {
+                    availableWidth += _columns[columnIndex].MeasuredSize;
+                }
+            }
+
+            var rowCount = Math.Min(child.RowSpan, _rows.Count - child.Row);
+            for (var i = 0; i < rowCount; i++)
+            {
+                var rowIndex = child.Row + i;
+                if (rowIndex < _rows.Count)
+                {
+                    availableHeight += _rows[rowIndex].MeasuredSize;
+                }
+            }
+
+            // Adjust available size by the child's margin
+            availableWidth -= child.Element.Margin.Left + child.Element.Margin.Right;
+            availableHeight -= child.Element.Margin.Top + child.Element.Margin.Bottom;
+
+            // Ensure we don't pass negative sizes to children
+            availableWidth = Math.Max(0, availableWidth);
+            availableHeight = Math.Max(0, availableHeight);
+
+            // Final measurement with correct constraints and allowing stretch
+            child.Element.Measure(new Size(availableWidth, availableHeight));
         }
 
         var totalWidth = _columns.Sum(c => c.MeasuredSize) + Margin.Left + Margin.Right;

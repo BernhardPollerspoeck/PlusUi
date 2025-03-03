@@ -8,7 +8,7 @@ public class NullElement : UiElement
     {
     }
 
-    public override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         return Size.Empty;
     }

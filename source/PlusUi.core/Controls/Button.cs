@@ -94,7 +94,7 @@ public class Button : UiTextElement<Button>, IInputControl
 
     }
 
-    public override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         var textWidth = Font.MeasureText(Text ?? string.Empty);
         Font.GetFontMetrics(out var fontMetrics);

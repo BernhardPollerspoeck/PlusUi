@@ -28,7 +28,6 @@ public sealed class GridTests
         Assert.AreEqual(50, grid.ElementSize.Width);
         Assert.AreEqual(30, grid.ElementSize.Height);
     }
-
     [TestMethod]
     public void TestGridColumnSizing_WithMixedColumns_ReturnsCorrectWidths()
     {
@@ -48,7 +47,6 @@ public sealed class GridTests
         //Assert
         Assert.AreEqual(160, grid.ElementSize.Width);
     }
-
     [TestMethod]
     public void TestGridRowSizing_WithMixedRows_ReturnsCorrectHeights()
     {
@@ -68,7 +66,6 @@ public sealed class GridTests
         //Assert
         Assert.AreEqual(180, grid.ElementSize.Height);
     }
-
     [TestMethod]
     public void TestGridItemPositioning_WithMultipleItems_CorrectPositions()
     {
@@ -102,7 +99,6 @@ public sealed class GridTests
         Assert.AreEqual(0, item3.Position.X);
         Assert.AreEqual(40, item3.Position.Y);
     }
-
     [TestMethod]
     public void TestGridItemSizing_WithSpans_CorrectSizing()
     {
@@ -143,7 +139,6 @@ public sealed class GridTests
         Assert.AreEqual(100, itemBothSpan.ElementSize.Width); // 50px + 50px
         Assert.AreEqual(80, itemBothSpan.ElementSize.Height); // 40px + 40px
     }
-
     [TestMethod]
     public void TestGridAutoSizing_WithChildContent_AdjustsCorrectly()
     {
@@ -168,7 +163,6 @@ public sealed class GridTests
         Assert.AreEqual(120, grid.ElementSize.Width);  // 70px + 50px
         Assert.AreEqual(50, grid.ElementSize.Height);  // Max height of row
     }
-
     [TestMethod]
     public void TestGridBoundSizing_ReturnsCorrectSize()
     {
@@ -232,7 +226,6 @@ public sealed class GridTests
         Assert.AreEqual(40, item4.Position.X);
         Assert.AreEqual(30, item4.Position.Y);
     }
-
     [TestMethod]
     public void TestGridChildPositioning_WithStarColumns_CorrectPositions()
     {
@@ -265,7 +258,6 @@ public sealed class GridTests
         Assert.AreEqual(100, item3.Position.X);
         Assert.AreEqual(0, item3.Position.Y);
     }
-
     [TestMethod]
     public void TestGridChildPositioning_WithMixedColumns_CorrectPositions()
     {
@@ -299,7 +291,6 @@ public sealed class GridTests
         Assert.AreEqual(110, item2.Position.X); // Star column starts after auto column (50px + 60px)
         Assert.AreEqual(0, item2.Position.Y);
     }
-
     [TestMethod]
     public void TestGridChildPositioning_WithBoundSizes_CorrectPositions()
     {
@@ -336,7 +327,6 @@ public sealed class GridTests
         Assert.AreEqual(100, item2.Position.X); // Position should update with bound width
         Assert.AreEqual(0, item2.Position.Y);
     }
-
     [TestMethod]
     public void TestGridChildPositioning_WithSpanning_CorrectPositions()
     {
@@ -407,7 +397,6 @@ public sealed class GridTests
         Assert.AreEqual(10, grid.Position.X);  // Left margin is the starting position
         Assert.AreEqual(15, grid.Position.Y);  // Top margin is the starting position
     }
-
     [TestMethod]
     public void TestGridChildWithMargin_PositionsCorrectly()
     {
@@ -433,7 +422,6 @@ public sealed class GridTests
         Assert.AreEqual(40, child.ElementSize.Width);  // Original width
         Assert.AreEqual(20, child.ElementSize.Height); // Original height
     }
-
     [TestMethod]
     public void TestGridWithMultipleChildrenWithMargins_PositionsCorrectly()
     {
@@ -473,7 +461,6 @@ public sealed class GridTests
         Assert.AreEqual(40 + 50, grid.ElementSize.Width);  // (30+5+5) + (30+10+10)
         Assert.AreEqual(50, grid.ElementSize.Height);      // Max(30+5+5, 30+10+10)
     }
-
     [TestMethod]
     public void TestGridAndChildWithMargins_NestedPositioning()
     {
@@ -507,7 +494,6 @@ public sealed class GridTests
         Assert.AreEqual(40 + 5 + 15 + 8 + 16, grid.ElementSize.Width);  // Child + child margins + grid margins
         Assert.AreEqual(30 + 10 + 20 + 12 + 20, grid.ElementSize.Height);
     }
-
     [TestMethod]
     public void TestGridRowColumnSpanWithMargins_SizesCorrectly()
     {
@@ -541,5 +527,290 @@ public sealed class GridTests
         // Child's total allocated space is 120x100, minus margins
         Assert.AreEqual(120, grid.ElementSize.Width);
         Assert.AreEqual(100, grid.ElementSize.Height);
+    }
+    [TestMethod]
+    public void TestEmptyGrid_MeasuresAndArrangesCorrectly()
+    {
+        //Arrange
+        var grid = new Grid()
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+        var availableSize = new Size(100, 100);
+
+        //Act
+        grid.Measure(availableSize);
+        grid.Arrange(new Rect(0, 0, 100, 100));
+
+        //Assert
+        Assert.AreEqual(0, grid.ElementSize.Width);
+        Assert.AreEqual(0, grid.ElementSize.Height);
+    }
+    [TestMethod]
+    public void TestGridWithoutColumnsRows_AddsDefaultAutomatically()
+    {
+        //Arrange
+        var child = new Solid().SetDesiredSize(new Size(50, 30));
+        var grid = new Grid()
+            .AddChild(child) // No explicit columns/rows added
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+        var availableSize = new Size(100, 100);
+
+        //Act
+        grid.Measure(availableSize);
+        grid.Arrange(new Rect(0, 0, 100, 100));
+
+        //Assert
+        Assert.AreEqual(50, grid.ElementSize.Width);
+        Assert.AreEqual(30, grid.ElementSize.Height);
+        Assert.AreEqual(0, child.Position.X);
+        Assert.AreEqual(0, child.Position.Y);
+    }
+    [TestMethod]
+    public void TestAutoColumns_WithDifferentSizedChildren_UsesLargest()
+    {
+        //Arrange
+        var smallChild = new Solid().SetDesiredSize(new Size(30, 20));
+        var largeChild = new Solid().SetDesiredSize(new Size(70, 20));
+
+        var grid = new Grid()
+            .AddColumn(Column.Auto)
+            .AddRow(Row.Auto)
+            .AddChild(smallChild, 0, 0)
+            .AddChild(largeChild, 0, 0) // Two children in the same cell
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+        var availableSize = new Size(200, 100);
+
+        //Act
+        grid.Measure(availableSize);
+        grid.Arrange(new Rect(0, 0, 200, 100));
+
+        //Assert
+        // Column should size to the largest child
+        Assert.AreEqual(70, grid.ElementSize.Width);
+        Assert.AreEqual(20, grid.ElementSize.Height);
+    }
+    [TestMethod]
+    public void TestGridWithOutOfBoundsIndices_HandlesGracefully()
+    {
+        //Arrange
+        var item1 = new Solid().SetDesiredSize(new Size(50, 30));
+        var item2 = new Solid().SetDesiredSize(new Size(40, 20));
+        var item3 = new Solid().SetDesiredSize(new Size(30, 10));
+
+        var grid = new Grid()
+            .AddColumn(Column.Auto)
+            .AddRow(Row.Auto)
+            .AddChild(item1, 0, 0)             // Normal placement
+            .AddChild(item2, 5, 0)             // Out of bounds row
+            .AddChild(item3, 0, 5)             // Out of bounds column
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+        var availableSize = new Size(200, 100);
+
+        //Act
+        grid.Measure(availableSize);
+        grid.Arrange(new Rect(0, 0, 200, 100));
+
+        //Assert
+        // Grid should still handle the normal item correctly
+        Assert.AreEqual(50, grid.ElementSize.Width);
+        Assert.AreEqual(30, grid.ElementSize.Height);
+
+        // Out of bounds items should still be positioned somewhere reasonable
+        Assert.IsTrue(item2.Position.Y >= 0);
+        Assert.IsTrue(item3.Position.X >= 0);
+    }
+    [TestMethod]
+    public void TestGridNestedInGrid_WithMargins_PositionsCorrectly()
+    {
+        //Arrange
+        var innerChild = new Solid()
+            .SetDesiredSize(new Size(20, 20))
+            .SetMargin(new(5, 5, 5, 5));
+
+        var innerGrid = new Grid()
+            .AddColumn(Column.Auto)
+            .AddRow(Row.Auto)
+            .AddChild(innerChild)
+            .SetMargin(new(10, 10, 10, 10))
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+
+        var outerGrid = new Grid()
+            .AddColumn(Column.Auto)
+            .AddRow(Row.Auto)
+            .AddChild(innerGrid)
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+
+        //Act
+        outerGrid.Measure(new Size(200, 200));
+        outerGrid.Arrange(new Rect(0, 0, 200, 200));
+
+        //Assert
+        // Check nested positioning
+        Assert.AreEqual(10, innerGrid.Position.X);
+        Assert.AreEqual(10, innerGrid.Position.Y);
+
+        // innerChild should be positioned at 5,5 within innerGrid
+        Assert.AreEqual(5, innerChild.Position.X);
+        Assert.AreEqual(5, innerChild.Position.Y);
+
+        // Check total sizes
+        Assert.AreEqual(20 + 5 + 5 + 10 + 10, outerGrid.ElementSize.Width);  // child + child margins + grid margins
+        Assert.AreEqual(20 + 5 + 5 + 10 + 10, outerGrid.ElementSize.Height);
+    }
+    [TestMethod]
+    public void TestGridWithZeroSizeColumns_HandlesGracefully()
+    {
+        //Arrange
+        var child1 = new Solid().SetDesiredSize(new Size(30, 20));
+        var child2 = new Solid().SetDesiredSize(new Size(40, 20));
+
+        var grid = new Grid()
+            .AddColumn(Column.Absolute, 0)     // Zero-width column
+            .AddColumn(Column.Absolute, 50)
+            .AddRow(Row.Absolute, 30)
+            .AddChild(child1, 0, 0)            // In zero-width column
+            .AddChild(child2, 0, 1)
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+
+        //Act
+        grid.Measure(new Size(200, 100));
+        grid.Arrange(new Rect(0, 0, 50, 30));
+
+        //Assert
+        Assert.AreEqual(0, child1.Position.X);
+        Assert.AreEqual(0, child1.Position.Y);
+        Assert.AreEqual(0, child1.ElementSize.Width);  // Zero width
+        Assert.AreEqual(30, child1.ElementSize.Height);
+
+        Assert.AreEqual(0, child2.Position.X);
+        Assert.AreEqual(0, child2.Position.Y);
+        Assert.AreEqual(50, child2.ElementSize.Width);
+        Assert.AreEqual(30, child2.ElementSize.Height);
+    }
+    [TestMethod]
+    public void TestGridWithLargeChildInAutoColumn_SizesCorrectly()
+    {
+        //Arrange
+        var largeChild = new Solid().SetDesiredSize(new Size(200, 100));
+
+        var grid = new Grid()
+            .AddColumn(Column.Auto)        // Auto column with large child
+            .AddColumn(Column.Star)        // Star column should get minimal space
+            .AddRow(Row.Auto)
+            .AddChild(largeChild, 0, 0)
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+
+        //Act
+        grid.Measure(new Size(250, 150));  // Available size is larger than child
+        grid.Arrange(new Rect(0, 0, 250, 150));
+
+        //Assert
+        // Auto column should size to child's width
+        Assert.AreEqual(200, largeChild.ElementSize.Width);
+        Assert.AreEqual(100, largeChild.ElementSize.Height);
+
+        // Grid should use available space, with star column getting minimal space
+        Assert.IsTrue(grid.ElementSize.Width >= 200);
+    }
+    [TestMethod]
+    public void TestRemoveChildFromGrid_LayoutUpdates()
+    {
+        //Arrange
+        var child1 = new Solid().SetDesiredSize(new Size(50, 30));
+        var child2 = new Solid().SetDesiredSize(new Size(70, 40));
+
+        var grid = (Grid)(new Grid()
+            .AddColumn(Column.Auto)
+            .AddRow(Row.Auto)
+            .AddChild(child1, 0, 0)
+            .AddChild(child2, 0, 0)
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top));
+
+        // Initial measure
+        grid.Measure(new Size(200, 200));
+        grid.Arrange(new Rect(0, 0, 200, 200));
+
+        // With both children, should size to largest (child2)
+        Assert.AreEqual(70, grid.ElementSize.Width);
+        Assert.AreEqual(40, grid.ElementSize.Height);
+
+        //Act
+        grid.RemoveChild(child2);
+        grid.Measure(new Size(200, 200));
+        grid.Arrange(new Rect(0, 0, 200, 200));
+
+        //Assert
+        // After removal, should size to remaining child
+        Assert.AreEqual(50, grid.ElementSize.Width);
+        Assert.AreEqual(30, grid.ElementSize.Height);
+    }
+    [TestMethod]
+    public void TestClearChildrenFromGrid_ReturnsToEmptySize()
+    {
+        //Arrange
+        var grid = (Grid)(new Grid()
+            .AddColumn(Column.Auto)
+            .AddRow(Row.Auto)
+            .AddChild(new Solid().SetDesiredSize(new Size(50, 30)))
+            .AddChild(new Solid().SetDesiredSize(new Size(70, 40)))
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top));
+
+        // Initial measure with children
+        grid.Measure(new Size(200, 200));
+        grid.Arrange(new Rect(0, 0, 200, 200));
+
+        Assert.AreEqual(70, grid.ElementSize.Width); // Sized to largest child
+
+        //Act
+        grid.ClearChildren();
+        grid.Measure(new Size(200, 200));
+        grid.Arrange(new Rect(0, 0, 200, 200));
+
+        //Assert
+        Assert.AreEqual(0, grid.ElementSize.Width);
+        Assert.AreEqual(0, grid.ElementSize.Height);
+        Assert.AreEqual(0, grid.Children.Count);
+    }
+    [TestMethod]
+    public void TestGridRowColumnResizingWithEvents_UpdatesLayout()
+    {
+        //Arrange
+        var dynamicWidth = 50f;
+        var dynamicHeight = 40f;
+
+        var grid = new Grid()
+            .AddBoundColumn(() => dynamicWidth)
+            .AddBoundRow(() => dynamicHeight)
+            .AddChild(new Solid())
+            .SetHorizontalAlignment(HorizontalAlignment.Left)
+            .SetVerticalAlignment(VerticalAlignment.Top);
+
+        // Initial measure
+        grid.Measure(new Size(200, 200));
+        grid.Arrange(new Rect(0, 0, 200, 200));
+
+        Assert.AreEqual(50, grid.ElementSize.Width);
+        Assert.AreEqual(40, grid.ElementSize.Height);
+
+        //Act
+        dynamicWidth = 100f;
+        dynamicHeight = 80f;
+
+        // This should trigger size change events internally
+        grid.Measure(new Size(200, 200));
+        grid.Arrange(new Rect(0, 0, 200, 200));
+
+        //Assert
+        Assert.AreEqual(100, grid.ElementSize.Width);
+        Assert.AreEqual(80, grid.ElementSize.Height);
     }
 }

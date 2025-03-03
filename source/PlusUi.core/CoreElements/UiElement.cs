@@ -209,7 +209,7 @@ public abstract class UiElement
     public Point Position { get; protected set; }
 
     #region Measuring
-    public Size Measure(Size availableSize)
+    public Size Measure(Size availableSize, bool dontStretch = false)
     {
         if (NeadsMeasure)
         {
@@ -218,27 +218,25 @@ public abstract class UiElement
             // For width: Use DesiredSize if set, or stretch to available width if alignment is Stretch, otherwise use measured width
             var desiredWidth = DesiredSize?.Width >= 0
                 ? DesiredSize.Value.Width
-                : HorizontalAlignment == HorizontalAlignment.Stretch
+                : !dontStretch && HorizontalAlignment == HorizontalAlignment.Stretch
                     ? availableSize.Width
                     : measuredSize.Width;
 
             // For height: Use DesiredSize if set, or stretch to available height if alignment is Stretch, otherwise use measured height
             var desiredHeight = DesiredSize?.Height >= 0
                 ? DesiredSize.Value.Height
-                : VerticalAlignment == VerticalAlignment.Stretch
+                : !dontStretch && VerticalAlignment == VerticalAlignment.Stretch
                     ? availableSize.Height
                     : measuredSize.Height;
 
             // Constrain to available size
-            ElementSize = new Size(
-                Math.Min(desiredWidth, availableSize.Width),
-                Math.Min(desiredHeight, availableSize.Height));
+            ElementSize = new Size(desiredWidth, desiredHeight);
 
-            NeadsMeasure = false;
+            NeadsMeasure = dontStretch;//if we ignore stretching it is a pure calculation pass. so we need to remeasure again
         }
         return ElementSize;
     }
-    public virtual Size MeasureInternal(Size availableSize)
+    public virtual Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         return new Size(
             Math.Min(ElementSize.Width, availableSize.Width),
