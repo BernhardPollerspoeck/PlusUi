@@ -10,7 +10,7 @@ internal class SecondaryPageViewModel : ViewModelBase
     {
         get => field;
         set => SetProperty(ref field, value);
-    } = 10;
+    } = 20;
 
     public ICommand NavCommand { get; }
     public ICommand IncrementCommand { get; }

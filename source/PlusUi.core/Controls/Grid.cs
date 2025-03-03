@@ -1,46 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PlusUi.core.Controls.GridHelper;
 
 namespace PlusUi.core;
-
 public class Grid : UiLayoutElement<Grid>
 {
-    private class GridItem(UiElement child, int row, int column, int rowSpan, int columnSpan)
-    {
-        public UiElement Element { get; } = child;
-        public int Row { get; } = row;
-        public int Column { get; } = column;
-        public int RowSpan { get; } = rowSpan;
-        public int ColumnSpan { get; } = columnSpan;
-    }
-
-    private class RowColumnItem<TType>(TType type, float? fixedSize = null, Func<float>? boundSize = null)
-        where TType : struct
-    {
-        public TType Type { get; } = type;
-
-        public float? FixedSize { get; } = fixedSize;
-        public Func<float>? BoundSize { get; } = boundSize;
-
-        public float MeasuredSize { get; set; }
-
-        public event Action? SizeChanged;
-
-        public float GetSize()
-        {
-            var newSize = FixedSize ?? BoundSize?.Invoke() ?? 0;
-            if (newSize != MeasuredSize)
-            {
-                MeasuredSize = newSize;
-                SizeChanged?.Invoke();
-            }
-            return MeasuredSize;
-        }
-    }
-
     protected override bool NeadsMeasure => true;
 
     #region Children
@@ -71,7 +33,7 @@ public class Grid : UiLayoutElement<Grid>
 
     #region Columns
     private readonly List<RowColumnItem<Column>> _columns = [];
-
+    public IReadOnlyList<RowColumnItem<Column>> Columns => _columns;
     public Grid AddColumn(Column column, float size = 1)
     {
         var columnItem = new RowColumnItem<Column>(column, size);
@@ -98,7 +60,7 @@ public class Grid : UiLayoutElement<Grid>
 
     #region Rows
     private readonly List<RowColumnItem<Row>> _rows = [];
-
+    public IReadOnlyList<RowColumnItem<Row>> Rows => _rows;
     public Grid AddRow(Row row, int size = 1)
     {
         var rowItem = new RowColumnItem<Row>(row, size);
@@ -131,13 +93,14 @@ public class Grid : UiLayoutElement<Grid>
 
     private void OnRowColumnSizeChanged()
     {
+        InvalidateMeasure();
         foreach (var child in _children)
         {
             child.Element.InvalidateMeasure();
         }
     }
 
-    protected override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize)
     {
         // Capture fixed row and column sizes
         for (var i = 0; i < _columns.Count; i++)
@@ -154,6 +117,22 @@ public class Grid : UiLayoutElement<Grid>
                 _rows[i].MeasuredSize = _rows[i].GetSize();
             }
         }
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // Pre-calculate star sizes for initial measure pass
         // This allows us to have reasonable sizes for star columns/rows before child measurement
@@ -188,61 +167,140 @@ public class Grid : UiLayoutElement<Grid>
 
             // For auto-sized columns/rows, pass through the available size
             // For fixed/star, use the assigned size
-            var columnCount = child.ColumnSpan;
-            for (var i = 0; i < columnCount && i + child.Column < _columns.Count; i++)
+            var columnCount = Math.Min(child.ColumnSpan, _columns.Count - child.Column);
+            var hasAutoColumn = false;
+
+            for (var i = 0; i < columnCount; i++)
             {
                 var columnIndex = child.Column + i;
-                if (_columns[columnIndex].Type == Column.Auto)
+                if (columnIndex < _columns.Count) // Ensure we don't go out of bounds
                 {
-                    availableWidth = availableSize.Width;
-                    break; // If any column is Auto, give full width
-                }
-                else
-                {
-                    availableWidth += _columns[columnIndex].MeasuredSize;
+                    if (_columns[columnIndex].Type == Column.Auto)
+                    {
+                        hasAutoColumn = true;
+                    }
+                    else
+                    {
+                        availableWidth += _columns[columnIndex].MeasuredSize;
+                    }
                 }
             }
 
-            var rowCount = child.RowSpan;
-            for (var i = 0; i < rowCount && i + child.Row < _rows.Count; i++)
+            if (hasAutoColumn)
+            {
+                availableWidth = availableSize.Width;
+            }
+
+            var rowCount = Math.Min(child.RowSpan, _rows.Count - child.Row);
+            var hasAutoRow = false;
+
+            for (var i = 0; i < rowCount; i++)
             {
                 var rowIndex = child.Row + i;
-                if (_rows[rowIndex].Type == Row.Auto)
+                if (rowIndex < _rows.Count) // Ensure we don't go out of bounds
                 {
-                    availableHeight = availableSize.Height;
-                    break; // If any row is Auto, give full height
+                    if (_rows[rowIndex].Type == Row.Auto)
+                    {
+                        hasAutoRow = true;
+                    }
+                    else
+                    {
+                        availableHeight += _rows[rowIndex].MeasuredSize;
+                    }
                 }
-                else
-                {
-                    availableHeight += _rows[rowIndex].MeasuredSize;
-                }
+            }
+
+            if (hasAutoRow)
+            {
+                availableHeight = availableSize.Height;
             }
 
             // Adjust available size by the child's margin
             availableWidth -= child.Element.Margin.Left + child.Element.Margin.Right;
             availableHeight -= child.Element.Margin.Top + child.Element.Margin.Bottom;
 
+            // Ensure we don't pass negative sizes to children
+            availableWidth = Math.Max(0, availableWidth);
+            availableHeight = Math.Max(0, availableHeight);
+
             var childSize = child.Element.Measure(new Size(availableWidth, availableHeight));
 
             // Calculate row and column sizes for auto
-            for (var i = 0; i < child.ColumnSpan && i + child.Column < _columns.Count; i++)
+            if (child.ColumnSpan > 1)
             {
-                var columnIndex = child.Column + i;
-                if (_columns[columnIndex].Type == Column.Auto)
+                // For multi-column spanning with auto columns, distribute proportionally
+                float totalAutoWidth = childSize.Width + child.Element.Margin.Left + child.Element.Margin.Right;
+                var autoColumns = new List<int>();
+
+                for (var i = 0; i < columnCount; i++)
                 {
-                    // For multi-column spanning, distribute proportionally (simple approach)
-                    var columnContribution = (childSize.Width + child.Element.Margin.Left + child.Element.Margin.Right) / child.ColumnSpan;
-                    _columns[columnIndex].MeasuredSize = Math.Max(_columns[columnIndex].MeasuredSize, columnContribution);
+                    var columnIndex = child.Column + i;
+                    if (columnIndex < _columns.Count && _columns[columnIndex].Type == Column.Auto)
+                    {
+                        autoColumns.Add(columnIndex);
+                    }
+                }
+
+                if (autoColumns.Count > 0)
+                {
+                    var widthPerAutoColumn = totalAutoWidth / autoColumns.Count;
+                    foreach (var columnIndex in autoColumns)
+                    {
+                        _columns[columnIndex].MeasuredSize = Math.Max(_columns[columnIndex].MeasuredSize, widthPerAutoColumn);
+                    }
                 }
             }
-            for (var i = 0; i < child.RowSpan && i + child.Row < _rows.Count; i++)
+            else
             {
-                var rowIndex = child.Row + i;
-                if (_rows[rowIndex].Type == Row.Auto)
+                // Single column
+                for (var i = 0; i < columnCount; i++)
                 {
-                    // For multi-row spanning, distribute proportionally (simple approach)
-                    var rowContribution = (childSize.Height + child.Element.Margin.Top + child.Element.Margin.Bottom) / child.RowSpan;
-                    _rows[rowIndex].MeasuredSize = Math.Max(_rows[rowIndex].MeasuredSize, rowContribution);
+                    var columnIndex = child.Column + i;
+                    if (columnIndex < _columns.Count && _columns[columnIndex].Type == Column.Auto)
+                    {
+                        _columns[columnIndex].MeasuredSize = Math.Max(
+                            _columns[columnIndex].MeasuredSize,
+                            childSize.Width + child.Element.Margin.Left + child.Element.Margin.Right);
+                    }
+                }
+            }
+
+            if (child.RowSpan > 1)
+            {
+                // For multi-row spanning with auto rows, distribute proportionally
+                float totalAutoHeight = childSize.Height + child.Element.Margin.Top + child.Element.Margin.Bottom;
+                var autoRows = new List<int>();
+
+                for (var i = 0; i < rowCount; i++)
+                {
+                    var rowIndex = child.Row + i;
+                    if (rowIndex < _rows.Count && _rows[rowIndex].Type == Row.Auto)
+                    {
+                        autoRows.Add(rowIndex);
+                    }
+                }
+
+                if (autoRows.Count > 0)
+                {
+                    var heightPerAutoRow = totalAutoHeight / autoRows.Count;
+                    foreach (var rowIndex in autoRows)
+                    {
+                        _rows[rowIndex].MeasuredSize = Math.Max(_rows[rowIndex].MeasuredSize, heightPerAutoRow);
+                    }
+                }
+            }
+            else
+            {
+                // Single row
+                for (var i = 0; i < rowCount; i++)
+                {
+                    var rowIndex = child.Row + i;
+                    if (rowIndex < _rows.Count && _rows[rowIndex].Type == Row.Auto)
+                    {
+                        _rows[rowIndex].MeasuredSize = Math.Max(
+                            _rows[rowIndex].MeasuredSize,
+                            childSize.Height + child.Element.Margin.Top + child.Element.Margin.Bottom);
+                    }
                 }
             }
         }
@@ -251,13 +309,10 @@ public class Grid : UiLayoutElement<Grid>
         totalFixedWidth = _columns.Where(c => c.Type != Column.Star).Sum(c => c.MeasuredSize);
         if (totalStarWeight > 0)
         {
-            var remainingWidth = availableSize.Width - totalFixedWidth;
-            if (remainingWidth > 0)
+            var remainingWidth = Math.Max(0, availableSize.Width - totalFixedWidth);
+            foreach (var column in _columns.Where(c => c.Type == Column.Star))
             {
-                foreach (var column in _columns.Where(c => c.Type == Column.Star))
-                {
-                    column.MeasuredSize = remainingWidth * (column.FixedSize ?? 0) / totalStarWeight;
-                }
+                column.MeasuredSize = remainingWidth * (column.FixedSize ?? 0) / totalStarWeight;
             }
         }
 
@@ -265,13 +320,10 @@ public class Grid : UiLayoutElement<Grid>
         totalFixedHeight = _rows.Where(r => r.Type != Row.Star).Sum(r => r.MeasuredSize);
         if (totalStarHeightWeight > 0)
         {
-            var remainingHeight = availableSize.Height - totalFixedHeight;
-            if (remainingHeight > 0)
+            var remainingHeight = Math.Max(0, availableSize.Height - totalFixedHeight);
+            foreach (var row in _rows.Where(r => r.Type == Row.Star))
             {
-                foreach (var row in _rows.Where(r => r.Type == Row.Star))
-                {
-                    row.MeasuredSize = remainingHeight * (row.FixedSize ?? 0) / totalStarHeightWeight;
-                }
+                row.MeasuredSize = remainingHeight * (row.FixedSize ?? 0) / totalStarHeightWeight;
             }
         }
 

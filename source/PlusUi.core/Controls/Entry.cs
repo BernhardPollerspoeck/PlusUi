@@ -72,7 +72,7 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
             if ((elapsedMilliseconds % 1600) < 800)
             {
 
-                var cursorX = Position.X + Padding.Left + Font.MeasureText(Text ?? string.Empty)+2;
+                var cursorX = Position.X + Padding.Left + Font.MeasureText(Text ?? string.Empty) + 2;
                 var cursorYStart = Position.Y + Padding.Top + (textHeight * 0.1f);
                 var cursorYEnd = Position.Y + Padding.Top + textHeight - (textHeight * 0.1f);
 
@@ -84,7 +84,7 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
         }
     }
 
-    protected override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize)
     {
         var textWidth = Font.MeasureText(Text ?? string.Empty);
         Font.GetFontMetrics(out var fontMetrics);

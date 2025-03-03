@@ -17,6 +17,7 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
             _tree = Build();
             _tree.BuildContent();
             _tree.Parent = this;
+            _tree.ApplyStyles();
             InvalidateMeasure();
             Appearing();
         }
@@ -49,7 +50,7 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
         }
     }
 
-    protected override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize)
     {
         return _tree.Measure(availableSize);
     }

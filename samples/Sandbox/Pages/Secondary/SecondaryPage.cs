@@ -15,11 +15,11 @@ internal class SecondaryPage(SecondaryPageViewModel vm) : UiPageElement(vm)
             .AddRow(Row.Star, 2)
             .AddBoundRow(() => vm.RowHeight)
 
-            .AddChild(new Solid().SetBackgroundColor(SKColors.Green))
-            .AddChild(row: 1, child: new Solid().SetBackgroundColor(SKColors.Blue))
-            .AddChild(column: 1, child: new Solid().SetBackgroundColor(SKColors.Yellow))
-            .AddChild(row: 2, columnSpan: 2, child: new Solid().SetBackgroundColor(SKColors.Red))
-            .AddChild(row: 1, column: 2, rowSpan: 2, child: new Solid().SetBackgroundColor(SKColors.Purple))
+            .AddChild(new Solid().SetBackgroundColor(SKColors.Green).IgnoreStyling())
+            .AddChild(row: 1, child: new Solid().SetBackgroundColor(SKColors.Blue).IgnoreStyling())
+            .AddChild(column: 1, child: new Solid().SetBackgroundColor(SKColors.Yellow).IgnoreStyling())
+            .AddChild(row: 2, columnSpan: 2, child: new Solid().SetBackgroundColor(SKColors.Red).IgnoreStyling())
+            .AddChild(row: 1, column: 2, rowSpan: 2, child: new Solid().SetBackgroundColor(SKColors.Purple).IgnoreStyling())
 
             .AddChild(row: 1, column: 1, child: new VStack(
                 new Button()

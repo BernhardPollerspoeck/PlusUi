@@ -32,6 +32,8 @@ public abstract class UiElement
 {
     private readonly Dictionary<string, List<Action>> _bindings = [];
     protected readonly Dictionary<string, List<Action<object>>> _setter = [];
+    protected bool _ignoreStyling;
+
 
     protected virtual bool NeadsMeasure { get; set; } = true;
 
@@ -186,15 +188,23 @@ public abstract class UiElement
     }
     #endregion
 
+    public UiElement IgnoreStyling()
+    {
+        _ignoreStyling = true;
+        return this;
+    }
+
     protected UiElement()
     {
-        ApplyStyles();
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public Size ElementSize { get; protected set; }
-    [EditorBrowsable(EditorBrowsableState.Never)]
     public UiElement? Parent { get; set; }
+
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Size ElementSize { get; protected set; }
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Point Position { get; protected set; }
 
@@ -228,7 +238,7 @@ public abstract class UiElement
         }
         return ElementSize;
     }
-    protected virtual Size MeasureInternal(Size availableSize)
+    public virtual Size MeasureInternal(Size availableSize)
     {
         return new Size(
             Math.Min(ElementSize.Width, availableSize.Width),
@@ -358,6 +368,10 @@ public abstract class UiElement
 
     public virtual void ApplyStyles()
     {
+        if (_ignoreStyling)
+        {
+            return;
+        }
         var style = ServiceProviderService.ServiceProvider?.GetRequiredService<Style>();
         style?.ApplyStyle(this);
     }
