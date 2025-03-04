@@ -16,8 +16,8 @@ internal class SecondaryPage(SecondaryPageViewModel vm) : UiPageElement(vm)
             .AddBoundRow(() => vm.RowHeight)
 
             .AddChild(new Solid().SetBackgroundColor(SKColors.Green).IgnoreStyling())
-            .AddChild(row: 1, child: new Solid().SetBackgroundColor(SKColors.Blue).IgnoreStyling())
             .AddChild(column: 1, child: new Solid().SetBackgroundColor(SKColors.Yellow).IgnoreStyling())
+            .AddChild(row: 1, child: new Solid().SetBackgroundColor(SKColors.Blue).IgnoreStyling())
             .AddChild(row: 2, columnSpan: 2, child: new Solid().SetBackgroundColor(SKColors.Red).IgnoreStyling())
             .AddChild(row: 1, column: 2, rowSpan: 2, child: new Solid().SetBackgroundColor(SKColors.Purple).IgnoreStyling())
 

@@ -91,7 +91,6 @@ public class WrongUiFixTests
 
         Assert.AreEqual(0, control.Children[0].Position.X);
         Assert.AreEqual(0, control.Children[0].Position.Y);
-        //TODO: we need to differenciate between minimum size and render size
         Assert.AreEqual(640.927734375, control.Children[0].ElementSize.Width);
         Assert.AreEqual(193.3333282470703, control.Children[0].ElementSize.Height);
 
@@ -119,7 +118,7 @@ public class WrongUiFixTests
         Assert.AreEqual(640.927734375, control.Children[5].Position.X);
         Assert.AreEqual(193.3333282470703, control.Children[5].Position.Y);
         Assert.AreEqual(109.072265625, control.Children[5].ElementSize.Width);
-        Assert.AreEqual(386.6666564941406, control.Children[5].ElementSize.Height);
+        Assert.AreEqual(73.203125, control.Children[5].ElementSize.Height);
 
         var stack = control.Children[5] as VStack;
         Assert.IsNotNull(stack);

@@ -61,6 +61,7 @@ public abstract class UiLayoutElement : UiElement
     #region rendering
     public override void Render(SKCanvas canvas)
     {
+        base.Render(canvas);
         foreach (var child in Children)
         {
             child.Render(canvas);

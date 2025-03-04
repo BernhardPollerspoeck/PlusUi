@@ -36,6 +36,16 @@ public abstract class UiElement
 
 
     protected virtual bool NeadsMeasure { get; set; } = true;
+    protected virtual bool SkipBackground { get; set; }
+
+    #region Debug
+    protected bool Debug { get; private set; }
+    public UiElement SetDebug(bool debug = true)
+    {
+        Debug = debug;
+        return this;
+    }
+    #endregion
 
     #region BackgroundColor
     internal SKColor BackgroundColor
@@ -211,23 +221,23 @@ public abstract class UiElement
     #region Measuring
     public Size Measure(Size availableSize, bool dontStretch = false)
     {
-        if (NeadsMeasure)
+        if (NeadsMeasure || dontStretch)
         {
-            var measuredSize = MeasureInternal(availableSize);
+            var measuredSize = MeasureInternal(availableSize, dontStretch);
 
             // For width: Use DesiredSize if set, or stretch to available width if alignment is Stretch, otherwise use measured width
             var desiredWidth = DesiredSize?.Width >= 0
-                ? DesiredSize.Value.Width
+                ? Math.Min(DesiredSize.Value.Width, availableSize.Width)
                 : !dontStretch && HorizontalAlignment == HorizontalAlignment.Stretch
                     ? availableSize.Width
-                    : measuredSize.Width;
+                    : Math.Min(measuredSize.Width, availableSize.Width);
 
             // For height: Use DesiredSize if set, or stretch to available height if alignment is Stretch, otherwise use measured height
             var desiredHeight = DesiredSize?.Height >= 0
-                ? DesiredSize.Value.Height
+                ? Math.Min(DesiredSize.Value.Height, availableSize.Height)
                 : !dontStretch && VerticalAlignment == VerticalAlignment.Stretch
                     ? availableSize.Height
-                    : measuredSize.Height;
+                    : Math.Min(measuredSize.Height, availableSize.Height);
 
             // Constrain to available size
             ElementSize = new Size(desiredWidth, desiredHeight);
@@ -239,8 +249,8 @@ public abstract class UiElement
     public virtual Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         return new Size(
-            Math.Min(ElementSize.Width, availableSize.Width),
-            Math.Min(ElementSize.Height, availableSize.Height));
+            Math.Min(0, availableSize.Width),
+            Math.Min(0, availableSize.Height));
     }
     public void InvalidateMeasure()
     {
@@ -335,7 +345,34 @@ public abstract class UiElement
     #region rendering
     public virtual void Render(SKCanvas canvas)
     {
-        if (BackgroundColor != SKColors.Transparent)
+        if (Debug is true)
+        {
+            var debugPaint = new SKPaint
+            {
+                Color = SKColors.Red,
+                IsStroke = true,
+                StrokeWidth = 1
+            };
+            var rect = new SKRect(
+                Position.X,
+                Position.Y,
+                Position.X + ElementSize.Width,
+                Position.Y + ElementSize.Height);
+            canvas.DrawRect(rect, debugPaint);
+
+            if (Margin.Horizontal > 0 || Margin.Vertical > 0)
+            {
+                var marginRect = new SKRect(
+                    Position.X - Margin.Left,
+                    Position.Y - Margin.Top,
+                    Position.X + ElementSize.Width + Margin.Right,
+                    Position.Y + ElementSize.Height + Margin.Bottom);
+                canvas.DrawRect(marginRect, debugPaint);
+            }
+        }
+
+
+        if (BackgroundColor != SKColors.Transparent && !SkipBackground)
         {
             var rect = new SKRect(
                 Position.X,

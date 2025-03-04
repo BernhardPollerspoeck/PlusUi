@@ -8,6 +8,8 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
     private bool _isSelected;
     private DateTime _selectionTime;
 
+    protected override bool SkipBackground => true;
+
     #region Padding
     internal Margin Padding
     {
@@ -39,6 +41,7 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
 
     public override void Render(SKCanvas canvas)
     {
+        base.Render(canvas);
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
         if (BackgroundPaint is not null)

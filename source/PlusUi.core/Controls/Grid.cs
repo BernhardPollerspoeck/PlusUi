@@ -102,6 +102,14 @@ public class Grid : UiLayoutElement<Grid>
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
+        if (_rows.Count == 0)
+        {
+            AddRow(Row.Auto);
+        }
+        if (_columns.Count == 0)
+        {
+            AddColumn(Column.Auto);
+        }
         // Dictionary to cache child natural sizes
         var childNaturalSizes = new Dictionary<UiElement, Size>();
 
@@ -278,8 +286,8 @@ public class Grid : UiLayoutElement<Grid>
             child.Element.Measure(new Size(availableWidth, availableHeight));
         }
 
-        var totalWidth = _columns.Sum(c => c.MeasuredSize) + Margin.Left + Margin.Right;
-        var totalHeight = _rows.Sum(r => r.MeasuredSize) + Margin.Top + Margin.Bottom;
+        var totalWidth = _columns.Sum(c => c.MeasuredSize);
+        var totalHeight = _rows.Sum(r => r.MeasuredSize);
 
         return new Size(totalWidth, totalHeight);
     }
@@ -292,8 +300,8 @@ public class Grid : UiLayoutElement<Grid>
         // Arrange children
         foreach (var child in _children)
         {
-            var x = columnWidths.Take(child.Column).Sum();
-            var y = rowHeights.Take(child.Row).Sum();
+            var x = columnWidths.Take(child.Column).Sum() + Margin.Left;
+            var y = rowHeights.Take(child.Row).Sum() + Margin.Top;
             var width = columnWidths.Skip(child.Column).Take(child.ColumnSpan).Sum();
             var height = rowHeights.Skip(child.Row).Take(child.RowSpan).Sum();
 

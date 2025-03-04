@@ -392,10 +392,10 @@ public sealed class GridTests
         grid.Arrange(new Rect(0, 0, 200, 200));
 
         //Assert
-        Assert.AreEqual(50 + 10 + 20, grid.ElementSize.Width);  // Content + left margin + right margin
-        Assert.AreEqual(30 + 15 + 25, grid.ElementSize.Height); // Content + top margin + bottom margin
-        Assert.AreEqual(10, grid.Position.X);  // Left margin is the starting position
-        Assert.AreEqual(15, grid.Position.Y);  // Top margin is the starting position
+        Assert.AreEqual(50, grid.ElementSize.Width);
+        Assert.AreEqual(30, grid.ElementSize.Height);
+        Assert.AreEqual(10, grid.Position.X);
+        Assert.AreEqual(15, grid.Position.Y);
     }
     [TestMethod]
     public void TestGridChildWithMargin_PositionsCorrectly()
@@ -487,12 +487,10 @@ public sealed class GridTests
         Assert.AreEqual(12, grid.Position.Y);
 
         // Child position is relative to grid + its own margin
-        Assert.AreEqual(5, child.Position.X);  // Left margin within grid
-        Assert.AreEqual(10, child.Position.Y); // Top margin within grid
-
-        // Grid size includes content + child margins + grid margins
-        Assert.AreEqual(40 + 5 + 15 + 8 + 16, grid.ElementSize.Width);  // Child + child margins + grid margins
-        Assert.AreEqual(30 + 10 + 20 + 12 + 20, grid.ElementSize.Height);
+        Assert.AreEqual(13, child.Position.X);  // Left margin within grid
+        Assert.AreEqual(22, child.Position.Y); // Top margin within grid
+        Assert.AreEqual(40 + 5 + 15 , grid.ElementSize.Width);
+        Assert.AreEqual(30 + 10 + 20, grid.ElementSize.Height);
     }
     [TestMethod]
     public void TestGridRowColumnSpanWithMargins_SizesCorrectly()
@@ -650,17 +648,20 @@ public sealed class GridTests
         outerGrid.Arrange(new Rect(0, 0, 200, 200));
 
         //Assert
-        // Check nested positioning
+        Assert.AreEqual(0, outerGrid.Position.X);
+        Assert.AreEqual(0, outerGrid.Position.Y);
+        Assert.AreEqual(50, outerGrid.ElementSize.Width);
+        Assert.AreEqual(50, outerGrid.ElementSize.Height);
+
         Assert.AreEqual(10, innerGrid.Position.X);
         Assert.AreEqual(10, innerGrid.Position.Y);
+        Assert.AreEqual(30, innerGrid.ElementSize.Width);
+        Assert.AreEqual(30, innerGrid.ElementSize.Height);
 
-        // innerChild should be positioned at 5,5 within innerGrid
-        Assert.AreEqual(5, innerChild.Position.X);
-        Assert.AreEqual(5, innerChild.Position.Y);
-
-        // Check total sizes
-        Assert.AreEqual(20 + 5 + 5 + 10 + 10, outerGrid.ElementSize.Width);  // child + child margins + grid margins
-        Assert.AreEqual(20 + 5 + 5 + 10 + 10, outerGrid.ElementSize.Height);
+        Assert.AreEqual(15, innerChild.Position.X);
+        Assert.AreEqual(15, innerChild.Position.Y);
+        Assert.AreEqual(20, innerChild.ElementSize.Width);
+        Assert.AreEqual(20, innerChild.ElementSize.Height);
     }
     [TestMethod]
     public void TestGridWithZeroSizeColumns_HandlesGracefully()
@@ -686,12 +687,12 @@ public sealed class GridTests
         Assert.AreEqual(0, child1.Position.X);
         Assert.AreEqual(0, child1.Position.Y);
         Assert.AreEqual(0, child1.ElementSize.Width);  // Zero width
-        Assert.AreEqual(30, child1.ElementSize.Height);
+        Assert.AreEqual(20, child1.ElementSize.Height);
 
         Assert.AreEqual(0, child2.Position.X);
         Assert.AreEqual(0, child2.Position.Y);
-        Assert.AreEqual(50, child2.ElementSize.Width);
-        Assert.AreEqual(30, child2.ElementSize.Height);
+        Assert.AreEqual(40, child2.ElementSize.Width);
+        Assert.AreEqual(20, child2.ElementSize.Height);
     }
     [TestMethod]
     public void TestGridWithLargeChildInAutoColumn_SizesCorrectly()

@@ -78,6 +78,7 @@ public class Image : UiElement<Image>
 
     public override void Render(SKCanvas canvas)
     {
+        base.Render(canvas);
         if (_image == null)
         {
             return;
