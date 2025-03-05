@@ -65,11 +65,13 @@ public class Button : UiTextElement<Button>, IInputControl
     }
     #endregion
 
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
+
         if (BackgroundPaint is not null)
         {
             var rect = new SKRect(
@@ -87,14 +89,22 @@ public class Button : UiTextElement<Button>, IInputControl
             }
         }
 
+        var textRect = new SKRect(
+            Position.X + Padding.Left,
+            Position.Y + Padding.Top,
+            Position.X + ElementSize.Width - Padding.Right,
+            Position.Y + ElementSize.Height - Padding.Bottom);
+
+        var textX = textRect.MidX;
+        var textY = textRect.MidY + (TextSize / 2);
+
         canvas.DrawText(
             Text ?? string.Empty,
-            Position.X + (ElementSize.Width / 2),
-            Position.Y + textHeight,
+            textX,
+            textY,
             (SKTextAlign)HorizontalTextAlignment,
             Font,
             Paint);
-
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)

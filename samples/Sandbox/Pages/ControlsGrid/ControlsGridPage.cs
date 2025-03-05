@@ -1,9 +1,9 @@
 ﻿using PlusUi.core;
 using SkiaSharp;
 
-namespace Sandbox.Pages.Secondary;
+namespace Sandbox.Pages.ControlsGrid;
 
-internal class SecondaryPage(SecondaryPageViewModel vm) : UiPageElement(vm)
+internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {

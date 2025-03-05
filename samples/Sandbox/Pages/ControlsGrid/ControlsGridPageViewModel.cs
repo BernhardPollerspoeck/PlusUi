@@ -2,9 +2,9 @@
 using Sandbox.Pages.Main;
 using System.Windows.Input;
 
-namespace Sandbox.Pages.Secondary;
+namespace Sandbox.Pages.ControlsGrid;
 
-internal class SecondaryPageViewModel : ViewModelBase
+internal class ControlsGridPageViewModel : ViewModelBase
 {
     public int RowHeight
     {
@@ -15,7 +15,7 @@ internal class SecondaryPageViewModel : ViewModelBase
     public ICommand NavCommand { get; }
     public ICommand IncrementCommand { get; }
 
-    public SecondaryPageViewModel(INavigationService navigationService)
+    public ControlsGridPageViewModel(INavigationService navigationService)
     {
         NavCommand = new SyncCommand(() => navigationService.NavigateTo<MainPage>());
         IncrementCommand = new SyncCommand(Increment);

@@ -1,11 +1,11 @@
 ﻿using PlusUi.core;
-using Sandbox.Pages.Secondary;
+using Sandbox.Pages.ControlsGrid;
 using SkiaSharp;
 using System.Windows.Input;
 
 namespace Sandbox.Pages.Main;
 
-internal class MainViewModel : ViewModelBase
+internal class MainPageViewModel : ViewModelBase
 {
     public string? Text
     {
@@ -28,10 +28,13 @@ internal class MainViewModel : ViewModelBase
     public ICommand SetColorCommand { get; }
     public ICommand NavigateCommand { get; }
 
-    public MainViewModel(INavigationService navigationService)
+    private readonly INavigationService _navigationService;
+
+    public MainPageViewModel(INavigationService navigationService)
     {
+        _navigationService = navigationService;
         SetColorCommand = new SyncCommand(SetColor);
-        NavigateCommand = new SyncCommand(() => navigationService.NavigateTo<SecondaryPage>());
+        NavigateCommand = new SyncCommand(Navigate);
     }
 
     private void SetColor()
@@ -39,6 +42,17 @@ internal class MainViewModel : ViewModelBase
         Color = new SKColor((uint)Random.Shared.Next(0xFF0000, 0xFFFFFF) | 0xFF000000);
     }
 
+    private void Navigate(object? arg)
+    {
+        if (arg is Type pageType)
+        {
+            // Use reflection to call the generic NavigateTo method with the provided type
+            typeof(INavigationService)
+                .GetMethod(nameof(INavigationService.NavigateTo))
+                ?.MakeGenericMethod(pageType)
+                .Invoke(_navigationService, null);
+        }
+    }
 }
 
 

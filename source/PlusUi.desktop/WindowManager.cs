@@ -12,7 +12,7 @@ internal class WindowManager(
     IOptions<PlusUiConfiguration> uiOptions,
     RenderService renderService,
     UpdateService updateService,
-    NavigationContainer navigationContainer,
+    PlusUiNavigationService plusUiNavigationService,
     IHostApplicationLifetime appLifetime)
     : IHostedService
 {
@@ -65,14 +65,7 @@ internal class WindowManager(
                 SKColorType.Rgba8888);
                 _canvas = _surface.Canvas;
 
-                navigationContainer.Page.ViewModel.PropertyChanged += (o, e) =>
-                {
-                    if (e.PropertyName is not null)
-                    {
-                        navigationContainer.Page.UpdateBindings(e.PropertyName);
-                    }
-                };
-                navigationContainer.Page.BuildPage();
+                plusUiNavigationService.Initialize();
 
                 var input = _window.CreateInput();
                 if (input is not null)
