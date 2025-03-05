@@ -44,7 +44,7 @@ internal class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
                         .SetBackgroundColor(new SKColor(0, 255, 0)),
-                    
+
                 new HStack(
                     new Image()
                         .SetAspect(Aspect.AspectFit)

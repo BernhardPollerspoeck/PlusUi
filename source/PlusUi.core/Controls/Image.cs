@@ -85,11 +85,11 @@ public class Image : UiElement<Image>
         }
 
         var destRect = new SKRect(
-            Position.X, 
-            Position.Y, 
-            Position.X + ElementSize.Width, 
+            Position.X,
+            Position.Y,
+            Position.X + ElementSize.Width,
             Position.Y + ElementSize.Height);
-        var srcRect = new SKRect(0, 0, _image.Width, _image.Height); 
+        var srcRect = new SKRect(0, 0, _image.Width, _image.Height);
         var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear);
 
 

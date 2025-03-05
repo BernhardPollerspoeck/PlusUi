@@ -12,19 +12,12 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
     protected abstract UiElement Build();
     public void BuildPage()
     {
-        try
-        {
-            _tree = Build();
-            _tree.BuildContent();
-            _tree.Parent = this;
-            _tree.ApplyStyles();
-            InvalidateMeasure();
-            Appearing();
-        }
-        catch (Exception ex)
-        {
-
-        }
+        _tree = Build();
+        _tree.BuildContent();
+        _tree.Parent = this;
+        _tree.ApplyStyles();
+        InvalidateMeasure();
+        Appearing();
     }
 
     public virtual void Appearing()
@@ -41,13 +34,7 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
 
     public override void Render(SKCanvas canvas)
     {
-        try
-        {
-            _tree.Render(canvas);
-        }
-        catch (Exception ex)
-        {
-        }
+        _tree.Render(canvas);
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)

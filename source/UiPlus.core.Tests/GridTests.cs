@@ -489,7 +489,7 @@ public sealed class GridTests
         // Child position is relative to grid + its own margin
         Assert.AreEqual(13, child.Position.X);  // Left margin within grid
         Assert.AreEqual(22, child.Position.Y); // Top margin within grid
-        Assert.AreEqual(40 + 5 + 15 , grid.ElementSize.Width);
+        Assert.AreEqual(40 + 5 + 15, grid.ElementSize.Width);
         Assert.AreEqual(30 + 10 + 20, grid.ElementSize.Height);
     }
     [TestMethod]
