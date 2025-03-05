@@ -30,9 +30,22 @@ public abstract class UiElement<T> : UiElement where T : UiElement<T>
 }
 public abstract class UiElement
 {
-    private bool _needsMeasure = true;
     private readonly Dictionary<string, List<Action>> _bindings = [];
     protected readonly Dictionary<string, List<Action<object>>> _setter = [];
+    protected bool _ignoreStyling;
+
+
+    protected virtual bool NeadsMeasure { get; set; } = true;
+    protected virtual bool SkipBackground { get; set; }
+
+    #region Debug
+    protected bool Debug { get; private set; }
+    public UiElement SetDebug(bool debug = true)
+    {
+        Debug = debug;
+        return this;
+    }
+    #endregion
 
     #region BackgroundColor
     internal SKColor BackgroundColor
@@ -175,7 +188,7 @@ public abstract class UiElement
     }
     public UiElement BindDesiredWidth(string propertyName, Func<float> propertyGetter)
     {
-        RegisterBinding(propertyName, () => DesiredSize = new Size(propertyGetter(), DesiredSize?.Height ?? -10));
+        RegisterBinding(propertyName, () => DesiredSize = new Size(propertyGetter(), DesiredSize?.Height ?? -1));
         return this;
     }
     public UiElement BindDesiredHeight(string propertyName, Func<float> propertyGetter)
@@ -185,44 +198,63 @@ public abstract class UiElement
     }
     #endregion
 
+    public UiElement IgnoreStyling()
+    {
+        _ignoreStyling = true;
+        return this;
+    }
+
     protected UiElement()
     {
-        ApplyStyles();
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public Size ElementSize { get; protected set; }
-    [EditorBrowsable(EditorBrowsableState.Never)]
     public UiElement? Parent { get; set; }
+
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Size ElementSize { get; protected set; }
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Point Position { get; protected set; }
 
     #region Measuring
-    public Size Measure(Size availableSize)
+    public Size Measure(Size availableSize, bool dontStretch = false)
     {
-        if (_needsMeasure)
+        if (NeadsMeasure || dontStretch)
         {
-            var measuredSize = MeasureInternal(availableSize);
+            var measuredSize = MeasureInternal(availableSize, dontStretch);
 
-            var desiredWidth = DesiredSize?.Width >= 0 ? DesiredSize.Value.Width : measuredSize.Width;
-            var desiredHeight = DesiredSize?.Height >= 0 ? DesiredSize.Value.Height : measuredSize.Height;
-            ElementSize = new Size(
-                Math.Min(desiredWidth, availableSize.Width),
-                Math.Min(desiredHeight, availableSize.Height));
+            // For width: Use DesiredSize if set, or stretch to available width if alignment is Stretch, otherwise use measured width
+            var desiredWidth = DesiredSize?.Width >= 0
+                ? Math.Min(DesiredSize.Value.Width, availableSize.Width)
+                : !dontStretch && HorizontalAlignment == HorizontalAlignment.Stretch
+                    ? availableSize.Width
+                    : Math.Min(measuredSize.Width, availableSize.Width);
 
-            _needsMeasure = false;
+            // For height: Use DesiredSize if set, or stretch to available height if alignment is Stretch, otherwise use measured height
+            var desiredHeight = DesiredSize?.Height >= 0
+                ? Math.Min(DesiredSize.Value.Height, availableSize.Height)
+                : !dontStretch && VerticalAlignment == VerticalAlignment.Stretch
+                    ? availableSize.Height
+                    : Math.Min(measuredSize.Height, availableSize.Height);
+
+            // Constrain to available size
+            ElementSize = new Size(desiredWidth, desiredHeight);
+
+            NeadsMeasure = dontStretch;//if we ignore stretching it is a pure calculation pass. so we need to remeasure again
         }
         return ElementSize;
     }
-    protected virtual Size MeasureInternal(Size availableSize)
+    public virtual Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         return new Size(
-            Math.Min(ElementSize.Width, availableSize.Width),
-            Math.Min(ElementSize.Height, availableSize.Height));
+            Math.Min(0, availableSize.Width),
+            Math.Min(0, availableSize.Height));
     }
-    protected void InvalidateMeasure()
+    public void InvalidateMeasure()
     {
-        _needsMeasure = true;
+        NeadsMeasure = true;
         Parent?.InvalidateMeasure();
     }
     #endregion
@@ -313,7 +345,34 @@ public abstract class UiElement
     #region rendering
     public virtual void Render(SKCanvas canvas)
     {
-        if (BackgroundColor != SKColors.Transparent)
+        if (Debug is true)
+        {
+            var debugPaint = new SKPaint
+            {
+                Color = SKColors.Red,
+                IsStroke = true,
+                StrokeWidth = 1
+            };
+            var rect = new SKRect(
+                Position.X,
+                Position.Y,
+                Position.X + ElementSize.Width,
+                Position.Y + ElementSize.Height);
+            canvas.DrawRect(rect, debugPaint);
+
+            if (Margin.Horizontal > 0 || Margin.Vertical > 0)
+            {
+                var marginRect = new SKRect(
+                    Position.X - Margin.Left,
+                    Position.Y - Margin.Top,
+                    Position.X + ElementSize.Width + Margin.Right,
+                    Position.Y + ElementSize.Height + Margin.Bottom);
+                canvas.DrawRect(marginRect, debugPaint);
+            }
+        }
+
+
+        if (BackgroundColor != SKColors.Transparent && !SkipBackground)
         {
             var rect = new SKRect(
                 Position.X,
@@ -344,6 +403,10 @@ public abstract class UiElement
 
     public virtual void ApplyStyles()
     {
+        if (_ignoreStyling)
+        {
+            return;
+        }
         var style = ServiceProviderService.ServiceProvider?.GetRequiredService<Style>();
         style?.ApplyStyle(this);
     }

@@ -8,6 +8,8 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
     private bool _isSelected;
     private DateTime _selectionTime;
 
+    protected override bool SkipBackground => true;
+
     #region Padding
     internal Margin Padding
     {
@@ -39,6 +41,7 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
 
     public override void Render(SKCanvas canvas)
     {
+        base.Render(canvas);
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
         if (BackgroundPaint is not null)
@@ -72,7 +75,7 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
             if ((elapsedMilliseconds % 1600) < 800)
             {
 
-                var cursorX = Position.X + Padding.Left + Font.MeasureText(Text ?? string.Empty)+2;
+                var cursorX = Position.X + Padding.Left + Font.MeasureText(Text ?? string.Empty) + 2;
                 var cursorYStart = Position.Y + Padding.Top + (textHeight * 0.1f);
                 var cursorYEnd = Position.Y + Padding.Top + textHeight - (textHeight * 0.1f);
 
@@ -84,7 +87,7 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
         }
     }
 
-    protected override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         var textWidth = Font.MeasureText(Text ?? string.Empty);
         Font.GetFontMetrics(out var fontMetrics);

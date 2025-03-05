@@ -27,7 +27,7 @@ public abstract class UiLayoutElement : UiElement
 {
 
     #region children
-    public List<UiElement> Children { get; } = [];
+    public virtual List<UiElement> Children { get; } = [];
     public UiElement AddChild(UiElement child)
     {
         child.Parent = this;
@@ -61,6 +61,7 @@ public abstract class UiLayoutElement : UiElement
     #region rendering
     public override void Render(SKCanvas canvas)
     {
+        base.Render(canvas);
         foreach (var child in Children)
         {
             child.Render(canvas);

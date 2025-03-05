@@ -4,6 +4,7 @@ namespace PlusUi.core.Controls;
 
 public class Checkbox : UiElement<Checkbox>, IToggleButtonControl
 {
+    protected override bool SkipBackground => true;
 
     public Checkbox()
     {
@@ -47,6 +48,7 @@ public class Checkbox : UiElement<Checkbox>, IToggleButtonControl
 
     public override void Render(SKCanvas canvas)
     {
+        base.Render(canvas);
         BackgroundPaint.StrokeWidth = 2;
         BackgroundPaint.Style = SKPaintStyle.Stroke;
         var rect = new SKRect(

@@ -5,6 +5,8 @@ namespace PlusUi.core;
 
 public class Button : UiTextElement<Button>, IInputControl
 {
+    protected override bool SkipBackground => true;
+
     #region Padding
     internal Margin Padding
     {
@@ -65,6 +67,7 @@ public class Button : UiTextElement<Button>, IInputControl
 
     public override void Render(SKCanvas canvas)
     {
+        base.Render(canvas);
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
         if (BackgroundPaint is not null)
@@ -94,7 +97,7 @@ public class Button : UiTextElement<Button>, IInputControl
 
     }
 
-    protected override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         var textWidth = Font.MeasureText(Text ?? string.Empty);
         Font.GetFontMetrics(out var fontMetrics);

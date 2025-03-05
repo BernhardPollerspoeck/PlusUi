@@ -40,7 +40,11 @@ internal class MainPage(MainViewModel vm) : UiPageElement(vm)
                     .SetBackgroundColor(new SKColor(255, 0, 0)),
                 new Checkbox()
                     .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                    .SetBackgroundColor(new SKColor(0, 255, 0))
+                    .SetBackgroundColor(new SKColor(0, 255, 0)),
+                new Button()
+                    .SetText("Go to GridPage")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
                 ),
             new HStack(
                 new Image()

@@ -7,14 +7,24 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
     public ViewModelBase ViewModel { get; } = vm;
     private UiElement _tree = new NullElement();
 
+    protected override bool NeadsMeasure => true;
+
     protected abstract UiElement Build();
     public void BuildPage()
     {
-        _tree = Build();
-        _tree.BuildContent();
-        _tree.Parent = this;
-        InvalidateMeasure();
-        Appearing();
+        try
+        {
+            _tree = Build();
+            _tree.BuildContent();
+            _tree.Parent = this;
+            _tree.ApplyStyles();
+            InvalidateMeasure();
+            Appearing();
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 
     public virtual void Appearing()
@@ -31,10 +41,16 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
 
     public override void Render(SKCanvas canvas)
     {
-        _tree.Render(canvas);
+        try
+        {
+            _tree.Render(canvas);
+        }
+        catch (Exception ex)
+        {
+        }
     }
 
-    protected override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         return _tree.Measure(availableSize);
     }

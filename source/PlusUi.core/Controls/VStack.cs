@@ -12,20 +12,11 @@ public class VStack : UiLayoutElement<VStack>
     }
 
     #region measure/arrange
-    protected override Size MeasureInternal(Size availableSize)
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        Children.ForEach(c => c.Measure(availableSize));
-
-        var width = HorizontalAlignment switch
-        {
-            HorizontalAlignment.Stretch => availableSize.Width,
-            _ => Children.Max(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right),
-        };
-        var height = VerticalAlignment switch
-        {
-            VerticalAlignment.Stretch => availableSize.Height,
-            _ => Children.Sum(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom),
-        };
+        Children.ForEach(c => c.Measure(availableSize, dontStretch));
+        var width = Children.Max(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right);
+        var height = Children.Sum(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom);
         return new Size(width, height);
     }
 
