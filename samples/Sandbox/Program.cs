@@ -8,7 +8,11 @@ using Sandbox.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.UsePlusUi<MainPage>();
+builder.UsePlusUi<MainPage>(cfg =>
+{
+    cfg.Title = "Sandbox";
+    cfg.Size = new SizeI(800, 600);
+});
 builder.StylePlusUi<DefaultStyle>();
 
 builder.AddPage<MainPage>().WithViewModel<MainPageViewModel>();

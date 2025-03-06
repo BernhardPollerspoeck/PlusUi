@@ -36,8 +36,13 @@ internal class WindowManager(
     {
         var options = WindowOptions.Default with
         {
-            Size = uiOptions.Value.Size,
+            Size = new(uiOptions.Value.Size.Width, uiOptions.Value.Size.Height),
             Title = uiOptions.Value.Title,
+            Position = new(uiOptions.Value.Position.Width, uiOptions.Value.Position.Height),
+            WindowState = uiOptions.Value.WindowState,
+            WindowBorder = uiOptions.Value.WindowBorder,
+            TopMost = uiOptions.Value.IsWindowTopMost,
+            TransparentFramebuffer = uiOptions.Value.IsWindowTransparent,
         };
 
         _window = Window.Create(options);
@@ -105,9 +110,30 @@ internal class WindowManager(
             _window.Update -= HandleWindowUpdate;
         }
 
-        _surface?.Dispose();
-        _grContext?.Dispose();
-        _inputContext?.Dispose();
+        try
+        {
+            _surface?.Dispose();
+        }
+        catch
+        {
+        }
+
+        try
+        {
+            _grContext?.Dispose();
+        }
+        catch
+        {
+        }
+
+        try
+        {
+            _inputContext?.Dispose();
+        }
+        catch
+        {
+        }
+
         appLifetime.StopApplication();
     }
     private void HandleWindowResize(Vector2D<int> newSize)
