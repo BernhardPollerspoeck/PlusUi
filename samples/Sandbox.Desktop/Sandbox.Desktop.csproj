@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -8,11 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\gfx\plusui.png" Link="plusui.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\source\PlusUi.core\PlusUi.core.csproj" />
+    <ProjectReference Include="..\..\source\PlusUi.desktop\PlusUi.desktop.csproj" />
+    <ProjectReference Include="..\Sandbox\Sandbox.csproj" />
   </ItemGroup>
 
 </Project>

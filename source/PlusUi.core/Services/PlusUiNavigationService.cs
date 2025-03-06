@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using PlusUi.core;
 using System.ComponentModel;
 
 namespace PlusUi.core;

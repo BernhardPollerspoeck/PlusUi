@@ -1,11 +1,10 @@
 ﻿using PlusUi.core;
-using Sandbox.Pages.ControlsGrid;
 using SkiaSharp;
 using System.Windows.Input;
 
 namespace Sandbox.Pages.Main;
 
-internal class MainPageViewModel : ViewModelBase
+public class MainPageViewModel : ViewModelBase
 {
     public string? Text
     {

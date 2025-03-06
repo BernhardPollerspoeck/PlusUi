@@ -6,7 +6,7 @@ using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
 
-internal class MainPage(MainPageViewModel vm) : UiPageElement(vm)
+public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {

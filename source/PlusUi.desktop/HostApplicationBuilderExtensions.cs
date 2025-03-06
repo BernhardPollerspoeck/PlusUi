@@ -6,17 +6,11 @@ namespace PlusUi.desktop;
 
 public static class HostApplicationBuilderExtensions
 {
-    public static HostApplicationBuilder UsePlusUi<TRootPage>(this HostApplicationBuilder builder)
-        where TRootPage : UiPageElement
-    {
-        return builder.UsePlusUi<TRootPage>(_ => { });
-    }
     public static HostApplicationBuilder UsePlusUi<TRootPage>(
-        this HostApplicationBuilder builder,
-        Action<PlusUiConfiguration> configurationAction)
+        this HostApplicationBuilder builder)
         where TRootPage : UiPageElement
     {
-        builder.UsePlusUiInternal<TRootPage>(configurationAction);
+        builder.UsePlusUiInternal<TRootPage>();
 
         builder.Services.AddHostedService<WindowManager>();
 

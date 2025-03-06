@@ -1,9 +1,12 @@
 ﻿using SkiaSharp;
+using System.Collections.Concurrent;
 
 namespace PlusUi.core;
 
 public class Image : UiElement<Image>
 {
+    private static readonly ConcurrentDictionary<string, SKImage?> _imageCache = new();
+
     #region ImageSource
     internal string? ImageSource
     {
@@ -57,15 +60,57 @@ public class Image : UiElement<Image>
             return null;
         }
 
-        var assembly = System.Reflection.Assembly.GetEntryAssembly()
-            ?? throw new InvalidOperationException("Entry assembly not found.");
+        if (_imageCache.TryGetValue(ImageSource, out var cachedImage))
+        {
+            return cachedImage;
+        }
 
+        // First try the entry assembly
+        var assembly = System.Reflection.Assembly.GetEntryAssembly();
+        if (assembly != null)
+        {
+            var image = TryLoadImageFromAssembly(assembly, ImageSource);
+            if (image != null)
+            {
+                _imageCache[ImageSource] = image;
+                return image;
+            }
+        }
+
+        // Try all loaded assemblies in the current AppDomain if not found
+        foreach (var loadedAssembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            // Skip system assemblies to improve performance
+            if (loadedAssembly.IsDynamic)
+            {
+                continue;
+            }
+
+            var image = TryLoadImageFromAssembly(loadedAssembly, ImageSource);
+            if (image != null)
+            {
+                _imageCache[ImageSource] = image;
+                return image;
+            }
+        }
+
+        throw new InvalidOperationException($"Resource '{ImageSource}' not found in any assembly.");
+    }
+
+    private static SKImage? TryLoadImageFromAssembly(System.Reflection.Assembly assembly, string resourceName)
+    {
         var resourceNames = assembly.GetManifestResourceNames();
-        var resourceName = resourceNames.FirstOrDefault(name => name.EndsWith(ImageSource, StringComparison.OrdinalIgnoreCase))
-        ?? throw new InvalidOperationException($"Resource '{ImageSource}' not found.");
+        var fullResourceName = resourceNames.FirstOrDefault(name =>
+            name.EndsWith(resourceName, StringComparison.OrdinalIgnoreCase));
 
-        using var stream = assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException($"Resource '{resourceName}' not found.");
+        if (fullResourceName == null)
+        {
+            return null;
+        }
+
+        using var stream = assembly.GetManifestResourceStream(fullResourceName);
+        if (stream == null)
+            return null;
 
         using var codec = SKCodec.Create(stream);
         var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
@@ -91,7 +136,6 @@ public class Image : UiElement<Image>
             Position.Y + ElementSize.Height);
         var srcRect = new SKRect(0, 0, _image.Width, _image.Height);
         var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear);
-
 
         switch (Aspect)
         {

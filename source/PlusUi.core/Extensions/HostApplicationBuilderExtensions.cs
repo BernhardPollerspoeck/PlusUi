@@ -5,13 +5,18 @@ namespace PlusUi.core;
 
 public static class HostApplicationBuilderExtensions
 {
-    public static HostApplicationBuilder UsePlusUiInternal<TRootPage>(
+    public static HostApplicationBuilder ConfigurePlusUiApp(
         this HostApplicationBuilder builder,
-        Action<PlusUiConfiguration> configurationAction)
+        IAppConfiguration appConfiguration)
+    {
+        builder.Services.Configure<PlusUiConfiguration>(appConfiguration.ConfigureWindow);
+        appConfiguration.ConfigureApp(builder);
+        return builder;
+    }
+    public static HostApplicationBuilder UsePlusUiInternal<TRootPage>(
+        this HostApplicationBuilder builder)
         where TRootPage : UiPageElement
     {
-        builder.Services.Configure(configurationAction);
-
         builder.Services.AddSingleton<ServiceProviderService>();
 
         builder.Services.AddSingleton<RenderService>();
