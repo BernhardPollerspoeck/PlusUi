@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlusUi.core;
 using Silk.NET.Input;
+using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using SkiaSharp;
@@ -13,89 +15,159 @@ internal class WindowManager(
     RenderService renderService,
     UpdateService updateService,
     PlusUiNavigationService plusUiNavigationService,
-    IHostApplicationLifetime appLifetime)
+    NavigationContainer navigationContainer,
+    IHostApplicationLifetime appLifetime,
+    ILogger<WindowManager> logger)
     : IHostedService
 {
+    #region fields
     private IWindow? _window;
     private GL? _glContext;
     private GRContext? _grContext;
     private SKSurface? _surface;
     private SKCanvas? _canvas;
+    private IInputContext? _inputContext;
+    private IMouse? _mouse;
+    private IKeyboard? _keyboard;
+    #endregion
 
+    #region IHostedService
     public Task StartAsync(CancellationToken cancellationToken)
     {
         var options = WindowOptions.Default with
         {
             Size = uiOptions.Value.Size,
             Title = uiOptions.Value.Title,
-            FramesPerSecond = 0,//TODO: trigger render
-            UpdatesPerSecond = 0//TODO: trigger update
         };
 
         _window = Window.Create(options);
 
         _window.Closing += HandleWindowClosing;
-        _window.Render += (d)
-            => renderService.Render(
-                _glContext!,
-                _canvas!,
-                _grContext!,
-                _window.Size);
-
-
-        _window.Load += () =>
-            {
-                _glContext = _window.CreateOpenGL();
-
-                var glInterface = GRGlInterface.Create();
-                _grContext = GRContext.CreateGl(glInterface);
-
-                var frameBufferInfo = new GRGlFramebufferInfo(0, 0x8058); // 0x8058 is GL_RGBA8
-                var backendRenderTarget = new GRBackendRenderTarget(
-                _window.Size.X,
-                _window.Size.Y,
-                0, // Sample count
-                0, // Stencil bits
-                frameBufferInfo);
-
-                _surface = SKSurface.Create(
-                _grContext,
-                backendRenderTarget,
-                GRSurfaceOrigin.BottomLeft,
-                SKColorType.Rgba8888);
-                _canvas = _surface.Canvas;
-
-                plusUiNavigationService.Initialize();
-
-                var input = _window.CreateInput();
-                if (input is not null)
-                {
-                    var mouse = input.Mice.Count > 0 ? input.Mice[0] : null;
-                    var keyboard = input.Keyboards.Count > 0 ? input.Keyboards[0] : null;
-                    if (mouse is not null && keyboard is not null)
-                    {
-                        updateService.SetKeyboard(keyboard);
-                        _window.Update += (d)
-                            => updateService.Update(mouse);
-                    }
-                }
-            };
+        _window.Render += HandleWindowRender;
+        _window.Resize += HandleWindowResize;
+        _window.Load += HandleWindowLoad;
 
         _window.Run();
 
         return Task.CompletedTask;
     }
-
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _window?.Close();
         return Task.CompletedTask;
     }
+    #endregion
 
+    #region event handling
+    private void HandleWindowRender(double delta)
+    {
+        if (this is not { _glContext: not null, _canvas: not null, _grContext: not null, _window: not null })
+        {
+            logger.LogWarning("Render skipped: GL context, canvas, GR context, or window is not initialized.");
+            return;
+        }
+        renderService.Render(
+            _glContext,
+            _canvas,
+            _grContext,
+            _window.Size);
+    }
+    private void HandleWindowLoad()
+    {
+        if (_window is null)
+        {
+            logger.LogError("Window is not initialized during load.");
+            throw new Exception("Window is not initialized");
+        }
+
+        _glContext = _window.CreateOpenGL();
+
+        var glInterface = GRGlInterface.Create();
+        _grContext = GRContext.CreateGl(glInterface);
+
+        CreateSurface(_window.Size);
+
+        plusUiNavigationService.Initialize();
+
+        SetupInputHandling();
+    }
+    private void HandleWindowUpdate(double delta)
+    {
+        if (_mouse is not null)
+        {
+            updateService.Update(_mouse);
+        }
+    }
     private void HandleWindowClosing()
     {
+        if (_window is not null)
+        {
+            _window.Update -= HandleWindowUpdate;
+        }
+
         _surface?.Dispose();
         _grContext?.Dispose();
+        _inputContext?.Dispose();
         appLifetime.StopApplication();
     }
+    private void HandleWindowResize(Vector2D<int> newSize)
+    {
+        _surface?.Dispose();
+        CreateSurface(newSize);
+        navigationContainer.Page.InvalidateMeasure();
+    }
+    #endregion
+
+    #region private methods
+    private void CreateSurface(Vector2D<int> size)
+    {
+        var frameBufferInfo = new GRGlFramebufferInfo(0, 0x8058); // 0x8058 is GL_RGBA8
+        var backendRenderTarget = new GRBackendRenderTarget(
+            size.X,
+            size.Y,
+            0, // Sample count
+            0, // Stencil bits
+            frameBufferInfo);
+
+        _surface = SKSurface.Create(
+            _grContext,
+            backendRenderTarget,
+            GRSurfaceOrigin.BottomLeft,
+            SKColorType.Rgba8888);
+
+        _canvas = _surface.Canvas;
+    }
+    private void SetupInputHandling()
+    {
+        if (_window is null)
+        {
+            return;
+        }
+
+        _inputContext = _window.CreateInput();
+        if (_inputContext is null)
+        {
+            return;
+        }
+
+        // Setup mouse if available
+        if (_inputContext.Mice.Count > 0)
+        {
+            _mouse = _inputContext.Mice[0];
+        }
+
+        // Setup keyboard if available
+        if (_inputContext.Keyboards.Count > 0)
+        {
+            _keyboard = _inputContext.Keyboards[0];
+            updateService.SetKeyboard(_keyboard);
+        }
+
+        // Only subscribe to Update if we have a mouse
+        if (_mouse is not null)
+        {
+            _window.Update += HandleWindowUpdate;
+        }
+    }
+    #endregion
 }

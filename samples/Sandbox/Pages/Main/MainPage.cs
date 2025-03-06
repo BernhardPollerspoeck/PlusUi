@@ -10,6 +10,7 @@ internal class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {
+        SetBackgroundColor(SKColors.SlateBlue);
         return new HStack(
             new VStack(
                 new HStack(

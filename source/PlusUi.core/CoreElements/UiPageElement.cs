@@ -34,12 +34,14 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
 
     public override void Render(SKCanvas canvas)
     {
+        base.Render(canvas);
         _tree.Render(canvas);
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        return _tree.Measure(availableSize);
+        _tree.Measure(availableSize);
+        return availableSize;
     }
     protected override Point ArrangeInternal(Rect bounds)
     {
