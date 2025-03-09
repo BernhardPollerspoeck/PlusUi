@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace PlusUi.core.Controls;
+namespace PlusUi.core;
 
 public class Checkbox : UiElement<Checkbox>, IToggleButtonControl
 {
@@ -8,8 +8,8 @@ public class Checkbox : UiElement<Checkbox>, IToggleButtonControl
 
     public Checkbox()
     {
-        ElementSize = new Size(22, 22);
-        BackgroundColor = SKColors.White;
+        SetDesiredSize(new(22, 22));
+        SetBackgroundColor(SKColors.White);
     }
 
     #region IsChecked

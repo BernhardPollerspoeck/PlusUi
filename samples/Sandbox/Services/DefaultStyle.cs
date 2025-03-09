@@ -11,7 +11,8 @@ internal class DefaultStyle : IApplicationStyle
             .AddStyle<UiElement>(element => element
                 .SetMargin(new(5))
                 .SetCornerRadius(10)
-                .SetDebug())
+                //.SetDebug()
+                )
 
             .AddStyle<HStack>(element => element
                 .SetMargin(new(0)))

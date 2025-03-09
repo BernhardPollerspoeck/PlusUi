@@ -1,6 +1,6 @@
 ﻿using PlusUi.core;
-using PlusUi.core.Controls;
 using Sandbox.Pages.ControlsGrid;
+using Sandbox.Pages.Form;
 using Sandbox.Pages.TextRendering;
 using SkiaSharp;
 
@@ -81,9 +81,15 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetText("Go to TextRendering")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(TextRenderPage)
+                .SetCommandParameter(typeof(TextRenderPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("Go to Form")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(FormDemoPage))
 
-        ));
+        );
     }
 
     public override void Appearing()

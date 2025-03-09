@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using PlusUi.core;
 using Sandbox.Pages.ControlsGrid;
+using Sandbox.Pages.Form;
 using Sandbox.Pages.Main;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Services;
@@ -21,5 +22,6 @@ public class App : IAppConfiguration
         builder.AddPage<MainPage>().WithViewModel<MainPageViewModel>();
         builder.AddPage<ControlsGridPage>().WithViewModel<ControlsGridPageViewModel>();
         builder.AddPage<TextRenderPage>().WithViewModel<TextRenderPageViewModel>();
+        builder.AddPage<FormDemoPage>().WithViewModel<FormDemoPageViewModel>();
     }
 }
