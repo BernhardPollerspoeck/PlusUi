@@ -144,7 +144,7 @@ public class Grid : UiLayoutElement<Grid>
             if (child.ColumnSpan > 1)
             {
                 // For multi-column spanning with auto columns, distribute proportionally
-                float totalAutoWidth = childSize.Width + child.Element.Margin.Left + child.Element.Margin.Right;
+                var totalAutoWidth = childSize.Width + child.Element.Margin.Left + child.Element.Margin.Right;
                 var autoColumns = new List<int>();
 
                 for (var i = 0; i < columnCount; i++)
@@ -184,7 +184,7 @@ public class Grid : UiLayoutElement<Grid>
             if (child.RowSpan > 1)
             {
                 // For multi-row spanning with auto rows, distribute proportionally
-                float totalAutoHeight = childSize.Height + child.Element.Margin.Top + child.Element.Margin.Bottom;
+                var totalAutoHeight = childSize.Height + child.Element.Margin.Top + child.Element.Margin.Bottom;
                 var autoRows = new List<int>();
 
                 for (var i = 0; i < rowCount; i++)

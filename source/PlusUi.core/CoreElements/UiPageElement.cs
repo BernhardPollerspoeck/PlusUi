@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
@@ -10,9 +11,22 @@ public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageEl
     protected override bool NeadsMeasure => true;
 
     protected abstract UiElement Build();
+    protected virtual void ConfigurePageStyles(Style pageStyle) { }
     public void BuildPage()
     {
         _tree = Build();
+
+        var themeService = ServiceProviderService.ServiceProvider?.GetRequiredService<IThemeService>();
+        var mainStyle = ServiceProviderService.ServiceProvider?.GetRequiredService<Style>();
+        if (themeService is not null && mainStyle is not null)
+        {
+            var tmpStyle = new Style(themeService);
+            ConfigurePageStyles(tmpStyle);
+
+            mainStyle.SetPageStyle(tmpStyle);
+        }
+        ApplyStyles();
+
         _tree.BuildContent();
         _tree.Parent = this;
         _tree.ApplyStyles();

@@ -2,8 +2,11 @@
 
 public class Style(IThemeService themeService)
 {
-    private static readonly Dictionary<string, List<KeyValuePair<Type, Action<UiElement>>>> _actions = [];
+    protected readonly Dictionary<string, List<KeyValuePair<Type, Action<UiElement>>>> _actions = [];
+    private readonly Dictionary<string, List<KeyValuePair<Type, Action<UiElement>>>> _pageActions = [];
 
+
+    #region style
     public Style AddStyle<TElement>(Action<TElement> styleAction)
        where TElement : UiElement
     {
@@ -45,7 +48,20 @@ public class Style(IThemeService themeService)
             element => styleAction((TElement)element)));
         return this;
     }
+    #endregion
 
+    #region pageStyle
+    internal void SetPageStyle(Style tmpStyle)
+    {
+        _pageActions.Clear();
+        foreach (var (key, value) in tmpStyle._actions)
+        {
+            _pageActions.Add(key, value);
+        }
+    }
+    #endregion
+
+    #region apply
     internal void ApplyStyle<TElement>(TElement element)
         where TElement : UiElement
     {
@@ -57,17 +73,28 @@ public class Style(IThemeService themeService)
         ApplyStyle(themeService.CurrentTheme, element);
     }
 
-    private static void ApplyStyle<TElement>(string theme, TElement element)
+    private void ApplyStyle<TElement>(string theme, TElement element)
         where TElement : UiElement
     {
-        if (!_actions.TryGetValue(theme, out List<KeyValuePair<Type, Action<UiElement>>>? value))
+        if (_actions.TryGetValue(theme, out List<KeyValuePair<Type, Action<UiElement>>>? value))
         {
-            return;
+            ApplyStyleToElement(element, value);
         }
+
+        if (_pageActions.TryGetValue(theme, out List<KeyValuePair<Type, Action<UiElement>>>? pageValue))
+        {
+            ApplyStyleToElement(element, pageValue);
+        }
+    }
+
+    private static void ApplyStyleToElement<TElement>(TElement element, List<KeyValuePair<Type, Action<UiElement>>> value)
+        where TElement : UiElement
+    {
         foreach (var style in value.Where(a => a.Key.IsAssignableFrom(element.GetType()))
-            .Select(a => a.Value as Action<TElement>))
+                 .Select(a => a.Value as Action<TElement>))
         {
             style(element);
         }
     }
+    #endregion
 }

@@ -63,6 +63,11 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     );
     }
 
+    protected override void ConfigurePageStyles(Style pageStyle)
+    {
+        pageStyle.AddStyle<UiPageElement>(element => element.SetBackgroundColor(SKColors.Black));
+    }
+
     private VStack CreateTestButtons()
     {
         return new VStack(
