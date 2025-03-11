@@ -21,7 +21,7 @@ public static class HostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<RenderService>();
         builder.Services.AddSingleton<UpdateService>();
-
+        
         builder.Services.AddSingleton<Style>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();
         builder.Services.AddHostedService<StartupStyleService>();

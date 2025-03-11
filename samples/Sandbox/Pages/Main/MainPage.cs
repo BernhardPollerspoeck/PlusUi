@@ -1,4 +1,5 @@
 ﻿using PlusUi.core;
+using Sandbox.Controls;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.TextRendering;
@@ -26,6 +27,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     new Solid().SetBackgroundColor(new SKColor(128, 128, 128)),
                     new Solid().SetBackgroundColor(new SKColor(50, 50, 50))),
 
+                new HelloWorldControl(),
                 new Label()
                     .BindText(nameof(vm.Text), () => $"The entry input is: [ {vm.Text} ]"),
                 new Entry()
@@ -36,7 +38,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     .BindTextColor(nameof(vm.Color), () => vm.Color),
                 new HStack(
                     new Button()
-                        .SetText("Hello World!")
+                        .SetText("Hello World!?")
                         .SetPadding(new(10, 5))
                         .SetCommand(vm.SetColorCommand),
                     new Checkbox()
