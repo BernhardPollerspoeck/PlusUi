@@ -294,20 +294,23 @@ public class Grid : UiLayoutElement<Grid>
 
     protected override Point ArrangeInternal(Rect bounds)
     {
+        // First call base.ArrangeInternal to get the grid's position with margin applied
+        var gridPosition = base.ArrangeInternal(bounds);
+        
         var columnWidths = _columns.Select(c => c.MeasuredSize).ToArray();
         var rowHeights = _rows.Select(r => r.MeasuredSize).ToArray();
 
         // Arrange children
         foreach (var child in _children)
         {
-            var x = columnWidths.Take(child.Column).Sum() + Margin.Left;
-            var y = rowHeights.Take(child.Row).Sum() + Margin.Top;
+            var x = gridPosition.X + columnWidths.Take(child.Column).Sum();
+            var y = gridPosition.Y + rowHeights.Take(child.Row).Sum();
             var width = columnWidths.Skip(child.Column).Take(child.ColumnSpan).Sum();
             var height = rowHeights.Skip(child.Row).Take(child.RowSpan).Sum();
 
             child.Element.Arrange(new Rect(x, y, width, height));
         }
-        return base.ArrangeInternal(bounds);
+        return gridPosition;
     }
 
     public override UiElement? HitTest(Point point)

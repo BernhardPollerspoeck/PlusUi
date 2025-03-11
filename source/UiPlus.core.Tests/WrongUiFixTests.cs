@@ -133,4 +133,41 @@ public class WrongUiFixTests
         Assert.AreEqual(60.8203125, stack.Children[1].ElementSize.Width);
         Assert.AreEqual(36.6015625, stack.Children[1].ElementSize.Height);
     }
+
+    [TestMethod]
+    public void Test_VStackWithLabelAndGrid_ShouldRespectMargins()
+    {
+        // Arrange - simulating the form demo page structure
+        var label = new Label()
+            .SetText("Modern Form Demo")
+            .SetTextSize(28)
+            .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
+            .SetHorizontalAlignment(HorizontalAlignment.Center)
+            .SetMargin(new Margin(0, 20, 0, 30))
+            .SetDesiredHeight(40);
+
+        var grid = (Grid)(new Grid()
+            .AddColumn(Column.Star)
+            .AddChild(new Label().SetText("Grid Content"))
+            .SetBackgroundColor(new SKColor(85, 70, 185))
+            .SetMargin(new Margin(20)));
+
+        var vstack = new VStack(label, grid);
+
+        var availableSize = new Size(400, 600);
+
+        // Act
+        vstack.Measure(availableSize);
+        vstack.Arrange(new Rect(0, 0, 400, 600));
+
+        // Assert
+        Assert.AreEqual(20, grid.Position.X);
+        Assert.AreEqual(110, grid.Position.Y);
+
+        var gridLabel = grid.Children[0] as Label;
+        Assert.IsNotNull(gridLabel);
+
+        Assert.AreEqual(20, gridLabel.Position.X);
+        Assert.AreEqual(110, gridLabel.Position.Y);
+    }
 }

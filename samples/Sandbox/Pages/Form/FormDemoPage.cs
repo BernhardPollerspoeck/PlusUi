@@ -32,7 +32,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                         CreateFormGroup("Account",
                             new VStack(
                                 CreateFormField("Username", vm.Username, (v) => vm.Username = v),
-                                CreateFormField("Password", vm.Password, (v) => vm.Password = v, true)
+                                CreateFormField("Password", vm.Password, (v) => vm.Password = v)
                             )
                         )
                     ).SetHorizontalAlignment(HorizontalAlignment.Stretch))
@@ -97,12 +97,13 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                             .SetCornerRadius(20)
                     ).SetHorizontalAlignment(HorizontalAlignment.Stretch)
                 )
-
-                .SetMargin(new Margin(20))
+                //IDEA: .IgnoreGlobalStyling()
+                //IDEA: .IgnorePageStyling()
+                .SetBackgroundColor(new SKColor(85, 70, 185))
         );
     }
 
-    private UiElement CreateFormGroup(string title, UiElement content)
+    private static UiElement CreateFormGroup(string title, UiElement content)
     {
         return new VStack(
             new Label()
@@ -118,7 +119,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
         .SetMargin(new Margin(0, 0, 0, 20));
     }
 
-    private UiElement CreateFormField(string label, string bindingValue, Action<string> setter, bool isPassword = false)
+    private static UiElement CreateFormField(string label, string bindingValue, Action<string> setter)
     {
         return new VStack(
             new Label()
@@ -137,7 +138,9 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
     protected override void ConfigurePageStyles(Style pageStyle)
     {
         pageStyle.AddStyle<UiPageElement>(element =>
-            element.SetBackgroundColor(new SKColor(105, 90, 205))
+            element
+                .SetBackgroundColor(new SKColor(105, 90, 205))
+                .SetCornerRadius(0)
         );
 
         pageStyle.AddStyle<Button>(button =>
