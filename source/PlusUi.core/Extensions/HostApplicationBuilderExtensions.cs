@@ -20,7 +20,7 @@ public static class HostApplicationBuilderExtensions
     {
         builder.Services.AddSingleton<ServiceProviderService>();
         builder.Services.AddSingleton<RenderService>();
-        builder.Services.AddSingleton<UpdateService>();
+        builder.Services.AddSingleton<InputService>();
 
         builder.Services.AddSingleton<Style>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();

@@ -14,6 +14,7 @@ public abstract class PlusUiActivity : Activity
 
     protected abstract IAppConfiguration CreateApp(HostApplicationBuilder builder);
 
+
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         //TODO: SetupInputHandling();
@@ -38,8 +39,12 @@ public abstract class PlusUiActivity : Activity
         _glSurfaceView.SetEGLContextClientVersion(3); // OpenGL ES 3.0
         _glSurfaceView.SetRenderer(_host.Services.GetRequiredService<SilkRenderer>());
 
+        _glSurfaceView.SetOnTouchListener(_host.Services.GetRequiredService<TapGestureListener>());
+
         SetContentView(_glSurfaceView);
     }
+
+
 
     protected override void OnPause()
     {
@@ -68,6 +73,8 @@ public abstract class PlusUiActivity : Activity
         }
         builder.Services.AddSingleton(ApplicationContext);
         builder.Services.AddSingleton<SilkRenderer>();
+        builder.Services.AddSingleton<TapGestureListener>();
+        builder.Services.AddSingleton<IKeyboardHandler, AndroidKeyboardHandler>();
 
         builder.ConfigurePlusUiApp(app);
 

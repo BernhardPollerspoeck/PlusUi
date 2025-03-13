@@ -13,7 +13,8 @@ namespace PlusUi.desktop;
 internal class WindowManager(
     IOptions<PlusUiConfiguration> uiOptions,
     RenderService renderService,
-    UpdateService updateService,
+    InputService inputService,
+    DesktopKeyboardHandler desktopKeyboardHandler,
     PlusUiNavigationService plusUiNavigationService,
     NavigationContainer navigationContainer,
     IHostApplicationLifetime appLifetime,
@@ -100,7 +101,17 @@ internal class WindowManager(
     {
         if (_mouse is not null)
         {
-            updateService.Update(_mouse);
+            if (_mouse.IsButtonPressed(MouseButton.Left))
+            {
+                inputService.MouseDown(_mouse.Position);
+                return;
+            }
+
+            if (!_mouse.IsButtonPressed(MouseButton.Left))
+            {
+                inputService.MouseUp(_mouse.Position);
+                return;
+            }
         }
     }
     private void HandleWindowClosing()
@@ -186,7 +197,7 @@ internal class WindowManager(
         if (_inputContext.Keyboards.Count > 0)
         {
             _keyboard = _inputContext.Keyboards[0];
-            updateService.SetKeyboard(_keyboard);
+            desktopKeyboardHandler.SetKeyboard(_keyboard);
         }
 
         // Only subscribe to Update if we have a mouse

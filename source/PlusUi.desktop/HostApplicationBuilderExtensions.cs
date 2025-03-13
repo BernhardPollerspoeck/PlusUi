@@ -12,6 +12,8 @@ public static class HostApplicationBuilderExtensions
     {
         builder.UsePlusUiInternal<TRootPage>();
 
+        builder.Services.AddSingleton<DesktopKeyboardHandler>();
+        builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<DesktopKeyboardHandler>());
         builder.Services.AddHostedService<WindowManager>();
 
         return builder;
