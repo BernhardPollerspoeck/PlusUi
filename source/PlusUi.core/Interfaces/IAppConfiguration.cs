@@ -6,4 +6,5 @@ public interface IAppConfiguration
 {
     void ConfigureWindow(PlusUiConfiguration configuration);
     void ConfigureApp(HostApplicationBuilder builder);
+    Type ConfigureRootPage();
 }

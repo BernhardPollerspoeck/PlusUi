@@ -13,24 +13,35 @@ public static class HostApplicationBuilderExtensions
         appConfiguration.ConfigureApp(builder);
         return builder;
     }
+
+    public static HostApplicationBuilder UsePlusUiInternal(
+        this HostApplicationBuilder builder,
+        Type mainPageType)
+    {
+        builder.Services.AddSingleton<ServiceProviderService>();
+        builder.Services.AddSingleton<RenderService>();
+        builder.Services.AddSingleton<UpdateService>();
+
+        builder.Services.AddSingleton<Style>();
+        builder.Services.AddSingleton<IThemeService, ThemeService>();
+        builder.Services.AddHostedService<StartupStyleService>();
+        builder.Services.AddSingleton(sp => new PlusUiNavigationService(sp));
+        builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
+
+        builder.Services.AddSingleton(sp =>
+        {
+            var mainPage = sp.GetRequiredService(mainPageType) as UiPageElement
+                ?? throw new Exception("MainPage not found");
+            return new NavigationContainer(mainPage);
+        });
+        return builder;
+
+    }
     public static HostApplicationBuilder UsePlusUiInternal<TRootPage>(
         this HostApplicationBuilder builder)
         where TRootPage : UiPageElement
     {
-        builder.Services.AddSingleton<ServiceProviderService>();
-
-        builder.Services.AddSingleton<RenderService>();
-        builder.Services.AddSingleton<UpdateService>();
-        
-        builder.Services.AddSingleton<Style>();
-        builder.Services.AddSingleton<IThemeService, ThemeService>();
-        builder.Services.AddHostedService<StartupStyleService>();
-
-        builder.Services.AddSingleton(sp => new PlusUiNavigationService(sp));
-        builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
-
-        builder.Services.AddSingleton(sp => new NavigationContainer(sp.GetRequiredService<TRootPage>()));
-        return builder;
+        return UsePlusUiInternal(builder, typeof(TRootPage));
     }
 
 

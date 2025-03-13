@@ -24,4 +24,9 @@ public class App : IAppConfiguration
         builder.AddPage<TextRenderPage>().WithViewModel<TextRenderPageViewModel>();
         builder.AddPage<FormDemoPage>().WithViewModel<FormDemoPageViewModel>();
     }
+
+    public Type ConfigureRootPage()
+    {
+        return typeof(MainPage);
+    }
 }
