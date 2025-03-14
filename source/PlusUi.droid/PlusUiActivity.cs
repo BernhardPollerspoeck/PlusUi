@@ -44,8 +44,6 @@ public abstract class PlusUiActivity : Activity
         SetContentView(_glSurfaceView);
     }
 
-
-
     protected override void OnPause()
     {
         base.OnPause();
@@ -57,6 +55,8 @@ public abstract class PlusUiActivity : Activity
         base.OnResume();
         _glSurfaceView?.OnResume();
     }
+
+
 
     private IHost CreateAndStartHost()
     {
@@ -71,10 +71,12 @@ public abstract class PlusUiActivity : Activity
         {
             throw new InvalidOperationException("ApplicationContext is null");
         }
+        builder.Services.AddSingleton<Activity>(this);
         builder.Services.AddSingleton(ApplicationContext);
         builder.Services.AddSingleton<SilkRenderer>();
         builder.Services.AddSingleton<TapGestureListener>();
         builder.Services.AddSingleton<IKeyboardHandler, AndroidKeyboardHandler>();
+        builder.Services.AddHostedService<KeyboardVisibilityDetector>();
 
         builder.ConfigurePlusUiApp(app);
 

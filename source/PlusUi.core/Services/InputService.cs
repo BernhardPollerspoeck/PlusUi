@@ -73,11 +73,17 @@ public class InputService
     {
         _textInputControl?.HandleInput(key);
     }
-
     public void HandleCharInput(object? sender, char chr)
     {
         _textInputControl?.HandleInput(chr);
     }
 
+
+    public void KeyboardExternallyClosed()
+    {
+        _keyboardHandler.Hide();
+        _textInputControl?.SetSelectionStatus(false);
+        _textInputControl = null;
+    }
 
 }
