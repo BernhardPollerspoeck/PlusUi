@@ -1,5 +1,4 @@
-﻿using Silk.NET.Input;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace PlusUi.core;
 
@@ -106,9 +105,9 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
         }
         _isSelected = isSelected;
     }
-    public void HandleInput(Key key)
+    public void HandleInput(PlusKey key)
     {
-        if (key == Key.Backspace)
+        if (key == PlusKey.Backspace)
         {
             if (Text?.Length > 0)
             {

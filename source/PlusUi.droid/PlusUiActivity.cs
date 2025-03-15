@@ -17,7 +17,6 @@ public abstract class PlusUiActivity : Activity
 
     protected override void OnCreate(Bundle? savedInstanceState)
     {
-        //TODO: SetupInputHandling();
         _host = CreateAndStartHost();
 
         RequestWindowFeature(WindowFeatures.NoTitle);
@@ -41,9 +40,20 @@ public abstract class PlusUiActivity : Activity
 
         _glSurfaceView.SetOnTouchListener(_host.Services.GetRequiredService<TapGestureListener>());
 
-        SetContentView(_glSurfaceView);
-    }
 
+
+        var frameLayout = new FrameLayout(this);
+        frameLayout.AddView(_glSurfaceView, new FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MatchParent,
+            ViewGroup.LayoutParams.MatchParent));
+
+        var keyCapture = _host.Services.GetRequiredService<KeyCaptureEditText>();
+        frameLayout.AddView(keyCapture, new FrameLayout.LayoutParams(
+            1, 1));
+
+        SetContentView(frameLayout);
+
+    }
     protected override void OnPause()
     {
         base.OnPause();
@@ -56,7 +66,18 @@ public abstract class PlusUiActivity : Activity
         _glSurfaceView?.OnResume();
     }
 
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (_host is not null)
+        {
+            var keyboardHandler = _host.Services.GetRequiredService<IKeyboardHandler>();
+            keyboardHandler.Hide();
+            _host.StopAsync().Wait();
+            _host.Dispose();
+        }
 
+    }
 
     private IHost CreateAndStartHost()
     {
@@ -75,8 +96,8 @@ public abstract class PlusUiActivity : Activity
         builder.Services.AddSingleton(ApplicationContext);
         builder.Services.AddSingleton<SilkRenderer>();
         builder.Services.AddSingleton<TapGestureListener>();
-        builder.Services.AddSingleton<IKeyboardHandler, AndroidKeyboardHandler>();
-        builder.Services.AddHostedService<KeyboardVisibilityDetector>();
+        builder.Services.AddSingleton<KeyCaptureEditText>();
+        builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<KeyCaptureEditText>());
 
         builder.ConfigurePlusUiApp(app);
 

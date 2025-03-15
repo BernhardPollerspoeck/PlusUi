@@ -1,5 +1,4 @@
-﻿using Silk.NET.Input;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace PlusUi.core;
 
@@ -57,9 +56,9 @@ public class InputService
         }
         else if (_textInputControl != null && _textInputControl != hitControl)
         {
-            _keyboardHandler.Hide();
             _textInputControl.SetSelectionStatus(false);
             _textInputControl = null;
+            _keyboardHandler.Hide();
         }
 
         if (hitControl is IToggleButtonControl toggleButtonControl)
@@ -69,21 +68,13 @@ public class InputService
 
     }
 
-    public void HandleKeyInput(object? sender, Key key)
+    public void HandleKeyInput(object? sender, PlusKey key)
     {
         _textInputControl?.HandleInput(key);
     }
     public void HandleCharInput(object? sender, char chr)
     {
         _textInputControl?.HandleInput(chr);
-    }
-
-
-    public void KeyboardExternallyClosed()
-    {
-        _keyboardHandler.Hide();
-        _textInputControl?.SetSelectionStatus(false);
-        _textInputControl = null;
     }
 
 }

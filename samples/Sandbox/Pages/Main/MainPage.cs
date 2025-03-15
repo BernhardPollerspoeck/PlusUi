@@ -32,6 +32,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     .BindText(nameof(vm.Text), () => $"The entry input is: [ {vm.Text} ]"),
                 new Entry()
                     .BindText(nameof(vm.Text), () => vm.Text, txt => vm.Text = txt),
+                new Entry(),
 
                 new Label()
                     .SetText("Hit the button below to Change my color")

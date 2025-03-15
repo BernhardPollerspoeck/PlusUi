@@ -1,6 +1,5 @@
 ﻿using Android.Content;
 using Android.Opengl;
-using Android.Views;
 using Javax.Microedition.Khronos.Opengles;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;

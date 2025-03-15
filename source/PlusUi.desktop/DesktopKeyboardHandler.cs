@@ -7,7 +7,7 @@ public class DesktopKeyboardHandler : IKeyboardHandler
 {
     private IKeyboard? _keyboard;
 
-    public event EventHandler<Key>? KeyInput;
+    public event EventHandler<PlusKey>? KeyInput;
     public event EventHandler<char>? CharInput;
     public void SetKeyboard(IKeyboard keyboard)
     {
@@ -34,7 +34,15 @@ public class DesktopKeyboardHandler : IKeyboardHandler
 
     private void HandleKeyboardInput(IKeyboard keyboard, Key key, int keyCode)
     {
-        KeyInput?.Invoke(this, key);
+        var plusKey = key switch
+        {
+            Key.Backspace => PlusKey.Backspace,
+            Key.Enter => PlusKey.Enter,
+            Key.Tab => PlusKey.Tab,
+            Key.Space => PlusKey.Space,
+            _ => PlusKey.Unknown
+        };
+        KeyInput?.Invoke(this, plusKey);
     }
     private void HandleKeyCharInput(IKeyboard keyboard, char chr)
     {
