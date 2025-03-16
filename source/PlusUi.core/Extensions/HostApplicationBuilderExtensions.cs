@@ -37,12 +37,6 @@ public static class HostApplicationBuilderExtensions
         return builder;
 
     }
-    public static HostApplicationBuilder UsePlusUiInternal<TRootPage>(
-        this HostApplicationBuilder builder)
-        where TRootPage : UiPageElement
-    {
-        return UsePlusUiInternal(builder, typeof(TRootPage));
-    }
 
 
     public static HostApplicationBuilder AddPage<TPage>(this HostApplicationBuilder builder)

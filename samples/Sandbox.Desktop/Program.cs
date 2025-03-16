@@ -1,14 +1,10 @@
-﻿using Microsoft.Extensions.Hosting;
-using PlusUi.core;
-using PlusUi.desktop;
+﻿using PlusUi.desktop;
 using Sandbox;
-using Sandbox.Pages.Main;
 
-var builder = Host.CreateApplicationBuilder(args);
+var app = new PlusUiApp(args);
 
-builder.UsePlusUi<MainPage>();
-builder.ConfigurePlusUiApp(new App());
+app.CreateApp(builder =>
+{
+    return new App();
+});
 
-var app = builder.Build();
-
-app.Run();
