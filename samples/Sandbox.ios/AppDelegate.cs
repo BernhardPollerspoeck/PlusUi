@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Hosting;
 using PlusUi.core;
-using PlusUi.droid;
+using PlusUi.ios;
 
-namespace Sandbox.Android;
+namespace Sandbox.ios;
 
-[Activity(Label = "@string/app_name", MainLauncher = true)]
-public class MainActivity : PlusUiActivity
+[Register("AppDelegate")]
+public class AppDelegate : PlusUiAppDelegate
 {
     protected override IAppConfiguration CreateApp(HostApplicationBuilder builder)
     {

@@ -7,4 +7,3 @@ app.CreateApp(builder =>
 {
     return new App();
 });
-
