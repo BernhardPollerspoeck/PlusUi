@@ -2,11 +2,13 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlusUi.core;
+using Silk.NET.GLFW;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using SkiaSharp;
+using MouseButton = Silk.NET.Input.MouseButton;
 
 namespace PlusUi.desktop;
 
@@ -91,6 +93,16 @@ internal class WindowManager(
         var glInterface = GRGlInterface.Create();
         _grContext = GRContext.CreateGl(glInterface);
 
+        float displayDensity;
+        unsafe
+        {
+            var glfw = Glfw.GetApi();
+            var monitor = glfw.GetPrimaryMonitor();
+            glfw.GetMonitorContentScale(monitor, out var monXscale, out var _);
+            displayDensity = monXscale;
+        }
+        renderService.DisplayDensity = displayDensity;
+
         CreateSurface(_window.Size);
 
         plusUiNavigationService.Initialize();
@@ -103,13 +115,13 @@ internal class WindowManager(
         {
             if (_mouse.IsButtonPressed(MouseButton.Left))
             {
-                inputService.MouseDown(_mouse.Position);
+                inputService.MouseDown(_mouse.Position / renderService.DisplayDensity);
                 return;
             }
 
             if (!_mouse.IsButtonPressed(MouseButton.Left))
             {
-                inputService.MouseUp(_mouse.Position);
+                inputService.MouseUp(_mouse.Position / renderService.DisplayDensity);
                 return;
             }
         }

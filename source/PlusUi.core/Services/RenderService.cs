@@ -6,17 +6,13 @@ namespace PlusUi.core;
 
 public class RenderService(NavigationContainer navigationContainer)
 {
-    private float _displayDensity = 1.0f;
 
-    public void SetDisplayDensity(float density)
-    {
-        _displayDensity = density;
-    }
+    public float DisplayDensity { get; set; } = 1.0f;
 
     public void Render(GL gl, SKCanvas canvas, GRContext? grContext, Vector2D<int> canvasSize)
     {
         canvas.Save();
-        canvas.Scale(_displayDensity);
+        canvas.Scale(DisplayDensity);
 
         gl.Clear((uint)ClearBufferMask.ColorBufferBit);
         canvas.Clear(SKColors.Transparent);

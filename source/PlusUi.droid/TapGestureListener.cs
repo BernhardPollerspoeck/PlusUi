@@ -5,12 +5,12 @@ using System.Numerics;
 
 namespace PlusUi.droid;
 
-internal class TapGestureListener(InputService inputService, Context context)
+internal class TapGestureListener(InputService inputService, RenderService renderService)
     : Java.Lang.Object, View.IOnTouchListener
 {
     public bool OnTouch(View? v, MotionEvent? e)
     {
-        var density = context.Resources?.DisplayMetrics?.Density ?? 1;
+        var density = renderService.DisplayDensity;
 
         if (e?.Action is MotionEventActions.Up)
         {

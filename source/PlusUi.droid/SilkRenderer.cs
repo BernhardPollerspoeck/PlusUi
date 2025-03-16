@@ -63,7 +63,7 @@ internal class SilkRenderer(
         }
 
         var density = context.Resources?.DisplayMetrics?.Density ?? 1;
-        renderService.SetDisplayDensity(density);
+        renderService.DisplayDensity = density;
 
         _size = new Vector2D<int>(width, height);
         _glContext.Viewport(0, 0, (uint)width, (uint)height);
