@@ -4,7 +4,7 @@ PlusUi is a cutting-edge, fully cross-platform UI Framework designed to deliver 
 
 ## The Journey Behind PlusUi
 
-After years of working with various cross-platform UI frameworks and repeatedly encountering inconsistencies between platforms, I decided to explore a different path. PlusUi wasn't born from a belief that I could outdo established solutions, but from genuine curiosity: what if I approached the cross-platform challenge with consistency as the absolute priority? This project represents that personal journey—an attempt to create something where what you design is exactly what users see, regardless of device. It's about seeing the results emerge when building things to work as I imagined they should.
+After years of working with various cross-platform UI frameworks and repeatedly encountering inconsistencies between platforms, I decided to explore a different path. PlusUi wasn't born from a belief that I could outdo established solutions, but from genuine curiosity: what if I approached the cross-platform challenge with consistency as the absolute priority? This project represents that personal journeyâ€”an attempt to create something where what you design is exactly what users see, regardless of device. It's about seeing the results emerge when building things to work as I imagined they should.
 
 ## Why Choose PlusUi?
 
@@ -37,11 +37,11 @@ In a landscape filled with cross-platform solutions like MAUI, Uno, Avalonia, an
 The following is a list of some of the features currently available in PlusUi. This section will be further expanded as the project evolves and may not list all features.
 
 - Cross-platform support: 
-  - iOS (TODO)
-  - Android (TODO)
+  - iOS
+  - Android
   - Windows
-  - Mac (TODO)
-  - Linux (TODO)
+  - Mac
+  - Linux
 - Easy to use and extend
 - Mvvm Data Binding
 - Modern UI components
