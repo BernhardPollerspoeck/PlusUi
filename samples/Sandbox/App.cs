@@ -4,6 +4,7 @@ using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.Main;
 using Sandbox.Pages.TextRendering;
+using Sandbox.Popups;
 using Sandbox.Services;
 
 namespace Sandbox;
@@ -14,6 +15,9 @@ public class App : IAppConfiguration
     {
         configuration.Title = "Sandbox";
         configuration.Size = new SizeI(800, 600);
+        //configuration.IsWindowTransparent = true;
+        //configuration.WindowBorder = Silk.NET.Windowing.WindowBorder.Hidden;
+        //configuration.WindowState = Silk.NET.Windowing.WindowState.Maximized;
     }
     public void ConfigureApp(HostApplicationBuilder builder)
     {
@@ -23,6 +27,8 @@ public class App : IAppConfiguration
         builder.AddPage<ControlsGridPage>().WithViewModel<ControlsGridPageViewModel>();
         builder.AddPage<TextRenderPage>().WithViewModel<TextRenderPageViewModel>();
         builder.AddPage<FormDemoPage>().WithViewModel<FormDemoPageViewModel>();
+
+        builder.AddPopup<TestPopup>().WithViewModel<TestPopupViewModel>();
     }
 
     public Type ConfigureRootPage()

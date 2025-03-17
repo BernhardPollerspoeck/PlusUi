@@ -7,13 +7,16 @@ public class InputService
     private bool _isMousePressed;
     private ITextInputControl? _textInputControl;
     private readonly NavigationContainer _navigationContainer;
+    private readonly PlusUiPopupService _popupService;
     private readonly IKeyboardHandler _keyboardHandler;
 
     public InputService(
         NavigationContainer navigationContainer,
+        PlusUiPopupService popupService,
         IKeyboardHandler keyboardHandler)
     {
         _navigationContainer = navigationContainer;
+        _popupService = popupService;
         _keyboardHandler = keyboardHandler;
         _keyboardHandler.KeyInput += HandleKeyInput;
         _keyboardHandler.CharInput += HandleCharInput;
@@ -39,8 +42,13 @@ public class InputService
         _isMousePressed = false;
 
         //we have an up action
+        var currentPopup = _popupService.CurrentPopup;
 
-        var hitControl = _navigationContainer.Page.HitTest(new(location.X, location.Y));
+        var hitControl = (currentPopup) switch
+        {
+            not null => currentPopup.HitTest(new(location.X, location.Y)),
+            _ => _navigationContainer.Page.HitTest(new(location.X, location.Y))
+        };
         if (hitControl is IInputControl inputControl)
         {
             inputControl.InvokeCommand();
@@ -70,6 +78,7 @@ public class InputService
 
     public void HandleKeyInput(object? sender, PlusKey key)
     {
+        //TODO: keyInputControl
         _textInputControl?.HandleInput(key);
     }
     public void HandleCharInput(object? sender, char chr)

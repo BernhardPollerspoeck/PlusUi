@@ -11,7 +11,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {
-        SetBackgroundColor(SKColors.SlateBlue);
+        //SetBackgroundColor(SKColors.SlateBlue);
         return new HStack(
             new VStack(
                 new HStack(
@@ -68,7 +68,8 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 
     protected override void ConfigurePageStyles(Style pageStyle)
     {
-        pageStyle.AddStyle<UiPageElement>(element => element.SetBackgroundColor(SKColors.Black));
+        pageStyle.AddStyle<UiPageElement>(element 
+            => element.SetBackgroundColor(new SKColor(0, 0, 0, 220)));
     }
 
     private VStack CreateTestButtons()
@@ -90,7 +91,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetText("Go to Form")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(FormDemoPage))
+                .SetCommandParameter(typeof(FormDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("Popup")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.PopupCommand)
 
         );
     }

@@ -1,4 +1,5 @@
 ﻿using PlusUi.core;
+using Sandbox.Popups;
 using SkiaSharp;
 using System.Windows.Input;
 
@@ -26,14 +27,18 @@ public class MainPageViewModel : ViewModelBase
 
     public ICommand SetColorCommand { get; }
     public ICommand NavigateCommand { get; }
+    public ICommand PopupCommand { get; }
 
     private readonly INavigationService _navigationService;
+    private readonly IPopupService _popupService;
 
-    public MainPageViewModel(INavigationService navigationService)
+    public MainPageViewModel(INavigationService navigationService, IPopupService popupService)
     {
         _navigationService = navigationService;
+        _popupService = popupService;
         SetColorCommand = new SyncCommand(SetColor);
         NavigateCommand = new SyncCommand(Navigate);
+        PopupCommand = new SyncCommand(Popup);
     }
 
     private void SetColor()
@@ -52,10 +57,19 @@ public class MainPageViewModel : ViewModelBase
                 .Invoke(_navigationService, null);
         }
     }
+
+    private void Popup()
+    {
+        _popupService.ShowPopup<TestPopup, string>(
+            arg: "Some Argument",
+            onClosed: () => Color = SKColors.Green,
+            configure: cfg =>
+            {
+                cfg.CloseOnBackgroundClick = true;
+                cfg.CloseOnEscape = true;
+                cfg.BackgroundColor = new SKColor(0, 0, 0, 220);
+            });
+    }
+
 }
-
-
-
-
-
 

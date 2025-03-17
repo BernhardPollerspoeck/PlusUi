@@ -8,7 +8,6 @@ internal class HelloWorldControl : UserControl
     public HelloWorldControl()
     {
         SetBackgroundColor(SKColors.Red);
-        SetHorizontalAlignment(HorizontalAlignment.Stretch);
     }
     protected override UiElement Build()
     {

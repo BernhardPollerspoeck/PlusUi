@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PlusUi.core.Services;
+using PlusUi.core;
 
 [assembly: System.Reflection.Metadata.MetadataUpdateHandler(typeof(PlusUiHotReloadManager))]
 
-namespace PlusUi.core.Services;
+namespace PlusUi.core;
 
 internal class PlusUiHotReloadManager
 {
@@ -33,6 +33,12 @@ internal class PlusUiHotReloadManager
             var internalNavigationService = ServiceProviderService.ServiceProvider?.GetRequiredService<PlusUiNavigationService>();
             internalNavigationService?.Initialize();
             logger?.LogInformation("NavigationContainer updated");
+        }
+        if (updatedTypes?
+            .Any(t => t.IsAssignableTo(typeof(UiPopupElement))) is true)
+        {
+            var internalPopupService = ServiceProviderService.ServiceProvider?.GetRequiredService<PlusUiPopupService>();
+            internalPopupService?.Build();//TODO: Bg color lost => reconstruct
         }
     }
 }

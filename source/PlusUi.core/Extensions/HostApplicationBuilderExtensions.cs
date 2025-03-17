@@ -28,6 +28,10 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton(sp => new PlusUiNavigationService(sp));
         builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
+        builder.Services.AddSingleton<PlusUiPopupService>();
+        builder.Services.AddSingleton<IPopupService>(sp => sp.GetRequiredService<PlusUiPopupService>());
+        builder.Services.AddTransient<IPopupConfiguration, PopupConfiguration>();
+
         builder.Services.AddSingleton(sp =>
         {
             var mainPage = sp.GetRequiredService(mainPageType) as UiPageElement
@@ -49,6 +53,12 @@ public static class HostApplicationBuilderExtensions
         where TViewModel : ViewModelBase
     {
         builder.Services.AddTransient<TViewModel>();
+        return builder;
+    }
+    public static HostApplicationBuilder AddPopup<TPopup>(this HostApplicationBuilder builder)
+       where TPopup : UiPopupElement
+    {
+        builder.Services.AddTransient<TPopup>();
         return builder;
     }
 

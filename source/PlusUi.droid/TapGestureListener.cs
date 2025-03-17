@@ -1,5 +1,4 @@
-﻿using Android.Content;
-using Android.Views;
+﻿using Android.Views;
 using PlusUi.core;
 using System.Numerics;
 

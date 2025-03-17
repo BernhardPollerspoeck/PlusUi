@@ -4,7 +4,8 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
-public class RenderService(NavigationContainer navigationContainer)
+//TODO: interface
+public class RenderService(NavigationContainer navigationContainer, PlusUiPopupService popupService)
 {
 
     public float DisplayDensity { get; set; } = 1.0f;
@@ -20,6 +21,14 @@ public class RenderService(NavigationContainer navigationContainer)
         navigationContainer.Page.Measure(new Size(canvasSize.X, canvasSize.Y));
         navigationContainer.Page.Arrange(new Rect(0, 0, canvasSize.X, canvasSize.Y));
         navigationContainer.Page.Render(canvas);
+
+        var popup = popupService.CurrentPopup;
+        if (popup is not null)
+        {
+            popup.Measure(new Size(canvasSize.X, canvasSize.Y));
+            popup.Arrange(new Rect(0, 0, canvasSize.X, canvasSize.Y));
+            popup.Render(canvas);
+        }
 
         canvas.Flush();
         grContext?.Flush();

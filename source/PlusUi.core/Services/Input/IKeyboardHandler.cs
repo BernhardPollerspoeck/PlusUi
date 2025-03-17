@@ -1,5 +1,4 @@
-﻿
-namespace PlusUi.core;
+﻿namespace PlusUi.core;
 
 public interface IKeyboardHandler
 {
