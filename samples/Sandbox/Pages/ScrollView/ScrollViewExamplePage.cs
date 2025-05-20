@@ -1,7 +1,7 @@
 using PlusUi.core;
 using SkiaSharp;
 
-namespace Sandbox.Pages.ScrollView;
+namespace Sandbox.Pages.ScrollViewDemo;
 
 internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPageElement(vm)
 {

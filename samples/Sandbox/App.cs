@@ -3,7 +3,7 @@ using PlusUi.core;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.Main;
-using Sandbox.Pages.ScrollView;
+using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Popups;
 using Sandbox.Services;

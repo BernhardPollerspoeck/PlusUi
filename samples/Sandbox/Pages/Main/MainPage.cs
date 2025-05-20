@@ -2,7 +2,7 @@
 using Sandbox.Controls;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
-using Sandbox.Pages.ScrollView;
+using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.TextRendering;
 using SkiaSharp;
 

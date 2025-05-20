@@ -2,7 +2,7 @@ using PlusUi.core;
 using Sandbox.Pages.Main;
 using System.Windows.Input;
 
-namespace Sandbox.Pages.ScrollView;
+namespace Sandbox.Pages.ScrollViewDemo;
 
 internal class ScrollViewExamplePageViewModel : ViewModelBase
 {

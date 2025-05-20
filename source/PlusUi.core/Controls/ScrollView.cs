@@ -5,8 +5,6 @@ namespace PlusUi.core;
 public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
 {
     private readonly UiElement _content;
-    private float _horizontalOffset;
-    private float _verticalOffset;
     
     #region CanScrollHorizontally
     internal bool CanScrollHorizontally 
@@ -51,11 +49,11 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
     #region HorizontalOffset
     internal float HorizontalOffset 
     { 
-        get => _horizontalOffset; 
+        get => field; 
         set
         {
             var maxOffset = Math.Max(0, _content.ElementSize.Width - ElementSize.Width);
-            _horizontalOffset = Math.Clamp(value, 0, maxOffset);
+            field = Math.Clamp(value, 0, maxOffset);
             InvalidateMeasure();
         }
     }
@@ -76,11 +74,11 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
     #region VerticalOffset
     internal float VerticalOffset 
     { 
-        get => _verticalOffset; 
+        get => field; 
         set
         {
             var maxOffset = Math.Max(0, _content.ElementSize.Height - ElementSize.Height);
-            _verticalOffset = Math.Clamp(value, 0, maxOffset);
+            field = Math.Clamp(value, 0, maxOffset);
             InvalidateMeasure();
         }
     }

@@ -203,6 +203,8 @@ internal class WindowManager(
         if (_inputContext.Mice.Count > 0)
         {
             _mouse = _inputContext.Mice[0];
+            _mouse.MouseMove += (_, position) => 
+                inputService.MouseMove(position / renderService.DisplayDensity);
         }
 
         // Setup keyboard if available
