@@ -141,8 +141,6 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
     
     public override void Render(SKCanvas canvas)
     {
-        base.Render(canvas);
-        
         // Save canvas state and apply clipping
         canvas.Save();
         var rect = new SKRect(
@@ -160,6 +158,9 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
         {
             canvas.ClipRect(rect);
         }
+        
+        // Call base to render background (now clipped)
+        base.Render(canvas);
         
         // Render content (already clipped)
         _content.Render(canvas);

@@ -10,12 +10,14 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
         return new VStack(
             new Label()
                 .SetText("ScrollView Example")
+                .SetTextColor(SKColors.Black)
                 .SetTextSize(24)
                 .SetMargin(new Margin(10)),
                 
             new HStack(
                 new Label()
                     .SetText("Horizontal Scrolling:")
+                    .SetTextColor(SKColors.Black)
                     .SetTextSize(16)
                     .SetMargin(new Margin(10)),
                     
@@ -29,6 +31,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
             new HStack(
                 new Label()
                     .SetText("Vertical Scrolling:")
+                    .SetTextColor(SKColors.Black)
                     .SetTextSize(16)
                     .SetMargin(new Margin(10)),
                     
@@ -79,16 +82,19 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                     // Multiple labels to demonstrate vertical scrolling
                     new Label()
                         .BindText(nameof(vm.LongText), () => vm.LongText)
+                        .SetTextColor(SKColors.Black)
                         .SetTextSize(18)
                         .SetMargin(new Margin(10)),
                     
                     new Label()
                         .BindText(nameof(vm.LongText), () => vm.LongText)
+                        .SetTextColor(SKColors.Black)
                         .SetTextSize(18)
                         .SetMargin(new Margin(10)),
                         
                     new Label()
                         .BindText(nameof(vm.LongText), () => vm.LongText)
+                        .SetTextColor(SKColors.Black)
                         .SetTextSize(18)
                         .SetMargin(new Margin(10))
                 )
@@ -104,6 +110,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                 .SetText("Back")
                 .SetTextSize(18)
                 .SetCommand(vm.NavCommand)
+                .SetPadding(new Padding(10, 5))
                 .SetTextColor(SKColors.Black)
                 .SetBackgroundColor(SKColors.White)
                 .SetMargin(new Margin(10))
