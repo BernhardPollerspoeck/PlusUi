@@ -89,6 +89,18 @@ public class DataGrid : Grid
     }
     
     /// <summary>
+    /// Binds whether columns are automatically generated from the data source.
+    /// </summary>
+    /// <param name="propertyName">The name of the property to bind to.</param>
+    /// <param name="propertyGetter">A function that returns whether to auto-generate columns.</param>
+    /// <returns>The DataGrid instance.</returns>
+    public DataGrid BindAutoGenerateColumns(string propertyName, Func<bool> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => AutoGenerateColumns = propertyGetter());
+        return this;
+    }
+    
+    /// <summary>
     /// Adds a column to the DataGrid.
     /// </summary>
     /// <param name="column">The column to add.</param>
@@ -173,13 +185,22 @@ public class DataGrid : Grid
         
         // Set up the column definitions
         // First, clear any existing columns and add a new one for each column
-        while (_columns.Count > Columns.Count)
+        SetColumns([]); // Clear all columns
+        
+        for (var i = 0; i < _columns.Count; i++) 
         {
             AddColumn(Column.Auto);
         }
         
+        // Add column spacing
+        SetColumnSpacing(2);
+        
         // Add a header row
+        SetRows([]); // Clear all rows
         AddRow(Row.Auto);
+        
+        // Add row spacing
+        SetRowSpacing(1);
         
         // Add headers
         for (var i = 0; i < _columns.Count; i++)

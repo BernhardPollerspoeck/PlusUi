@@ -224,4 +224,70 @@ public sealed class DataGridTests
         var boundItems = dataGrid.ItemsSource;
         Assert.AreEqual(items, boundItems);
     }
+
+    [TestMethod]
+    public void BindAutoGenerateColumns_RegistersBinding()
+    {
+        // Arrange
+        var dataGrid = new DataGrid();
+        bool autoGenerate = true;
+        
+        // Act
+        dataGrid.BindAutoGenerateColumns("AutoGenerateColumns", () => autoGenerate);
+        
+        // Assert
+        Assert.IsTrue(dataGrid.AutoGenerateColumns);
+        
+        // Change the bound value
+        autoGenerate = false;
+        dataGrid.InvokeBindings(); // Simulate a change notification
+        
+        // Check that the property was updated
+        Assert.IsFalse(dataGrid.AutoGenerateColumns);
+    }
+    
+    [TestMethod]
+    public void DemoPageGrid_HasCorrectLayout()
+    {
+        // Arrange - Recreate the grid from the demo page
+        var people = new List<TestModel> 
+        { 
+            new TestModel { Id = 1, Name = "John Doe", IsActive = true, ImageUrl = "test.png" },
+            new TestModel { Id = 2, Name = "Jane Smith", IsActive = false, ImageUrl = "test.png" }
+        };
+        
+        var dataGrid = new DataGrid()
+            .SetItemsSource(people)
+            .SetAutoGenerateColumns(true);
+        
+        // Get the private RefreshData method using reflection to simulate rebuilding the grid
+        var refreshDataMethod = typeof(DataGrid).GetMethod("RefreshData", 
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(refreshDataMethod, "Method RefreshData not found");
+        
+        // Act
+        refreshDataMethod.Invoke(dataGrid, Array.Empty<object>());
+        
+        // Assert
+        // Check that there are columns for all mapped properties
+        Assert.AreEqual(4, dataGrid.Columns.Count);
+        
+        // Check that the grid has the correct number of rows (header + data rows)
+        // We have to infer this from the structure
+        // Since we can't directly access the UI elements, we'll verify through column property info
+        Assert.IsNotNull(dataGrid.Columns[0].PropertyInfo);
+        
+        // Check that rows aren't overlapping (test that proper row spacing is applied)
+        // Indirect test as we can't access the rows directly
+        var rowSpacing = dataGrid.GetType().GetProperty("RowSpacing", 
+            BindingFlags.Public | BindingFlags.Instance)?.GetValue(dataGrid);
+        Assert.IsNotNull(rowSpacing);
+        Assert.IsTrue((int)rowSpacing > 0);
+        
+        // Check column spacing
+        var columnSpacing = dataGrid.GetType().GetProperty("ColumnSpacing", 
+            BindingFlags.Public | BindingFlags.Instance)?.GetValue(dataGrid);
+        Assert.IsNotNull(columnSpacing);
+        Assert.IsTrue((int)columnSpacing > 0);
+    }
 }
