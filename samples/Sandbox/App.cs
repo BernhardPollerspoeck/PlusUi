@@ -3,6 +3,7 @@ using PlusUi.core;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.Main;
+using Sandbox.Pages.ScrollView;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Popups;
 using Sandbox.Services;
@@ -27,6 +28,7 @@ public class App : IAppConfiguration
         builder.AddPage<ControlsGridPage>().WithViewModel<ControlsGridPageViewModel>();
         builder.AddPage<TextRenderPage>().WithViewModel<TextRenderPageViewModel>();
         builder.AddPage<FormDemoPage>().WithViewModel<FormDemoPageViewModel>();
+        builder.AddPage<ScrollViewExamplePage>().WithViewModel<ScrollViewExamplePageViewModel>();
 
         builder.AddPopup<TestPopup>().WithViewModel<TestPopupViewModel>();
     }
