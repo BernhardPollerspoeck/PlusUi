@@ -105,10 +105,14 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
     
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        // Measure content without constraints (or with very large constraints)
+        // Use a large but reasonable value for "unlimited" space instead of float.MaxValue
+        // to avoid calculation issues in nested layouts
+        const float MaxReasonableSize = 10000f;
+        
+        // Measure content with constraints appropriate for scrollable/non-scrollable directions
         _content.Measure(new Size(
-            CanScrollHorizontally ? float.MaxValue : availableSize.Width, 
-            CanScrollVertically ? float.MaxValue : availableSize.Height), 
+            CanScrollHorizontally ? MaxReasonableSize : availableSize.Width, 
+            CanScrollVertically ? MaxReasonableSize : availableSize.Height), 
             dontStretch);
         
         return availableSize;

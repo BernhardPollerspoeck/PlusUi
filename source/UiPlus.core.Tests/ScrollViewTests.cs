@@ -387,4 +387,25 @@ public class ScrollViewTests
         Assert.AreEqual(0, scrollView.HorizontalOffset, "Horizontal offset should be 0 when content is smaller than viewport");
         Assert.AreEqual(0, scrollView.VerticalOffset, "Vertical offset should be 0 when content is smaller than viewport");
     }
+    [TestMethod]
+    public void TestScrollView_Measure_WithGrid_UsesSaneMaxSize()
+    {
+        // Arrange
+        var grid = new Grid()
+            .AddColumn(200)
+            .AddColumn(200)
+            .AddRow(50);
+            
+        var scrollView = new ScrollView(grid)
+            .SetCanScrollHorizontally(true)
+            .SetCanScrollVertically(true);
+        var availableSize = new Size(100, 100);
+        
+        // Act
+        scrollView.Measure(availableSize);
+        
+        // Assert - Verify that the grid's measured size is not approaching float.MaxValue
+        Assert.IsTrue(grid.ElementSize.Width < 100000, "Grid width should be less than 100000 (not approaching float.MaxValue)");
+        Assert.IsTrue(grid.ElementSize.Height < 100000, "Grid height should be less than 100000 (not approaching float.MaxValue)");
+    }
 }
