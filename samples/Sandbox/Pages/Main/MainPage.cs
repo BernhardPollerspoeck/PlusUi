@@ -2,6 +2,7 @@
 using Sandbox.Controls;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
+using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.TextRendering;
 using SkiaSharp;
 
@@ -96,7 +97,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
             new Button()
                 .SetText("Popup")
                 .SetPadding(new(20, 5))
-                .SetCommand(vm.PopupCommand)
+                .SetCommand(vm.PopupCommand),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("ScrollView Example")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ScrollViewExamplePage))
 
         );
     }
