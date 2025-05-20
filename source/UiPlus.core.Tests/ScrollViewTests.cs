@@ -400,9 +400,9 @@ public class ScrollViewTests
             .AddColumn(50)
             .AddRow(50)
             .AddRow(50)
-            .AddControl(label, 0, 0)
-            .AddControl(image, 1, 0)
-            .AddControl(solid, 0, 1);
+            .AddChild(label, 0, 0)
+            .AddChild(image, 1, 0)
+            .AddChild(solid, 0, 1);
             
         var scrollView = new ScrollView(grid);
         scrollView.Measure(new Size(100, 100));
@@ -438,9 +438,9 @@ public class ScrollViewTests
             .AddColumn(50)
             .AddRow(50)
             .AddRow(50)
-            .AddControl(button, 0, 0)
-            .AddControl(entry, 1, 0)
-            .AddControl(checkbox, 0, 1);
+            .AddChild(button, 0, 0)
+            .AddChild(entry, 1, 0)
+            .AddChild(checkbox, 0, 1);
             
         var scrollView = new ScrollView(grid);
         scrollView.Measure(new Size(100, 100));
