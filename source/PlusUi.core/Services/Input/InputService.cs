@@ -9,6 +9,8 @@ public class InputService
     private readonly NavigationContainer _navigationContainer;
     private readonly PlusUiPopupService _popupService;
     private readonly IKeyboardHandler _keyboardHandler;
+    private Vector2 _lastMousePosition;
+    private IScrollableControl? _activeScrollControl;
 
     public InputService(
         NavigationContainer navigationContainer,
@@ -30,6 +32,21 @@ public class InputService
             return;
         }
         _isMousePressed = true;
+        _lastMousePosition = location;
+
+        // Check if we're starting a scroll operation
+        var currentPopup = _popupService.CurrentPopup;
+        var hitControl = (currentPopup) switch
+        {
+            not null => currentPopup.HitTest(new(location.X, location.Y)),
+            _ => _navigationContainer.Page.HitTest(new(location.X, location.Y))
+        };
+        
+        if (hitControl is IScrollableControl scrollControl)
+        {
+            _activeScrollControl = scrollControl;
+            _activeScrollControl.IsScrolling = true;
+        }
 
         //we have a down action
     }
@@ -40,6 +57,13 @@ public class InputService
             return;
         }
         _isMousePressed = false;
+        
+        // End any active scrolling operation
+        if (_activeScrollControl != null)
+        {
+            _activeScrollControl.IsScrolling = false;
+            _activeScrollControl = null;
+        }
 
         //we have an up action
         var currentPopup = _popupService.CurrentPopup;
@@ -84,6 +108,20 @@ public class InputService
     public void HandleCharInput(object? sender, char chr)
     {
         _textInputControl?.HandleInput(chr);
+    }
+    
+    public void MouseMove(Vector2 location)
+    {
+        // Handle scrolling if active
+        if (_isMousePressed && _activeScrollControl != null)
+        {
+            float deltaX = _lastMousePosition.X - location.X;
+            float deltaY = _lastMousePosition.Y - location.Y;
+            
+            _activeScrollControl.HandleScroll(deltaX, deltaY);
+        }
+        
+        _lastMousePosition = location;
     }
 
 }
