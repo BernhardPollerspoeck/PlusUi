@@ -21,6 +21,11 @@ internal class TapGestureListener(InputService inputService, RenderService rende
             inputService.MouseDown(new Vector2(e.GetX() / density, e.GetY() / density));
             return true;
         }
+        else if (e?.Action is MotionEventActions.Move)
+        {
+            inputService.MouseMove(new Vector2(e.GetX() / density, e.GetY() / density));
+            return true;
+        }
         return false;
     }
 }
