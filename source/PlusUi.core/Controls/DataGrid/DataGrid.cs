@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using System.Collections;
 using System.Reflection;
 
 namespace PlusUi.core;
@@ -8,40 +9,38 @@ namespace PlusUi.core;
 /// </summary>
 public class DataGrid : Grid
 {
-    private IEnumerable? _itemsSource;
     private readonly List<DataGridColumn> _columns = [];
-    private bool _autoGenerateColumns = true;
-    
+
     /// <summary>
     /// Gets or sets whether columns are automatically generated from the data source.
     /// </summary>
     public bool AutoGenerateColumns
     {
-        get => _autoGenerateColumns;
+        get;
         set
         {
-            _autoGenerateColumns = value;
-            if (_itemsSource != null)
+            field = value;
+            if (ItemsSource != null)
             {
                 RefreshData();
             }
         }
-    }
-    
+    } = true;
+
     /// <summary>
     /// Gets the collection of columns in the DataGrid.
     /// </summary>
-    public IReadOnlyList<DataGridColumn> Columns => _columns;
+    public new IReadOnlyList<DataGridColumn> Columns => _columns;
     
     /// <summary>
     /// Gets or sets the data source for the DataGrid.
     /// </summary>
     public IEnumerable? ItemsSource
     {
-        get => _itemsSource;
+        get;
         set
         {
-            _itemsSource = value;
+            field = value;
             RefreshData();
         }
     }
@@ -97,7 +96,7 @@ public class DataGrid : Grid
     public DataGrid AddColumn(DataGridColumn column)
     {
         _columns.Add(column);
-        if (_itemsSource != null)
+        if (ItemsSource != null)
         {
             RefreshData();
         }
@@ -148,14 +147,14 @@ public class DataGrid : Grid
         ClearChildren();
         
         // If there's no data source, nothing more to do
-        if (_itemsSource == null)
+        if (ItemsSource == null)
         {
             return;
         }
         
         // Get the item type from the first item in the collection (if any)
         Type? itemType = null;
-        foreach (var item in _itemsSource)
+        foreach (var item in ItemsSource)
         {
             itemType = item.GetType();
             break;
@@ -167,7 +166,7 @@ public class DataGrid : Grid
         }
         
         // Auto-generate or use existing columns
-        if (_autoGenerateColumns && _columns.Count == 0)
+        if (AutoGenerateColumns && _columns.Count == 0)
         {
             GenerateColumns(itemType);
         }
@@ -183,27 +182,27 @@ public class DataGrid : Grid
         AddRow(Row.Auto);
         
         // Add headers
-        for (int i = 0; i < _columns.Count; i++)
+        for (var i = 0; i < _columns.Count; i++)
         {
             var headerLabel = new Label()
                 .SetText(_columns[i].Header)
                 .SetTextColor(SKColors.Black)
                 .SetTextSize(14)
-                .SetBackgroundColor(new SKColor(240, 240, 240))
-                .SetPadding(new Margin(5));
+                .SetPadding(new Margin(5))
+                .SetBackgroundColor(new SKColor(240, 240, 240));
             
             AddChild(headerLabel, 0, i);
         }
         
         // Add data rows
-        int rowIndex = 1;
-        foreach (var item in _itemsSource)
+        var rowIndex = 1;
+        foreach (var item in ItemsSource)
         {
             // Add a new row for each item
             AddRow(Row.Auto);
             
             // Add cells for each column
-            for (int i = 0; i < _columns.Count; i++)
+            for (var i = 0; i < _columns.Count; i++)
             {
                 var column = _columns[i];
                 var cell = CreateCell(item, column);
@@ -265,12 +264,11 @@ public class DataGrid : Grid
                 {
                     PropertyName = prop.Name,
                     Header = prop.Name,
-                    PropertyInfo = prop
+                    PropertyInfo = prop,
+                    // Set an appropriate template based on the property type
+                    CellTemplate = GetDefaultCellTemplate(prop.PropertyType)
                 };
-                
-                // Set an appropriate template based on the property type
-                column.CellTemplate = GetDefaultCellTemplate(prop.PropertyType);
-                
+
                 _columns.Add(column);
             }
         }
@@ -310,7 +308,7 @@ public class DataGrid : Grid
     /// <param name="item">The data item.</param>
     /// <param name="column">The column definition.</param>
     /// <returns>A UI element representing the cell.</returns>
-    private UiElement? CreateCell(object item, DataGridColumn column)
+    private static UiElement? CreateCell(object item, DataGridColumn column)
     {
         // If there's a custom template selector, use that
         if (column.CellTemplateSelector != null)
@@ -358,7 +356,7 @@ public class DataGrid : Grid
     /// </summary>
     /// <param name="value">The cell value.</param>
     /// <returns>A Label element.</returns>
-    private static UiElement CreateLabelCell(object? value)
+    private static Label CreateLabelCell(object? value)
     {
         return new Label()
             .SetText(value?.ToString() ?? string.Empty)
@@ -373,7 +371,7 @@ public class DataGrid : Grid
     /// <param name="column">The column definition.</param>
     /// <param name="value">The cell value.</param>
     /// <returns>An Entry element.</returns>
-    private static UiElement CreateEntryCell(object item, DataGridColumn column, object? value)
+    private static Entry CreateEntryCell(object item, DataGridColumn column, object? value)
     {
         var entry = new Entry()
             .SetText(value?.ToString() ?? string.Empty)
@@ -399,8 +397,8 @@ public class DataGrid : Grid
         }
         
         return new Image()
-            .SetImageSource(imageSource)
             .SetAspect(Aspect.AspectFit)
+            .SetImageSource(imageSource)
             .SetDesiredHeight(32)
             .SetMargin(new Margin(2));
     }
@@ -412,9 +410,9 @@ public class DataGrid : Grid
     /// <param name="column">The column definition.</param>
     /// <param name="value">The cell value.</param>
     /// <returns>A Checkbox element.</returns>
-    private static UiElement CreateCheckboxCell(object item, DataGridColumn column, object? value)
+    private static Checkbox CreateCheckboxCell(object item, DataGridColumn column, object? value)
     {
-        bool isChecked = value is bool boolValue && boolValue;
+        var isChecked = value is bool boolValue && boolValue;
         
         var checkbox = new Checkbox()
             .SetIsChecked(isChecked);
