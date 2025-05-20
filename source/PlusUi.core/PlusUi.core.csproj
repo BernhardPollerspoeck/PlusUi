@@ -11,7 +11,7 @@
     <Company>PlusUi</Company>
     <Product>PlusUi.core</Product>
     <Description>The Core PlusiUi Package</Description>
-    <PackageTags>PlusUi;UiFramework;Silk.net;Skiasharp</PackageTags>
+    <PackageTags>PlusUi;UiFramework;Silk.nat;Skiasharp</PackageTags>
     <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
