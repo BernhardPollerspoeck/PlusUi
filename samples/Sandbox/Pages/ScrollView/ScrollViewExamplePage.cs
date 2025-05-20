@@ -104,8 +104,8 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                 .SetText("Back")
                 .SetTextSize(18)
                 .SetCommand(vm.NavCommand)
-                .SetBackgroundColor(SKColors.White)
                 .SetTextColor(SKColors.Black)
+                .SetBackgroundColor(SKColors.White)
                 .SetMargin(new Margin(10))
         );
     }

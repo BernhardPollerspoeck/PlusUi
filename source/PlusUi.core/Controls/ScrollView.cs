@@ -181,6 +181,12 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
         var adjustedPoint = new Point(point.X + HorizontalOffset, point.Y + VerticalOffset);
         var childHit = _content.HitTest(adjustedPoint);
         
+        // Don't return layout controls (like Grid), return this ScrollView instead
+        if (childHit is UiLayoutElement)
+        {
+            return this;
+        }
+        
         // Return the hit child or this
         return childHit ?? this;
     }
