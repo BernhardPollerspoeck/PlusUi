@@ -10,38 +10,35 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
         return new VStack(
             new Label()
                 .SetText("ScrollView Example")
-                .SetTextColor(SKColors.Black)
                 .SetTextSize(24)
                 .SetMargin(new Margin(10)),
-                
+
             new HStack(
                 new Label()
                     .SetText("Horizontal Scrolling:")
-                    .SetTextColor(SKColors.Black)
                     .SetTextSize(16)
                     .SetMargin(new Margin(10)),
-                    
+
                 new Checkbox()
-                    .BindIsChecked(nameof(vm.IsHorizontalScrollingEnabled), 
-                        () => vm.IsHorizontalScrollingEnabled, 
+                    .BindIsChecked(nameof(vm.IsHorizontalScrollingEnabled),
+                        () => vm.IsHorizontalScrollingEnabled,
                         isChecked => vm.IsHorizontalScrollingEnabled = isChecked)
                     .SetMargin(new Margin(10))
             ),
-            
+
             new HStack(
                 new Label()
                     .SetText("Vertical Scrolling:")
-                    .SetTextColor(SKColors.Black)
                     .SetTextSize(16)
                     .SetMargin(new Margin(10)),
-                    
+
                 new Checkbox()
-                    .BindIsChecked(nameof(vm.IsVerticalScrollingEnabled), 
-                        () => vm.IsVerticalScrollingEnabled, 
+                    .BindIsChecked(nameof(vm.IsVerticalScrollingEnabled),
+                        () => vm.IsVerticalScrollingEnabled,
                         isChecked => vm.IsVerticalScrollingEnabled = isChecked)
                     .SetMargin(new Margin(10))
             ),
-            
+
             // ScrollView with a VStack of content
             new ScrollView(
                 new VStack(
@@ -77,21 +74,24 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                             new Solid()
                                 .SetBackgroundColor(SKColors.Purple)
                                 .SetMargin(new Margin(5))
-                                .IgnoreStyling()),
-                                
+                                .IgnoreStyling())
+                        ,
+
                     // Multiple labels to demonstrate vertical scrolling
                     new Label()
                         .BindText(nameof(vm.LongText), () => vm.LongText)
                         .SetTextColor(SKColors.Black)
                         .SetTextSize(18)
-                        .SetMargin(new Margin(10)),
-                    
+                        .SetBackgroundColor(SKColors.Green)
+                        .SetMargin(new Margin(10))
+                        .SetDebug(true),
+
                     new Label()
                         .BindText(nameof(vm.LongText), () => vm.LongText)
                         .SetTextColor(SKColors.Black)
                         .SetTextSize(18)
                         .SetMargin(new Margin(10)),
-                        
+
                     new Label()
                         .BindText(nameof(vm.LongText), () => vm.LongText)
                         .SetTextColor(SKColors.Black)
@@ -101,16 +101,16 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
             )
             .BindCanScrollHorizontally(nameof(vm.IsHorizontalScrollingEnabled), () => vm.IsHorizontalScrollingEnabled)
             .BindCanScrollVertically(nameof(vm.IsVerticalScrollingEnabled), () => vm.IsVerticalScrollingEnabled)
-            .SetBackgroundColor(new SKColor(220, 220, 220))
+            .SetBackgroundColor(new SKColor(30, 30, 30))
             .SetCornerRadius(10)
             .SetMargin(new Margin(10))
             .SetDesiredHeight(300),
-            
+
             new Button()
                 .SetText("Back")
                 .SetTextSize(18)
                 .SetCommand(vm.NavCommand)
-                .SetPadding(new Padding(10, 5))
+                .SetPadding(new(10, 5))
                 .SetTextColor(SKColors.Black)
                 .SetBackgroundColor(SKColors.White)
                 .SetMargin(new Margin(10))
