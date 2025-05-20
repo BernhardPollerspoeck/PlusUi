@@ -74,27 +74,21 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                             new Solid()
                                 .SetBackgroundColor(SKColors.Purple)
                                 .SetMargin(new Margin(5))
-                                .IgnoreStyling())
-                        ,
+                                .IgnoreStyling()),
 
                     // Multiple labels to demonstrate vertical scrolling
                     new Label()
                         .BindText(nameof(vm.LongText), () => vm.LongText)
-                        .SetTextColor(SKColors.Black)
-                        .SetTextSize(18)
-                        .SetBackgroundColor(SKColors.Green)
-                        .SetMargin(new Margin(10))
-                        .SetDebug(true),
-
-                    new Label()
-                        .BindText(nameof(vm.LongText), () => vm.LongText)
-                        .SetTextColor(SKColors.Black)
                         .SetTextSize(18)
                         .SetMargin(new Margin(10)),
 
                     new Label()
                         .BindText(nameof(vm.LongText), () => vm.LongText)
-                        .SetTextColor(SKColors.Black)
+                        .SetTextSize(18)
+                        .SetMargin(new Margin(10)),
+
+                    new Label()
+                        .BindText(nameof(vm.LongText), () => vm.LongText)
                         .SetTextSize(18)
                         .SetMargin(new Margin(10))
                 )
@@ -104,7 +98,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
             .SetBackgroundColor(new SKColor(30, 30, 30))
             .SetCornerRadius(10)
             .SetMargin(new Margin(10))
-            .SetDesiredHeight(300),
+            .SetDesiredHeight(100),
 
             new Button()
                 .SetText("Back")
