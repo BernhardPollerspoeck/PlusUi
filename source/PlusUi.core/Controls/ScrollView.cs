@@ -184,14 +184,22 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
         var adjustedPoint = new Point(point.X + HorizontalOffset, point.Y + VerticalOffset);
         var childHit = _content.HitTest(adjustedPoint);
         
-        // Don't return layout controls (like Grid), return this ScrollView instead
-        if (childHit is UiLayoutElement)
+        // If no child hit, return this ScrollView
+        if (childHit == null)
         {
             return this;
         }
         
-        // Return the hit child or this
-        return childHit ?? this;
+        // Return interactive controls (that take input) directly
+        // These are controls that implement any of the input interfaces
+        if (childHit is IInputControl || childHit is ITextInputControl || childHit is IToggleButtonControl)
+        {
+            return childHit;
+        }
+        
+        // For non-interactive controls (like Labels, Images) or layout controls (Grid, Stack),
+        // return this ScrollView to handle scrolling
+        return this;
     }
     
     #region IScrollableControl Implementation

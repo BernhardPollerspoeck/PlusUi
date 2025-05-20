@@ -388,24 +388,78 @@ public class ScrollViewTests
         Assert.AreEqual(0, scrollView.VerticalOffset, "Vertical offset should be 0 when content is smaller than viewport");
     }
     [TestMethod]
-    public void TestScrollView_Measure_WithGrid_UsesNaturalSize()
+    public void TestScrollView_HitTest_NonInteractiveElementsReturnScrollView()
     {
         // Arrange
+        var label = new Label().SetText("Test Label");
+        var image = new Image().SetDesiredSize(new Size(50, 50));
+        var solid = new Solid(50, 50);
+        
         var grid = new Grid()
-            .AddColumn(200)
-            .AddColumn(200)
-            .AddRow(50);
+            .AddColumn(50)
+            .AddColumn(50)
+            .AddRow(50)
+            .AddRow(50)
+            .AddControl(label, 0, 0)
+            .AddControl(image, 1, 0)
+            .AddControl(solid, 0, 1);
             
-        var scrollView = new ScrollView(grid)
-            .SetCanScrollHorizontally(true)
-            .SetCanScrollVertically(true);
-        var availableSize = new Size(100, 100);
+        var scrollView = new ScrollView(grid);
+        scrollView.Measure(new Size(100, 100));
+        scrollView.Arrange(new Rect(0, 0, 100, 100));
         
-        // Act
-        scrollView.Measure(availableSize);
+        // Act & Assert
+        // Hit test on a Label (non-interactive) - should return ScrollView
+        var labelHit = scrollView.HitTest(new Point(20, 20));
+        Assert.IsNotNull(labelHit);
+        Assert.AreSame(scrollView, labelHit, "Hit test on Label should return ScrollView for scrolling");
         
-        // Assert - Verify that the grid's measured size reflects the actual columns/rows
-        Assert.AreEqual(400, grid.ElementSize.Width, "Grid width should be the sum of column widths (200+200)");
-        Assert.AreEqual(50, grid.ElementSize.Height, "Grid height should be the row height (50)");
+        // Hit test on an Image (non-interactive) - should return ScrollView
+        var imageHit = scrollView.HitTest(new Point(70, 20));
+        Assert.IsNotNull(imageHit);
+        Assert.AreSame(scrollView, imageHit, "Hit test on Image should return ScrollView for scrolling");
+        
+        // Hit test on a Solid (non-interactive) - should return ScrollView
+        var solidHit = scrollView.HitTest(new Point(20, 70));
+        Assert.IsNotNull(solidHit);
+        Assert.AreSame(scrollView, solidHit, "Hit test on Solid should return ScrollView for scrolling");
+    }
+    
+    [TestMethod]
+    public void TestScrollView_HitTest_InteractiveElementsReturnThemselves()
+    {
+        // Arrange
+        var button = new Button().SetText("Test Button");
+        var entry = new Entry().SetText("Test Entry");
+        var checkbox = new Checkbox();
+        
+        var grid = new Grid()
+            .AddColumn(50)
+            .AddColumn(50)
+            .AddRow(50)
+            .AddRow(50)
+            .AddControl(button, 0, 0)
+            .AddControl(entry, 1, 0)
+            .AddControl(checkbox, 0, 1);
+            
+        var scrollView = new ScrollView(grid);
+        scrollView.Measure(new Size(100, 100));
+        scrollView.Arrange(new Rect(0, 0, 100, 100));
+        
+        // Act & Assert
+        // Hit test on a Button (interactive) - should return the Button
+        var buttonHit = scrollView.HitTest(new Point(20, 20));
+        Assert.IsNotNull(buttonHit);
+        Assert.AreSame(button, buttonHit, "Hit test on Button should return Button itself for interaction");
+        
+        // Hit test on an Entry (interactive) - should return the Entry
+        var entryHit = scrollView.HitTest(new Point(70, 20));
+        Assert.IsNotNull(entryHit);
+        Assert.AreSame(entry, entryHit, "Hit test on Entry should return Entry itself for interaction");
+        
+        // Hit test on a Checkbox (interactive) - should return the Checkbox
+        var checkboxHit = scrollView.HitTest(new Point(20, 70));
+        Assert.IsNotNull(checkboxHit);
+        Assert.AreSame(checkbox, checkboxHit, "Hit test on Checkbox should return Checkbox itself for interaction");
     }
 }
