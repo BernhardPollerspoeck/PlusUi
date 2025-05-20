@@ -63,7 +63,7 @@ internal class DataGridDemoPage(DataGridDemoPageViewModel vm) : UiPageElement(vm
     
     private DataGrid CreateManuallyConfiguredDataGrid()
     {
-        return new DataGrid()
+        return (DataGrid)(new DataGrid()
             .SetItemsSource(vm.CustomPeople)
             .SetAutoGenerateColumns(false)
             // Add custom columns
@@ -83,9 +83,7 @@ internal class DataGridDemoPage(DataGridDemoPageViewModel vm) : UiPageElement(vm
                     .SetPadding(new Margin(5, 3));
             })
             .AddColumn("ImageUrl", "Avatar", DataGridCellTemplate.Image)
-            .SetRowSpacing(1)
-            .SetColumnSpacing(1)
             .SetBackgroundColor(new SKColor(230, 230, 230))
-            .SetMargin(new Margin(10));
+            .SetMargin(new Margin(10)));
     }
 }
