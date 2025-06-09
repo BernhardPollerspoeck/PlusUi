@@ -1,6 +1,7 @@
 ﻿using PlusUi.core;
 using Sandbox.Controls;
 using Sandbox.Pages.ControlsGrid;
+using Sandbox.Pages.DataGridDemo;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.TextRendering;
@@ -103,8 +104,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetText("ScrollView Example")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(ScrollViewExamplePage))
-
+                .SetCommandParameter(typeof(ScrollViewExamplePage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("DataGrid Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(DataGridDemoPage))
         );
     }
 

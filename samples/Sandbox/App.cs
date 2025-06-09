@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using PlusUi.core;
 using Sandbox.Pages.ControlsGrid;
+using Sandbox.Pages.DataGridDemo;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.Main;
 using Sandbox.Pages.ScrollViewDemo;
@@ -29,6 +30,7 @@ public class App : IAppConfiguration
         builder.AddPage<TextRenderPage>().WithViewModel<TextRenderPageViewModel>();
         builder.AddPage<FormDemoPage>().WithViewModel<FormDemoPageViewModel>();
         builder.AddPage<ScrollViewExamplePage>().WithViewModel<ScrollViewExamplePageViewModel>();
+        builder.AddPage<DataGridDemoPage>().WithViewModel<DataGridDemoPageViewModel>();
 
         builder.AddPopup<TestPopup>().WithViewModel<TestPopupViewModel>();
     }
