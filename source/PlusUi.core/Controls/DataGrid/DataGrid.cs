@@ -10,6 +10,7 @@ namespace PlusUi.core;
 public class DataGrid : Grid
 {
     private readonly List<DataGridColumn> _columns = [];
+    private bool _gridStructureInitialized = false;
 
     /// <summary>
     /// Gets or sets whether columns are automatically generated from the data source.
@@ -108,6 +109,7 @@ public class DataGrid : Grid
     public DataGrid AddColumn(DataGridColumn column)
     {
         _columns.Add(column);
+        _gridStructureInitialized = false; // Reset to recalculate grid structure
         if (ItemsSource != null)
         {
             RefreshData();
@@ -183,24 +185,29 @@ public class DataGrid : Grid
             GenerateColumns(itemType);
         }
         
-        // Set up the column definitions
-        // First, clear any existing columns and add a new one for each column
-        SetColumns([]); // Clear all columns
+        // Clear existing children and rebuild the grid
+        ClearChildren();
         
-        for (var i = 0; i < _columns.Count; i++) 
+        // Set up the grid structure only if not already initialized or if column count changed
+        var expectedColumns = _columns.Count;
+        if (!_gridStructureInitialized || base.Columns.Count != expectedColumns)
         {
-            AddColumn(Column.Auto);
+            _gridStructureInitialized = true;
+            
+            // Note: We can't clear existing columns/rows from base Grid class
+            // So we work with what we have and add only what's needed
+            var currentColumns = base.Columns.Count;
+            for (var i = currentColumns; i < expectedColumns; i++) 
+            {
+                base.AddColumn(Column.Auto);
+            }
+            
+            // Ensure we have at least one row (for headers)
+            if (base.Rows.Count == 0)
+            {
+                base.AddRow(Row.Auto);
+            }
         }
-        
-        // Add column spacing
-        SetColumnSpacing(2);
-        
-        // Add a header row
-        SetRows([]); // Clear all rows
-        AddRow(Row.Auto);
-        
-        // Add row spacing
-        SetRowSpacing(1);
         
         // Add headers
         for (var i = 0; i < _columns.Count; i++)
@@ -216,12 +223,20 @@ public class DataGrid : Grid
         }
         
         // Add data rows
-        var rowIndex = 1;
-        foreach (var item in ItemsSource)
+        var dataItems = ItemsSource.Cast<object>().ToList();
+        var totalRowsNeeded = 1 + dataItems.Count; // 1 for header + data rows
+        var currentRows = base.Rows.Count;
+        
+        // Add any missing rows
+        for (var i = currentRows; i < totalRowsNeeded; i++)
         {
-            // Add a new row for each item
-            AddRow(Row.Auto);
-            
+            base.AddRow(Row.Auto);
+        }
+        
+        // Add data cells
+        var rowIndex = 1;
+        foreach (var item in dataItems)
+        {
             // Add cells for each column
             for (var i = 0; i < _columns.Count; i++)
             {
@@ -244,6 +259,7 @@ public class DataGrid : Grid
     private void GenerateColumns(Type itemType)
     {
         _columns.Clear();
+        _gridStructureInitialized = false; // Reset to recalculate grid structure
         
         // Get all properties
         var properties = itemType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
