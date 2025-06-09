@@ -1,27 +1,24 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using PlusUi.core;
 using Sandbox.Pages.Main;
-using System.ComponentModel;
-using System.Windows.Input;
 
 namespace Sandbox.Pages.ControlsGrid;
 
-internal class ControlsGridPageViewModel : ObservableObject
+internal partial class ControlsGridPageViewModel(INavigationService navigationService) : ObservableObject
 {
     [ObservableProperty]
     private int _rowHeight = 20;
 
-    public ICommand NavCommand { get; }
-    public ICommand IncrementCommand { get; }
-
-    public ControlsGridPageViewModel(INavigationService navigationService)
-    {
-        NavCommand = new SyncCommand(() => navigationService.NavigateTo<MainPage>());
-        IncrementCommand = new SyncCommand(Increment);
-    }
-
+    [RelayCommand]
     private void Increment()
     {
         RowHeight += 10;
+    }
+
+    [RelayCommand]
+    private void Nav()
+    {
+        navigationService.NavigateTo<MainPage>();
     }
 }

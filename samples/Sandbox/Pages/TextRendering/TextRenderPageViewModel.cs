@@ -1,10 +1,17 @@
-﻿using PlusUi.core;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using PlusUi.core;
 using Sandbox.Pages.Main;
 using System.Windows.Input;
 
 namespace Sandbox.Pages.TextRendering;
 
-public class TextRenderPageViewModel(INavigationService navigationService) : ViewModelBase
+public partial class TextRenderPageViewModel(INavigationService navigationService) : ObservableObject
 {
-    public ICommand NavCommand { get; } = new SyncCommand(() => navigationService.NavigateTo<MainPage>());
+    [RelayCommand]
+    private void Nav()
+    {
+        navigationService.NavigateTo<MainPage>();
+    }
+
 }

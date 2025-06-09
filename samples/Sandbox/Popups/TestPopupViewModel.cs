@@ -1,24 +1,17 @@
-﻿using PlusUi.core;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using PlusUi.core;
 using SkiaSharp;
 using System.Windows.Input;
 
 namespace Sandbox.Popups;
 
-public class TestPopupViewModel : ViewModelBase
+public partial class TestPopupViewModel(IPopupService popupService) : ObservableObject
 {
-    private readonly IPopupService _popupService;
-
-    public ICommand CloseCommand { get; }
-
-    public TestPopupViewModel(IPopupService popupService)
-    {
-        _popupService = popupService;
-        CloseCommand = new SyncCommand(Close);
-    }
-
+    [RelayCommand]
     private void Close()
     {
-        _popupService.ClosePopup();
+        popupService.ClosePopup();
     }
 }
 

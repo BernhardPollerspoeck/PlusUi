@@ -2,6 +2,7 @@
 using Sandbox.Controls;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
+using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.TextRendering;
 using SkiaSharp;
@@ -69,7 +70,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 
     protected override void ConfigurePageStyles(Style pageStyle)
     {
-        pageStyle.AddStyle<UiPageElement>(element 
+        pageStyle.AddStyle<UiPageElement>(element
             => element.SetBackgroundColor(new SKColor(0, 0, 0, 220)));
     }
 
@@ -103,7 +104,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetText("ScrollView Example")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(ScrollViewExamplePage))
+                .SetCommandParameter(typeof(ScrollViewExamplePage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("RawUserControl Example")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(RawUserControlPage))
 
         );
     }

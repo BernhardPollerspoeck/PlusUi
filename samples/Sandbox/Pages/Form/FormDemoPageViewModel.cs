@@ -1,9 +1,9 @@
-﻿using PlusUi.core;
-using System.Windows.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Sandbox.Pages.Form;
 
-public class FormDemoPageViewModel : ViewModelBase
+public partial class FormDemoPageViewModel : ObservableObject
 {
     public string Name { get; set => SetProperty(ref field, value); } = string.Empty;
 
@@ -19,12 +19,16 @@ public class FormDemoPageViewModel : ViewModelBase
 
     public bool DarkMode { get; set => SetProperty(ref field, value); }
 
-    public ICommand UploadImageCommand { get; }
-    public ICommand SubmitFormCommand { get; }
 
-    public FormDemoPageViewModel()
+    [RelayCommand]
+    private void UploadImage()
     {
-        UploadImageCommand = new SyncCommand(() => { /* Upload image logic */ });
-        SubmitFormCommand = new SyncCommand(() => { /* Submit form logic */ });
+        // Logic to upload an image
+    }
+    [RelayCommand]
+    private void SubmitForm()
+    {
+        // Logic to submit the form
+        // For example, you might want to validate the fields and then send them to a server or save them locally
     }
 }

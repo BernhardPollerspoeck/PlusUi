@@ -1,11 +1,13 @@
-﻿using PlusUi.core;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using PlusUi.core;
 using Sandbox.Popups;
 using SkiaSharp;
 using System.Windows.Input;
 
 namespace Sandbox.Pages.Main;
 
-public class MainPageViewModel : ViewModelBase
+public partial class MainPageViewModel(INavigationService navigationService, IPopupService popupService) : ObservableObject
 {
     public string? Text
     {
@@ -25,27 +27,13 @@ public class MainPageViewModel : ViewModelBase
         set => SetProperty(ref field, value);
     }
 
-    public ICommand SetColorCommand { get; }
-    public ICommand NavigateCommand { get; }
-    public ICommand PopupCommand { get; }
-
-    private readonly INavigationService _navigationService;
-    private readonly IPopupService _popupService;
-
-    public MainPageViewModel(INavigationService navigationService, IPopupService popupService)
-    {
-        _navigationService = navigationService;
-        _popupService = popupService;
-        SetColorCommand = new SyncCommand(SetColor);
-        NavigateCommand = new SyncCommand(Navigate);
-        PopupCommand = new SyncCommand(Popup);
-    }
-
+    [RelayCommand]
     private void SetColor()
     {
         Color = new SKColor((uint)Random.Shared.Next(0xFF0000, 0xFFFFFF) | 0xFF000000);
     }
 
+    [RelayCommand]
     private void Navigate(object? arg)
     {
         if (arg is Type pageType)
@@ -54,13 +42,14 @@ public class MainPageViewModel : ViewModelBase
             typeof(INavigationService)
                 .GetMethod(nameof(INavigationService.NavigateTo))
                 ?.MakeGenericMethod(pageType)
-                .Invoke(_navigationService, null);
+                .Invoke(navigationService, null);
         }
     }
 
+    [RelayCommand]
     private void Popup()
     {
-        _popupService.ShowPopup<TestPopup, string>(
+        popupService.ShowPopup<TestPopup, string>(
             arg: "Some Argument",
             onClosed: () => Color = SKColors.Green,
             configure: cfg =>
