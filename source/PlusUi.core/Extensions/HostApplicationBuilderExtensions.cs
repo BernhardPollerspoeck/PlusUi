@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.ComponentModel;
 
 namespace PlusUi.core;
 
@@ -50,7 +51,7 @@ public static class HostApplicationBuilderExtensions
         return builder;
     }
     public static HostApplicationBuilder WithViewModel<TViewModel>(this HostApplicationBuilder builder)
-        where TViewModel : ViewModelBase
+        where TViewModel : class, INotifyPropertyChanged
     {
         builder.Services.AddTransient<TViewModel>();
         return builder;

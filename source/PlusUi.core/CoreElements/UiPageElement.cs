@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
+using System.ComponentModel;
 
 namespace PlusUi.core;
 
-public abstract class UiPageElement(ViewModelBase vm) : UiLayoutElement<UiPageElement>
+public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement<UiPageElement>
 {
-    public ViewModelBase ViewModel { get; } = vm;
+    public INotifyPropertyChanged ViewModel { get; } = vm;
     private UiElement _tree = new NullElement();
 
     protected override bool NeadsMeasure => true;

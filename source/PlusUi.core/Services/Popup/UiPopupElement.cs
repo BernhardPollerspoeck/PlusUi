@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
+using System.ComponentModel;
 
 namespace PlusUi.core;
 //TODO: move towards CoreElements
-public abstract class UiPopupElement<TArgument>(ViewModelBase vm) : UiPopupElement(vm)
+public abstract class UiPopupElement<TArgument>(INotifyPropertyChanged vm) : UiPopupElement(vm)
 {
     public TArgument? Argument { get; private set; }
     public Action? OnClosed { get; private set; }
@@ -25,7 +26,7 @@ public abstract class UiPopupElement<TArgument>(ViewModelBase vm) : UiPopupEleme
 }
 public abstract class UiPopupElement : UiElement
 {
-    public ViewModelBase ViewModel { get; }
+    public INotifyPropertyChanged ViewModel { get; }
     private UiElement _tree = new NullElement();
 
     protected override bool SkipBackground => true;
@@ -33,7 +34,7 @@ public abstract class UiPopupElement : UiElement
     public bool CloseOnBackgroundClick { get; private set; }
     public bool CloseOnEscape { get; private set; }
 
-    protected UiPopupElement(ViewModelBase vm)
+    protected UiPopupElement(INotifyPropertyChanged vm)
     {
         ViewModel = vm;
         SetHorizontalAlignment(HorizontalAlignment.Center);

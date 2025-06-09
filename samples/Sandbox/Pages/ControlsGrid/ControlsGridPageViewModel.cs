@@ -1,16 +1,15 @@
-﻿using PlusUi.core;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using PlusUi.core;
 using Sandbox.Pages.Main;
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace Sandbox.Pages.ControlsGrid;
 
-internal class ControlsGridPageViewModel : ViewModelBase
+internal class ControlsGridPageViewModel : ObservableObject
 {
-    public int RowHeight
-    {
-        get => field;
-        set => SetProperty(ref field, value);
-    } = 20;
+    [ObservableProperty]
+    private int _rowHeight = 20;
 
     public ICommand NavCommand { get; }
     public ICommand IncrementCommand { get; }
