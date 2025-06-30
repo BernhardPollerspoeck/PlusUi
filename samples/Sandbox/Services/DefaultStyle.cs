@@ -30,7 +30,12 @@ internal class DefaultStyle : IApplicationStyle
                 .SetDesiredWidth(200))
 
             .AddStyle<Button>(element => element
-                .SetBackgroundColor(SKColors.Green));
+                .SetBackgroundColor(SKColors.Green))
+
+            .AddStyle<Border>(element => element
+                .SetStrokeColor(SKColors.Gray)
+                .SetStrokeThickness(1f)
+                .SetStrokeType(StrokeType.Solid));
 
     }
 }
