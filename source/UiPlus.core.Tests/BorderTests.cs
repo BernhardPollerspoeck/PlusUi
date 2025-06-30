@@ -95,4 +95,14 @@ public class BorderTests
         var dottedBorder = new Border().SetStrokeType(StrokeType.Dotted);
         Assert.AreEqual(StrokeType.Dotted, dottedBorder.StrokeType);
     }
+
+    [TestMethod]
+    public void TestBorder_StrokeThicknessValidation()
+    {
+        // Arrange & Act
+        var border = new Border().SetStrokeThickness(-5f);
+        
+        // Assert - negative values should be clamped to 0
+        Assert.AreEqual(0f, border.StrokeThickness);
+    }
 }

@@ -2,13 +2,34 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// Defines the stroke pattern types available for Border control.
+/// </summary>
 public enum StrokeType
 {
+    /// <summary>Solid continuous stroke</summary>
     Solid,
+    /// <summary>Dashed stroke pattern</summary>
     Dashed,
+    /// <summary>Dotted stroke pattern</summary>
     Dotted
 }
 
+/// <summary>
+/// Border control that provides background color, stroke color, stroke thickness, and stroke type.
+/// Inherits from UiLayoutElement to support a single child element with proper border spacing.
+/// </summary>
+/// <example>
+/// Basic usage:
+/// <code>
+/// new Border()
+///     .SetStrokeColor(SKColors.Red)
+///     .SetStrokeThickness(2f)
+///     .SetStrokeType(StrokeType.Dashed)
+///     .SetBackgroundColor(SKColors.LightBlue)
+///     .AddChild(new Label().SetText("Content"));
+/// </code>
+/// </example>
 public class Border : UiLayoutElement<Border>
 {
     protected override bool SkipBackground => true;
@@ -49,7 +70,7 @@ public class Border : UiLayoutElement<Border>
 
     public Border SetStrokeThickness(float thickness)
     {
-        StrokeThickness = thickness;
+        StrokeThickness = Math.Max(0, thickness); // Ensure non-negative
         return this;
     }
     public Border BindStrokeThickness(string propertyName, Func<float> propertyGetter)
