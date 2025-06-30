@@ -22,18 +22,28 @@ internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm
             .AddChild(row: 1, column: 2, rowSpan: 2, child: new Solid().SetBackgroundColor(SKColors.Purple).IgnoreStyling())
 
             .AddChild(row: 1, column: 1, child: new VStack(
-                new Button()
-                    .SetText("Increment")
-                    .SetTextSize(20)
-                    .SetCommand(vm.IncrementCommand)
-                    .SetTextColor(SKColors.Black)
-                    .SetBackgroundColor(SKColors.White),
-                new Button()
-                   .SetText("Back")
-                   .SetTextSize(20)
-                   .SetCommand(vm.NavCommand)
-                   .SetTextColor(SKColors.Black)
-                   .SetBackgroundColor(SKColors.White))
+                new Border()
+                    .SetStrokeColor(SKColors.White)
+                    .SetStrokeThickness(2f)
+                    .SetStrokeType(StrokeType.Solid)
+                    .SetBackgroundColor(new SKColor(0, 0, 0, 150))
+                    .AddChild(new Button()
+                        .SetText("Increment")
+                        .SetTextSize(20)
+                        .SetCommand(vm.IncrementCommand)
+                        .SetTextColor(SKColors.Black)
+                        .SetBackgroundColor(SKColors.White)),
+                new Border()
+                    .SetStrokeColor(SKColors.Cyan)
+                    .SetStrokeThickness(3f)
+                    .SetStrokeType(StrokeType.Dashed)
+                    .SetCornerRadius(5)
+                    .AddChild(new Button()
+                       .SetText("Back")
+                       .SetTextSize(20)
+                       .SetCommand(vm.NavCommand)
+                       .SetTextColor(SKColors.Black)
+                       .SetBackgroundColor(SKColors.White)))
             );
 
     }
