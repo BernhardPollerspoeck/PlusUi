@@ -42,6 +42,10 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
     {
     }
 
+    protected override void UpdateBindingsInternal()
+    {
+        _tree.UpdateBindings();
+    }
     protected override void UpdateBindingsInternal(string propertyName)
     {
         _tree.UpdateBindings(propertyName);

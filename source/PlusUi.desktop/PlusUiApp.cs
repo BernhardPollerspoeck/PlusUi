@@ -15,7 +15,7 @@ public class PlusUiApp(string[] args)
         var rootPage = app.ConfigureRootPage();
 
         builder.UsePlusUiInternal(rootPage);
-        
+
         builder.Services.AddSingleton<DesktopKeyboardHandler>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<DesktopKeyboardHandler>());
         builder.Services.AddHostedService<WindowManager>();

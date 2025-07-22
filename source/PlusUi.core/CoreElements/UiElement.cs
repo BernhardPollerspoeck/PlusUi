@@ -327,6 +327,17 @@ public abstract class UiElement
         }
         setterActions.Add(value => setter((TValue)value));
     }
+    public void UpdateBindings()
+    {
+        foreach (var propertyGroup in _bindings)
+        {
+            foreach (var update in propertyGroup.Value)
+            {
+                update();
+            }
+        }
+        UpdateBindingsInternal();
+    }
     public void UpdateBindings(string propertyName)
     {
         if (_bindings.TryGetValue(propertyName, out var updateActions))
@@ -339,6 +350,7 @@ public abstract class UiElement
 
         UpdateBindingsInternal(propertyName);
     }
+    protected virtual void UpdateBindingsInternal() { }
     protected virtual void UpdateBindingsInternal(string propertyName) { }
     #endregion
 

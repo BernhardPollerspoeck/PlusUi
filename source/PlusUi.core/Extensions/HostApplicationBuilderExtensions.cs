@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PlusUi.core.Services;
 using System.ComponentModel;
 
 namespace PlusUi.core;
@@ -29,6 +30,7 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton(sp => new PlusUiNavigationService(sp));
         builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
+        builder.Services.AddSingleton<IApplicationTimeProvider, ApplicationTimeProvider>();
         builder.Services.AddSingleton<PlusUiPopupService>();
         builder.Services.AddSingleton<IPopupService>(sp => sp.GetRequiredService<PlusUiPopupService>());
         builder.Services.AddTransient<IPopupConfiguration, PopupConfiguration>();

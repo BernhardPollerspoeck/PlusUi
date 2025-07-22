@@ -70,6 +70,13 @@ public abstract class UiLayoutElement : UiElement
     #endregion
 
     #region bindings
+    protected override void UpdateBindingsInternal()
+    {
+        foreach (var child in Children)
+        {
+            child.UpdateBindings();
+        }
+    }
     protected override void UpdateBindingsInternal(string propertyName)
     {
         foreach (var child in Children)
