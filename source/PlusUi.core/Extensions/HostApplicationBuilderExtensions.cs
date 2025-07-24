@@ -18,8 +18,11 @@ public static class HostApplicationBuilderExtensions
 
     public static HostApplicationBuilder UsePlusUiInternal(
         this HostApplicationBuilder builder,
-        Type mainPageType)
+        IAppConfiguration appConfiguration,
+        string[] args)
     {
+        builder.Services.AddSingleton(appConfiguration);
+        builder.Services.AddSingleton<ICommandLineService>(sp => new CommandLineService(args));
         builder.Services.AddSingleton<ServiceProviderService>();
         builder.Services.AddSingleton<RenderService>();
         builder.Services.AddSingleton<InputService>();
@@ -37,8 +40,8 @@ public static class HostApplicationBuilderExtensions
 
         builder.Services.AddSingleton(sp =>
         {
-            var mainPage = sp.GetRequiredService(mainPageType) as UiPageElement
-                ?? throw new Exception("MainPage not found");
+            var appConfiguration = sp.GetRequiredService<IAppConfiguration>();
+            var mainPage = appConfiguration.GetRootPage(sp);
             return new NavigationContainer(mainPage);
         });
         return builder;

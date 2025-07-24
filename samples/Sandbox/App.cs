@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using PlusUi.core;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
@@ -35,8 +36,8 @@ public class App : IAppConfiguration
         builder.AddPopup<TestPopup>().WithViewModel<TestPopupViewModel>();
     }
 
-    public Type ConfigureRootPage()
+    public UiPageElement GetRootPage(IServiceProvider serviceProvider)
     {
-        return typeof(MainPage);
+        return serviceProvider.GetRequiredService<MainPage>();
     }
 }

@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
+    <PackageReference Include="FFMpegCore" Version="5.2.0" />
+  </ItemGroup>
+  
+  <!-- FFmpeg Binaries für Windows (alle DLLs) -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <Content Include="ffmpeg\win-x64\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+
+  <!-- FFmpeg Binaries für Linux -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+    <Content Include="ffmpeg\linux-x64\ffmpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>ffmpeg</Link>
+    </Content>
+  </ItemGroup>
+
+  <!-- FFmpeg Binaries für macOS -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+    <Content Include="ffmpeg\osx-x64\ffmpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>ffmpeg</Link>
+    </Content>
+  </ItemGroup>
+  
+</Project>
