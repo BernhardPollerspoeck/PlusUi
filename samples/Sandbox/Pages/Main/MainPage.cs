@@ -19,7 +19,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 new HStack(
                     new Solid().SetBackgroundColor(new SKColor(0, 255, 255)),
                     new Solid().SetBackgroundColor(new SKColor(255, 0, 255)).SetIsVisible(false),
-                    new Solid().SetBackgroundColor(new SKColor(255, 255, 0))),
+                    new Solid().SetBackgroundColor(new SKColor(255, 255, 0)).SetVisualOffset(new(0,10))),
                 new HStack(
                     new Solid().SetBackgroundColor(new SKColor(255, 0, 0)),
                     new Solid().SetBackgroundColor(new SKColor(0, 255, 0)),
