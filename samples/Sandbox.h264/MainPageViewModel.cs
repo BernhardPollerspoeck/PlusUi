@@ -1,10 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using PlusUi.core.Services;
 
 namespace Sandbox.h264;
 
 public partial class MainPageViewModel(
-    IApplicationTimeProvider timeProvider)
+    TimeProvider timeProvider)
     : ObservableObject
 {
 
@@ -12,7 +11,7 @@ public partial class MainPageViewModel(
 
     private TimeSpan GetTimestamp()
     {
-        var val = TimeSpan.FromSeconds(10) - timeProvider.Now.TimeOfDay;
+        var val = TimeSpan.FromSeconds(10) - timeProvider.GetUtcNow().TimeOfDay;
         return val < TimeSpan.Zero ? TimeSpan.Zero : val;
     }
 

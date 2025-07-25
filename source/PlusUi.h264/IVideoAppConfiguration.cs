@@ -8,5 +8,5 @@ public interface IVideoAppConfiguration
     void ConfigureVideo(VideoConfiguration videoConfiguration);
     void ConfigureApp(HostApplicationBuilder builder);
     UiPageElement GetRootPage(IServiceProvider serviceProvider);
-    IAudioSequenceProvider GetAudioSequenceProvider(IServiceProvider serviceProvider);
+    IAudioSequenceProvider? GetAudioSequenceProvider(IServiceProvider serviceProvider);
 }

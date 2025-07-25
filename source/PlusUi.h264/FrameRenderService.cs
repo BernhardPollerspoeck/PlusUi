@@ -16,8 +16,8 @@ internal class FrameRenderService(
     IOptions<VideoConfiguration> videoOptions,
     ILogger<FrameRenderService> logger,
     ICommandLineService commandLineService,
-    IAudioSequenceProvider audioSequenceProvider,
-    AudioSequenceConverter audioSequenceConverter)
+    AudioSequenceConverter audioSequenceConverter,
+    IAudioSequenceProvider? audioSequenceProvider = null)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,31 +43,45 @@ internal class FrameRenderService(
             FrameRate = videoOptions.Value.FrameRate,
         };
 
-        var audioSequence = audioSequenceProvider.GetAudioSequence().ToList();
-
         var arguments = FFMpegArguments
             .FromPipeInput(videoFramesSource);
-        foreach (var audioFile in audioSequence)
+
+        var complexFilter = (string?)null;
+        if (audioSequenceProvider is not null)
         {
-            arguments.AddFileInput(audioFile.FilePath);
+            var audioSequence = audioSequenceProvider.GetAudioSequence().ToList();
+
+            foreach (var audioFile in audioSequence)
+            {
+                arguments.AddFileInput(audioFile.FilePath);
+            }
+            complexFilter = audioSequenceConverter.GetComplexFilter(audioSequence);
         }
-        var complexFilter = audioSequenceConverter.GetComplexFilter(audioSequence);
 
         await arguments
-            .OutputToFile(videoOptions.Value.OutputFilePath, true, options => options
-                .WithVideoCodec("libx264")
-                .WithConstantRateFactor(23)
-                .WithVideoBitrate(2000)
-                .ForcePixelFormat("yuv420p")
-                .WithFramerate(videoOptions.Value.FrameRate)
-                .WithVideoFilters(filterOptions => filterOptions
-                    .Scale(videoOptions.Value.Width, videoOptions.Value.Height))
-                .WithAudioCodec("aac")
-                .WithAudioBitrate(128)
-                .WithCustomArgument($"-filter_complex \"{complexFilter}\"")
-                .WithCustomArgument("-map 0:v -map \"[aout]\"")
-                .WithFastStart()
-                )
+            .OutputToFile(
+                videoOptions.Value.OutputFilePath,
+                true,
+                options =>
+                {
+                    options
+                        .WithVideoCodec("libx264")
+                        .WithConstantRateFactor(23)
+                        .WithVideoBitrate(2000)
+                        .ForcePixelFormat("yuv420p")
+                        .WithFramerate(videoOptions.Value.FrameRate)
+                        .WithVideoFilters(filterOptions => filterOptions
+                            .Scale(videoOptions.Value.Width, videoOptions.Value.Height));
+                    if (audioSequenceProvider is not null)
+                    {
+                        options
+                            .WithAudioCodec("aac")
+                            .WithAudioBitrate(128)
+                            .WithCustomArgument($"-filter_complex \"{complexFilter}\"")
+                            .WithCustomArgument("-map 0:v -map \"[aout]\"");
+                    }
+                    options.WithFastStart();
+                })
             .ProcessAsynchronously();
 
     }

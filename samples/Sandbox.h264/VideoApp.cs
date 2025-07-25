@@ -10,7 +10,7 @@ public class VideoApp : IVideoAppConfiguration
     {
         builder.Services.AddSingleton<MainPageViewModel>();
         builder.Services.AddSingleton<MainPage>();
-        builder.Services.AddSingleton<IAudioSequenceProvider>(sp => sp.GetRequiredService<MainPage>());
+        //builder.Services.AddSingleton<IAudioSequenceProvider>(sp => sp.GetRequiredService<MainPage>());
 
         builder.Services.AddSingleton<IApplicationStyle, ApplicationStyle>();
     }
@@ -20,16 +20,16 @@ public class VideoApp : IVideoAppConfiguration
         return serviceProvider.GetRequiredService<MainPage>();
     }
 
-    public IAudioSequenceProvider GetAudioSequenceProvider(IServiceProvider serviceProvider)
+    public IAudioSequenceProvider? GetAudioSequenceProvider(IServiceProvider serviceProvider)
     {
-        return serviceProvider.GetRequiredService<MainPage>();
+        return null;// serviceProvider.GetRequiredService<MainPage>();
     }
 
     public void ConfigureVideo(VideoConfiguration videoConfiguration)
     {
         videoConfiguration.Width = 800;
         videoConfiguration.Height = 100;
-        videoConfiguration.OutputFilePath = "output.mp4";
+        videoConfiguration.OutputFilePath = "../output.mp4";
         videoConfiguration.FrameRate = 60;
         videoConfiguration.Duration = TimeSpan.FromSeconds(11);
     }

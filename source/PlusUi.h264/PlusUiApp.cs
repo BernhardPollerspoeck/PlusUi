@@ -33,7 +33,8 @@ public class PlusUiApp(string[] args)
         builder.Services.AddSingleton<FrameInformationService>();
         builder.Services.AddSingleton<AudioSequenceConverter>();
         builder.Services.AddHostedService<FrameRenderService>();
-        builder.Services.AddSingleton<IApplicationTimeProvider, VideoTimeProvider>();
+        builder.Services.AddSingleton<VideoTimeProvider>();
+        builder.Services.AddSingleton<TimeProvider>(sp => sp.GetRequiredService<VideoTimeProvider>());
 
         builder.ConfigurePlusUiApp(app);
 

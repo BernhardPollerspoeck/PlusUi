@@ -6,7 +6,6 @@ namespace Sandbox.h264;
 public class MainPage(
     MainPageViewModel vm)
     : UiPageElement(vm)
-    , IAudioSequenceProvider
 {
     protected override UiElement Build()
     {

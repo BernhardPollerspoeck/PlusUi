@@ -35,7 +35,7 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
 
         var app = CreateApp(builder);
 
-        builder.UsePlusUiInternal([]);
+        builder.UsePlusUiInternal(app, []);
         builder.Services.AddSingleton<OpenGlViewController>();
         //builder.Services.AddSingleton<TapGestureListener>();
         //builder.Services.AddSingleton<KeyCaptureEditText>();

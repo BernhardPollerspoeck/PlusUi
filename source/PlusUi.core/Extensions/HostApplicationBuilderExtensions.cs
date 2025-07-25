@@ -33,7 +33,7 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton(sp => new PlusUiNavigationService(sp));
         builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
-        builder.Services.AddSingleton<IApplicationTimeProvider, ApplicationTimeProvider>();
+        builder.Services.AddSingleton(sp => TimeProvider.System);
         builder.Services.AddSingleton<PlusUiPopupService>();
         builder.Services.AddSingleton<IPopupService>(sp => sp.GetRequiredService<PlusUiPopupService>());
         builder.Services.AddTransient<IPopupConfiguration, PopupConfiguration>();
