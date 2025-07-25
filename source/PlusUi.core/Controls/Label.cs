@@ -11,8 +11,8 @@ public class Label : UiTextElement<Label>
 
         canvas.DrawText(
             Text ?? string.Empty,
-            Position.X,
-            Position.Y + TextSize,
+            Position.X + VisualOffset.X,
+            Position.Y + VisualOffset.Y + TextSize,
             (SKTextAlign)HorizontalTextAlignment,
             Font,
             Paint);

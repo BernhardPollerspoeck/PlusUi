@@ -27,6 +27,17 @@ public abstract class UiElement<T> : UiElement where T : UiElement<T>
         base.BindMargin(propertyName, propertyGetter);
         return (T)this;
     }
+
+    public new T SetVisualOffset(Point offset)
+    {
+        base.SetVisualOffset(offset);
+        return (T)this;
+    }
+    public new T BindVisualOffset(string propertyName, Func<Point> propertyGetter)
+    {
+        base.BindVisualOffset(propertyName, propertyGetter);
+        return (T)this;
+    }
 }
 public abstract class UiElement
 {
@@ -43,6 +54,20 @@ public abstract class UiElement
     public UiElement SetDebug(bool debug = true)
     {
         Debug = debug;
+        return this;
+    }
+    #endregion
+
+    #region VisualOffset
+    internal Point VisualOffset { get; set; } = new Point(0, 0);
+    public UiElement SetVisualOffset(Point offset)
+    {
+        VisualOffset = offset;
+        return this;
+    }
+    public UiElement BindVisualOffset(string propertyName, Func<Point> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => VisualOffset = propertyGetter());
         return this;
     }
     #endregion
@@ -366,19 +391,19 @@ public abstract class UiElement
                 StrokeWidth = 1
             };
             var rect = new SKRect(
-                Position.X,
-                Position.Y,
-                Position.X + ElementSize.Width,
-                Position.Y + ElementSize.Height);
+                Position.X + VisualOffset.X,
+                Position.Y + VisualOffset.Y,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                Position.Y + VisualOffset.Y + ElementSize.Height);
             canvas.DrawRect(rect, debugPaint);
 
             if (Margin.Horizontal > 0 || Margin.Vertical > 0)
             {
                 var marginRect = new SKRect(
-                    Position.X - Margin.Left,
-                    Position.Y - Margin.Top,
-                    Position.X + ElementSize.Width + Margin.Right,
-                    Position.Y + ElementSize.Height + Margin.Bottom);
+                    Position.X + VisualOffset.X - Margin.Left,
+                    Position.Y + VisualOffset.Y - Margin.Top,
+                    Position.X + VisualOffset.X + ElementSize.Width + Margin.Right,
+                    Position.Y + VisualOffset.Y + ElementSize.Height + Margin.Bottom);
                 canvas.DrawRect(marginRect, debugPaint);
             }
         }
@@ -387,10 +412,10 @@ public abstract class UiElement
         if (BackgroundColor != SKColors.Transparent && !SkipBackground)
         {
             var rect = new SKRect(
-                Position.X,
-                Position.Y,
-                Position.X + ElementSize.Width,
-                Position.Y + ElementSize.Height);
+                Position.X + VisualOffset.X,
+                Position.Y + VisualOffset.Y,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                Position.Y + VisualOffset.Y + ElementSize.Height);
             if (CornerRadius > 0)
             {
                 canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
