@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="CopyFFmpegFiles" AfterTargets="Build">
+    <!-- Copy Windows FFmpeg files -->
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+      <FFmpegFilesWin Include="$(MSBuildThisFileDirectory)..\content\ffmpeg\win-x64\*.*" />
+    </ItemGroup>
+    <Copy Condition="$([MSBuild]::IsOSPlatform('Windows'))" SourceFiles="@(FFmpegFilesWin)" DestinationFolder="$(TargetDir)" />
+
+    <!-- Copy Linux FFmpeg files if they exist -->
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux')) AND Exists('$(MSBuildThisFileDirectory)..\content\ffmpeg\linux-x64')">
+      <FFmpegFilesLinux Include="$(MSBuildThisFileDirectory)..\content\ffmpeg\linux-x64\*.*" />
+    </ItemGroup>
+    <Copy Condition="$([MSBuild]::IsOSPlatform('Linux')) AND Exists('$(MSBuildThisFileDirectory)..\content\ffmpeg\linux-x64')" SourceFiles="@(FFmpegFilesLinux)" DestinationFolder="$(TargetDir)" />
+
+    <!-- Copy macOS FFmpeg files if they exist -->
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) AND Exists('$(MSBuildThisFileDirectory)..\content\ffmpeg\osx-x64')">
+      <FFmpegFilesMac Include="$(MSBuildThisFileDirectory)..\content\ffmpeg\osx-x64\*.*" />
+    </ItemGroup>
+    <Copy Condition="$([MSBuild]::IsOSPlatform('OSX')) AND Exists('$(MSBuildThisFileDirectory)..\content\ffmpeg\osx-x64')" SourceFiles="@(FFmpegFilesMac)" DestinationFolder="$(TargetDir)" />
+  </Target>
+</Project>
