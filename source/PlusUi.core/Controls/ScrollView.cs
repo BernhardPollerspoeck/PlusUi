@@ -143,27 +143,34 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
     
     public override void Render(SKCanvas canvas)
     {
-        // Save canvas state and apply clipping
-        canvas.Save();
-        var rect = new SKRect(
-            Position.X + VisualOffset.X,
-            Position.Y + VisualOffset.Y,
-            Position.X + VisualOffset.X + ElementSize.Width,
-            Position.Y + VisualOffset.Y + ElementSize.Height);
-            
-        // Apply clipping with corner radius if needed
-        if (CornerRadius > 0)
+        if (IsVisible)
         {
-            canvas.ClipRoundRect(new SKRoundRect(rect, CornerRadius, CornerRadius));
-        }
-        else
-        {
-            canvas.ClipRect(rect);
+            // Save canvas state and apply clipping
+            canvas.Save();
+            var rect = new SKRect(
+                Position.X + VisualOffset.X,
+                Position.Y + VisualOffset.Y,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                Position.Y + VisualOffset.Y + ElementSize.Height);
+
+            // Apply clipping with corner radius if needed
+            if (CornerRadius > 0)
+            {
+                canvas.ClipRoundRect(new SKRoundRect(rect, CornerRadius, CornerRadius));
+            }
+            else
+            {
+                canvas.ClipRect(rect);
+            }
         }
         
         // Call base to render background (now clipped)
         base.Render(canvas);
-        
+        if (!IsVisible)
+        {
+            return;
+        }
+
         // Store the original visual offset of the content
         var originalContentOffset = _content.VisualOffset;
         

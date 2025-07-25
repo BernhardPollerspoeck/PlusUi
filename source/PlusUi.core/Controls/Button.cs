@@ -69,6 +69,10 @@ public class Button : UiTextElement<Button>, IInputControl
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
+        if (!IsVisible)
+        {
+            return;
+        }
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 

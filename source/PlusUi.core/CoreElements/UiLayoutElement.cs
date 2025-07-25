@@ -62,22 +62,25 @@ public abstract class UiLayoutElement : UiElement
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
-        foreach (var child in Children)
+
+        if (IsVisible)
         {
-            // Save the current VisualOffset
-            var childOriginalOffset = child.VisualOffset;
-            
-            // Apply parent's VisualOffset to child (additive)
-            child.SetVisualOffset(new Point(
-                childOriginalOffset.X + VisualOffset.X,
-                childOriginalOffset.Y + VisualOffset.Y
-            ));
-            
-            // Render the child
-            child.Render(canvas);
-            
-            // Restore original VisualOffset
-            child.SetVisualOffset(childOriginalOffset);
+            foreach (var child in Children)
+            {
+                // Save the current VisualOffset
+                var childOriginalOffset = child.VisualOffset;
+
+                // Apply parent's VisualOffset to child (additive)
+                child.SetVisualOffset(new Point(
+                    childOriginalOffset.X + VisualOffset.X,
+                    childOriginalOffset.Y + VisualOffset.Y
+                ));
+                // Render the child
+                child.Render(canvas);
+
+                // Restore original VisualOffset
+                child.SetVisualOffset(childOriginalOffset);
+            }
         }
     }
     #endregion

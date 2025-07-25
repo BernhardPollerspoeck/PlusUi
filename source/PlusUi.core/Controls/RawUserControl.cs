@@ -14,6 +14,10 @@ public abstract class RawUserControl : UiElement
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
+        if (!IsVisible)
+        {
+            return;
+        }
 
         var bitmap = new SKBitmap((int)Size.Width, (int)Size.Height);
         RenderControl(bitmap);

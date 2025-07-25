@@ -128,6 +128,10 @@ public class Image : UiElement<Image>
         {
             return;
         }
+        if (!IsVisible)
+        {
+            return;
+        }
 
         var destRect = new SKRect(
             Position.X + VisualOffset.X,

@@ -18,7 +18,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
             new VStack(
                 new HStack(
                     new Solid().SetBackgroundColor(new SKColor(0, 255, 255)),
-                    new Solid().SetBackgroundColor(new SKColor(255, 0, 255)),
+                    new Solid().SetBackgroundColor(new SKColor(255, 0, 255)).SetIsVisible(false),
                     new Solid().SetBackgroundColor(new SKColor(255, 255, 0))),
                 new HStack(
                     new Solid().SetBackgroundColor(new SKColor(255, 0, 0)),

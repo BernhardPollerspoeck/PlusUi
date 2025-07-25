@@ -8,6 +8,10 @@ public class Label : UiTextElement<Label>
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
+        if (!IsVisible)
+        {
+            return;
+        }
 
         canvas.DrawText(
             Text ?? string.Empty,

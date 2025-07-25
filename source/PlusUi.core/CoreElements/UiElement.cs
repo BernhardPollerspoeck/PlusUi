@@ -38,6 +38,18 @@ public abstract class UiElement<T> : UiElement where T : UiElement<T>
         base.BindVisualOffset(propertyName, propertyGetter);
         return (T)this;
     }
+
+    public new T SetIsVisible(bool isVisible)
+    {
+        base.SetIsVisible(isVisible);
+        return (T)this;
+    }
+
+    public new T BindIsVisible(string propertyName, Func<bool> propertyGetter)
+    {
+        base.BindIsVisible(propertyName, propertyGetter);
+        return (T)this;
+    }
 }
 public abstract class UiElement
 {
@@ -54,6 +66,22 @@ public abstract class UiElement
     public UiElement SetDebug(bool debug = true)
     {
         Debug = debug;
+        return this;
+    }
+    #endregion
+
+    #region IsVisible
+    internal bool IsVisible { get; set; } = true;
+
+    public UiElement SetIsVisible(bool isVisible)
+    {
+        IsVisible = isVisible;
+        return this;
+    }
+
+    public UiElement BindIsVisible(string propertyName, Func<bool> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => IsVisible = propertyGetter());
         return this;
     }
     #endregion
@@ -382,7 +410,7 @@ public abstract class UiElement
     #region rendering
     public virtual void Render(SKCanvas canvas)
     {
-        if (Debug is true)
+        if (Debug)
         {
             var debugPaint = new SKPaint
             {
@@ -409,20 +437,23 @@ public abstract class UiElement
         }
 
 
-        if (BackgroundColor != SKColors.Transparent && !SkipBackground)
+        if (IsVisible)
         {
-            var rect = new SKRect(
-                Position.X + VisualOffset.X,
-                Position.Y + VisualOffset.Y,
-                Position.X + VisualOffset.X + ElementSize.Width,
-                Position.Y + VisualOffset.Y + ElementSize.Height);
-            if (CornerRadius > 0)
+            if (BackgroundColor != SKColors.Transparent && !SkipBackground)
             {
-                canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
-            }
-            else
-            {
-                canvas.DrawRect(rect, BackgroundPaint);
+                var rect = new SKRect(
+                    Position.X + VisualOffset.X,
+                    Position.Y + VisualOffset.Y,
+                    Position.X + VisualOffset.X + ElementSize.Width,
+                    Position.Y + VisualOffset.Y + ElementSize.Height);
+                if (CornerRadius > 0)
+                {
+                    canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
+                }
+                else
+                {
+                    canvas.DrawRect(rect, BackgroundPaint);
+                }
             }
         }
     }

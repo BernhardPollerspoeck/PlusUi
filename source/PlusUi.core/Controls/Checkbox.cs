@@ -49,6 +49,10 @@ public class Checkbox : UiElement<Checkbox>, IToggleButtonControl
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
+        if (!IsVisible)
+        {
+            return;
+        }
         BackgroundPaint.StrokeWidth = 2;
         BackgroundPaint.Style = SKPaintStyle.Stroke;
         var rect = new SKRect(
