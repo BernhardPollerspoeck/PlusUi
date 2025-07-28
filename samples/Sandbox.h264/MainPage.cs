@@ -1,5 +1,6 @@
 ﻿using PlusUi.core;
 using PlusUi.h264;
+using SkiaSharp;
 
 namespace Sandbox.h264;
 
@@ -9,12 +10,27 @@ public class MainPage(
 {
     protected override UiElement Build()
     {
-        return new HStack(
-            new Label()
-                .BindText(nameof(vm.Timestamp), () => $"PlusUi: {(int)vm.Timestamp.TotalSeconds}.{vm.Timestamp.Milliseconds:000}")
-                .SetTextSize(90))
-            .SetHorizontalAlignment(HorizontalAlignment.Center)
-            .SetVerticalAlignment(VerticalAlignment.Center);
+        return 
+            new Grid()
+                .AddColumn(Column.Absolute, 100)
+                .AddColumn(Column.Auto, 1)
+                .AddChild(new Solid()
+                    .SetBackgroundColor(SKColors.Red)
+                    .BindDesiredHeight(nameof(vm.Size), () => vm.Size)
+                    .BindDesiredWidth(nameof(vm.Size), () => vm.Size)
+                    .BindCornerRadius(nameof(vm.Size), () => vm.Size / 2)
+                    .SetHorizontalAlignment(HorizontalAlignment.Center)
+                    .SetVerticalAlignment(VerticalAlignment.Center)
+                )
+                .AddChild(new Label()
+                    .BindText(nameof(vm.Timestamp), () => $"PlusUi: {(int)vm.Timestamp.TotalSeconds}.{vm.Timestamp.Milliseconds:000}")
+                    .SetTextSize(90)
+                    .SetVerticalAlignment(VerticalAlignment.Center)
+                , column: 1)
+                .SetDesiredHeight(100)
+                .SetHorizontalAlignment(HorizontalAlignment.Center)
+            
+            ;
     }
 
     public IEnumerable<AudioDefinition> GetAudioSequence()

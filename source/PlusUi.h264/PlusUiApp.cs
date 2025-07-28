@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
-using PlusUi.core.Services;
+using PlusUi.h264.Animations;
 using System.Threading.Channels;
 
 namespace PlusUi.h264;
@@ -35,6 +35,8 @@ public class PlusUiApp(string[] args)
         builder.Services.AddHostedService<FrameRenderService>();
         builder.Services.AddSingleton<VideoTimeProvider>();
         builder.Services.AddSingleton<TimeProvider>(sp => sp.GetRequiredService<VideoTimeProvider>());
+
+        builder.Services.AddKeyedTransient<IAnimation, LinearAnimation>(EAnimationType.Linear);
 
         builder.ConfigurePlusUiApp(app);
 
