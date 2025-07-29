@@ -1,5 +1,6 @@
 ﻿using PlusUi.core;
 using Sandbox.Controls;
+using Sandbox.Pages.BgTest;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.RawControl;
@@ -110,7 +111,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetText("RawUserControl Example")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(RawUserControlPage))
+                .SetCommandParameter(typeof(RawUserControlPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("BgTest Example")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(BgTestPage))
 
         );
     }

@@ -64,7 +64,8 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
     }
     protected override Point ArrangeInternal(Rect bounds)
     {
-        return _tree.Arrange(bounds);
+        _tree.Arrange(bounds);
+        return new Point(bounds.X, bounds.Y);
     }
     public override UiElement? HitTest(Point point)
     {
