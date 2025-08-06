@@ -14,9 +14,9 @@ internal class VideoMainHandler(
     RenderService renderService,
     IOptions<VideoConfiguration> videoOptions,
     ChannelWriter<IVideoFrame> frameWriter,
-    ILogger<VideoMainHandler> logger,
     PlusUiNavigationService plusUiNavigationService,
-    NavigationContainer navigationContainer)
+    NavigationContainer navigationContainer,
+    VideoRenderingProgressService progressService)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -25,36 +25,44 @@ internal class VideoMainHandler(
 
         plusUiNavigationService.Initialize();
 
-        //generate the canvas
+        // Generate the canvas
         var bitmap = new SKBitmap(videoOptions.Value.Width, videoOptions.Value.Height);
         var canvas = new SKCanvas(bitmap);
         var canvasSize = new Vector2D<int>(videoOptions.Value.Width, videoOptions.Value.Height);
 
-        //Get a frame from FrameInformationService this is a integer or null if the video is finished
+        // Display initial information
+        progressService.DisplayVideoInformation();
+        
+        // Process frames
         foreach (var _ in frameInformationService.GetNextFrame())
         {
-            logger.LogInformation("Rendering frame {FrameNumber}", frameInformationService.CurrentFrame);
 
+            // Update progress using the service
+            progressService.UpdateRenderingProgress(frameInformationService.CurrentFrame);
+
+            // Update UI bindings and render frame
             navigationContainer.Page.UpdateBindings();
-
             renderService.Render(null, canvas, null, canvasSize);
-            logger.LogInformation("Frame {FrameNumber} rendered", frameInformationService.CurrentFrame);
-
+            
+            // Create and write video frame
             var videoFrame = new SkiaSharpVideoFrame(bitmap.Copy());
-
             var writeResult = frameWriter.TryWrite(videoFrame);
-            logger.LogInformation("Frame {FrameNumber} written: {WriteResult}", frameInformationService.CurrentFrame, writeResult);
+            
+            // Give UI time to update
+            await Task.Delay(1, stoppingToken);
         }
 
-        //write the end of file frame. this will lead to the video encoder to finish the video
-        logger.LogInformation("Writing end of file frame");
+        // Write the end of file frame
+        progressService.ReportMessage("Writing end of file frame", MessageType.Warning);
+        
         var videoFrameEof = new SkiaSharpVideoFrame(bitmap.Copy())
         {
             IsEofFrame = true
         };
+        
         frameWriter.TryWrite(videoFrameEof);
         frameWriter.Complete();
-        logger.LogInformation("End of file frame written");
+        
+        progressService.ReportRenderingComplete();
     }
-
 }

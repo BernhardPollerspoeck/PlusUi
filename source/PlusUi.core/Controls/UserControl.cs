@@ -20,6 +20,11 @@ public abstract class UserControl : UiElement<UserControl>
     {
         _content.UpdateBindings(propertyName);
     }
+    protected override void UpdateBindingsInternal()
+    {
+        _content.UpdateBindings();
+    }
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);

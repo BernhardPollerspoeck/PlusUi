@@ -2,11 +2,6 @@
 using SkiaSharp;
 
 namespace PlusUi.h264;
-
-public interface ISkiaVideoFrame
-{
-    SKBitmap Bitmap { get; }
-}
 internal class SkiaSharpVideoFrame(SKBitmap bitmap) : IVideoFrame, ISkiaVideoFrame
 {
     public SKBitmap Bitmap => bitmap;

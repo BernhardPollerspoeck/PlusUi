@@ -14,12 +14,14 @@ namespace PlusUi.h264;
 internal class FrameRenderService(
     ChannelReader<IVideoFrame> frameReader,
     IOptions<VideoConfiguration> videoOptions,
-    ILogger<FrameRenderService> logger,
     ICommandLineService commandLineService,
     AudioSequenceConverter audioSequenceConverter,
+    VideoRenderingProgressService progressService,
     IAudioSequenceProvider? audioSequenceProvider = null)
     : BackgroundService
 {
+    private int _processedFrameCount = 0;
+    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (CheckForSingleFrameExport(stoppingToken))
@@ -38,6 +40,8 @@ internal class FrameRenderService(
 
     private async Task RenderFrames(CancellationToken stoppingToken)
     {
+        progressService.ReportMessage("Configuring video encoder...", MessageType.Warning);
+        
         var videoFramesSource = new RawVideoPipeSource(GenerateVideoFrames(stoppingToken))
         {
             FrameRate = videoOptions.Value.FrameRate,
@@ -49,15 +53,19 @@ internal class FrameRenderService(
         var complexFilter = (string?)null;
         if (audioSequenceProvider is not null)
         {
+            progressService.ReportMessage("Adding audio to video...", MessageType.Info);
             var audioSequence = audioSequenceProvider.GetAudioSequence().ToList();
 
             foreach (var audioFile in audioSequence)
             {
                 arguments.AddFileInput(audioFile.FilePath);
+                progressService.ReportMessage($"- Added audio file: {audioFile.FilePath}", MessageType.Info);
             }
             complexFilter = audioSequenceConverter.GetComplexFilter(audioSequence);
         }
 
+        progressService.ReportMessage("Starting video encoding process", MessageType.Success);
+        
         await arguments
             .OutputToFile(
                 videoOptions.Value.OutputFilePath,
@@ -83,7 +91,8 @@ internal class FrameRenderService(
                     options.WithFastStart();
                 })
             .ProcessAsynchronously();
-
+            
+        progressService.ReportEncodingComplete();
     }
 
     private bool CheckForSingleFrameExport(CancellationToken stoppingToken)
@@ -103,6 +112,8 @@ internal class FrameRenderService(
         var fileName = Path.GetFileNameWithoutExtension(videoOptions.Value.OutputFilePath);
         var outputFilePath = Path.Combine(outputPath, $"{fileName}_{parsedTimestamp}.png").Replace(':', '_');
 
+        progressService.ReportMessage($"Exporting single frame at timestamp: {parsedTimestamp}", MessageType.Info);
+        
         var frames = GenerateVideoFrames(stoppingToken).ToList();
         if (frames.Count != 1)
         {
@@ -119,13 +130,15 @@ internal class FrameRenderService(
         using var data = image.Encode(SKEncodedImageFormat.Png, 100);
         data.SaveTo(imageStream);
 
-        logger.LogInformation("Frame saved to {OutputFilePath}", outputFilePath);
+        progressService.ReportSingleFrameExported(outputFilePath);
         return true;
     }
 
     private IEnumerable<IVideoFrame> GenerateVideoFrames(CancellationToken stoppingToken)
     {
         var frameQueue = new ConcurrentQueue<IVideoFrame>();
+        
+        // Start frame reading task
         var frameReaderTask = Task.Run(async () =>
         {
             try
@@ -133,7 +146,6 @@ internal class FrameRenderService(
                 // Read frames asynchronously without blocking the main thread
                 await foreach (var frame in frameReader.ReadAllAsync(stoppingToken))
                 {
-                    logger.LogInformation("Frame read: {FrameType}", frame.GetType().Name);
                     frameQueue.Enqueue(frame);
                     if (frame is SkiaSharpVideoFrame { IsEofFrame: true })
                     {
@@ -147,9 +159,14 @@ internal class FrameRenderService(
             }
             catch (Exception ex)
             {
-                // Log exception or handle it appropriately
-                Console.WriteLine($"Error reading frames: {ex.Message}");
+                progressService.ReportMessage($"Error reading frames: {ex.Message}", MessageType.Error);
             }
+        }, stoppingToken);
+
+        // Start progress display in a separate task
+        var progressTask = Task.Run(() =>
+        {
+            progressService.StartProgressDisplay();
         }, stoppingToken);
 
         // This is the synchronous iterator that will be consumed by RawVideoPipeSource
@@ -160,10 +177,16 @@ internal class FrameRenderService(
             {
                 if (frame is SkiaSharpVideoFrame { IsEofFrame: true })
                 {
-                    logger.LogInformation("End of file frame encountered, stopping frame generation.");
+                    progressService.ReportMessage("End of frames reached - finishing encoding", MessageType.Warning);
+                    progressService.CompleteProgress();
                     yield break;
                 }
-                logger.LogInformation("Yielding frame: {FrameType}", frame.GetType().Name);
+                
+                _processedFrameCount++;
+                
+                // Update progress via service
+                progressService.UpdateEncodingProgress(_processedFrameCount);
+                
                 yield return frame;
             }
             else
@@ -175,8 +198,7 @@ internal class FrameRenderService(
         }
     }
 
-
-    private static void ConfigureFFmpeg()
+    private void ConfigureFFmpeg()
     {
         var appDir = AppContext.BaseDirectory;
         string ffmpegPath;
@@ -221,13 +243,14 @@ internal class FrameRenderService(
         if (File.Exists(ffmpegPath))
         {
             GlobalFFOptions.Configure(options => options.BinaryFolder = appDir);
+            progressService.ReportFFmpegConfiguration(ffmpegPath, true);
         }
         else
         {
+            progressService.ReportFFmpegConfiguration(ffmpegPath, false);
             throw new FileNotFoundException($"FFmpeg Binary nicht gefunden: {ffmpegPath}");
         }
     }
-
 }
 
 internal class AudioSequenceConverter

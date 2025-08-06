@@ -29,12 +29,18 @@ public class PlusUiApp(string[] args)
         builder.Services.AddSingleton(sp => sp.GetRequiredService<Channel<IVideoFrame>>().Reader);
         builder.Services.AddSingleton(sp => sp.GetRequiredService<Channel<IVideoFrame>>().Writer);
 
-        builder.Services.AddHostedService<VideoMainHandler>();
+        // Register services
         builder.Services.AddSingleton<FrameInformationService>();
         builder.Services.AddSingleton<AudioSequenceConverter>();
-        builder.Services.AddHostedService<FrameRenderService>();
         builder.Services.AddSingleton<VideoTimeProvider>();
         builder.Services.AddSingleton<TimeProvider>(sp => sp.GetRequiredService<VideoTimeProvider>());
+        
+        // Register the new VideoRenderingProgressService
+        builder.Services.AddSingleton<VideoRenderingProgressService>();
+        
+        // Register hosted services
+        builder.Services.AddHostedService<VideoMainHandler>();
+        builder.Services.AddHostedService<FrameRenderService>();
 
         builder.Services.AddKeyedTransient<IAnimation, LinearAnimation>(EAnimationType.Linear);
 
