@@ -4,13 +4,24 @@ using SkiaSharp;
 
 namespace Sandbox.h264;
 
+public class TestControl(MainPageViewModel vm) : UserControl
+{
+    protected override UiElement Build()
+    {
+        return new Label()
+                    .BindText(nameof(vm.Timestamp), () => $"PlusUi: {(int)vm.Timestamp.TotalSeconds}.{vm.Timestamp.Milliseconds:000}")
+                    .SetTextSize(90)
+                    .SetVerticalAlignment(VerticalAlignment.Center);
+    }
+}
+
 public class MainPage(
     MainPageViewModel vm)
     : UiPageElement(vm)
 {
     protected override UiElement Build()
     {
-        return 
+        return
             new Grid()
                 .AddColumn(Column.Absolute, 100)
                 .AddColumn(Column.Auto, 1)
@@ -22,14 +33,11 @@ public class MainPage(
                     .SetHorizontalAlignment(HorizontalAlignment.Center)
                     .SetVerticalAlignment(VerticalAlignment.Center)
                 )
-                .AddChild(new Label()
-                    .BindText(nameof(vm.Timestamp), () => $"PlusUi: {(int)vm.Timestamp.TotalSeconds}.{vm.Timestamp.Milliseconds:000}")
-                    .SetTextSize(90)
-                    .SetVerticalAlignment(VerticalAlignment.Center)
+                .AddChild(new TestControl(vm)
                 , column: 1)
                 .SetDesiredHeight(100)
                 .SetHorizontalAlignment(HorizontalAlignment.Center)
-            
+
             ;
     }
 
