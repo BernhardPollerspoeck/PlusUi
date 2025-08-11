@@ -4,6 +4,8 @@ using System.ComponentModel;
 
 namespace PlusUi.core;
 
+/*
+// This manual generic wrapper will be replaced by the generated one
 public abstract class UiElement<T> : UiElement where T : UiElement<T>
 {
     public new T SetBackgroundColor(SKColor color)
@@ -51,6 +53,8 @@ public abstract class UiElement<T> : UiElement where T : UiElement<T>
         return (T)this;
     }
 }
+*/
+[PlusUi.SourceGenerators.GenerateGenericWrapper]
 public abstract class UiElement
 {
     private readonly Dictionary<string, List<Action>> _bindings = [];
