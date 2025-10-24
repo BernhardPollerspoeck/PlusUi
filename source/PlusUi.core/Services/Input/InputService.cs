@@ -50,6 +50,7 @@ public class InputService
 
         //we have a down action
     }
+    
     public void MouseUp(Vector2 location)
     {
         if (!_isMousePressed)
@@ -105,6 +106,7 @@ public class InputService
         //TODO: keyInputControl
         _textInputControl?.HandleInput(key);
     }
+    
     public void HandleCharInput(object? sender, char chr)
     {
         _textInputControl?.HandleInput(chr);
@@ -123,5 +125,21 @@ public class InputService
         
         _lastMousePosition = location;
     }
-
+    
+    public void MouseWheel(Vector2 location, float deltaX, float deltaY)
+    {
+        // Find the scrollable control under the mouse cursor
+        var currentPopup = _popupService.CurrentPopup;
+        var hitControl = (currentPopup) switch
+        {
+            not null => currentPopup.HitTest(new(location.X, location.Y)),
+            _ => _navigationContainer.Page.HitTest(new(location.X, location.Y))
+        };
+        
+        // Scroll the control if it's scrollable
+        if (hitControl is IScrollableControl scrollControl)
+        {
+            scrollControl.HandleScroll(deltaX, deltaY);
+        }
+    }
 }

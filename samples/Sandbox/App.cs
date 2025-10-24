@@ -4,6 +4,7 @@ using PlusUi.core;
 using Sandbox.Pages.BgTest;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
+using Sandbox.Pages.ItemsListDemo;
 using Sandbox.Pages.Main;
 using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
@@ -18,7 +19,7 @@ public class App : IAppConfiguration
     public void ConfigureWindow(PlusUiConfiguration configuration)
     {
         configuration.Title = "Sandbox";
-        configuration.Size = new SizeI(1200, 600);
+        configuration.Size = new SizeI(1200, 800);
         //configuration.IsWindowTransparent = true;
         //configuration.WindowBorder = Silk.NET.Windowing.WindowBorder.Hidden;
         //configuration.WindowState = Silk.NET.Windowing.WindowState.Maximized;
@@ -33,6 +34,7 @@ public class App : IAppConfiguration
         builder.AddPage<FormDemoPage>().WithViewModel<FormDemoPageViewModel>();
         builder.AddPage<ScrollViewExamplePage>().WithViewModel<ScrollViewExamplePageViewModel>();
         builder.AddPage<RawUserControlPage>().WithViewModel<RawUserControlPageViewModel>();
+        builder.AddPage<ItemsListDemoPage>().WithViewModel<ItemsListDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 

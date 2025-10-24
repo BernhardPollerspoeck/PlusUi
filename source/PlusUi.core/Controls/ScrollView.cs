@@ -46,6 +46,26 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
     }
     #endregion
     
+    #region ScrollFactor
+    internal float ScrollFactor
+    {
+        get => field;
+        set => field = value;
+    } = 1.0f;
+    
+    public ScrollView SetScrollFactor(float factor)
+    {
+        ScrollFactor = factor;
+        return this;
+    }
+    
+    public ScrollView BindScrollFactor(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => ScrollFactor = propertyGetter());
+        return this;
+    }
+    #endregion
+    
     #region HorizontalOffset
     internal float HorizontalOffset 
     { 
@@ -229,12 +249,12 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
     {
         if (CanScrollHorizontally)
         {
-            HorizontalOffset += deltaX;
+            HorizontalOffset += deltaX * ScrollFactor;
         }
         
         if (CanScrollVertically)
         {
-            VerticalOffset += deltaY;
+            VerticalOffset += deltaY * ScrollFactor;
         }
     }
     #endregion
