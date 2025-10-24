@@ -40,9 +40,7 @@
 
   <!-- Development Reference to Source Generator -->
   <ItemGroup>
-    <ProjectReference Include="..\PlusUi.SourceGenerators\PlusUi.SourceGenerators.csproj" 
-                      OutputItemType="Analyzer" 
-                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\PlusUi.SourceGenerators\PlusUi.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

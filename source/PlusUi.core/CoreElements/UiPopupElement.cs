@@ -2,8 +2,8 @@
 using SkiaSharp;
 using System.ComponentModel;
 
-namespace PlusUi.core;
-//TODO: move towards CoreElements
+namespace PlusUi.core.CoreElements;
+
 public abstract class UiPopupElement<TArgument>(INotifyPropertyChanged vm) : UiPopupElement(vm)
 {
     public TArgument? Argument { get; private set; }

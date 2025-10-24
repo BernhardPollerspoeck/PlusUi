@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
+using PlusUi.core.CoreElements;
 
 [assembly: System.Reflection.Metadata.MetadataUpdateHandler(typeof(PlusUiHotReloadManager))]
 
