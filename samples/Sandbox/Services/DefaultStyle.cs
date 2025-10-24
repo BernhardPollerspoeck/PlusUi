@@ -31,7 +31,10 @@ internal class DefaultStyle : IApplicationStyle
                 .SetDesiredWidth(200))
 
             .AddStyle<Button>(element => element
-                .SetBackgroundColor(SKColors.Green));
+                .SetBackgroundColor(SKColors.Green))
 
+
+
+            ;
     }
 }

@@ -18,7 +18,7 @@ public class App : IAppConfiguration
     public void ConfigureWindow(PlusUiConfiguration configuration)
     {
         configuration.Title = "Sandbox";
-        configuration.Size = new SizeI(800, 600);
+        configuration.Size = new SizeI(1200, 600);
         //configuration.IsWindowTransparent = true;
         //configuration.WindowBorder = Silk.NET.Windowing.WindowBorder.Hidden;
         //configuration.WindowState = Silk.NET.Windowing.WindowState.Maximized;
