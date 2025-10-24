@@ -21,14 +21,14 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
             // Vertical ItemsList
             new ItemsList<ItemsListDemoPageViewModel.ItemModel>()
                 .BindItemsSource(nameof(vm.Items), () => vm.Items)
-                .SetItemTemplate(item => 
+                .SetItemTemplate((item, index) =>
                     new HStack(
-                        new Solid(50, 50)
+                        new Solid(50, index == 2 ? 100 : 50)
                             .SetBackgroundColor(item.Color)
                             .SetMargin(new Margin(5)),
                         new VStack(
                             new Label()
-                                .SetText(item.Title)
+                                .SetText($"#{index + 1}: {item.Title}")
                                 .SetTextSize(16)
                                 .SetTextColor(SKColors.White),
                             new Label()
@@ -43,6 +43,7 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                     .SetCornerRadius(5)
                 )
                 .SetOrientation(Orientation.Vertical)
+                .SetScrollFactor(1.5f) // Faster scrolling
                 .SetBackgroundColor(new SKColor(20, 20, 20))
                 .SetCornerRadius(10)
                 .SetMargin(new Margin(10))
@@ -56,16 +57,15 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
             // Horizontal ItemsList
             new ItemsList<ItemsListDemoPageViewModel.ItemModel>()
                 .BindItemsSource(nameof(vm.HorizontalItems), () => vm.HorizontalItems)
-                .SetItemTemplate(item => 
+                .SetItemTemplate((item, index) =>
                     new VStack(
-                        new Solid(80, 80)
+                        new Solid(index == 2 ? 130 : 80, 80)
                             .SetBackgroundColor(item.Color)
                             .SetMargin(new Margin(5)),
                         new Label()
-                            .SetText(item.Title)
+                            .SetText($"#{index + 1}: {item.Title}")
                             .SetTextSize(12)
                             .SetTextColor(SKColors.White)
-                            .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
                     )
                     .SetBackgroundColor(new SKColor(40, 40, 40))
                     .SetMargin(new Margin(2, 5))

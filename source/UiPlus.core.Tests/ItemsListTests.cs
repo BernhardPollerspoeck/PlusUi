@@ -89,7 +89,7 @@ public class ItemsListTests
     {
         // Arrange
         var itemsList = new ItemsList<TestItem>();
-        Func<TestItem, UiElement> template = item => new Label().SetText(item.Text);
+        Func<TestItem, int, UiElement> template = (item, index) => new Label().SetText(item.Text);
         
         // Act - Test setter
         var result1 = itemsList.SetItemTemplate(template);
@@ -99,7 +99,7 @@ public class ItemsListTests
         Assert.AreSame(itemsList, result1, "Method should return the ItemsList for chaining");
         
         // Act - Test binding
-        Func<TestItem, UiElement>? propertyValue = item => new Label().SetText(item.Value.ToString());
+        Func<TestItem, int, UiElement>? propertyValue = (item, index) => new Label().SetText(item.Value.ToString());
         var result2 = itemsList.BindItemTemplate("TestProperty", () => propertyValue);
         itemsList.UpdateBindings("TestProperty");
         
@@ -121,7 +121,7 @@ public class ItemsListTests
         
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(100, 50))
+            .SetItemTemplate((item, index) => new Solid(100, 50))
             .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
@@ -149,7 +149,7 @@ public class ItemsListTests
         
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(50, 100))
+            .SetItemTemplate((item, index) => new Solid(50, 100))
             .SetOrientation(Orientation.Horizontal);
         
         var availableSize = new Size(200, 200);
@@ -170,7 +170,7 @@ public class ItemsListTests
         // Arrange
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(new List<TestItem>())
-            .SetItemTemplate(item => new Label().SetText(item.Text));
+            .SetItemTemplate((item, index) => new Label().SetText(item.Text));
         
         var availableSize = new Size(200, 200);
         
@@ -187,7 +187,7 @@ public class ItemsListTests
     {
         // Arrange
         var itemsList = new ItemsList<TestItem>()
-            .SetItemTemplate(item => new Label().SetText(item.Text));
+            .SetItemTemplate((item, index) => new Label().SetText(item.Text));
         
         var availableSize = new Size(200, 200);
         
@@ -237,7 +237,7 @@ public class ItemsListTests
         
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(100, 50))
+            .SetItemTemplate((item, index) => new Solid(100, 50))
             .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
@@ -266,7 +266,7 @@ public class ItemsListTests
         
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(50, 100))
+            .SetItemTemplate((item, index) => new Solid(50, 100))
             .SetOrientation(Orientation.Horizontal);
         
         var availableSize = new Size(200, 200);
@@ -292,7 +292,7 @@ public class ItemsListTests
         
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(100, 50))
+            .SetItemTemplate((item, index) => new Solid(100, 50))
             .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
@@ -323,7 +323,7 @@ public class ItemsListTests
         
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(100, 50))
+            .SetItemTemplate((item, index) => new Solid(100, 50))
             .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
@@ -348,7 +348,7 @@ public class ItemsListTests
         
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(100, 50))
+            .SetItemTemplate((item, index) => new Solid(100, 50))
             .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
@@ -374,7 +374,7 @@ public class ItemsListTests
         
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(100, 50))
+            .SetItemTemplate((item, index) => new Solid(100, 50))
             .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
@@ -401,7 +401,7 @@ public class ItemsListTests
         
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(100, 50))
+            .SetItemTemplate((item, index) => new Solid(100, 50))
             .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
@@ -432,7 +432,7 @@ public class ItemsListTests
         
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(100, 50))
+            .SetItemTemplate((item, index) => new Solid(100, 50))
             .SetOrientation(Orientation.Vertical);
         
         // Act - Test setter

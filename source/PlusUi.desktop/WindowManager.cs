@@ -205,6 +205,23 @@ internal class WindowManager(
             _mouse = _inputContext.Mice[0];
             _mouse.MouseMove += (_, position) => 
                 inputService.MouseMove(position / renderService.DisplayDensity);
+            
+            // Add mouse wheel event handler
+            _mouse.Scroll += (_, scrollDelta) =>
+            {
+                if (_mouse is null) return;
+                
+                // Scale the scroll delta and invert Y for natural scrolling direction
+                // Multiply by a scroll speed factor (e.g., 20) for better UX
+                float scrollSpeed = 20f;
+                float deltaX = scrollDelta.X * scrollSpeed;
+                float deltaY = -scrollDelta.Y * scrollSpeed; // Invert Y for natural scrolling
+                
+                inputService.MouseWheel(
+                    _mouse.Position / renderService.DisplayDensity, 
+                    deltaX, 
+                    deltaY);
+            };
         }
 
         // Setup keyboard if available
