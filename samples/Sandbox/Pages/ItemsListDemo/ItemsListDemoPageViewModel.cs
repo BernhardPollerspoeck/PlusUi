@@ -19,17 +19,11 @@ internal partial class ItemsListDemoPageViewModel : ObservableObject
         public SKColor Color { get; set; }
     }
 
-    public ObservableCollection<ItemModel> Items
-    {
-        get => field;
-        set => SetProperty(ref field, value);
-    } = new ObservableCollection<ItemModel>();
+    [ObservableProperty]
+    private ObservableCollection<ItemModel> _items = new ObservableCollection<ItemModel>();
 
-    public ObservableCollection<ItemModel> HorizontalItems
-    {
-        get => field;
-        set => SetProperty(ref field, value);
-    } = new ObservableCollection<ItemModel>();
+    [ObservableProperty]
+    private ObservableCollection<ItemModel> _horizontalItems = new ObservableCollection<ItemModel>();
 
     private int _itemCounter = 0;
     private readonly Random _random = new Random();
