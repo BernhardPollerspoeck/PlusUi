@@ -1,0 +1,51 @@
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+namespace PlusUi.SourceGenerators;
+
+internal static class SemanticTargetAnalyzer
+{
+    internal static GeneratorContext GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
+    {
+        var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
+
+        // Check if class has the GenerateGenericWrapper attribute
+        foreach (var attributeListSyntax in classDeclarationSyntax.AttributeLists)
+        {
+            foreach (var attributeSyntax in attributeListSyntax.Attributes)
+            {
+                var attributeName = attributeSyntax.Name.ToString();
+                if (attributeName == "GenerateGenericWrapper" || 
+                    attributeName == "GenerateGenericWrapperAttribute" ||
+                    attributeName.EndsWith(".GenerateGenericWrapper") ||
+                    attributeName.EndsWith(".GenerateGenericWrapperAttribute"))
+                {
+                    return new GeneratorContext(classDeclarationSyntax, context.SemanticModel);
+                }
+
+                // Also try semantic analysis if available
+                try
+                {
+                    var symbolInfo = context.SemanticModel.GetSymbolInfo(attributeSyntax);
+                    if (symbolInfo.Symbol is IMethodSymbol attributeSymbol)
+                    {
+                        var attributeContainingTypeSymbol = attributeSymbol.ContainingType;
+                        var fullName = attributeContainingTypeSymbol.ToDisplayString();
+
+                        if (fullName == "PlusUi.SourceGenerators.GenerateGenericWrapperAttribute")
+                        {
+                            return new GeneratorContext(classDeclarationSyntax, context.SemanticModel);
+                        }
+                    }
+                }
+                catch
+                {
+                    // Ignore semantic analysis errors
+                }
+            }
+        }
+
+        return null;
+    }
+}

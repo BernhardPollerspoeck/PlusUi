@@ -7,6 +7,7 @@ internal class DefaultStyle : IApplicationStyle
 {
     public void ConfigureStyle(Style style)
     {
+
         style
             .AddStyle<UiElement>(element => element
                 .SetMargin(new(5))

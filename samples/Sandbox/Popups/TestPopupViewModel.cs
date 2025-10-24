@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlusUi.core;
+using PlusUi.core.CoreElements;
 using SkiaSharp;
 using System.Windows.Input;
 

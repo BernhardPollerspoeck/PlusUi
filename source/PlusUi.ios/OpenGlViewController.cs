@@ -16,7 +16,7 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
 
     public override UIWindow? Window { get; set; }
 
-    public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
+    public override bool FinishedLaunching(UIApplication application, NSDictionary? launchOptions)
     {
         _host = CreateAndStartHost();
 
@@ -34,9 +34,8 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
         var builder = Host.CreateApplicationBuilder();
 
         var app = CreateApp(builder);
-        var rootPage = app.ConfigureRootPage();
 
-        builder.UsePlusUiInternal(rootPage);
+        builder.UsePlusUiInternal(app, []);
         builder.Services.AddSingleton<OpenGlViewController>();
         //builder.Services.AddSingleton<TapGestureListener>();
         //builder.Services.AddSingleton<KeyCaptureEditText>();

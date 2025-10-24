@@ -41,15 +41,19 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
+        if (!IsVisible)
+        {
+            return;
+        }
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
         if (BackgroundPaint is not null)
         {
             var rect = new SKRect(
-                Position.X,
-                Position.Y,
-                Position.X + ElementSize.Width,
-                Position.Y + ElementSize.Height);
+                Position.X + VisualOffset.X,
+                Position.Y + VisualOffset.Y,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                Position.Y + VisualOffset.Y + ElementSize.Height);
             if (CornerRadius > 0)
             {
                 canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
@@ -62,8 +66,8 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
 
         canvas.DrawText(
             Text ?? string.Empty,
-            Position.X + Padding.Left,
-            Position.Y + textHeight,
+            Position.X + VisualOffset.X + Padding.Left,
+            Position.Y + VisualOffset.Y + textHeight,
             (SKTextAlign)HorizontalTextAlignment,
             Font,
             Paint);
@@ -74,9 +78,9 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
             if ((elapsedMilliseconds % 1600) < 800)
             {
 
-                var cursorX = Position.X + Padding.Left + Font.MeasureText(Text ?? string.Empty) + 2;
-                var cursorYStart = Position.Y + Padding.Top + (textHeight * 0.1f);
-                var cursorYEnd = Position.Y + Padding.Top + textHeight - (textHeight * 0.1f);
+                var cursorX = Position.X + VisualOffset.X + Padding.Left + Font.MeasureText(Text ?? string.Empty) + 2;
+                var cursorYStart = Position.Y + VisualOffset.Y + Padding.Top + (textHeight * 0.1f);
+                var cursorYEnd = Position.Y + VisualOffset.Y + Padding.Top + textHeight - (textHeight * 0.1f);
 
                 var strokeWidth = Paint.StrokeWidth;
                 Paint.StrokeWidth = Math.Max(2, textHeight * 0.04f);

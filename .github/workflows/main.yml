@@ -35,6 +35,9 @@ jobs:
     - name: Build
       run: dotnet build nuget.sln --no-restore --configuration Release /p:Version=${VERSION}
     
+    - name: Build Source Generator
+      run: dotnet build source/PlusUi.SourceGenerators/PlusUi.SourceGenerators.csproj --no-restore --configuration Release
+    
     - name: Pack
       run: dotnet pack nuget.sln --no-build --no-restore --configuration Release /p:Version=${VERSION} --output .
     

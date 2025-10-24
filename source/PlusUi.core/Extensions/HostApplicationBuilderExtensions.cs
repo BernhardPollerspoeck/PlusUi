@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PlusUi.core.CoreElements;
+using PlusUi.core.Services;
 using System.ComponentModel;
 
 namespace PlusUi.core;
@@ -17,8 +19,11 @@ public static class HostApplicationBuilderExtensions
 
     public static HostApplicationBuilder UsePlusUiInternal(
         this HostApplicationBuilder builder,
-        Type mainPageType)
+        IAppConfiguration appConfiguration,
+        string[] args)
     {
+        builder.Services.AddSingleton(appConfiguration);
+        builder.Services.AddSingleton<ICommandLineService>(sp => new CommandLineService(args));
         builder.Services.AddSingleton<ServiceProviderService>();
         builder.Services.AddSingleton<RenderService>();
         builder.Services.AddSingleton<InputService>();
@@ -29,14 +34,15 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton(sp => new PlusUiNavigationService(sp));
         builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
+        builder.Services.AddSingleton(sp => TimeProvider.System);
         builder.Services.AddSingleton<PlusUiPopupService>();
         builder.Services.AddSingleton<IPopupService>(sp => sp.GetRequiredService<PlusUiPopupService>());
         builder.Services.AddTransient<IPopupConfiguration, PopupConfiguration>();
 
         builder.Services.AddSingleton(sp =>
         {
-            var mainPage = sp.GetRequiredService(mainPageType) as UiPageElement
-                ?? throw new Exception("MainPage not found");
+            var appConfiguration = sp.GetRequiredService<IAppConfiguration>();
+            var mainPage = appConfiguration.GetRootPage(sp);
             return new NavigationContainer(mainPage);
         });
         return builder;

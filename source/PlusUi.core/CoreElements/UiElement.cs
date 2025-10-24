@@ -1,33 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core.Attributes;
 using SkiaSharp;
 using System.ComponentModel;
 
 namespace PlusUi.core;
 
-public abstract class UiElement<T> : UiElement where T : UiElement<T>
-{
-    public new T SetBackgroundColor(SKColor color)
-    {
-        base.SetBackgroundColor(color);
-        return (T)this;
-    }
-    public new T BindBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
-    {
-        base.BindBackgroundColor(propertyName, propertyGetter);
-        return (T)this;
-    }
-
-    public new T SetMargin(Margin margin)
-    {
-        base.SetMargin(margin);
-        return (T)this;
-    }
-    public new T BindMargin(string propertyName, Func<Margin> propertyGetter)
-    {
-        base.BindMargin(propertyName, propertyGetter);
-        return (T)this;
-    }
-}
+[GenerateGenericWrapper]
 public abstract class UiElement
 {
     private readonly Dictionary<string, List<Action>> _bindings = [];
@@ -43,6 +21,36 @@ public abstract class UiElement
     public UiElement SetDebug(bool debug = true)
     {
         Debug = debug;
+        return this;
+    }
+    #endregion
+
+    #region IsVisible
+    internal bool IsVisible { get; set; } = true;
+
+    public UiElement SetIsVisible(bool isVisible)
+    {
+        IsVisible = isVisible;
+        return this;
+    }
+
+    public UiElement BindIsVisible(string propertyName, Func<bool> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => IsVisible = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region VisualOffset
+    internal Point VisualOffset { get; set; } = new Point(0, 0);
+    public UiElement SetVisualOffset(Point offset)
+    {
+        VisualOffset = offset;
+        return this;
+    }
+    public UiElement BindVisualOffset(string propertyName, Func<Point> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => VisualOffset = propertyGetter());
         return this;
     }
     #endregion
@@ -327,6 +335,17 @@ public abstract class UiElement
         }
         setterActions.Add(value => setter((TValue)value));
     }
+    public void UpdateBindings()
+    {
+        foreach (var propertyGroup in _bindings)
+        {
+            foreach (var update in propertyGroup.Value)
+            {
+                update();
+            }
+        }
+        UpdateBindingsInternal();
+    }
     public void UpdateBindings(string propertyName)
     {
         if (_bindings.TryGetValue(propertyName, out var updateActions))
@@ -339,13 +358,14 @@ public abstract class UiElement
 
         UpdateBindingsInternal(propertyName);
     }
+    protected virtual void UpdateBindingsInternal() { }
     protected virtual void UpdateBindingsInternal(string propertyName) { }
     #endregion
 
     #region rendering
     public virtual void Render(SKCanvas canvas)
     {
-        if (Debug is true)
+        if (Debug)
         {
             var debugPaint = new SKPaint
             {
@@ -354,38 +374,41 @@ public abstract class UiElement
                 StrokeWidth = 1
             };
             var rect = new SKRect(
-                Position.X,
-                Position.Y,
-                Position.X + ElementSize.Width,
-                Position.Y + ElementSize.Height);
+                Position.X + VisualOffset.X,
+                Position.Y + VisualOffset.Y,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                Position.Y + VisualOffset.Y + ElementSize.Height);
             canvas.DrawRect(rect, debugPaint);
 
             if (Margin.Horizontal > 0 || Margin.Vertical > 0)
             {
                 var marginRect = new SKRect(
-                    Position.X - Margin.Left,
-                    Position.Y - Margin.Top,
-                    Position.X + ElementSize.Width + Margin.Right,
-                    Position.Y + ElementSize.Height + Margin.Bottom);
+                    Position.X + VisualOffset.X - Margin.Left,
+                    Position.Y + VisualOffset.Y - Margin.Top,
+                    Position.X + VisualOffset.X + ElementSize.Width + Margin.Right,
+                    Position.Y + VisualOffset.Y + ElementSize.Height + Margin.Bottom);
                 canvas.DrawRect(marginRect, debugPaint);
             }
         }
 
 
-        if (BackgroundColor != SKColors.Transparent && !SkipBackground)
+        if (IsVisible)
         {
-            var rect = new SKRect(
-                Position.X,
-                Position.Y,
-                Position.X + ElementSize.Width,
-                Position.Y + ElementSize.Height);
-            if (CornerRadius > 0)
+            if (BackgroundColor != SKColors.Transparent && !SkipBackground)
             {
-                canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
-            }
-            else
-            {
-                canvas.DrawRect(rect, BackgroundPaint);
+                var rect = new SKRect(
+                    Position.X + VisualOffset.X,
+                    Position.Y + VisualOffset.Y,
+                    Position.X + VisualOffset.X + ElementSize.Width,
+                    Position.Y + VisualOffset.Y + ElementSize.Height);
+                if (CornerRadius > 0)
+                {
+                    canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
+                }
+                else
+                {
+                    canvas.DrawRect(rect, BackgroundPaint);
+                }
             }
         }
     }

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using PlusUi.core;
+using Sandbox.Pages.BgTest;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.Main;
@@ -32,11 +34,13 @@ public class App : IAppConfiguration
         builder.AddPage<ScrollViewExamplePage>().WithViewModel<ScrollViewExamplePageViewModel>();
         builder.AddPage<RawUserControlPage>().WithViewModel<RawUserControlPageViewModel>();
 
+        builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
+
         builder.AddPopup<TestPopup>().WithViewModel<TestPopupViewModel>();
     }
 
-    public Type ConfigureRootPage()
+    public UiPageElement GetRootPage(IServiceProvider serviceProvider)
     {
-        return typeof(MainPage);
+        return serviceProvider.GetRequiredService<MainPage>();
     }
 }

@@ -1,0 +1,76 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>PlusUi.h264</PackageId>
+    <Authors>Bernhard Pollerspöck</Authors>
+    <Company>PlusUi</Company>
+    <Product>PlusUi.h264</Product>
+    <Description>The H264 Video Rendering PlusUi Package</Description>
+    <PackageTags>PlusUi;UiFramework;Silk.net;Skiasharp;Video;H264;FFmpeg</PackageTags>
+    <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
+    <PackageIcon>plusui.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\gfx\plusui.png" Link="plusui.png" Pack="true" PackagePath="plusui.png" />
+    <None Include="..\..\README.md" Link="readme.md" Pack="true" PackagePath="readme.md" />
+    <None Include="PlusUi.h264.targets" Pack="true" PackagePath="build\PlusUi.h264.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
+    <PackageReference Include="FFMpegCore" Version="5.2.0" />
+    <PackageReference Include="Spectre.Console" Version="0.50.0" />
+  </ItemGroup>
+  
+  <!-- FFmpeg Binaries for Windows -->
+  <ItemGroup>
+    <None Include="ffmpeg\win-x64\*" Pack="true" PackagePath="content\ffmpeg\win-x64" />
+  </ItemGroup>
+
+  <!-- FFmpeg Binaries for runtime copying -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <Content Include="ffmpeg\win-x64\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+
+  <!-- FFmpeg Binaries für Linux - included in package if the folder exists -->
+  <ItemGroup Condition="Exists('ffmpeg\linux-x64')">
+    <None Include="ffmpeg\linux-x64\*" Pack="true" PackagePath="content\ffmpeg\linux-x64" />
+  </ItemGroup>
+  
+  <!-- Runtime copy for Linux if running on Linux -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux')) AND Exists('ffmpeg\linux-x64')">
+    <Content Include="ffmpeg\linux-x64\ffmpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>ffmpeg</Link>
+    </Content>
+  </ItemGroup>
+
+  <!-- FFmpeg Binaries für macOS - included in package if the folder exists -->
+  <ItemGroup Condition="Exists('ffmpeg\osx-x64')">
+    <None Include="ffmpeg\osx-x64\*" Pack="true" PackagePath="content\ffmpeg\osx-x64" />
+  </ItemGroup>
+  
+  <!-- Runtime copy for macOS if running on macOS -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) AND Exists('ffmpeg\osx-x64')">
+    <Content Include="ffmpeg\osx-x64\ffmpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>ffmpeg</Link>
+    </Content>
+  </ItemGroup>
+  
+</Project>

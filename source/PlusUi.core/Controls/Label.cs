@@ -8,11 +8,15 @@ public class Label : UiTextElement<Label>
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
+        if (!IsVisible)
+        {
+            return;
+        }
 
         canvas.DrawText(
             Text ?? string.Empty,
-            Position.X,
-            Position.Y + TextSize,
+            Position.X + VisualOffset.X,
+            Position.Y + VisualOffset.Y + TextSize,
             (SKTextAlign)HorizontalTextAlignment,
             Font,
             Paint);

@@ -143,29 +143,49 @@ public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
     
     public override void Render(SKCanvas canvas)
     {
-        // Save canvas state and apply clipping
-        canvas.Save();
-        var rect = new SKRect(
-            Position.X,
-            Position.Y,
-            Position.X + ElementSize.Width,
-            Position.Y + ElementSize.Height);
-            
-        // Apply clipping with corner radius if needed
-        if (CornerRadius > 0)
+        if (IsVisible)
         {
-            canvas.ClipRoundRect(new SKRoundRect(rect, CornerRadius, CornerRadius));
-        }
-        else
-        {
-            canvas.ClipRect(rect);
+            // Save canvas state and apply clipping
+            canvas.Save();
+            var rect = new SKRect(
+                Position.X + VisualOffset.X,
+                Position.Y + VisualOffset.Y,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                Position.Y + VisualOffset.Y + ElementSize.Height);
+
+            // Apply clipping with corner radius if needed
+            if (CornerRadius > 0)
+            {
+                canvas.ClipRoundRect(new SKRoundRect(rect, CornerRadius, CornerRadius));
+            }
+            else
+            {
+                canvas.ClipRect(rect);
+            }
         }
         
         // Call base to render background (now clipped)
         base.Render(canvas);
+        if (!IsVisible)
+        {
+            return;
+        }
+
+        // Store the original visual offset of the content
+        var originalContentOffset = _content.VisualOffset;
+        
+        // For ScrollView, we need to apply our VisualOffset but not include the scroll offsets
+        // in the child's VisualOffset since they're already applied via positioning
+        _content.SetVisualOffset(new Point(
+            originalContentOffset.X + VisualOffset.X,
+            originalContentOffset.Y + VisualOffset.Y
+        ));
         
         // Render content (already clipped)
         _content.Render(canvas);
+        
+        // Restore original visual offset
+        _content.SetVisualOffset(originalContentOffset);
         
         // Restore canvas state
         canvas.Restore();

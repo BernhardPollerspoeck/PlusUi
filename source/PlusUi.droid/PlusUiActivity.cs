@@ -84,9 +84,8 @@ public abstract class PlusUiActivity : Activity
         var builder = Host.CreateApplicationBuilder();
 
         var app = CreateApp(builder);
-        var rootPage = app.ConfigureRootPage();
 
-        builder.UsePlusUiInternal(rootPage);
+        builder.UsePlusUiInternal(app, []);
 
         if (ApplicationContext is null)
         {

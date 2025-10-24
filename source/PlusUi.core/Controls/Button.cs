@@ -69,16 +69,20 @@ public class Button : UiTextElement<Button>, IInputControl
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
+        if (!IsVisible)
+        {
+            return;
+        }
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         if (BackgroundPaint is not null)
         {
             var rect = new SKRect(
-                Position.X,
-                Position.Y,
-                Position.X + ElementSize.Width,
-                Position.Y + ElementSize.Height);
+                Position.X + VisualOffset.X,
+                Position.Y + VisualOffset.Y,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                Position.Y + VisualOffset.Y + ElementSize.Height);
             if (CornerRadius > 0)
             {
                 canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
@@ -90,10 +94,10 @@ public class Button : UiTextElement<Button>, IInputControl
         }
 
         var textRect = new SKRect(
-            Position.X + Padding.Left,
-            Position.Y + Padding.Top,
-            Position.X + ElementSize.Width - Padding.Right,
-            Position.Y + ElementSize.Height - Padding.Bottom);
+            Position.X + VisualOffset.X + Padding.Left,
+            Position.Y + VisualOffset.Y + Padding.Top,
+            Position.X + VisualOffset.X + ElementSize.Width - Padding.Right,
+            Position.Y + VisualOffset.Y + ElementSize.Height - Padding.Bottom);
 
         var textX = textRect.MidX;
         var textY = textRect.MidY + (TextSize / 2);
