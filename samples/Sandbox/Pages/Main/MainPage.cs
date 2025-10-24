@@ -3,6 +3,7 @@ using Sandbox.Controls;
 using Sandbox.Pages.BgTest;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
+using Sandbox.Pages.ItemsListDemo;
 using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.TextRendering;
@@ -129,6 +130,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
                 .SetCommandParameter(typeof(ScrollViewExamplePage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("ItemsList Example")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ItemsListDemoPage)),
             new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
                 .SetText("RawUserControl Example")
