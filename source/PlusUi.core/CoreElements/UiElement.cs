@@ -1,56 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core.Attributes;
 using SkiaSharp;
 using System.ComponentModel;
 
 namespace PlusUi.core;
 
-public abstract class UiElement<T> : UiElement where T : UiElement<T>
-{
-    public new T SetBackgroundColor(SKColor color)
-    {
-        base.SetBackgroundColor(color);
-        return (T)this;
-    }
-    public new T BindBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
-    {
-        base.BindBackgroundColor(propertyName, propertyGetter);
-        return (T)this;
-    }
-
-    public new T SetMargin(Margin margin)
-    {
-        base.SetMargin(margin);
-        return (T)this;
-    }
-    public new T BindMargin(string propertyName, Func<Margin> propertyGetter)
-    {
-        base.BindMargin(propertyName, propertyGetter);
-        return (T)this;
-    }
-
-    public new T SetVisualOffset(Point offset)
-    {
-        base.SetVisualOffset(offset);
-        return (T)this;
-    }
-    public new T BindVisualOffset(string propertyName, Func<Point> propertyGetter)
-    {
-        base.BindVisualOffset(propertyName, propertyGetter);
-        return (T)this;
-    }
-
-    public new T SetIsVisible(bool isVisible)
-    {
-        base.SetIsVisible(isVisible);
-        return (T)this;
-    }
-
-    public new T BindIsVisible(string propertyName, Func<bool> propertyGetter)
-    {
-        base.BindIsVisible(propertyName, propertyGetter);
-        return (T)this;
-    }
-}
+[GenerateGenericWrapper]
 public abstract class UiElement
 {
     private readonly Dictionary<string, List<Action>> _bindings = [];

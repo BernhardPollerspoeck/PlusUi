@@ -1,4 +1,6 @@
-﻿namespace PlusUi.core;
+﻿using PlusUi.core.CoreElements;
+
+namespace PlusUi.core;
 
 public interface IPopupService
 {

@@ -38,4 +38,9 @@
     <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="3.119.0" />
   </ItemGroup>
 
+  <!-- Development Reference to Source Generator -->
+  <ItemGroup>
+    <ProjectReference Include="..\PlusUi.SourceGenerators\PlusUi.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
 </Project>

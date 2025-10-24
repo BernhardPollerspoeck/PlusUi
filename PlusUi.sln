@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.h264", "samples\San
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.h264", "source\PlusUi.h264\PlusUi.h264.csproj", "{B2B71706-0A48-42C1-AFC0-6D850EA76F3D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.SourceGenerators", "source\PlusUi.SourceGenerators\PlusUi.SourceGenerators.csproj", "{776501BE-E5FE-1E06-690C-5957CD89BAED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,10 @@ Global
 		{B2B71706-0A48-42C1-AFC0-6D850EA76F3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2B71706-0A48-42C1-AFC0-6D850EA76F3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2B71706-0A48-42C1-AFC0-6D850EA76F3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{776501BE-E5FE-1E06-690C-5957CD89BAED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{776501BE-E5FE-1E06-690C-5957CD89BAED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{776501BE-E5FE-1E06-690C-5957CD89BAED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{776501BE-E5FE-1E06-690C-5957CD89BAED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +119,7 @@ Global
 		{FD4CEB9D-0EC5-49E1-B37D-C1170E581842} = {E0DFC523-7D7B-4C94-968B-98C31B06AEF6}
 		{7AB3027C-DDFB-4781-9D97-CDA6A204DC42} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{B2B71706-0A48-42C1-AFC0-6D850EA76F3D} = {E0DFC523-7D7B-4C94-968B-98C31B06AEF6}
+		{776501BE-E5FE-1E06-690C-5957CD89BAED} = {A6F2765B-2FE3-4448-BD84-D656E66466C2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {001A04BF-110B-43E3-8C60-7D81403E4146}

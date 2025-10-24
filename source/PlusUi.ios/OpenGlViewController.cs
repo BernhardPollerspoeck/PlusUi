@@ -16,7 +16,7 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
 
     public override UIWindow? Window { get; set; }
 
-    public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
+    public override bool FinishedLaunching(UIApplication application, NSDictionary? launchOptions)
     {
         _host = CreateAndStartHost();
 
