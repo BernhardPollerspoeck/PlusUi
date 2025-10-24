@@ -103,104 +103,37 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
     }
     #endregion
     
-    #region CanScrollHorizontally
-    internal bool CanScrollHorizontally 
-    { 
-        get => field; 
-        set => field = value;
-    } = false;
-    
-    public ItemsList<T> SetCanScrollHorizontally(bool canScroll)
-    {
-        CanScrollHorizontally = canScroll;
-        return this;
-    }
-    
-    public ItemsList<T> BindCanScrollHorizontally(string propertyName, Func<bool> propertyGetter)
-    {
-        RegisterBinding(propertyName, () => CanScrollHorizontally = propertyGetter());
-        return this;
-    }
-    #endregion
-    
-    #region CanScrollVertically
-    internal bool CanScrollVertically 
-    { 
-        get => field; 
-        set => field = value;
-    } = false;
-    
-    public ItemsList<T> SetCanScrollVertically(bool canScroll)
-    {
-        CanScrollVertically = canScroll;
-        return this;
-    }
-    
-    public ItemsList<T> BindCanScrollVertically(string propertyName, Func<bool> propertyGetter)
-    {
-        RegisterBinding(propertyName, () => CanScrollVertically = propertyGetter());
-        return this;
-    }
-    #endregion
-    
-    #region HorizontalOffset
-    internal float HorizontalOffset 
+    #region ScrollOffset
+    internal float ScrollOffset 
     { 
         get => field; 
         set
         {
-            var totalWidth = CalculateTotalSize().Width;
-            var maxOffset = Math.Max(0, totalWidth - ElementSize.Width);
+            var totalSize = CalculateTotalSize();
+            var maxOffset = Orientation == Orientation.Vertical
+                ? Math.Max(0, totalSize.Height - ElementSize.Height)
+                : Math.Max(0, totalSize.Width - ElementSize.Width);
             field = Math.Clamp(value, 0, maxOffset);
             InvalidateMeasure();
             UpdateVisibleRange();
         }
     }
     
-    public ItemsList<T> SetHorizontalOffset(float offset)
+    public ItemsList<T> SetScrollOffset(float offset)
     {
-        HorizontalOffset = offset;
+        ScrollOffset = offset;
         return this;
     }
     
-    public ItemsList<T> BindHorizontalOffset(string propertyName, Func<float> propertyGetter)
+    public ItemsList<T> BindScrollOffset(string propertyName, Func<float> propertyGetter)
     {
-        RegisterBinding(propertyName, () => HorizontalOffset = propertyGetter());
-        return this;
-    }
-    #endregion
-    
-    #region VerticalOffset
-    internal float VerticalOffset 
-    { 
-        get => field; 
-        set
-        {
-            var totalHeight = CalculateTotalSize().Height;
-            var maxOffset = Math.Max(0, totalHeight - ElementSize.Height);
-            field = Math.Clamp(value, 0, maxOffset);
-            InvalidateMeasure();
-            UpdateVisibleRange();
-        }
-    }
-    
-    public ItemsList<T> SetVerticalOffset(float offset)
-    {
-        VerticalOffset = offset;
-        return this;
-    }
-    
-    public ItemsList<T> BindVerticalOffset(string propertyName, Func<float> propertyGetter)
-    {
-        RegisterBinding(propertyName, () => VerticalOffset = propertyGetter());
+        RegisterBinding(propertyName, () => ScrollOffset = propertyGetter());
         return this;
     }
     #endregion
     
     public ItemsList()
     {
-        // Set default scroll directions based on orientation
-        CanScrollVertically = true;
     }
     
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -251,13 +184,13 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         
         if (Orientation == Orientation.Vertical)
         {
-            newFirstVisible = _itemHeight > 0 ? (int)(VerticalOffset / _itemHeight) : 0;
+            newFirstVisible = _itemHeight > 0 ? (int)(ScrollOffset / _itemHeight) : 0;
             var visibleCount = _itemHeight > 0 ? (int)Math.Ceiling(ElementSize.Height / _itemHeight) + 1 : items.Count;
             newLastVisible = Math.Min(newFirstVisible + visibleCount, items.Count - 1);
         }
         else
         {
-            newFirstVisible = _itemWidth > 0 ? (int)(HorizontalOffset / _itemWidth) : 0;
+            newFirstVisible = _itemWidth > 0 ? (int)(ScrollOffset / _itemWidth) : 0;
             var visibleCount = _itemWidth > 0 ? (int)Math.Ceiling(ElementSize.Width / _itemWidth) + 1 : items.Count;
             newLastVisible = Math.Min(newFirstVisible + visibleCount, items.Count - 1);
         }
@@ -372,7 +305,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         
         if (Orientation == Orientation.Vertical)
         {
-            var y = positionY - VerticalOffset + (_firstVisibleIndex * _itemHeight);
+            var y = positionY - ScrollOffset + (_firstVisibleIndex * _itemHeight);
             
             foreach (var child in Children)
             {
@@ -393,7 +326,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         }
         else
         {
-            var x = positionX - HorizontalOffset + (_firstVisibleIndex * _itemWidth);
+            var x = positionX - ScrollOffset + (_firstVisibleIndex * _itemWidth);
             
             foreach (var child in Children)
             {
@@ -474,8 +407,13 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             return null;
         }
         
+        // Adjust the point based on scroll offset
+        var adjustedPoint = Orientation == Orientation.Vertical
+            ? new Point(point.X, point.Y + ScrollOffset)
+            : new Point(point.X + ScrollOffset, point.Y);
+        
         // Check if any child was hit
-        var childHit = Children.Select(c => c.HitTest(point)).FirstOrDefault(hit => hit != null);
+        var childHit = Children.Select(c => c.HitTest(adjustedPoint)).FirstOrDefault(hit => hit != null);
         
         // If no child hit, return this ItemsList
         if (childHit == null)
@@ -498,14 +436,13 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
     
     public void HandleScroll(float deltaX, float deltaY)
     {
-        if (Orientation == Orientation.Vertical && CanScrollVertically)
+        if (Orientation == Orientation.Vertical)
         {
-            VerticalOffset += deltaY;
+            ScrollOffset += deltaY;
         }
-        
-        if (Orientation == Orientation.Horizontal && CanScrollHorizontally)
+        else
         {
-            HorizontalOffset += deltaX;
+            ScrollOffset += deltaX;
         }
     }
     #endregion

@@ -22,10 +22,7 @@ public class ItemsListTests
         Assert.AreEqual(Orientation.Vertical, itemsList.Orientation, "Orientation should be Vertical by default");
         Assert.IsNull(itemsList.ItemsSource, "ItemsSource should be null by default");
         Assert.IsNull(itemsList.ItemTemplate, "ItemTemplate should be null by default");
-        Assert.IsFalse(itemsList.CanScrollHorizontally, "CanScrollHorizontally should be false by default");
-        Assert.IsTrue(itemsList.CanScrollVertically, "CanScrollVertically should be true by default");
-        Assert.AreEqual(0, itemsList.HorizontalOffset, "HorizontalOffset should be 0 by default");
-        Assert.AreEqual(0, itemsList.VerticalOffset, "VerticalOffset should be 0 by default");
+        Assert.AreEqual(0, itemsList.ScrollOffset, "ScrollOffset should be 0 by default");
         Assert.IsFalse(itemsList.IsScrolling, "IsScrolling should be false by default");
     }
     
@@ -125,8 +122,7 @@ public class ItemsListTests
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
             .SetItemTemplate(item => new Solid(100, 50))
-            .SetOrientation(Orientation.Vertical)
-            .SetCanScrollVertically(true);
+            .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
         
@@ -154,8 +150,7 @@ public class ItemsListTests
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
             .SetItemTemplate(item => new Solid(50, 100))
-            .SetOrientation(Orientation.Horizontal)
-            .SetCanScrollHorizontally(true);
+            .SetOrientation(Orientation.Horizontal);
         
         var availableSize = new Size(200, 200);
         
@@ -243,8 +238,7 @@ public class ItemsListTests
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
             .SetItemTemplate(item => new Solid(100, 50))
-            .SetOrientation(Orientation.Vertical)
-            .SetCanScrollVertically(true);
+            .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
         
@@ -254,7 +248,7 @@ public class ItemsListTests
         itemsList.HandleScroll(0, 50);
         
         // Assert
-        Assert.AreEqual(50, itemsList.VerticalOffset, "Vertical offset should be updated after scrolling");
+        Assert.AreEqual(50, itemsList.ScrollOffset, "Scroll offset should be updated after scrolling");
     }
     
     [TestMethod]
@@ -273,8 +267,7 @@ public class ItemsListTests
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
             .SetItemTemplate(item => new Solid(50, 100))
-            .SetOrientation(Orientation.Horizontal)
-            .SetCanScrollHorizontally(true);
+            .SetOrientation(Orientation.Horizontal);
         
         var availableSize = new Size(200, 200);
         
@@ -284,34 +277,7 @@ public class ItemsListTests
         itemsList.HandleScroll(50, 0);
         
         // Assert
-        Assert.AreEqual(50, itemsList.HorizontalOffset, "Horizontal offset should be updated after scrolling");
-    }
-    
-    [TestMethod]
-    public void TestItemsList_ScrollingDisabled_OffsetNotUpdated()
-    {
-        // Arrange
-        var items = new List<TestItem>
-        {
-            new TestItem { Text = "Item 1", Value = 1 },
-            new TestItem { Text = "Item 2", Value = 2 }
-        };
-        
-        var itemsList = new ItemsList<TestItem>()
-            .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(100, 50))
-            .SetOrientation(Orientation.Vertical)
-            .SetCanScrollVertically(false);
-        
-        var availableSize = new Size(200, 200);
-        
-        // Act
-        itemsList.Measure(availableSize);
-        itemsList.Arrange(new Rect(0, 0, 200, 200));
-        itemsList.HandleScroll(0, 50);
-        
-        // Assert
-        Assert.AreEqual(0, itemsList.VerticalOffset, "Vertical offset should not change when scrolling is disabled");
+        Assert.AreEqual(50, itemsList.ScrollOffset, "Scroll offset should be updated after scrolling");
     }
     
     [TestMethod]
@@ -409,8 +375,7 @@ public class ItemsListTests
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
             .SetItemTemplate(item => new Solid(100, 50))
-            .SetOrientation(Orientation.Vertical)
-            .SetCanScrollVertically(true);
+            .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
         
@@ -437,8 +402,7 @@ public class ItemsListTests
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
             .SetItemTemplate(item => new Solid(100, 50))
-            .SetOrientation(Orientation.Vertical)
-            .SetCanScrollVertically(true);
+            .SetOrientation(Orientation.Vertical);
         
         var availableSize = new Size(200, 200);
         
@@ -448,7 +412,7 @@ public class ItemsListTests
         var initialChildren = itemsList.Children.ToList();
         
         // Scroll down significantly
-        itemsList.SetVerticalOffset(500);
+        itemsList.SetScrollOffset(500);
         itemsList.Measure(availableSize);
         itemsList.Arrange(new Rect(0, 0, 200, 200));
         
@@ -457,53 +421,7 @@ public class ItemsListTests
     }
     
     [TestMethod]
-    public void TestItemsList_CanScrollHorizontally_SetterAndBinder()
-    {
-        // Arrange
-        var itemsList = new ItemsList<TestItem>();
-        
-        // Act - Test setter
-        var result1 = itemsList.SetCanScrollHorizontally(true);
-        
-        // Assert
-        Assert.IsTrue(itemsList.CanScrollHorizontally, "CanScrollHorizontally should be set to true");
-        Assert.AreSame(itemsList, result1, "Method should return the ItemsList for chaining");
-        
-        // Act - Test binding
-        bool propertyValue = false;
-        var result2 = itemsList.BindCanScrollHorizontally("TestProperty", () => propertyValue);
-        itemsList.UpdateBindings("TestProperty");
-        
-        // Verify binding
-        Assert.IsFalse(itemsList.CanScrollHorizontally, "CanScrollHorizontally should be bound to the property value");
-        Assert.AreSame(itemsList, result2, "Method should return the ItemsList for chaining");
-    }
-    
-    [TestMethod]
-    public void TestItemsList_CanScrollVertically_SetterAndBinder()
-    {
-        // Arrange
-        var itemsList = new ItemsList<TestItem>();
-        
-        // Act - Test setter
-        var result1 = itemsList.SetCanScrollVertically(false);
-        
-        // Assert
-        Assert.IsFalse(itemsList.CanScrollVertically, "CanScrollVertically should be set to false");
-        Assert.AreSame(itemsList, result1, "Method should return the ItemsList for chaining");
-        
-        // Act - Test binding
-        bool propertyValue = true;
-        var result2 = itemsList.BindCanScrollVertically("TestProperty", () => propertyValue);
-        itemsList.UpdateBindings("TestProperty");
-        
-        // Verify binding
-        Assert.IsTrue(itemsList.CanScrollVertically, "CanScrollVertically should be bound to the property value");
-        Assert.AreSame(itemsList, result2, "Method should return the ItemsList for chaining");
-    }
-    
-    [TestMethod]
-    public void TestItemsList_HorizontalOffset_SetterAndBinder()
+    public void TestItemsList_ScrollOffset_SetterAndBinder()
     {
         // Arrange
         var items = new List<TestItem>
@@ -515,60 +433,24 @@ public class ItemsListTests
         var itemsList = new ItemsList<TestItem>()
             .SetItemsSource(items)
             .SetItemTemplate(item => new Solid(100, 50))
-            .SetOrientation(Orientation.Horizontal)
-            .SetCanScrollHorizontally(true);
+            .SetOrientation(Orientation.Vertical);
         
         // Act - Test setter
         itemsList.Measure(new Size(100, 100));
         itemsList.Arrange(new Rect(0, 0, 100, 100));
-        var result1 = itemsList.SetHorizontalOffset(50);
+        var result1 = itemsList.SetScrollOffset(50);
         
         // Assert
-        Assert.IsTrue(itemsList.HorizontalOffset >= 0, "HorizontalOffset should be non-negative");
+        Assert.IsTrue(itemsList.ScrollOffset >= 0, "ScrollOffset should be non-negative");
         Assert.AreSame(itemsList, result1, "Method should return the ItemsList for chaining");
         
         // Act - Test binding
         float propertyValue = 25;
-        var result2 = itemsList.BindHorizontalOffset("TestProperty", () => propertyValue);
+        var result2 = itemsList.BindScrollOffset("TestProperty", () => propertyValue);
         itemsList.UpdateBindings("TestProperty");
         
         // Verify binding
-        Assert.IsTrue(itemsList.HorizontalOffset >= 0, "HorizontalOffset should be bound to the property value");
-        Assert.AreSame(itemsList, result2, "Method should return the ItemsList for chaining");
-    }
-    
-    [TestMethod]
-    public void TestItemsList_VerticalOffset_SetterAndBinder()
-    {
-        // Arrange
-        var items = new List<TestItem>
-        {
-            new TestItem { Text = "Item 1", Value = 1 },
-            new TestItem { Text = "Item 2", Value = 2 }
-        };
-        
-        var itemsList = new ItemsList<TestItem>()
-            .SetItemsSource(items)
-            .SetItemTemplate(item => new Solid(100, 50))
-            .SetOrientation(Orientation.Vertical)
-            .SetCanScrollVertically(true);
-        
-        // Act - Test setter
-        itemsList.Measure(new Size(100, 100));
-        itemsList.Arrange(new Rect(0, 0, 100, 100));
-        var result1 = itemsList.SetVerticalOffset(50);
-        
-        // Assert
-        Assert.IsTrue(itemsList.VerticalOffset >= 0, "VerticalOffset should be non-negative");
-        Assert.AreSame(itemsList, result1, "Method should return the ItemsList for chaining");
-        
-        // Act - Test binding
-        float propertyValue = 25;
-        var result2 = itemsList.BindVerticalOffset("TestProperty", () => propertyValue);
-        itemsList.UpdateBindings("TestProperty");
-        
-        // Verify binding
-        Assert.IsTrue(itemsList.VerticalOffset >= 0, "VerticalOffset should be bound to the property value");
+        Assert.IsTrue(itemsList.ScrollOffset >= 0, "ScrollOffset should be bound to the property value");
         Assert.AreSame(itemsList, result2, "Method should return the ItemsList for chaining");
     }
 }
