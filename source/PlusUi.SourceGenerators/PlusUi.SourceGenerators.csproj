@@ -4,6 +4,7 @@
     <LangVersion>latest</LangVersion>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   
   <ItemGroup>
