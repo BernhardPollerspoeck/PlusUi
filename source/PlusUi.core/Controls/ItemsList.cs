@@ -1,0 +1,512 @@
+using SkiaSharp;
+using System.Collections;
+using System.Collections.Specialized;
+
+namespace PlusUi.core;
+
+public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
+{
+    private IEnumerable<T>? _itemsSource;
+    private Func<T, UiElement>? _itemTemplate;
+    private readonly Dictionary<int, UiElement> _realizedItems = new();
+    private int _firstVisibleIndex;
+    private int _lastVisibleIndex;
+    private float _itemHeight;
+    private float _itemWidth;
+    
+    #region Orientation
+    internal Orientation Orientation 
+    { 
+        get => field; 
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    } = Orientation.Vertical;
+    
+    public ItemsList<T> SetOrientation(Orientation orientation)
+    {
+        Orientation = orientation;
+        return this;
+    }
+    
+    public ItemsList<T> BindOrientation(string propertyName, Func<Orientation> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => Orientation = propertyGetter());
+        return this;
+    }
+    #endregion
+    
+    #region ItemsSource
+    internal IEnumerable<T>? ItemsSource
+    {
+        get => field;
+        set
+        {
+            // Unsubscribe from old collection
+            if (_itemsSource is INotifyCollectionChanged oldCollection)
+            {
+                oldCollection.CollectionChanged -= OnCollectionChanged;
+            }
+            
+            field = value;
+            _itemsSource = value;
+            
+            // Subscribe to new collection
+            if (_itemsSource is INotifyCollectionChanged newCollection)
+            {
+                newCollection.CollectionChanged += OnCollectionChanged;
+            }
+            
+            InvalidateMeasure();
+            RebuildItems();
+        }
+    }
+    
+    public ItemsList<T> SetItemsSource(IEnumerable<T>? items)
+    {
+        ItemsSource = items;
+        return this;
+    }
+    
+    public ItemsList<T> BindItemsSource(string propertyName, Func<IEnumerable<T>?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => ItemsSource = propertyGetter());
+        return this;
+    }
+    #endregion
+    
+    #region ItemTemplate
+    internal Func<T, UiElement>? ItemTemplate
+    {
+        get => field;
+        set
+        {
+            field = value;
+            _itemTemplate = value;
+            InvalidateMeasure();
+            RebuildItems();
+        }
+    }
+    
+    public ItemsList<T> SetItemTemplate(Func<T, UiElement> template)
+    {
+        ItemTemplate = template;
+        return this;
+    }
+    
+    public ItemsList<T> BindItemTemplate(string propertyName, Func<Func<T, UiElement>?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => ItemTemplate = propertyGetter());
+        return this;
+    }
+    #endregion
+    
+    #region CanScrollHorizontally
+    internal bool CanScrollHorizontally 
+    { 
+        get => field; 
+        set => field = value;
+    } = false;
+    
+    public ItemsList<T> SetCanScrollHorizontally(bool canScroll)
+    {
+        CanScrollHorizontally = canScroll;
+        return this;
+    }
+    
+    public ItemsList<T> BindCanScrollHorizontally(string propertyName, Func<bool> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => CanScrollHorizontally = propertyGetter());
+        return this;
+    }
+    #endregion
+    
+    #region CanScrollVertically
+    internal bool CanScrollVertically 
+    { 
+        get => field; 
+        set => field = value;
+    } = false;
+    
+    public ItemsList<T> SetCanScrollVertically(bool canScroll)
+    {
+        CanScrollVertically = canScroll;
+        return this;
+    }
+    
+    public ItemsList<T> BindCanScrollVertically(string propertyName, Func<bool> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => CanScrollVertically = propertyGetter());
+        return this;
+    }
+    #endregion
+    
+    #region HorizontalOffset
+    internal float HorizontalOffset 
+    { 
+        get => field; 
+        set
+        {
+            var totalWidth = CalculateTotalSize().Width;
+            var maxOffset = Math.Max(0, totalWidth - ElementSize.Width);
+            field = Math.Clamp(value, 0, maxOffset);
+            InvalidateMeasure();
+            UpdateVisibleRange();
+        }
+    }
+    
+    public ItemsList<T> SetHorizontalOffset(float offset)
+    {
+        HorizontalOffset = offset;
+        return this;
+    }
+    
+    public ItemsList<T> BindHorizontalOffset(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => HorizontalOffset = propertyGetter());
+        return this;
+    }
+    #endregion
+    
+    #region VerticalOffset
+    internal float VerticalOffset 
+    { 
+        get => field; 
+        set
+        {
+            var totalHeight = CalculateTotalSize().Height;
+            var maxOffset = Math.Max(0, totalHeight - ElementSize.Height);
+            field = Math.Clamp(value, 0, maxOffset);
+            InvalidateMeasure();
+            UpdateVisibleRange();
+        }
+    }
+    
+    public ItemsList<T> SetVerticalOffset(float offset)
+    {
+        VerticalOffset = offset;
+        return this;
+    }
+    
+    public ItemsList<T> BindVerticalOffset(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => VerticalOffset = propertyGetter());
+        return this;
+    }
+    #endregion
+    
+    public ItemsList()
+    {
+        // Set default scroll directions based on orientation
+        CanScrollVertically = true;
+    }
+    
+    private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        InvalidateMeasure();
+        RebuildItems();
+    }
+    
+    private void RebuildItems()
+    {
+        // Clear existing realized items
+        _realizedItems.Clear();
+        Children.Clear();
+        
+        if (_itemsSource == null || _itemTemplate == null)
+        {
+            return;
+        }
+        
+        // Calculate visible range and realize only visible items
+        UpdateVisibleRange();
+    }
+    
+    private void UpdateVisibleRange()
+    {
+        if (_itemsSource == null || _itemTemplate == null)
+        {
+            return;
+        }
+        
+        var items = _itemsSource.ToList();
+        if (items.Count == 0)
+        {
+            return;
+        }
+        
+        // Estimate item size from first item if not yet calculated
+        if (_itemHeight == 0 || _itemWidth == 0)
+        {
+            var firstItem = _itemTemplate(items[0]);
+            firstItem.Measure(new Size(float.MaxValue, float.MaxValue), true);
+            _itemHeight = firstItem.ElementSize.Height + firstItem.Margin.Top + firstItem.Margin.Bottom;
+            _itemWidth = firstItem.ElementSize.Width + firstItem.Margin.Left + firstItem.Margin.Right;
+        }
+        
+        // Calculate visible range based on orientation
+        int newFirstVisible, newLastVisible;
+        
+        if (Orientation == Orientation.Vertical)
+        {
+            newFirstVisible = _itemHeight > 0 ? (int)(VerticalOffset / _itemHeight) : 0;
+            var visibleCount = _itemHeight > 0 ? (int)Math.Ceiling(ElementSize.Height / _itemHeight) + 1 : items.Count;
+            newLastVisible = Math.Min(newFirstVisible + visibleCount, items.Count - 1);
+        }
+        else
+        {
+            newFirstVisible = _itemWidth > 0 ? (int)(HorizontalOffset / _itemWidth) : 0;
+            var visibleCount = _itemWidth > 0 ? (int)Math.Ceiling(ElementSize.Width / _itemWidth) + 1 : items.Count;
+            newLastVisible = Math.Min(newFirstVisible + visibleCount, items.Count - 1);
+        }
+        
+        // Realize new items in visible range
+        for (int i = newFirstVisible; i <= newLastVisible; i++)
+        {
+            if (!_realizedItems.ContainsKey(i))
+            {
+                var item = _itemTemplate(items[i]);
+                item.Parent = this;
+                _realizedItems[i] = item;
+            }
+        }
+        
+        // Remove items outside visible range
+        var keysToRemove = _realizedItems.Keys.Where(k => k < newFirstVisible || k > newLastVisible).ToList();
+        foreach (var key in keysToRemove)
+        {
+            _realizedItems.Remove(key);
+        }
+        
+        // Update children list
+        Children.Clear();
+        Children.AddRange(_realizedItems.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value));
+        
+        _firstVisibleIndex = newFirstVisible;
+        _lastVisibleIndex = newLastVisible;
+    }
+    
+    private Size CalculateTotalSize()
+    {
+        if (_itemsSource == null)
+        {
+            return new Size(0, 0);
+        }
+        
+        var itemCount = _itemsSource.Count();
+        
+        if (Orientation == Orientation.Vertical)
+        {
+            return new Size(0, itemCount * _itemHeight);
+        }
+        else
+        {
+            return new Size(itemCount * _itemWidth, 0);
+        }
+    }
+    
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
+    {
+        if (_itemsSource == null || _itemTemplate == null)
+        {
+            return new Size(0, 0);
+        }
+        
+        var items = _itemsSource.ToList();
+        if (items.Count == 0)
+        {
+            return new Size(0, 0);
+        }
+        
+        // Measure first item to get typical size
+        var firstItem = _itemTemplate(items[0]);
+        firstItem.Measure(availableSize, true);
+        _itemHeight = firstItem.ElementSize.Height + firstItem.Margin.Top + firstItem.Margin.Bottom;
+        _itemWidth = firstItem.ElementSize.Width + firstItem.Margin.Left + firstItem.Margin.Right;
+        
+        // Update visible range after measuring
+        UpdateVisibleRange();
+        
+        // Measure all visible items
+        if (Orientation == Orientation.Vertical)
+        {
+            float maxWidth = 0;
+            foreach (var child in Children)
+            {
+                child.Measure(availableSize, dontStretch);
+                maxWidth = Math.Max(maxWidth, child.ElementSize.Width + child.Margin.Left + child.Margin.Right);
+            }
+            
+            // Return available size as our size for scrolling to work
+            return availableSize;
+        }
+        else
+        {
+            float maxHeight = 0;
+            foreach (var child in Children)
+            {
+                child.Measure(availableSize, dontStretch);
+                maxHeight = Math.Max(maxHeight, child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom);
+            }
+            
+            return availableSize;
+        }
+    }
+    
+    protected override Point ArrangeInternal(Rect bounds)
+    {
+        var positionX = HorizontalAlignment switch
+        {
+            HorizontalAlignment.Center => bounds.Left + ((bounds.Width - ElementSize.Width) / 2),
+            HorizontalAlignment.Right => bounds.Right - ElementSize.Width - Margin.Right,
+            _ => bounds.Left + Margin.Left,
+        };
+        var positionY = VerticalAlignment switch
+        {
+            VerticalAlignment.Center => bounds.Top + ((bounds.Height - ElementSize.Height) / 2),
+            VerticalAlignment.Bottom => bounds.Bottom - ElementSize.Height - Margin.Bottom,
+            _ => bounds.Top + Margin.Top,
+        };
+        
+        if (Orientation == Orientation.Vertical)
+        {
+            var y = positionY - VerticalOffset + (_firstVisibleIndex * _itemHeight);
+            
+            foreach (var child in Children)
+            {
+                var childLeftBound = child.HorizontalAlignment switch
+                {
+                    HorizontalAlignment.Center => positionX + ((ElementSize.Width - child.ElementSize.Width) / 2),
+                    HorizontalAlignment.Right => positionX + ElementSize.Width - child.ElementSize.Width,
+                    _ => positionX,
+                };
+                
+                child.Arrange(new Rect(
+                    childLeftBound,
+                    y,
+                    child.ElementSize.Width,
+                    child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom));
+                y += child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom;
+            }
+        }
+        else
+        {
+            var x = positionX - HorizontalOffset + (_firstVisibleIndex * _itemWidth);
+            
+            foreach (var child in Children)
+            {
+                var childTopBound = child.VerticalAlignment switch
+                {
+                    VerticalAlignment.Center => positionY + ((ElementSize.Height - child.ElementSize.Height) / 2),
+                    VerticalAlignment.Bottom => positionY + ElementSize.Height - child.ElementSize.Height,
+                    _ => positionY,
+                };
+                
+                child.Arrange(new Rect(x, childTopBound, child.ElementSize.Width, child.ElementSize.Height));
+                x += child.ElementSize.Width + child.Margin.Left + child.Margin.Right;
+            }
+        }
+        
+        return new Point(positionX, positionY);
+    }
+    
+    public override void Render(SKCanvas canvas)
+    {
+        if (IsVisible)
+        {
+            // Save canvas state and apply clipping
+            canvas.Save();
+            var rect = new SKRect(
+                Position.X + VisualOffset.X,
+                Position.Y + VisualOffset.Y,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                Position.Y + VisualOffset.Y + ElementSize.Height);
+
+            // Apply clipping with corner radius if needed
+            if (CornerRadius > 0)
+            {
+                canvas.ClipRoundRect(new SKRoundRect(rect, CornerRadius, CornerRadius));
+            }
+            else
+            {
+                canvas.ClipRect(rect);
+            }
+        }
+        
+        // Call base to render background (now clipped)
+        base.Render(canvas);
+        if (!IsVisible)
+        {
+            return;
+        }
+
+        // Render visible children
+        foreach (var child in Children)
+        {
+            // Save the current VisualOffset
+            var childOriginalOffset = child.VisualOffset;
+
+            // Apply parent's VisualOffset to child
+            child.SetVisualOffset(new Point(
+                childOriginalOffset.X + VisualOffset.X,
+                childOriginalOffset.Y + VisualOffset.Y
+            ));
+            
+            // Render the child
+            child.Render(canvas);
+
+            // Restore original VisualOffset
+            child.SetVisualOffset(childOriginalOffset);
+        }
+        
+        // Restore canvas state
+        canvas.Restore();
+    }
+    
+    public override UiElement? HitTest(Point point)
+    {
+        // First check if the point is within our bounds
+        if (!(point.X >= Position.X && point.X <= Position.X + ElementSize.Width &&
+              point.Y >= Position.Y && point.Y <= Position.Y + ElementSize.Height))
+        {
+            return null;
+        }
+        
+        // Check if any child was hit
+        var childHit = Children.Select(c => c.HitTest(point)).FirstOrDefault(hit => hit != null);
+        
+        // If no child hit, return this ItemsList
+        if (childHit == null)
+        {
+            return this;
+        }
+        
+        // Return interactive controls directly
+        if (childHit is IInputControl || childHit is ITextInputControl || childHit is IToggleButtonControl)
+        {
+            return childHit;
+        }
+        
+        // For non-interactive controls, return this ItemsList to handle scrolling
+        return this;
+    }
+    
+    #region IScrollableControl Implementation
+    public bool IsScrolling { get; set; }
+    
+    public void HandleScroll(float deltaX, float deltaY)
+    {
+        if (Orientation == Orientation.Vertical && CanScrollVertically)
+        {
+            VerticalOffset += deltaY;
+        }
+        
+        if (Orientation == Orientation.Horizontal && CanScrollHorizontally)
+        {
+            HorizontalOffset += deltaX;
+        }
+    }
+    #endregion
+}
