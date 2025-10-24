@@ -11,7 +11,7 @@ public class BorderTests
     {
         // Arrange & Act
         var border = new Border();
-        
+
         // Assert
         Assert.AreEqual(SKColors.Black, border.StrokeColor);
         Assert.AreEqual(1f, border.StrokeThickness);
@@ -24,13 +24,13 @@ public class BorderTests
     {
         // Arrange
         var border = new Border();
-        
+
         // Act
         border.SetStrokeColor(SKColors.Red)
               .SetStrokeThickness(3f)
               .SetStrokeType(StrokeType.Dashed)
               .SetBackgroundColor(SKColors.Blue);
-        
+
         // Assert
         Assert.AreEqual(SKColors.Red, border.StrokeColor);
         Assert.AreEqual(3f, border.StrokeThickness);
@@ -46,16 +46,17 @@ public class BorderTests
             .SetStrokeThickness(2f);
         var child = new Label().SetText("Test");
         border.AddChild(child);
-        
+
         var availableSize = new Size(100, 100);
-        
+
         // Act
         border.Measure(availableSize);
-        
+
         // Assert
         // Border should add stroke thickness to child size
-        Assert.IsTrue(border.DesiredSize.Width >= 4); // 2 * stroke thickness
-        Assert.IsTrue(border.DesiredSize.Height >= 4); // 2 * stroke thickness
+
+        Assert.IsTrue(border.DesiredSize.Value.Width >= 4); // 2 * stroke thickness
+        Assert.IsTrue(border.DesiredSize.Value.Height >= 4); // 2 * stroke thickness
     }
 
     [TestMethod]
@@ -66,17 +67,17 @@ public class BorderTests
             .SetStrokeThickness(5f);
         var child = new Label().SetText("Test");
         border.AddChild(child);
-        
+
         var bounds = new Rect(0, 0, 100, 100);
-        
+
         // Act
         border.Measure(new Size(100, 100));
         border.Arrange(bounds);
-        
+
         // Assert
         Assert.AreEqual(0, border.Position.X);
         Assert.AreEqual(0, border.Position.Y);
-        
+
         // Child should be positioned with stroke thickness offset
         Assert.AreEqual(5, child.Position.X); // stroke thickness
         Assert.AreEqual(5, child.Position.Y); // stroke thickness
@@ -88,10 +89,10 @@ public class BorderTests
         // Arrange & Act & Assert
         var solidBorder = new Border().SetStrokeType(StrokeType.Solid);
         Assert.AreEqual(StrokeType.Solid, solidBorder.StrokeType);
-        
+
         var dashedBorder = new Border().SetStrokeType(StrokeType.Dashed);
         Assert.AreEqual(StrokeType.Dashed, dashedBorder.StrokeType);
-        
+
         var dottedBorder = new Border().SetStrokeType(StrokeType.Dotted);
         Assert.AreEqual(StrokeType.Dotted, dottedBorder.StrokeType);
     }
@@ -101,7 +102,7 @@ public class BorderTests
     {
         // Arrange & Act
         var border = new Border().SetStrokeThickness(-5f);
-        
+
         // Assert - negative values should be clamped to 0
         Assert.AreEqual(0f, border.StrokeThickness);
     }

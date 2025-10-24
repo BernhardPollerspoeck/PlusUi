@@ -32,10 +32,8 @@ internal class DefaultStyle : IApplicationStyle
             .AddStyle<Button>(element => element
                 .SetBackgroundColor(SKColors.Green))
 
-            .AddStyle<Border>(element => element
-                .SetStrokeColor(SKColors.Gray)
-                .SetStrokeThickness(1f)
-                .SetStrokeType(StrokeType.Solid));
 
+
+            ;
     }
 }

@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SkiaSharp.Views" Version="3.116.1" />
+    <PackageReference Include="SkiaSharp.Views" Version="3.119.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />

@@ -192,14 +192,14 @@ public class Border : UiLayoutElement<Border>
             Math.Max(0, availableSize.Width - borderThickness),
             Math.Max(0, availableSize.Height - borderThickness));
 
-        Size childSize = Size.Zero;
+        Size childSize = Size.Empty;
 
         // Measure the single child if it exists
         if (Children.Count > 0)
         {
             var child = Children[0];
             child.Measure(availableChildSize);
-            childSize = child.DesiredSize;
+            childSize = child.ElementSize + child.Margin;
         }
 
         // Return the child size plus border thickness
@@ -226,5 +226,18 @@ public class Border : UiLayoutElement<Border>
         }
 
         return position;
+    }
+
+    public override UiElement? HitTest(Point point)
+    {
+        foreach (var child in Children)
+        {
+            var result = child.HitTest(point);
+            if (result is not null)
+            {
+                return result;
+            }
+        }
+        return base.HitTest(point);
     }
 }

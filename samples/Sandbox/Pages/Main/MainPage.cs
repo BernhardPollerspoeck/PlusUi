@@ -51,29 +51,28 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
                         .SetBackgroundColor(new SKColor(0, 255, 0)),
 
-                // Border control examples
                 new Border()
+                    .AddChild(new Label().SetText("Solid Border").SetTextColor(SKColors.Black))
                     .SetStrokeColor(SKColors.Red)
                     .SetStrokeThickness(3f)
                     .SetStrokeType(StrokeType.Solid)
-                    .SetBackgroundColor(new SKColor(255, 255, 0, 100))
-                    .AddChild(new Label().SetText("Solid Border").SetTextColor(SKColors.Black)),
-                
+                    .SetBackgroundColor(new SKColor(255, 255, 0, 100)),
+
                 new Border()
+                    .AddChild(new Label().SetText("Dashed").SetTextColor(SKColors.Black))
                     .SetStrokeColor(SKColors.Blue)
                     .SetStrokeThickness(2f)
                     .SetStrokeType(StrokeType.Dashed)
-                    .SetBackgroundColor(new SKColor(0, 255, 255, 100))
-                    .AddChild(new Label().SetText("Dashed").SetTextColor(SKColors.Black)),
-                
+                    .SetBackgroundColor(new SKColor(0, 255, 255, 100)),
+
                 new Border()
+                    .AddChild(new VStack(
+                        new Label().SetText("Dotted").SetTextColor(SKColors.White),
+                        new Label().SetText("Multi-line").SetTextColor(SKColors.White)))
                     .SetStrokeColor(SKColors.Green)
                     .SetStrokeThickness(4f)
                     .SetStrokeType(StrokeType.Dotted)
-                    .SetCornerRadius(10)
-                    .AddChild(new VStack(
-                        new Label().SetText("Dotted").SetTextColor(SKColors.White),
-                        new Label().SetText("Multi-line").SetTextColor(SKColors.White))),
+                    .SetCornerRadius(10),
 
                 new HStack(
                     new Image()
