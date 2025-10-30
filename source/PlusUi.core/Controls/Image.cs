@@ -72,6 +72,7 @@ public class Image : UiElement<Image>
         if (ImageSource.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
             ImageSource.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
         {
+            // Web images are loaded asynchronously, don't cache null here
             image = TryLoadImageFromWeb(ImageSource);
         }
         // Check for file: prefix
@@ -80,35 +81,55 @@ public class Image : UiElement<Image>
             const string filePrefix = "file:";
             var filePath = ImageSource.Substring(filePrefix.Length);
             image = TryLoadImageFromFile(filePath);
+            // Cache the result (even if null) to avoid repeated failed attempts
+            _imageCache[ImageSource] = image;
         }
         // Default: Load from embedded resources
         else
         {
             image = TryLoadImageFromResources(ImageSource);
+            // Cache the result (even if null) to avoid repeated failed attempts
+            _imageCache[ImageSource] = image;
         }
 
-        // Cache the result (even if null) to avoid repeated failed attempts
-        _imageCache[ImageSource] = image;
         return image;
     }
 
     private SKImage? TryLoadImageFromWeb(string url)
     {
+        // Start loading the image asynchronously in the background
+        // Return null immediately to avoid blocking the UI thread
+        _ = LoadImageFromWebAsync(url);
+        return null;
+    }
+
+    private async Task LoadImageFromWebAsync(string url)
+    {
         try
         {
-            using var stream = _httpClient.GetStreamAsync(url).GetAwaiter().GetResult();
+            using var stream = await _httpClient.GetStreamAsync(url).ConfigureAwait(false);
             using var codec = SKCodec.Create(stream);
             if (codec == null)
-                return null;
+            {
+                _imageCache[url] = null;
+                return;
+            }
 
             var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
             using var bitmap = new SKBitmap(info);
             codec.GetPixels(bitmap.Info, bitmap.GetPixels());
-            return SKImage.FromBitmap(bitmap);
+            var image = SKImage.FromBitmap(bitmap);
+
+            // Update the cache and the current image if this is still the active source
+            _imageCache[url] = image;
+            if (ImageSource == url)
+            {
+                _image = image;
+            }
         }
         catch
         {
-            return null;
+            _imageCache[url] = null;
         }
     }
 
