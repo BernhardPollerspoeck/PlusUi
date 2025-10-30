@@ -85,7 +85,16 @@ public class InputService
             _textInputControl?.SetSelectionStatus(false);
             _textInputControl = textInputControl;
             _textInputControl.SetSelectionStatus(true);
-            _keyboardHandler.Show();
+            
+            // Pass keyboard configuration if the control is an Entry
+            if (textInputControl is Entry entry)
+            {
+                _keyboardHandler.Show(entry.Keyboard, entry.ReturnKey, entry.IsPassword);
+            }
+            else
+            {
+                _keyboardHandler.Show();
+            }
         }
         else if (_textInputControl != null && _textInputControl != hitControl)
         {
