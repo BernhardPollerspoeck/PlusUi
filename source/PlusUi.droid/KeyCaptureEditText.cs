@@ -1,6 +1,8 @@
 ﻿using Android.Content;
+using Android.Text;
 using Android.Views;
 using Android.Views.InputMethods;
+using Android.Widget;
 using Java.Lang;
 using PlusUi.core;
 
