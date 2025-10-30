@@ -44,6 +44,36 @@ public abstract class UiTextElement<T> : UiTextElement where T : UiTextElement<T
         base.BindHorizontalTextAlignment(propertyName, propertyGetter);
         return (T)this;
     }
+    public new T SetTextWrapping(TextWrapping textWrapping)
+    {
+        base.SetTextWrapping(textWrapping);
+        return (T)this;
+    }
+    public new T BindTextWrapping(string propertyName, Func<TextWrapping> propertyGetter)
+    {
+        base.BindTextWrapping(propertyName, propertyGetter);
+        return (T)this;
+    }
+    public new T SetMaxLines(int maxLines)
+    {
+        base.SetMaxLines(maxLines);
+        return (T)this;
+    }
+    public new T BindMaxLines(string propertyName, Func<int> propertyGetter)
+    {
+        base.BindMaxLines(propertyName, propertyGetter);
+        return (T)this;
+    }
+    public new T SetTextTruncation(TextTruncation textTruncation)
+    {
+        base.SetTextTruncation(textTruncation);
+        return (T)this;
+    }
+    public new T BindTextTruncation(string propertyName, Func<TextTruncation> propertyGetter)
+    {
+        base.BindTextTruncation(propertyName, propertyGetter);
+        return (T)this;
+    }
 }
 public abstract class UiTextElement : UiElement
 {
@@ -132,6 +162,72 @@ public abstract class UiTextElement : UiElement
     public UiTextElement BindHorizontalTextAlignment(string propertyName, Func<HorizontalTextAlignment> propertyGetter)
     {
         RegisterBinding(propertyName, () => HorizontalTextAlignment = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region TextWrapping
+    internal TextWrapping TextWrapping
+    {
+        get => field;
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    } = TextWrapping.NoWrap;
+    public UiTextElement SetTextWrapping(TextWrapping textWrapping)
+    {
+        TextWrapping = textWrapping;
+        return this;
+    }
+    public UiTextElement BindTextWrapping(string propertyName, Func<TextWrapping> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => TextWrapping = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region MaxLines
+    internal int? MaxLines
+    {
+        get => field;
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    }
+    public UiTextElement SetMaxLines(int maxLines)
+    {
+        MaxLines = maxLines;
+        return this;
+    }
+    public UiTextElement BindMaxLines(string propertyName, Func<int> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => MaxLines = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region TextTruncation
+    internal TextTruncation TextTruncation
+    {
+        get => field;
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    } = TextTruncation.None;
+    public UiTextElement SetTextTruncation(TextTruncation textTruncation)
+    {
+        TextTruncation = textTruncation;
+        return this;
+    }
+    public UiTextElement BindTextTruncation(string propertyName, Func<TextTruncation> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => TextTruncation = propertyGetter());
         return this;
     }
     #endregion
