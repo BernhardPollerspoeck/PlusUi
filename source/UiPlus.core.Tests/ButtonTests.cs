@@ -97,7 +97,7 @@ public class ButtonTests
     {
         //Arrange
         var button = new Button().SetText("Test").SetPadding(new(0));
-        var font = new SKFont(SKTypeface.Default) { Size = 12 };
+        using var font = new SKFont(SKTypeface.Default) { Size = 12 };
         var expectedWidth = font.MeasureText("Test");
         font.GetFontMetrics(out var fontMetrics);
         var expectedHeight = fontMetrics.Descent - fontMetrics.Ascent;
@@ -160,7 +160,7 @@ public class ButtonTests
             .SetIconPosition(IconPosition.Leading)
             .SetPadding(new(0))
             .SetTextSize(12);
-        var font = new SKFont(SKTypeface.Default) { Size = 12 };
+        using var font = new SKFont(SKTypeface.Default) { Size = 12 };
         var textWidth = font.MeasureText("Test");
         //Act
         button.Measure(new Size(200, 200));
@@ -179,7 +179,7 @@ public class ButtonTests
             .SetIconPosition(IconPosition.Trailing)
             .SetPadding(new(0))
             .SetTextSize(12);
-        var font = new SKFont(SKTypeface.Default) { Size = 12 };
+        using var font = new SKFont(SKTypeface.Default) { Size = 12 };
         var textWidth = font.MeasureText("Test");
         //Act
         button.Measure(new Size(200, 200));
@@ -198,7 +198,7 @@ public class ButtonTests
             .SetIconPosition(IconPosition.Leading | IconPosition.Trailing)
             .SetPadding(new(0))
             .SetTextSize(12);
-        var font = new SKFont(SKTypeface.Default) { Size = 12 };
+        using var font = new SKFont(SKTypeface.Default) { Size = 12 };
         var textWidth = font.MeasureText("Test");
         //Act
         button.Measure(new Size(200, 200));
@@ -217,7 +217,7 @@ public class ButtonTests
             .SetIconPosition(IconPosition.None)
             .SetPadding(new(0))
             .SetTextSize(12);
-        var font = new SKFont(SKTypeface.Default) { Size = 12 };
+        using var font = new SKFont(SKTypeface.Default) { Size = 12 };
         var textWidth = font.MeasureText("Test");
         //Act
         button.Measure(new Size(200, 200));
