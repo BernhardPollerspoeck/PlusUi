@@ -65,14 +65,84 @@ public class Image : UiElement<Image>
             return cachedImage;
         }
 
+        SKImage? image = null;
+
+        // Check for http:// or https:// prefix
+        if (ImageSource.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            ImageSource.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            image = TryLoadImageFromWeb(ImageSource);
+        }
+        // Check for file: prefix
+        else if (ImageSource.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
+        {
+            var filePath = ImageSource.Substring(5); // Remove "file:" prefix
+            image = TryLoadImageFromFile(filePath);
+        }
+        // Default: Load from embedded resources
+        else
+        {
+            image = TryLoadImageFromResources(ImageSource);
+        }
+
+        // Cache the result (even if null) to avoid repeated failed attempts
+        _imageCache[ImageSource] = image;
+        return image;
+    }
+
+    private SKImage? TryLoadImageFromWeb(string url)
+    {
+        try
+        {
+            using var httpClient = new System.Net.Http.HttpClient();
+            using var stream = httpClient.GetStreamAsync(url).GetAwaiter().GetResult();
+            using var codec = SKCodec.Create(stream);
+            if (codec == null)
+                return null;
+
+            var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
+            using var bitmap = new SKBitmap(info);
+            codec.GetPixels(bitmap.Info, bitmap.GetPixels());
+            return SKImage.FromBitmap(bitmap);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private SKImage? TryLoadImageFromFile(string filePath)
+    {
+        try
+        {
+            if (!System.IO.File.Exists(filePath))
+                return null;
+
+            using var stream = System.IO.File.OpenRead(filePath);
+            using var codec = SKCodec.Create(stream);
+            if (codec == null)
+                return null;
+
+            var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
+            using var bitmap = new SKBitmap(info);
+            codec.GetPixels(bitmap.Info, bitmap.GetPixels());
+            return SKImage.FromBitmap(bitmap);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private SKImage? TryLoadImageFromResources(string resourceName)
+    {
         // First try the entry assembly
         var assembly = System.Reflection.Assembly.GetEntryAssembly();
         if (assembly != null)
         {
-            var image = TryLoadImageFromAssembly(assembly, ImageSource);
+            var image = TryLoadImageFromAssembly(assembly, resourceName);
             if (image != null)
             {
-                _imageCache[ImageSource] = image;
                 return image;
             }
         }
@@ -86,15 +156,15 @@ public class Image : UiElement<Image>
                 continue;
             }
 
-            var image = TryLoadImageFromAssembly(loadedAssembly, ImageSource);
+            var image = TryLoadImageFromAssembly(loadedAssembly, resourceName);
             if (image != null)
             {
-                _imageCache[ImageSource] = image;
                 return image;
             }
         }
 
-        throw new InvalidOperationException($"Resource '{ImageSource}' not found in any assembly.");
+        // Return null instead of throwing exception
+        return null;
     }
 
     private static SKImage? TryLoadImageFromAssembly(System.Reflection.Assembly assembly, string resourceName)
