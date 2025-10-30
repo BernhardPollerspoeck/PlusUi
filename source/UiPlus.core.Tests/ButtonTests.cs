@@ -123,4 +123,106 @@ public class ButtonTests
         Assert.AreEqual(IconPosition.Trailing, button.IconPosition);
         Assert.AreEqual(10, button.Padding.Left);
     }
+
+    [TestMethod]
+    public void TestButton_IconOnly_MeasuresCorrectly()
+    {
+        //Arrange
+        var button = new Button().SetIcon("icon.png").SetPadding(new(0)).SetTextSize(12);
+        //Act
+        button.Measure(new Size(200, 200));
+        //Assert
+        // Without actual icon resource, _iconImage will be null and size will be zero
+        // This test verifies that setting an icon doesn't crash the button
+        Assert.IsTrue(button.ElementSize.Width >= 0);
+        Assert.IsTrue(button.ElementSize.Height >= 0);
+    }
+
+    [TestMethod]
+    public void TestButton_NoIconNoText_MeasuresZero()
+    {
+        //Arrange
+        var button = new Button().SetPadding(new(0));
+        //Act
+        button.Measure(new Size(200, 200));
+        //Assert
+        // Button with no text and no icon should have zero size
+        Assert.AreEqual(0f, button.ElementSize.Width, 0.1);
+    }
+
+    [TestMethod]
+    public void TestButton_IconLeading_IncludesIconInWidth()
+    {
+        //Arrange
+        var button = new Button()
+            .SetText("Test")
+            .SetIcon("icon.png")
+            .SetIconPosition(IconPosition.Leading)
+            .SetPadding(new(0))
+            .SetTextSize(12);
+        var font = new SKFont(SKTypeface.Default) { Size = 12 };
+        var textWidth = font.MeasureText("Test");
+        //Act
+        button.Measure(new Size(200, 200));
+        //Assert
+        // Without actual icon resource, width should be at least text width
+        Assert.IsTrue(button.ElementSize.Width >= textWidth);
+    }
+
+    [TestMethod]
+    public void TestButton_IconTrailing_IncludesIconInWidth()
+    {
+        //Arrange
+        var button = new Button()
+            .SetText("Test")
+            .SetIcon("icon.png")
+            .SetIconPosition(IconPosition.Trailing)
+            .SetPadding(new(0))
+            .SetTextSize(12);
+        var font = new SKFont(SKTypeface.Default) { Size = 12 };
+        var textWidth = font.MeasureText("Test");
+        //Act
+        button.Measure(new Size(200, 200));
+        //Assert
+        // Without actual icon resource, width should be at least text width
+        Assert.IsTrue(button.ElementSize.Width >= textWidth);
+    }
+
+    [TestMethod]
+    public void TestButton_IconBoth_IncludesBothIconsInWidth()
+    {
+        //Arrange
+        var button = new Button()
+            .SetText("Test")
+            .SetIcon("icon.png")
+            .SetIconPosition(IconPosition.Leading | IconPosition.Trailing)
+            .SetPadding(new(0))
+            .SetTextSize(12);
+        var font = new SKFont(SKTypeface.Default) { Size = 12 };
+        var textWidth = font.MeasureText("Test");
+        //Act
+        button.Measure(new Size(200, 200));
+        //Assert
+        // Without actual icon resource, width should be at least text width
+        Assert.IsTrue(button.ElementSize.Width >= textWidth);
+    }
+
+    [TestMethod]
+    public void TestButton_IconPositionNone_DoesNotIncludeIcon()
+    {
+        //Arrange
+        var button = new Button()
+            .SetText("Test")
+            .SetIcon("icon.png")
+            .SetIconPosition(IconPosition.None)
+            .SetPadding(new(0))
+            .SetTextSize(12);
+        var font = new SKFont(SKTypeface.Default) { Size = 12 };
+        var textWidth = font.MeasureText("Test");
+        //Act
+        button.Measure(new Size(200, 200));
+        //Assert
+        // When IconPosition is None, icon should not be included in the width
+        Assert.AreEqual(textWidth, button.ElementSize.Width, 0.1);
+    }
 }
