@@ -294,4 +294,113 @@ public sealed class LabelTests
         Assert.AreEqual(50 - label.ElementSize.Height - 10, label.Position.Y);
     }
 
+    [TestMethod]
+    public void TestLabel_SetTextWrapping_NoWrap()
+    {
+        // Arrange
+        var label = new Label()
+            .SetText("Test Label")
+            .SetTextWrapping(TextWrapping.NoWrap);
+        
+        // Assert
+        Assert.IsNotNull(label);
+    }
+
+    [TestMethod]
+    public void TestLabel_SetTextWrapping_Wrap()
+    {
+        // Arrange
+        var label = new Label()
+            .SetText("Test Label")
+            .SetTextWrapping(TextWrapping.Wrap);
+        
+        // Assert
+        Assert.IsNotNull(label);
+    }
+
+    [TestMethod]
+    public void TestLabel_SetTextWrapping_WordWrap()
+    {
+        // Arrange
+        var label = new Label()
+            .SetText("Test Label")
+            .SetTextWrapping(TextWrapping.WordWrap);
+        
+        // Assert
+        Assert.IsNotNull(label);
+    }
+
+    [TestMethod]
+    public void TestLabel_SetMaxLines()
+    {
+        // Arrange
+        var label = new Label()
+            .SetText("Test Label")
+            .SetMaxLines(2);
+        
+        // Assert
+        Assert.IsNotNull(label);
+    }
+
+    [TestMethod]
+    public void TestLabel_SetTextTruncation_None()
+    {
+        // Arrange
+        var label = new Label()
+            .SetText("Test Label")
+            .SetTextTruncation(TextTruncation.None);
+        
+        // Assert
+        Assert.IsNotNull(label);
+    }
+
+    [TestMethod]
+    public void TestLabel_SetTextTruncation_Start()
+    {
+        // Arrange
+        var label = new Label()
+            .SetText("Test Label")
+            .SetTextTruncation(TextTruncation.Start);
+        
+        // Assert
+        Assert.IsNotNull(label);
+    }
+
+    [TestMethod]
+    public void TestLabel_SetTextTruncation_Middle()
+    {
+        // Arrange
+        var label = new Label()
+            .SetText("Test Label")
+            .SetTextTruncation(TextTruncation.Middle);
+        
+        // Assert
+        Assert.IsNotNull(label);
+    }
+
+    [TestMethod]
+    public void TestLabel_SetTextTruncation_End()
+    {
+        // Arrange
+        var label = new Label()
+            .SetText("Test Label")
+            .SetTextTruncation(TextTruncation.End);
+        
+        // Assert
+        Assert.IsNotNull(label);
+    }
+
+    [TestMethod]
+    public void TestLabel_ChainedSetters()
+    {
+        // Arrange & Act
+        var label = new Label()
+            .SetText("Test Label")
+            .SetTextWrapping(TextWrapping.WordWrap)
+            .SetMaxLines(3)
+            .SetTextTruncation(TextTruncation.End);
+        
+        // Assert
+        Assert.IsNotNull(label);
+    }
 }
