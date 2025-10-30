@@ -25,14 +25,14 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                         CreateFormGroup("Personal Information",
                             new VStack(
                                 CreateFormField("Name", vm.Name, (v) => vm.Name = v),
-                                CreateFormField("Email", vm.Email, (v) => vm.Email = v),
-                                CreateFormField("Phone", vm.Phone, (v) => vm.Phone = v)
+                                CreateFormField("Email", vm.Email, (v) => vm.Email = v, KeyboardType.Email),
+                                CreateFormField("Phone", vm.Phone, (v) => vm.Phone = v, KeyboardType.Telephone)
                             )
                         ),
                         CreateFormGroup("Account",
                             new VStack(
                                 CreateFormField("Username", vm.Username, (v) => vm.Username = v),
-                                CreateFormField("Password", vm.Password, (v) => vm.Password = v)
+                                CreateFormField("Password", vm.Password, (v) => vm.Password = v, isPassword: true)
                             )
                         )
                     ).SetHorizontalAlignment(HorizontalAlignment.Stretch))
@@ -119,19 +119,31 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
         .SetMargin(new Margin(0, 0, 0, 20));
     }
 
-    private static UiElement CreateFormField(string label, string bindingValue, Action<string> setter)
+    private static UiElement CreateFormField(string label, string bindingValue, Action<string> setter, KeyboardType keyboardType = KeyboardType.Default, bool isPassword = false)
     {
+        var entry = new Entry()
+            .BindText(label, () => bindingValue, setter)
+            .SetPadding(new Margin(10, 8))
+            .SetTextColor(SKColors.White)
+            .SetCornerRadius(10)
+            .SetBackgroundColor(new SKColor(255, 255, 255, 30));
+
+        if (isPassword)
+        {
+            entry.SetIsPassword(true);
+        }
+
+        if (keyboardType != KeyboardType.Default)
+        {
+            entry.SetKeyboard(keyboardType);
+        }
+
         return new VStack(
             new Label()
                 .SetText(label)
                 .SetTextColor(new SKColor(255, 255, 255))
                 .SetMargin(new Margin(0, 0, 0, 5)),
-            new Entry()
-                .BindText(label, () => bindingValue, setter)
-                .SetPadding(new Margin(10, 8))
-                .SetTextColor(SKColors.White)
-                .SetCornerRadius(10)
-                .SetBackgroundColor(new SKColor(255, 255, 255, 30))
+            entry
         ).SetMargin(new Margin(0, 0, 0, 10));
     }
 

@@ -31,6 +31,12 @@ public class DesktopKeyboardHandler : IKeyboardHandler
         _keyboard?.EndInput();
     }
 
+    public void Show(KeyboardType keyboardType, ReturnKeyType returnKeyType, bool isPassword)
+    {
+        // Desktop keyboards don't need special configuration, just show it
+        Show();
+    }
+
 
     private void HandleKeyboardInput(IKeyboard keyboard, Key key, int keyCode)
     {
