@@ -6,6 +6,7 @@ namespace PlusUi.core;
 public class Image : UiElement<Image>
 {
     private static readonly ConcurrentDictionary<string, SKImage?> _imageCache = new();
+    private static readonly System.Net.Http.HttpClient _httpClient = new();
 
     #region ImageSource
     internal string? ImageSource
@@ -76,7 +77,8 @@ public class Image : UiElement<Image>
         // Check for file: prefix
         else if (ImageSource.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
         {
-            var filePath = ImageSource.Substring(5); // Remove "file:" prefix
+            const string filePrefix = "file:";
+            var filePath = ImageSource.Substring(filePrefix.Length);
             image = TryLoadImageFromFile(filePath);
         }
         // Default: Load from embedded resources
@@ -94,8 +96,7 @@ public class Image : UiElement<Image>
     {
         try
         {
-            using var httpClient = new System.Net.Http.HttpClient();
-            using var stream = httpClient.GetStreamAsync(url).GetAwaiter().GetResult();
+            using var stream = _httpClient.GetStreamAsync(url).GetAwaiter().GetResult();
             using var codec = SKCodec.Create(stream);
             if (codec == null)
                 return null;
@@ -183,6 +184,9 @@ public class Image : UiElement<Image>
             return null;
 
         using var codec = SKCodec.Create(stream);
+        if (codec == null)
+            return null;
+
         var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
         using var bitmap = new SKBitmap(info);
         codec.GetPixels(bitmap.Info, bitmap.GetPixels());
