@@ -52,7 +52,7 @@ internal class SilkRenderer(
             _glContext,
             _canvas,
             _grContext,
-            _size.Value);
+            new(_size.Value.X, _size.Value.Y));
     }
 
     public void OnSurfaceChanged(IGL10? _, int width, int height)

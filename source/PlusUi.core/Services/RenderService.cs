@@ -1,6 +1,7 @@
 ﻿using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using SkiaSharp;
+using System.Numerics;
 
 namespace PlusUi.core;
 
@@ -10,7 +11,7 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
 
     public float DisplayDensity { get; set; } = 1.0f;
 
-    public void Render(GL? gl, SKCanvas canvas, GRContext? grContext, Vector2D<int> canvasSize)
+    public void Render(GL? gl, SKCanvas canvas, GRContext? grContext, Vector2 canvasSize)
     {
         canvas.Save();
         canvas.Scale(DisplayDensity);

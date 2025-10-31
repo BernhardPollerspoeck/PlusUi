@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using Silk.NET.Maths;
 using SkiaSharp.Views.iOS;
+using System.Numerics;
 
 namespace PlusUi.ios;
 
@@ -81,7 +82,7 @@ public class OpenGlViewController(
     private void OnCanvasPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
-        var canvasSize = new Vector2D<int>(e.Info.Width, e.Info.Height);
+        var canvasSize = new Vector2(e.Info.Width, e.Info.Height);
         renderService.Render(null, canvas, null, canvasSize);
     }
 
