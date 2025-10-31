@@ -8,6 +8,7 @@ using Sandbox.Pages.ItemsListDemo;
 using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.TextRendering;
+using Sandbox.Pages.TextWrapDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -116,6 +117,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetCommandParameter(typeof(TextRenderPage)),
             new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
+                .SetText("Text Wrap & Truncation Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(TextWrapDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
                 .SetText("Go to Form")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
@@ -165,6 +172,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
         vm.SetColorCommand.Execute(null);
     }
 }
+
 
 
 
