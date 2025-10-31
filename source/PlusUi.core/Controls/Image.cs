@@ -1,12 +1,11 @@
-﻿using SkiaSharp;
-using System.Collections.Concurrent;
+﻿using PlusUi.core.Attributes;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
-public class Image : UiElement<Image>
+[GenerateShadowMethods]
+public partial class Image : UiElement
 {
-    private static readonly ConcurrentDictionary<string, SKImage?> _imageCache = new();
-
     #region ImageSource
     internal string? ImageSource
     {
@@ -14,7 +13,7 @@ public class Image : UiElement<Image>
         set
         {
             field = value;
-            _image = CreateImage();
+            _image = ImageLoaderService.LoadImage(value, OnImageLoadedFromWeb);
         }
     }
     public UiElement SetImageSource(string imageSource)
@@ -53,71 +52,14 @@ public class Image : UiElement<Image>
 
     #region render cache
     private SKImage? _image;
-    private SKImage? CreateImage()
+
+    private void OnImageLoadedFromWeb(SKImage? image)
     {
-        if (string.IsNullOrEmpty(ImageSource))
+        // Update the image if this is still the active source
+        if (image != null)
         {
-            return null;
+            _image = image;
         }
-
-        if (_imageCache.TryGetValue(ImageSource, out var cachedImage))
-        {
-            return cachedImage;
-        }
-
-        // First try the entry assembly
-        var assembly = System.Reflection.Assembly.GetEntryAssembly();
-        if (assembly != null)
-        {
-            var image = TryLoadImageFromAssembly(assembly, ImageSource);
-            if (image != null)
-            {
-                _imageCache[ImageSource] = image;
-                return image;
-            }
-        }
-
-        // Try all loaded assemblies in the current AppDomain if not found
-        foreach (var loadedAssembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            // Skip system assemblies to improve performance
-            if (loadedAssembly.IsDynamic)
-            {
-                continue;
-            }
-
-            var image = TryLoadImageFromAssembly(loadedAssembly, ImageSource);
-            if (image != null)
-            {
-                _imageCache[ImageSource] = image;
-                return image;
-            }
-        }
-
-        throw new InvalidOperationException($"Resource '{ImageSource}' not found in any assembly.");
-    }
-
-    private static SKImage? TryLoadImageFromAssembly(System.Reflection.Assembly assembly, string resourceName)
-    {
-        var resourceNames = assembly.GetManifestResourceNames();
-        var fullResourceName = resourceNames.FirstOrDefault(name =>
-            name.EndsWith(resourceName, StringComparison.OrdinalIgnoreCase));
-
-        if (fullResourceName == null)
-        {
-            return null;
-        }
-
-        using var stream = assembly.GetManifestResourceStream(fullResourceName);
-        if (stream == null)
-            return null;
-
-        using var codec = SKCodec.Create(stream);
-        var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
-        using var bitmap = new SKBitmap(info);
-        codec.GetPixels(bitmap.Info, bitmap.GetPixels());
-
-        return SKImage.FromBitmap(bitmap);
     }
     #endregion
 

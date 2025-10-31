@@ -1,8 +1,10 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Attributes;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
-public class Checkbox : UiElement<Checkbox>, IToggleButtonControl
+[GenerateShadowMethods]
+public partial class Checkbox : UiElement, IToggleButtonControl
 {
     protected override bool SkipBackground => true;
 

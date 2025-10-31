@@ -1,3 +1,4 @@
+using PlusUi.core.Attributes;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -30,7 +31,8 @@ public enum StrokeType
 ///     .AddChild(new Label().SetText("Content"));
 /// </code>
 /// </example>
-public class Border : UiLayoutElement<Border>
+[GenerateShadowMethods]
+public partial class Border : UiLayoutElement
 {
     protected override bool SkipBackground => true;
 

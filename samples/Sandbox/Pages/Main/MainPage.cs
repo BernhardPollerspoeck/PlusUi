@@ -1,6 +1,7 @@
 ﻿using PlusUi.core;
 using Sandbox.Controls;
 using Sandbox.Pages.BgTest;
+using Sandbox.Pages.ButtonDemo;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.ItemsListDemo;
@@ -84,7 +85,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetDesiredHeight(250),
                     new Image()
                         .SetAspect(Aspect.AspectFit)
-                        .SetImageSource("plusui.png")
+                        .SetImageSource("https://picsum.photos/100")
                         .SetVerticalAlignment(VerticalAlignment.Bottom)
                         .SetDesiredWidth(100)
                         .SetDesiredHeight(100))))
@@ -119,6 +120,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
                 .SetCommandParameter(typeof(FormDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("Go to Button Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ButtonDemoPage)),
             new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
                 .SetText("Popup")
@@ -158,6 +165,11 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
         vm.SetColorCommand.Execute(null);
     }
 }
+
+
+
+
+
 
 
 

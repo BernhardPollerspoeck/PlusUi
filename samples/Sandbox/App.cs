@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using PlusUi.core;
 using Sandbox.Pages.BgTest;
+using Sandbox.Pages.ButtonDemo;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.ItemsListDemo;
@@ -35,6 +36,7 @@ public class App : IAppConfiguration
         builder.AddPage<ScrollViewExamplePage>().WithViewModel<ScrollViewExamplePageViewModel>();
         builder.AddPage<RawUserControlPage>().WithViewModel<RawUserControlPageViewModel>();
         builder.AddPage<ItemsListDemoPage>().WithViewModel<ItemsListDemoPageViewModel>();
+        builder.AddPage<ButtonDemoPage>().WithViewModel<ButtonDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 

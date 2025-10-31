@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using System.Linq;
 using System.Text;
 
 namespace PlusUi.SourceGenerators;
@@ -22,8 +23,26 @@ internal static class SourceGenerator
         if (classSymbol == null)
             return;
 
-        // Generate the generic wrapper class
-        var sourceText = GenericWrapperClassBuilder.GenerateGenericWrapperClass(namespaceName, className, classSymbol);
-        context.AddSource($"{className}Generic.g.cs", SourceText.From(sourceText, Encoding.UTF8));
+        // Check which attribute is present
+        var hasGenericWrapper = classSymbol.GetAttributes().Any(attr =>
+            attr.AttributeClass?.Name == "GenerateGenericWrapperAttribute" ||
+            attr.AttributeClass?.Name == "GenerateGenericWrapper");
+
+        var hasShadowMethods = classSymbol.GetAttributes().Any(attr =>
+            attr.AttributeClass?.Name == "GenerateShadowMethodsAttribute" ||
+            attr.AttributeClass?.Name == "GenerateShadowMethods");
+
+        if (hasGenericWrapper)
+        {
+            // Generate the generic wrapper class (for base classes like UiElement, UiTextElement)
+            var sourceText = GenericWrapperClassBuilder.GenerateGenericWrapperClass(namespaceName, className, classSymbol);
+            context.AddSource($"{className}Generic.g.cs", SourceText.From(sourceText, Encoding.UTF8));
+        }
+        else if (hasShadowMethods)
+        {
+            // Generate shadow methods for concrete classes (for Button, Entry, Label, etc.)
+            var sourceText = ConcreteClassShadowBuilder.GenerateConcreteClassShadows(namespaceName, className, classSymbol);
+            context.AddSource($"{className}Shadows.g.cs", SourceText.From(sourceText, Encoding.UTF8));
+        }
     }
 }

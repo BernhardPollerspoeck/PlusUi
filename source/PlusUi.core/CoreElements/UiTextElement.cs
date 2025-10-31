@@ -1,50 +1,8 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Attributes;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
-public abstract class UiTextElement<T> : UiTextElement where T : UiTextElement<T>
-{
-    public new T SetText(string text)
-    {
-        base.SetText(text);
-        return (T)this;
-    }
-    public new T BindText(string propertyName, Func<string?> propertyGetter)
-    {
-        base.BindText(propertyName, propertyGetter);
-        return (T)this;
-    }
-    public new T SetTextSize(float fontSize)
-    {
-        base.SetTextSize(fontSize);
-        return (T)this;
-    }
-    public new T BindTextSize(string propertyName, Func<float> propertyGetter)
-    {
-        base.BindTextSize(propertyName, propertyGetter);
-        return (T)this;
-    }
-    public new T SetTextColor(SKColor color)
-    {
-        base.SetTextColor(color);
-        return (T)this;
-    }
-    public new T BindTextColor(string propertyName, Func<SKColor> propertyGetter)
-    {
-        base.BindTextColor(propertyName, propertyGetter);
-        return (T)this;
-    }
-    public new T SetHorizontalTextAlignment(HorizontalTextAlignment alignment)
-    {
-        base.SetHorizontalTextAlignment(alignment);
-        return (T)this;
-    }
-    public new T BindHorizontalTextAlignment(string propertyName, Func<HorizontalTextAlignment> propertyGetter)
-    {
-        base.BindHorizontalTextAlignment(propertyName, propertyGetter);
-        return (T)this;
-    }
-}
 public abstract class UiTextElement : UiElement
 {
     #region Text

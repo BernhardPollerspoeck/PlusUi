@@ -1,6 +1,9 @@
-﻿namespace PlusUi.core;
+﻿using PlusUi.core.Attributes;
 
-public class HStack : UiLayoutElement<HStack>
+namespace PlusUi.core;
+
+[GenerateShadowMethods]
+public partial class HStack : UiLayoutElement
 {
     public HStack(params UiElement[] elements)
     {
