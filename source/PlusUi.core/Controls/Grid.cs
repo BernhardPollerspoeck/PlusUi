@@ -1,7 +1,10 @@
-﻿using PlusUi.core.Controls.GridHelper;
+﻿using PlusUi.core.Attributes;
+using PlusUi.core.Controls.GridHelper;
 
 namespace PlusUi.core;
-public class Grid : UiLayoutElement<Grid>
+
+[GenerateShadowMethods]
+public partial class Grid : UiLayoutElement
 {
     protected override bool NeadsMeasure => true;
 

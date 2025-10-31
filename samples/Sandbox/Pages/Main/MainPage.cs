@@ -1,6 +1,7 @@
 ﻿using PlusUi.core;
 using Sandbox.Controls;
 using Sandbox.Pages.BgTest;
+using Sandbox.Pages.ButtonDemo;
 using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.ItemsListDemo;
@@ -121,6 +122,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetCommandParameter(typeof(FormDemoPage)),
             new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
+                .SetText("Go to Button Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ButtonDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
                 .SetText("Popup")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.PopupCommand),
@@ -158,6 +165,11 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
         vm.SetColorCommand.Execute(null);
     }
 }
+
+
+
+
+
 
 
 

@@ -10,16 +10,20 @@ internal static class SemanticTargetAnalyzer
     {
         var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
 
-        // Check if class has the GenerateGenericWrapper attribute
+        // Check if class has GenerateGenericWrapper or GenerateShadowMethods attribute
         foreach (var attributeListSyntax in classDeclarationSyntax.AttributeLists)
         {
             foreach (var attributeSyntax in attributeListSyntax.Attributes)
             {
                 var attributeName = attributeSyntax.Name.ToString();
-                if (attributeName == "GenerateGenericWrapper" || 
+                if (attributeName == "GenerateGenericWrapper" ||
                     attributeName == "GenerateGenericWrapperAttribute" ||
+                    attributeName == "GenerateShadowMethods" ||
+                    attributeName == "GenerateShadowMethodsAttribute" ||
                     attributeName.EndsWith(".GenerateGenericWrapper") ||
-                    attributeName.EndsWith(".GenerateGenericWrapperAttribute"))
+                    attributeName.EndsWith(".GenerateGenericWrapperAttribute") ||
+                    attributeName.EndsWith(".GenerateShadowMethods") ||
+                    attributeName.EndsWith(".GenerateShadowMethodsAttribute"))
                 {
                     return new GeneratorContext(classDeclarationSyntax, context.SemanticModel);
                 }
@@ -33,7 +37,8 @@ internal static class SemanticTargetAnalyzer
                         var attributeContainingTypeSymbol = attributeSymbol.ContainingType;
                         var fullName = attributeContainingTypeSymbol.ToDisplayString();
 
-                        if (fullName == "PlusUi.SourceGenerators.GenerateGenericWrapperAttribute")
+                        if (fullName == "PlusUi.core.Attributes.GenerateGenericWrapperAttribute" ||
+                            fullName == "PlusUi.core.Attributes.GenerateShadowMethodsAttribute")
                         {
                             return new GeneratorContext(classDeclarationSyntax, context.SemanticModel);
                         }

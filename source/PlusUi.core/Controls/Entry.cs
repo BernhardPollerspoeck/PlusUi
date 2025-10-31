@@ -1,8 +1,10 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Attributes;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
-public class Entry : UiTextElement<Entry>, ITextInputControl
+[GenerateShadowMethods]
+public partial class Entry : UiTextElement, ITextInputControl
 {
     private bool _isSelected;
     private DateTime _selectionTime;

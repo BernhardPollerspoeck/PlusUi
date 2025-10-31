@@ -1,8 +1,10 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Attributes;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
-public class Label : UiTextElement<Label>
+[GenerateShadowMethods]
+public partial class Label : UiTextElement
 {
     #region UiElement
     public override void Render(SKCanvas canvas)

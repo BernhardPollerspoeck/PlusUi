@@ -1,7 +1,9 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Attributes;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
+[GenerateGenericWrapper]
 public abstract class UserControl : UiElement<UserControl>
 {
     private UiElement _content = new NullElement();
