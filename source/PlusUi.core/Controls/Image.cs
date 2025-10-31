@@ -1,13 +1,9 @@
 ﻿using SkiaSharp;
-using System.Collections.Concurrent;
 
 namespace PlusUi.core;
 
 public class Image : UiElement<Image>
 {
-    private static readonly ConcurrentDictionary<string, SKImage?> _imageCache = new();
-    private static readonly System.Net.Http.HttpClient _httpClient = new();
-
     #region ImageSource
     internal string? ImageSource
     {
@@ -15,7 +11,7 @@ public class Image : UiElement<Image>
         set
         {
             field = value;
-            _image = CreateImage();
+            _image = ImageLoaderService.LoadImage(value, OnImageLoadedFromWeb);
         }
     }
     public UiElement SetImageSource(string imageSource)
@@ -54,165 +50,14 @@ public class Image : UiElement<Image>
 
     #region render cache
     private SKImage? _image;
-    private SKImage? CreateImage()
+
+    private void OnImageLoadedFromWeb(SKImage? image)
     {
-        if (string.IsNullOrEmpty(ImageSource))
+        // Update the image if this is still the active source
+        if (image != null)
         {
-            return null;
+            _image = image;
         }
-
-        if (_imageCache.TryGetValue(ImageSource, out var cachedImage))
-        {
-            return cachedImage;
-        }
-
-        SKImage? image = null;
-
-        // Check for http:// or https:// prefix
-        if (ImageSource.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-            ImageSource.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-        {
-            // Web images are loaded asynchronously, don't cache null here
-            image = TryLoadImageFromWeb(ImageSource);
-        }
-        // Check for file: prefix
-        else if (ImageSource.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
-        {
-            const string filePrefix = "file:";
-            var filePath = ImageSource.Substring(filePrefix.Length);
-            image = TryLoadImageFromFile(filePath);
-            // Cache the result (even if null) to avoid repeated failed attempts
-            _imageCache[ImageSource] = image;
-        }
-        // Default: Load from embedded resources
-        else
-        {
-            image = TryLoadImageFromResources(ImageSource);
-            // Cache the result (even if null) to avoid repeated failed attempts
-            _imageCache[ImageSource] = image;
-        }
-
-        return image;
-    }
-
-    private SKImage? TryLoadImageFromWeb(string url)
-    {
-        // Start loading the image asynchronously in the background
-        // Return null immediately to avoid blocking the UI thread
-        _ = LoadImageFromWebAsync(url);
-        return null;
-    }
-
-    private async Task LoadImageFromWebAsync(string url)
-    {
-        try
-        {
-            using var stream = await _httpClient.GetStreamAsync(url).ConfigureAwait(false);
-            using var codec = SKCodec.Create(stream);
-            if (codec == null)
-            {
-                _imageCache[url] = null;
-                return;
-            }
-
-            var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
-            using var bitmap = new SKBitmap(info);
-            codec.GetPixels(bitmap.Info, bitmap.GetPixels());
-            var image = SKImage.FromBitmap(bitmap);
-
-            // Update the cache and the current image if this is still the active source
-            _imageCache[url] = image;
-            if (ImageSource == url)
-            {
-                _image = image;
-            }
-        }
-        catch
-        {
-            _imageCache[url] = null;
-        }
-    }
-
-    private SKImage? TryLoadImageFromFile(string filePath)
-    {
-        try
-        {
-            if (!System.IO.File.Exists(filePath))
-                return null;
-
-            using var stream = System.IO.File.OpenRead(filePath);
-            using var codec = SKCodec.Create(stream);
-            if (codec == null)
-                return null;
-
-            var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
-            using var bitmap = new SKBitmap(info);
-            codec.GetPixels(bitmap.Info, bitmap.GetPixels());
-            return SKImage.FromBitmap(bitmap);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    private SKImage? TryLoadImageFromResources(string resourceName)
-    {
-        // First try the entry assembly
-        var assembly = System.Reflection.Assembly.GetEntryAssembly();
-        if (assembly != null)
-        {
-            var image = TryLoadImageFromAssembly(assembly, resourceName);
-            if (image != null)
-            {
-                return image;
-            }
-        }
-
-        // Try all loaded assemblies in the current AppDomain if not found
-        foreach (var loadedAssembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            // Skip system assemblies to improve performance
-            if (loadedAssembly.IsDynamic)
-            {
-                continue;
-            }
-
-            var image = TryLoadImageFromAssembly(loadedAssembly, resourceName);
-            if (image != null)
-            {
-                return image;
-            }
-        }
-
-        // Return null instead of throwing exception
-        return null;
-    }
-
-    private static SKImage? TryLoadImageFromAssembly(System.Reflection.Assembly assembly, string resourceName)
-    {
-        var resourceNames = assembly.GetManifestResourceNames();
-        var fullResourceName = resourceNames.FirstOrDefault(name =>
-            name.EndsWith(resourceName, StringComparison.OrdinalIgnoreCase));
-
-        if (fullResourceName == null)
-        {
-            return null;
-        }
-
-        using var stream = assembly.GetManifestResourceStream(fullResourceName);
-        if (stream == null)
-            return null;
-
-        using var codec = SKCodec.Create(stream);
-        if (codec == null)
-            return null;
-
-        var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
-        using var bitmap = new SKBitmap(info);
-        codec.GetPixels(bitmap.Info, bitmap.GetPixels());
-
-        return SKImage.FromBitmap(bitmap);
     }
     #endregion
 

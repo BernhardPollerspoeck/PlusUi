@@ -1,5 +1,4 @@
 ﻿using SkiaSharp;
-using System.Collections.Concurrent;
 using System.Windows.Input;
 
 namespace PlusUi.core;
@@ -7,7 +6,6 @@ namespace PlusUi.core;
 public class Button : UiTextElement<Button>, IInputControl
 {
     protected override bool SkipBackground => true;
-    private static readonly ConcurrentDictionary<string, SKImage?> _imageCache = new();
 
     #region Padding
     internal Margin Padding
@@ -59,7 +57,7 @@ public class Button : UiTextElement<Button>, IInputControl
         set
         {
             field = value;
-            _iconImage = CreateIconImage();
+            _iconImage = ImageLoaderService.LoadImage(value, OnIconLoadedFromWeb);
             InvalidateMeasure();
         }
     }
@@ -99,72 +97,15 @@ public class Button : UiTextElement<Button>, IInputControl
 
     #region Icon rendering cache
     private SKImage? _iconImage;
-    private SKImage? CreateIconImage()
+
+    private void OnIconLoadedFromWeb(SKImage? image)
     {
-        if (string.IsNullOrEmpty(Icon))
+        // Update the icon if this is still the active icon source
+        if (image != null)
         {
-            return null;
+            _iconImage = image;
+            InvalidateMeasure();
         }
-
-        if (_imageCache.TryGetValue(Icon, out var cachedImage))
-        {
-            return cachedImage;
-        }
-
-        // First try the entry assembly
-        var assembly = System.Reflection.Assembly.GetEntryAssembly();
-        if (assembly != null)
-        {
-            var image = TryLoadImageFromAssembly(assembly, Icon);
-            if (image != null)
-            {
-                _imageCache[Icon] = image;
-                return image;
-            }
-        }
-
-        // Try all loaded assemblies in the current AppDomain if not found
-        foreach (var loadedAssembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            // Skip system assemblies to improve performance
-            if (loadedAssembly.IsDynamic)
-            {
-                continue;
-            }
-
-            var image = TryLoadImageFromAssembly(loadedAssembly, Icon);
-            if (image != null)
-            {
-                _imageCache[Icon] = image;
-                return image;
-            }
-        }
-
-        // Return null if resource not found instead of throwing
-        return null;
-    }
-
-    private static SKImage? TryLoadImageFromAssembly(System.Reflection.Assembly assembly, string resourceName)
-    {
-        var resourceNames = assembly.GetManifestResourceNames();
-        var fullResourceName = resourceNames.FirstOrDefault(name =>
-            name.EndsWith(resourceName, StringComparison.OrdinalIgnoreCase));
-
-        if (fullResourceName == null)
-        {
-            return null;
-        }
-
-        using var stream = assembly.GetManifestResourceStream(fullResourceName);
-        if (stream == null)
-            return null;
-
-        using var codec = SKCodec.Create(stream);
-        var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
-        using var bitmap = new SKBitmap(info);
-        codec.GetPixels(bitmap.Info, bitmap.GetPixels());
-
-        return SKImage.FromBitmap(bitmap);
     }
     #endregion
 
