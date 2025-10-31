@@ -1,9 +1,11 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Attributes;
+using SkiaSharp;
 using System.Windows.Input;
 
 namespace PlusUi.core;
 
-public class Button : UiTextElement<Button>, IInputControl
+[GenerateShadowMethods]
+public partial class Button : UiTextElement, IInputControl
 {
     protected override bool SkipBackground => true;
 

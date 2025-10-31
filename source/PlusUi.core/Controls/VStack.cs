@@ -1,6 +1,9 @@
-﻿namespace PlusUi.core;
+﻿using PlusUi.core.Attributes;
 
-public class VStack : UiLayoutElement<VStack>
+namespace PlusUi.core;
+
+[GenerateShadowMethods]
+public partial class VStack : UiLayoutElement
 {
     public VStack(params UiElement[] elements)
     {

@@ -1,8 +1,10 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Attributes;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
-public class Image : UiElement<Image>
+[GenerateShadowMethods]
+public partial class Image : UiElement
 {
     #region ImageSource
     internal string? ImageSource

@@ -175,7 +175,7 @@ public class ButtonDemoPage(ButtonDemoPageViewModel vm) : UiPageElement(vm)
                         .AddColumn(Column.Star)
                         .AddRow(Row.Auto)
                         .AddRow(Row.Auto)
-                        .AddChild(0, 0,
+                        .AddChild(
                             new Button()
                                 .SetText("Small")
                                 .SetIcon("plusui.png")
@@ -184,7 +184,7 @@ public class ButtonDemoPage(ButtonDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetBackgroundColor(SKColors.CornflowerBlue)
                                 .SetCornerRadius(6)
                                 .SetMargin(new Margin(5)))
-                        .AddChild(1, 0,
+                        .AddChild(
                             new Button()
                                 .SetText("Medium")
                                 .SetIcon("plusui.png")
@@ -192,8 +192,9 @@ public class ButtonDemoPage(ButtonDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetPadding(new Margin(12, 8))
                                 .SetBackgroundColor(SKColors.MediumSlateBlue)
                                 .SetCornerRadius(8)
-                                .SetMargin(new Margin(5)))
-                        .AddChild(2, 0,
+                                .SetMargin(new Margin(5)),
+                            1, 0)
+                        .AddChild(
                             new Button()
                                 .SetText("Large")
                                 .SetIcon("plusui.png")
@@ -201,31 +202,35 @@ public class ButtonDemoPage(ButtonDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetPadding(new Margin(14, 10))
                                 .SetBackgroundColor(SKColors.DarkSlateBlue)
                                 .SetCornerRadius(10)
-                                .SetMargin(new Margin(5)))
-                        .AddChild(0, 1,
+                                .SetMargin(new Margin(5)),
+                            2, 0)
+                        .AddChild(
                             new Button()
                                 .SetIcon("plusui.png")
                                 .SetTextSize(12)
                                 .SetPadding(new Margin(8))
                                 .SetBackgroundColor(SKColors.IndianRed)
                                 .SetCornerRadius(20)
-                                .SetMargin(new Margin(5)))
-                        .AddChild(1, 1,
+                                .SetMargin(new Margin(5)),
+                            0, 1)
+                        .AddChild(
                             new Button()
                                 .SetIcon("plusui.png")
                                 .SetTextSize(16)
                                 .SetPadding(new Margin(12))
                                 .SetBackgroundColor(SKColors.Tomato)
                                 .SetCornerRadius(25)
-                                .SetMargin(new Margin(5)))
-                        .AddChild(2, 1,
+                                .SetMargin(new Margin(5)),
+                            1, 1)
+                        .AddChild(
                             new Button()
                                 .SetIcon("plusui.png")
                                 .SetTextSize(20)
                                 .SetPadding(new Margin(16))
                                 .SetBackgroundColor(SKColors.OrangeRed)
                                 .SetCornerRadius(30)
-                                .SetMargin(new Margin(5)))
+                                .SetMargin(new Margin(5)),
+                            2, 1)
                 )
             )
         );
@@ -239,10 +244,10 @@ public class ButtonDemoPage(ButtonDemoPageViewModel vm) : UiPageElement(vm)
                 .SetTextSize(20)
                 .SetTextColor(SKColors.LightGray)
                 .SetMargin(new Margin(0, 15, 0, 10)),
-            new Border(content)
+            new Border()
+                .AddChild(content)
                 .SetBackgroundColor(new SKColor(40, 40, 40))
                 .SetCornerRadius(12)
-                .SetPadding(new Margin(20))
                 .SetMargin(new Margin(0, 0, 0, 10))
         ).SetMargin(new Margin(20, 0));
     }
