@@ -24,9 +24,17 @@ public partial class Label : UiTextElement
             // Single line rendering with optional truncation
             var truncatedText = ApplyTruncation(text, ElementSize.Width);
             
+            // Calculate X position based on text alignment
+            var x = HorizontalTextAlignment switch
+            {
+                HorizontalTextAlignment.Center => Position.X + VisualOffset.X + (ElementSize.Width / 2),
+                HorizontalTextAlignment.Right => Position.X + VisualOffset.X + ElementSize.Width,
+                _ => Position.X + VisualOffset.X
+            };
+            
             canvas.DrawText(
                 truncatedText,
-                Position.X + VisualOffset.X,
+                x,
                 Position.Y + VisualOffset.Y + TextSize,
                 (SKTextAlign)HorizontalTextAlignment,
                 Font,
@@ -53,9 +61,17 @@ public partial class Label : UiTextElement
             var y = Position.Y + VisualOffset.Y + TextSize;
             foreach (var line in lines)
             {
+                // Calculate X position based on text alignment
+                var x = HorizontalTextAlignment switch
+                {
+                    HorizontalTextAlignment.Center => Position.X + VisualOffset.X + (ElementSize.Width / 2),
+                    HorizontalTextAlignment.Right => Position.X + VisualOffset.X + ElementSize.Width,
+                    _ => Position.X + VisualOffset.X
+                };
+                
                 canvas.DrawText(
                     line,
-                    Position.X + VisualOffset.X,
+                    x,
                     y,
                     (SKTextAlign)HorizontalTextAlignment,
                     Font,

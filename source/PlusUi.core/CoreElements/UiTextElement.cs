@@ -173,6 +173,14 @@ public abstract class UiTextElement : UiElement
         Font.GetFontMetrics(out var fontMetrics);
         var lineHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
+        // Calculate the effective width constraint for text wrapping
+        // This should match what will actually be used for rendering
+        var effectiveWidth = availableSize.Width;
+        if (DesiredSize?.Width >= 0)
+        {
+            effectiveWidth = Math.Min(DesiredSize.Value.Width, availableSize.Width);
+        }
+
         if (TextWrapping == TextWrapping.NoWrap)
         {
             // No wrapping - single line
@@ -183,8 +191,8 @@ public abstract class UiTextElement : UiElement
         }
         else
         {
-            // Text wrapping enabled
-            var lines = WrapText(text, availableSize.Width);
+            // Text wrapping enabled - use effective width for wrapping
+            var lines = WrapText(text, effectiveWidth);
             
             // Apply MaxLines if set
             if (MaxLines.HasValue && lines.Count > MaxLines.Value)
@@ -303,7 +311,7 @@ public abstract class UiTextElement : UiElement
             return text;
         }
 
-        const string ellipsis = "...";
+        const string ellipsis = " ... ";
         var ellipsisWidth = Font.MeasureText(ellipsis);
 
         return TextTruncation switch
