@@ -19,17 +19,17 @@ public class PlusUiWebApp(WebAssemblyHostBuilder builder)
     public async Task CreateApp(Func<HostApplicationBuilder, IAppConfiguration> appBuilder)
     {
         // Let the user configure their app
-        var appConfig = appBuilder(hostBuilder);
+        //var appConfig = appBuilder(hostBuilder);
         
-        // Register PlusUi core services
-        builder.UsePlusUiInternal(appConfig, Array.Empty<string>());
+        //// Register PlusUi core services
+        //builder.UsePlusUiInternal(appConfig, Array.Empty<string>());
         
-        // Register web-specific services
-        builder.Services.AddSingleton<WebKeyboardHandler>();
-        builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<WebKeyboardHandler>());
+        //// Register web-specific services
+        //builder.Services.AddSingleton<WebKeyboardHandler>();
+        //builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<WebKeyboardHandler>());
 
-        // Configure the app (pages, styles, etc.)
-        builder.ConfigurePlusUiApp(appConfig);
+        //// Configure the app (pages, styles, etc.)
+        //builder.ConfigurePlusUiApp(appConfig);
         
         // Add root component
         builder.RootComponents.Add<PlusUiRootComponent>("#app");

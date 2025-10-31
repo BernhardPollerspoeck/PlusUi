@@ -10,6 +10,7 @@ using Sandbox.Pages.Main;
 using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.TextRendering;
+using Sandbox.Pages.TextWrapDemo;
 using Sandbox.Popups;
 using Sandbox.Services;
 
@@ -32,6 +33,7 @@ public class App : IAppConfiguration
         builder.AddPage<MainPage>().WithViewModel<MainPageViewModel>();
         builder.AddPage<ControlsGridPage>().WithViewModel<ControlsGridPageViewModel>();
         builder.AddPage<TextRenderPage>().WithViewModel<TextRenderPageViewModel>();
+        builder.AddPage<TextWrapDemoPage>().WithViewModel<TextWrapDemoPageViewModel>();
         builder.AddPage<FormDemoPage>().WithViewModel<FormDemoPageViewModel>();
         builder.AddPage<ScrollViewExamplePage>().WithViewModel<ScrollViewExamplePageViewModel>();
         builder.AddPage<RawUserControlPage>().WithViewModel<RawUserControlPageViewModel>();

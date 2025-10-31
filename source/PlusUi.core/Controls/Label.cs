@@ -15,14 +15,70 @@ public partial class Label : UiTextElement
             return;
         }
 
-        canvas.DrawText(
-            Text ?? string.Empty,
-            Position.X + VisualOffset.X,
-            Position.Y + VisualOffset.Y + TextSize,
-            (SKTextAlign)HorizontalTextAlignment,
-            Font,
-            Paint);
+        Font.GetFontMetrics(out var fontMetrics);
+        var lineHeight = fontMetrics.Descent - fontMetrics.Ascent;
+        var text = Text ?? string.Empty;
 
+        if (TextWrapping == TextWrapping.NoWrap)
+        {
+            // Single line rendering with optional truncation
+            var truncatedText = ApplyTruncation(text, ElementSize.Width);
+            
+            // Calculate X position based on text alignment
+            var x = HorizontalTextAlignment switch
+            {
+                HorizontalTextAlignment.Center => Position.X + VisualOffset.X + (ElementSize.Width / 2),
+                HorizontalTextAlignment.Right => Position.X + VisualOffset.X + ElementSize.Width,
+                _ => Position.X + VisualOffset.X
+            };
+            
+            canvas.DrawText(
+                truncatedText,
+                x,
+                Position.Y + VisualOffset.Y + TextSize,
+                (SKTextAlign)HorizontalTextAlignment,
+                Font,
+                Paint);
+        }
+        else
+        {
+            // Multi-line rendering with wrapping
+            var lines = WrapText(text, ElementSize.Width);
+            
+            // Apply MaxLines if set
+            if (MaxLines.HasValue && lines.Count > MaxLines.Value)
+            {
+                lines = lines.Take(MaxLines.Value).ToList();
+                
+                // Apply truncation to the last line if needed
+                if (TextTruncation != TextTruncation.None && lines.Count > 0)
+                {
+                    var lastIndex = lines.Count - 1;
+                    lines[lastIndex] = ApplyTruncation(lines[lastIndex], ElementSize.Width);
+                }
+            }
+
+            var y = Position.Y + VisualOffset.Y + TextSize;
+            foreach (var line in lines)
+            {
+                // Calculate X position based on text alignment
+                var x = HorizontalTextAlignment switch
+                {
+                    HorizontalTextAlignment.Center => Position.X + VisualOffset.X + (ElementSize.Width / 2),
+                    HorizontalTextAlignment.Right => Position.X + VisualOffset.X + ElementSize.Width,
+                    _ => Position.X + VisualOffset.X
+                };
+                
+                canvas.DrawText(
+                    line,
+                    x,
+                    y,
+                    (SKTextAlign)HorizontalTextAlignment,
+                    Font,
+                    Paint);
+                y += lineHeight;
+            }
+        }
     }
 
     #endregion
