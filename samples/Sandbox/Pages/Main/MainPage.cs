@@ -84,7 +84,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetDesiredHeight(250),
                     new Image()
                         .SetAspect(Aspect.AspectFit)
-                        .SetImageSource("plusui.png")
+                        .SetImageSource("https://picsum.photos/100")
                         .SetVerticalAlignment(VerticalAlignment.Bottom)
                         .SetDesiredWidth(100)
                         .SetDesiredHeight(100))))
