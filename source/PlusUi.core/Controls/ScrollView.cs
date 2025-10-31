@@ -1,8 +1,10 @@
+using PlusUi.core.Attributes;
 using SkiaSharp;
 
 namespace PlusUi.core;
 
-public class ScrollView : UiLayoutElement<ScrollView>, IScrollableControl
+[GenerateShadowMethods]
+public partial class ScrollView : UiLayoutElement, IScrollableControl
 {
     private readonly UiElement _content;
     

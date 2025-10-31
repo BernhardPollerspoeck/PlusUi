@@ -1,8 +1,10 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Attributes;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
-public class Entry : UiTextElement<Entry>, ITextInputControl
+[GenerateShadowMethods]
+public partial class Entry : UiTextElement, ITextInputControl
 {
     private bool _isSelected;
     private DateTime _selectionTime;
@@ -27,6 +29,62 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
     public Entry BindPadding(string propertyName, Func<Margin> propertyGetter)
     {
         RegisterBinding(propertyName, () => Padding = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region IsPassword
+    internal bool IsPassword { get; set; }
+    public Entry SetIsPassword(bool isPassword)
+    {
+        IsPassword = isPassword;
+        return this;
+    }
+    public Entry BindIsPassword(string propertyName, Func<bool> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => IsPassword = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region PasswordChar
+    internal char PasswordChar { get; set; } = '•';
+    public Entry SetPasswordChar(char passwordChar)
+    {
+        PasswordChar = passwordChar;
+        return this;
+    }
+    public Entry BindPasswordChar(string propertyName, Func<char> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => PasswordChar = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region Keyboard
+    internal KeyboardType Keyboard { get; set; } = KeyboardType.Default;
+    public Entry SetKeyboard(KeyboardType keyboard)
+    {
+        Keyboard = keyboard;
+        return this;
+    }
+    public Entry BindKeyboard(string propertyName, Func<KeyboardType> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => Keyboard = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region ReturnKey
+    internal ReturnKeyType ReturnKey { get; set; } = ReturnKeyType.Default;
+    public Entry SetReturnKey(ReturnKeyType returnKey)
+    {
+        ReturnKey = returnKey;
+        return this;
+    }
+    public Entry BindReturnKey(string propertyName, Func<ReturnKeyType> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => ReturnKey = propertyGetter());
         return this;
     }
     #endregion
@@ -65,7 +123,9 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
         }
 
         canvas.DrawText(
-            Text ?? string.Empty,
+            IsPassword && !string.IsNullOrEmpty(Text) 
+                ? new string(PasswordChar, Text.Length) 
+                : Text ?? string.Empty,
             Position.X + VisualOffset.X + Padding.Left,
             Position.Y + VisualOffset.Y + textHeight,
             (SKTextAlign)HorizontalTextAlignment,
@@ -77,8 +137,10 @@ public class Entry : UiTextElement<Entry>, ITextInputControl
             var elapsedMilliseconds = (DateTime.Now - _selectionTime).TotalMilliseconds;
             if ((elapsedMilliseconds % 1600) < 800)
             {
-
-                var cursorX = Position.X + VisualOffset.X + Padding.Left + Font.MeasureText(Text ?? string.Empty) + 2;
+                var displayText = IsPassword && !string.IsNullOrEmpty(Text) 
+                    ? new string(PasswordChar, Text.Length) 
+                    : Text ?? string.Empty;
+                var cursorX = Position.X + VisualOffset.X + Padding.Left + Font.MeasureText(displayText) + 2;
                 var cursorYStart = Position.Y + VisualOffset.Y + Padding.Top + (textHeight * 0.1f);
                 var cursorYEnd = Position.Y + VisualOffset.Y + Padding.Top + textHeight - (textHeight * 0.1f);
 

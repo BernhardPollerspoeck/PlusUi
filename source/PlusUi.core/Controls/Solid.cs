@@ -1,8 +1,10 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Attributes;
+using SkiaSharp;
 
 namespace PlusUi.core;
 
-public class Solid : UiElement<Solid>
+[GenerateShadowMethods]
+public partial class Solid : UiElement
 {
     public Solid(float? width = null, float? height = null, SKColor? color = null)
     {

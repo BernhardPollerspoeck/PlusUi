@@ -78,7 +78,7 @@ internal class WindowManager(
             _glContext,
             _canvas,
             _grContext,
-            _window.Size);
+            new(_window.Size.X, _window.Size.Y));
     }
     private void HandleWindowLoad()
     {
@@ -203,23 +203,23 @@ internal class WindowManager(
         if (_inputContext.Mice.Count > 0)
         {
             _mouse = _inputContext.Mice[0];
-            _mouse.MouseMove += (_, position) => 
+            _mouse.MouseMove += (_, position) =>
                 inputService.MouseMove(position / renderService.DisplayDensity);
-            
+
             // Add mouse wheel event handler
             _mouse.Scroll += (_, scrollDelta) =>
             {
                 if (_mouse is null) return;
-                
+
                 // Scale the scroll delta and invert Y for natural scrolling direction
                 // Multiply by a scroll speed factor (e.g., 20) for better UX
                 float scrollSpeed = 20f;
                 float deltaX = scrollDelta.X * scrollSpeed;
                 float deltaY = -scrollDelta.Y * scrollSpeed; // Invert Y for natural scrolling
-                
+
                 inputService.MouseWheel(
-                    _mouse.Position / renderService.DisplayDensity, 
-                    deltaX, 
+                    _mouse.Position / renderService.DisplayDensity,
+                    deltaX,
                     deltaY);
             };
         }
