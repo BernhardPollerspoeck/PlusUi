@@ -55,8 +55,8 @@ public class BorderTests
         // Assert
         // Border should add stroke thickness to child size
 
-        Assert.IsTrue(border.DesiredSize.Value.Width >= 4); // 2 * stroke thickness
-        Assert.IsTrue(border.DesiredSize.Value.Height >= 4); // 2 * stroke thickness
+        Assert.IsTrue(border.ElementSize.Width >= 4); // 2 * stroke thickness
+        Assert.IsTrue(border.ElementSize.Height >= 4); // 2 * stroke thickness
     }
 
     [TestMethod]

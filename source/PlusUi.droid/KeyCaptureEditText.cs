@@ -5,6 +5,7 @@ using Android.Views.InputMethods;
 using Android.Widget;
 using Java.Lang;
 using PlusUi.core;
+using KeyboardType = PlusUi.core.KeyboardType;
 
 namespace PlusUi.droid;
 
@@ -44,7 +45,7 @@ public class KeyCaptureEditText : EditText, IKeyboardHandler
         if (_context.GetSystemService(Context.InputMethodService) is InputMethodManager imm)
         {
             // Set input type based on keyboard type
-            InputType inputType = keyboardType switch
+            var inputType = keyboardType switch
             {
                 KeyboardType.Numeric => InputTypes.ClassNumber,
                 KeyboardType.Email => InputTypes.ClassText | InputTypes.TextVariationEmailAddress,
@@ -69,7 +70,7 @@ public class KeyCaptureEditText : EditText, IKeyboardHandler
                 ReturnKeyType.Search => ImeAction.Search,
                 ReturnKeyType.Next => ImeAction.Next,
                 ReturnKeyType.Done => ImeAction.Done,
-                _ => ImeAction.Default
+                _ => ImeAction.None
             };
 
             RequestFocus();

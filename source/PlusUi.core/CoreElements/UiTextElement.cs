@@ -306,20 +306,13 @@ public abstract class UiTextElement : UiElement
         const string ellipsis = "...";
         var ellipsisWidth = Font.MeasureText(ellipsis);
 
-        switch (TextTruncation)
+        return TextTruncation switch
         {
-            case TextTruncation.Start:
-                return TruncateStart(text, maxWidth, ellipsis, ellipsisWidth);
-            
-            case TextTruncation.Middle:
-                return TruncateMiddle(text, maxWidth, ellipsis, ellipsisWidth);
-            
-            case TextTruncation.End:
-                return TruncateEnd(text, maxWidth, ellipsis, ellipsisWidth);
-            
-            default:
-                return text;
-        }
+            TextTruncation.Start => TruncateStart(text, maxWidth, ellipsis, ellipsisWidth),
+            TextTruncation.Middle => TruncateMiddle(text, maxWidth, ellipsis, ellipsisWidth),
+            TextTruncation.End => TruncateEnd(text, maxWidth, ellipsis, ellipsisWidth),
+            _ => text,
+        };
     }
 
     private string TruncateEnd(string text, float maxWidth, string ellipsis, float ellipsisWidth)

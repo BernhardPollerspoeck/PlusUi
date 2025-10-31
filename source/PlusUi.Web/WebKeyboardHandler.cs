@@ -30,6 +30,8 @@ public class WebKeyboardHandler : IKeyboardHandler
         // Implementation would use JSInterop.
     }
 
+
+
     /// <summary>
     /// Called from the Blazor component when a key is pressed
     /// </summary>
@@ -78,5 +80,11 @@ public class WebKeyboardHandler : IKeyboardHandler
             //"PageDown" => PlusKey.PageDown,
             _ => PlusKey.Unknown
         };
+    }
+
+    public void Show(KeyboardType keyboardType, ReturnKeyType returnKeyType, bool isPassword)
+    {
+        // Desktop keyboards don't need special configuration, just show it
+        Show();
     }
 }
