@@ -134,7 +134,7 @@ public class ItemsListTests
         // Assert
         Assert.AreEqual(200, itemsList.ElementSize.Width, "ItemsList should take full available width");
         Assert.AreEqual(200, itemsList.ElementSize.Height, "ItemsList should take full available height");
-        Assert.IsTrue(itemsList.Children.Count > 0, "ItemsList should have children");
+        Assert.IsNotEmpty(itemsList.Children, "ItemsList should have children");
     }
     
     [TestMethod]
@@ -162,7 +162,7 @@ public class ItemsListTests
         // Assert
         Assert.AreEqual(200, itemsList.ElementSize.Width, "ItemsList should take full available width");
         Assert.AreEqual(200, itemsList.ElementSize.Height, "ItemsList should take full available height");
-        Assert.IsTrue(itemsList.Children.Count > 0, "ItemsList should have children");
+        Assert.IsNotEmpty(itemsList.Children, "ItemsList should have children");
     }
     
     [TestMethod]
@@ -180,7 +180,7 @@ public class ItemsListTests
         itemsList.Arrange(new Rect(0, 0, 200, 200));
         
         // Assert
-        Assert.AreEqual(0, itemsList.Children.Count, "ItemsList with empty source should have no children");
+        Assert.IsEmpty(itemsList.Children, "ItemsList with empty source should have no children");
     }
     
     [TestMethod]
@@ -197,7 +197,7 @@ public class ItemsListTests
         itemsList.Arrange(new Rect(0, 0, 200, 200));
         
         // Assert
-        Assert.AreEqual(0, itemsList.Children.Count, "ItemsList with null source should have no children");
+        Assert.IsEmpty(itemsList.Children, "ItemsList with null source should have no children");
     }
     
     [TestMethod]
@@ -220,7 +220,7 @@ public class ItemsListTests
         itemsList.Arrange(new Rect(0, 0, 200, 200));
         
         // Assert
-        Assert.AreEqual(0, itemsList.Children.Count, "ItemsList with null template should have no children");
+        Assert.IsEmpty(itemsList.Children, "ItemsList with null template should have no children");
     }
     
     [TestMethod]
@@ -385,9 +385,9 @@ public class ItemsListTests
         itemsList.Arrange(new Rect(0, 0, 200, 200));
         
         // Assert - Should only have visible items, not all 100
-        Assert.IsTrue(itemsList.Children.Count < items.Count, 
-            $"Virtualization should render fewer items than total. Rendered: {itemsList.Children.Count}, Total: {items.Count}");
-        Assert.IsTrue(itemsList.Children.Count > 0, "Should have at least some visible items");
+        Assert.IsLessThan(items.Count,
+itemsList.Children.Count, $"Virtualization should render fewer items than total. Rendered: {itemsList.Children.Count}, Total: {items.Count}");
+        Assert.IsNotEmpty(itemsList.Children, "Should have at least some visible items");
     }
     
     [TestMethod]
@@ -442,7 +442,7 @@ public class ItemsListTests
         var result1 = itemsList.SetScrollOffset(50);
         
         // Assert
-        Assert.IsTrue(itemsList.ScrollOffset >= 0, "ScrollOffset should be non-negative");
+        Assert.IsGreaterThanOrEqualTo(0, itemsList.ScrollOffset, "ScrollOffset should be non-negative");
         Assert.AreSame(itemsList, result1, "Method should return the ItemsList for chaining");
         
         // Act - Test binding
@@ -451,7 +451,7 @@ public class ItemsListTests
         itemsList.UpdateBindings("TestProperty");
         
         // Verify binding
-        Assert.IsTrue(itemsList.ScrollOffset >= 0, "ScrollOffset should be bound to the property value");
+        Assert.IsGreaterThanOrEqualTo(0, itemsList.ScrollOffset, "ScrollOffset should be bound to the property value");
         Assert.AreSame(itemsList, result2, "Method should return the ItemsList for chaining");
     }
 

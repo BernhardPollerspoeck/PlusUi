@@ -34,6 +34,8 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton(sp => new PlusUiNavigationService(sp));
         builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
+        builder.Services.AddSingleton<IFontRegistryService, FontRegistryService>();
+
         builder.Services.AddSingleton(sp => TimeProvider.System);
         builder.Services.AddSingleton<PlusUiPopupService>();
         builder.Services.AddSingleton<IPopupService>(sp => sp.GetRequiredService<PlusUiPopupService>());
@@ -73,6 +75,24 @@ public static class HostApplicationBuilderExtensions
         where TApplicationStyle : class, IApplicationStyle
     {
         builder.Services.AddSingleton<IApplicationStyle, TApplicationStyle>();
+        return builder;
+    }
+
+    public static HostApplicationBuilder RegisterFont(
+        this HostApplicationBuilder builder,
+        string resourcePath,
+        string fontFamily,
+        FontWeight fontWeight = FontWeight.Regular,
+        FontStyle fontStyle = FontStyle.Normal)
+    {
+        // Store font registrations to be executed when the service provider is built
+        builder.Services.AddSingleton<IFontRegistration>(new FontRegistration
+        {
+            ResourcePath = resourcePath,
+            FontFamily = fontFamily,
+            FontWeight = fontWeight,
+            FontStyle = fontStyle
+        });
         return builder;
     }
 }

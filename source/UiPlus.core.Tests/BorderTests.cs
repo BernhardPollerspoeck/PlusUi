@@ -16,7 +16,7 @@ public class BorderTests
         Assert.AreEqual(SKColors.Black, border.StrokeColor);
         Assert.AreEqual(1f, border.StrokeThickness);
         Assert.AreEqual(StrokeType.Solid, border.StrokeType);
-        Assert.AreEqual(SKColors.Transparent, border.BackgroundColor);
+        Assert.IsNull(border.Background);
     }
 
     [TestMethod]
@@ -29,13 +29,15 @@ public class BorderTests
         border.SetStrokeColor(SKColors.Red)
               .SetStrokeThickness(3f)
               .SetStrokeType(StrokeType.Dashed)
-              .SetBackgroundColor(SKColors.Blue);
+              .SetBackground(new SolidColorBackground(SKColors.Blue));
 
         // Assert
         Assert.AreEqual(SKColors.Red, border.StrokeColor);
         Assert.AreEqual(3f, border.StrokeThickness);
         Assert.AreEqual(StrokeType.Dashed, border.StrokeType);
-        Assert.AreEqual(SKColors.Blue, border.BackgroundColor);
+        Assert.IsNotNull(border.Background);
+        Assert.IsInstanceOfType(border.Background, typeof(SolidColorBackground));
+        Assert.AreEqual(SKColors.Blue, ((SolidColorBackground)border.Background).Color);
     }
 
     [TestMethod]
@@ -55,8 +57,8 @@ public class BorderTests
         // Assert
         // Border should add stroke thickness to child size
 
-        Assert.IsTrue(border.ElementSize.Width >= 4); // 2 * stroke thickness
-        Assert.IsTrue(border.ElementSize.Height >= 4); // 2 * stroke thickness
+        Assert.IsGreaterThanOrEqualTo(4, border.ElementSize.Width); // 2 * stroke thickness
+        Assert.IsGreaterThanOrEqualTo(4, border.ElementSize.Height); // 2 * stroke thickness
     }
 
     [TestMethod]

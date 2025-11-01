@@ -24,7 +24,7 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                 .SetItemTemplate((item, index) =>
                     new HStack(
                         new Solid(50, index == 2 ? 100 : 50)
-                            .SetBackgroundColor(item.Color)
+                            .SetBackground(new SolidColorBackground(item.Color))
                             .SetMargin(new Margin(5)),
                         new VStack(
                             new Label()
@@ -38,13 +38,13 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                         )
                         .SetMargin(new Margin(5))
                     )
-                    .SetBackgroundColor(new SKColor(40, 40, 40))
+                    .SetBackground(new SolidColorBackground(new SKColor(40, 40, 40)))
                     .SetMargin(new Margin(5, 2))
                     .SetCornerRadius(5)
                 )
                 .SetOrientation(Orientation.Vertical)
                 .SetScrollFactor(1.5f) // Faster scrolling
-                .SetBackgroundColor(new SKColor(20, 20, 20))
+                .SetBackground(new SolidColorBackground(new SKColor(20, 20, 20)))
                 .SetCornerRadius(10)
                 .SetMargin(new Margin(10))
                 .SetDesiredHeight(300),
@@ -60,19 +60,19 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                 .SetItemTemplate((item, index) =>
                     new VStack(
                         new Solid(index == 2 ? 130 : 80, 80)
-                            .SetBackgroundColor(item.Color)
+                            .SetBackground(new SolidColorBackground(item.Color))
                             .SetMargin(new Margin(5)),
                         new Label()
                             .SetText($"#{index + 1}: {item.Title}")
                             .SetTextSize(12)
                             .SetTextColor(SKColors.White)
                     )
-                    .SetBackgroundColor(new SKColor(40, 40, 40))
+                    .SetBackground(new SolidColorBackground(new SKColor(40, 40, 40)))
                     .SetMargin(new Margin(2, 5))
                     .SetCornerRadius(5)
                 )
                 .SetOrientation(Orientation.Horizontal)
-                .SetBackgroundColor(new SKColor(20, 20, 20))
+                .SetBackground(new SolidColorBackground(new SKColor(20, 20, 20)))
                 .SetCornerRadius(10)
                 .SetMargin(new Margin(10))
                 .SetDesiredHeight(120),
@@ -84,7 +84,7 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                     .SetCommand(vm.AddItemCommand)
                     .SetPadding(new(10, 5))
                     .SetTextColor(SKColors.Black)
-                    .SetBackgroundColor(SKColors.Green)
+                    .SetBackground(new SolidColorBackground(SKColors.Green))
                     .SetMargin(new Margin(5)),
 
                 new Button()
@@ -93,7 +93,7 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                     .SetCommand(vm.RemoveItemCommand)
                     .SetPadding(new(10, 5))
                     .SetTextColor(SKColors.Black)
-                    .SetBackgroundColor(SKColors.Red)
+                    .SetBackground(new SolidColorBackground(SKColors.Red))
                     .SetMargin(new Margin(5))
             )
             .SetMargin(new Margin(10)),
@@ -104,7 +104,7 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                 .SetCommand(vm.NavCommand)
                 .SetPadding(new(10, 5))
                 .SetTextColor(SKColors.Black)
-                .SetBackgroundColor(SKColors.White)
+                .SetBackground(new SolidColorBackground(SKColors.White))
                 .SetMargin(new Margin(10))
         );
     }

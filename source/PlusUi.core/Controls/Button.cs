@@ -7,7 +7,6 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Button : UiTextElement, IInputControl
 {
-    protected override bool SkipBackground => true;
 
     #region Padding
     internal Margin Padding
@@ -136,23 +135,6 @@ public partial class Button : UiTextElement, IInputControl
         }
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
-
-        if (BackgroundPaint is not null)
-        {
-            var rect = new SKRect(
-                Position.X + VisualOffset.X,
-                Position.Y + VisualOffset.Y,
-                Position.X + VisualOffset.X + ElementSize.Width,
-                Position.Y + VisualOffset.Y + ElementSize.Height);
-            if (CornerRadius > 0)
-            {
-                canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
-            }
-            else
-            {
-                canvas.DrawRect(rect, BackgroundPaint);
-            }
-        }
 
         var textRect = new SKRect(
             Position.X + VisualOffset.X + Padding.Left,

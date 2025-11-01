@@ -25,7 +25,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetText(vm.SampleText)
                                 .SetTextWrapping(TextWrapping.NoWrap)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(40, 40, 60))
+                                .SetBackground(new SolidColorBackground(new SKColor(40, 40, 60)))
                                 .SetTextColor(SKColors.White)),
 
                     CreateDemoRow("Wrap",
@@ -33,7 +33,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                             .SetText(vm.SampleText)
                             .SetTextWrapping(TextWrapping.Wrap)
                             .SetDesiredWidth(300)
-                            .SetBackgroundColor(new SKColor(40, 40, 60))
+                            .SetBackground(new SolidColorBackground(new SKColor(40, 40, 60)))
                             .SetTextColor(SKColors.White)),
 
                     CreateDemoRow("WordWrap",
@@ -41,7 +41,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                             .SetText(vm.SampleText)
                             .SetTextWrapping(TextWrapping.WordWrap)
                             .SetDesiredWidth(300)
-                            .SetBackgroundColor(new SKColor(40, 40, 60))
+                            .SetBackground(new SolidColorBackground(new SKColor(40, 40, 60)))
                             .SetTextColor(SKColors.White))
                     )
                 ),
@@ -54,7 +54,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetText(vm.LongText)
                                 .SetTextTruncation(TextTruncation.None)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(60, 40, 40))
+                                .SetBackground(new SolidColorBackground(new SKColor(60, 40, 40)))
                                 .SetTextColor(SKColors.White)),
 
                         CreateDemoRow("Start",
@@ -62,7 +62,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetText(vm.LongText)
                                 .SetTextTruncation(TextTruncation.Start)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(60, 40, 40))
+                                .SetBackground(new SolidColorBackground(new SKColor(60, 40, 40)))
                                 .SetTextColor(SKColors.White)),
 
                         CreateDemoRow("Middle",
@@ -70,7 +70,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetText(vm.LongText)
                                 .SetTextTruncation(TextTruncation.Middle)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(60, 40, 40))
+                                .SetBackground(new SolidColorBackground(new SKColor(60, 40, 40)))
                                 .SetTextColor(SKColors.White)),
 
                         CreateDemoRow("End",
@@ -78,7 +78,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetText(vm.LongText)
                                 .SetTextTruncation(TextTruncation.End)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(60, 40, 40))
+                                .SetBackground(new SolidColorBackground(new SKColor(60, 40, 40)))
                                 .SetTextColor(SKColors.White))
                     )
                 ),
@@ -92,7 +92,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetTextWrapping(TextWrapping.WordWrap)
                                 .SetMaxLines(1)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(40, 60, 40))
+                                .SetBackground(new SolidColorBackground(new SKColor(40, 60, 40)))
                                 .SetTextColor(SKColors.White)),
 
                         CreateDemoRow("MaxLines = 2",
@@ -101,7 +101,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetTextWrapping(TextWrapping.WordWrap)
                                 .SetMaxLines(2)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(40, 60, 40))
+                                .SetBackground(new SolidColorBackground(new SKColor(40, 60, 40)))
                                 .SetTextColor(SKColors.White)),
 
                         CreateDemoRow("MaxLines = 3",
@@ -110,7 +110,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetTextWrapping(TextWrapping.WordWrap)
                                 .SetMaxLines(3)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(40, 60, 40))
+                                .SetBackground(new SolidColorBackground(new SKColor(40, 60, 40)))
                                 .SetTextColor(SKColors.White)),
 
                         CreateDemoRow("Short Text + MaxLines = 5",
@@ -119,7 +119,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetTextWrapping(TextWrapping.WordWrap)
                                 .SetMaxLines(5)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(40, 60, 40))
+                                .SetBackground(new SolidColorBackground(new SKColor(40, 60, 40)))
                                 .SetTextColor(SKColors.White))
                     )
                 ),
@@ -134,7 +134,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetMaxLines(2)
                                 .SetTextTruncation(TextTruncation.End)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(60, 40, 60))
+                                .SetBackground(new SolidColorBackground(new SKColor(60, 40, 60)))
                                 .SetTextColor(SKColors.White)),
 
                         CreateDemoRow("WordWrap + MaxLines(3) + Middle", 
@@ -144,7 +144,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetMaxLines(3)
                                 .SetTextTruncation(TextTruncation.Middle)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(60, 40, 60))
+                                .SetBackground(new SolidColorBackground(new SKColor(60, 40, 60)))
                                 .SetTextColor(SKColors.White)),
 
                         CreateDemoRow("Wrap + MaxLines(1) + Start", 
@@ -154,7 +154,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetMaxLines(1)
                                 .SetTextTruncation(TextTruncation.Start)
                                 .SetDesiredWidth(300)
-                                .SetBackgroundColor(new SKColor(60, 40, 60))
+                                .SetBackground(new SolidColorBackground(new SKColor(60, 40, 60)))
                                 .SetTextColor(SKColors.White))
                     )
                 ),
@@ -168,7 +168,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetHorizontalTextAlignment(HorizontalTextAlignment.Left)
                                 .SetTextTruncation(TextTruncation.End)
                                 .SetDesiredWidth(250)
-                                .SetBackgroundColor(new SKColor(50, 50, 70))
+                                .SetBackground(new SolidColorBackground(new SKColor(50, 50, 70)))
                                 .SetTextColor(SKColors.White)),
 
                         CreateDemoRow("Center + Middle Truncation",
@@ -177,7 +177,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
                                 .SetTextTruncation(TextTruncation.Middle)
                                 .SetDesiredWidth(250)
-                                .SetBackgroundColor(new SKColor(50, 50, 70))
+                                .SetBackground(new SolidColorBackground(new SKColor(50, 50, 70)))
                                 .SetTextColor(SKColors.White)),
 
                         CreateDemoRow("Right + Start Truncation",
@@ -186,7 +186,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetHorizontalTextAlignment(HorizontalTextAlignment.Right)
                                 .SetTextTruncation(TextTruncation.Start)
                                 .SetDesiredWidth(250)
-                                .SetBackgroundColor(new SKColor(50, 50, 70))
+                                .SetBackground(new SolidColorBackground(new SKColor(50, 50, 70)))
                                 .SetTextColor(SKColors.White))
                     )
                 ),
@@ -196,7 +196,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                 new Button()
                     .SetText("Back to Main Page")
                     .SetPadding(new Margin(20, 10))
-                    .SetBackgroundColor(SKColors.DodgerBlue)
+                    .SetBackground(new SolidColorBackground(SKColors.DodgerBlue))
                     .SetCornerRadius(8)
                     .SetHorizontalAlignment(HorizontalAlignment.Center)
                     .SetCommand(vm.NavCommand),
@@ -215,7 +215,7 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
                 .SetMargin(new Margin(0, 20, 0, 10)),
             new Border()
                 .AddChild(content)
-                .SetBackgroundColor(new SKColor(30, 30, 30))
+                .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
                 .SetCornerRadius(12)
                 .SetMargin(new Margin(0, 0, 0, 10))
         ).SetMargin(new Margin(20, 0));
@@ -238,6 +238,6 @@ public class TextWrapDemoPage(TextWrapDemoPageViewModel vm) : UiPageElement(vm)
     protected override void ConfigurePageStyles(Style pageStyle)
     {
         pageStyle.AddStyle<UiPageElement>(element 
-            => element.SetBackgroundColor(new SKColor(20, 20, 20)));
+            => element.SetBackground(new SolidColorBackground(new SKColor(20, 20, 20))));
     }
 }
