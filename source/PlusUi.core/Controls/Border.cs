@@ -142,6 +142,9 @@ public partial class Border : UiLayoutElement
 
     public override void Render(SKCanvas canvas)
     {
+        // Render shadow BEFORE the element (in background layer)
+        RenderShadow(canvas);
+
         // Draw background first
         if (BackgroundPaint is not null && BackgroundColor != SKColors.Transparent)
         {
