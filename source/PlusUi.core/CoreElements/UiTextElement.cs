@@ -1,4 +1,6 @@
-﻿using PlusUi.core.Attributes;
+﻿using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core.Attributes;
+using PlusUi.core.Services;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -68,6 +70,75 @@ public abstract class UiTextElement : UiElement
     public UiTextElement BindTextColor(string propertyName, Func<SKColor> propertyGetter)
     {
         RegisterBinding(propertyName, () => TextColor = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region FontFamily
+    internal string? FontFamily
+    {
+        get => field;
+        set
+        {
+            field = value;
+            Font = CreateFont();
+            InvalidateMeasure();
+        }
+    }
+    public UiTextElement SetFontFamily(string fontFamily)
+    {
+        FontFamily = fontFamily;
+        return this;
+    }
+    public UiTextElement BindFontFamily(string propertyName, Func<string?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => FontFamily = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region FontWeight
+    internal FontWeight FontWeight
+    {
+        get => field;
+        set
+        {
+            field = value;
+            Font = CreateFont();
+            InvalidateMeasure();
+        }
+    } = FontWeight.Regular;
+    public UiTextElement SetFontWeight(FontWeight weight)
+    {
+        FontWeight = weight;
+        return this;
+    }
+    public UiTextElement BindFontWeight(string propertyName, Func<FontWeight> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => FontWeight = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region FontStyle
+    internal FontStyle FontStyle
+    {
+        get => field;
+        set
+        {
+            field = value;
+            Font = CreateFont();
+            InvalidateMeasure();
+        }
+    } = FontStyle.Normal;
+    public UiTextElement SetFontStyle(FontStyle style)
+    {
+        FontStyle = style;
+        return this;
+    }
+    public UiTextElement BindFontStyle(string propertyName, Func<FontStyle> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => FontStyle = propertyGetter());
         return this;
     }
     #endregion
@@ -224,7 +295,38 @@ public abstract class UiTextElement : UiElement
     protected SKFont Font { get; set; } = null!;
     private SKFont CreateFont()
     {
-        return new SKFont(SKTypeface.Default)
+        SKTypeface? typeface = null;
+
+        // Try to get custom font from registry
+        if (!string.IsNullOrEmpty(FontFamily))
+        {
+            try
+            {
+                var fontRegistry = ServiceProviderService.ServiceProvider?.GetService<IFontRegistryService>();
+                typeface = fontRegistry?.GetTypeface(FontFamily, FontWeight, FontStyle);
+            }
+            catch
+            {
+                // Silently fallback to system font
+            }
+        }
+
+        // Fallback to system font if custom font not found
+        if (typeface == null)
+        {
+            // Create SKFontStyle from our enums
+            var skFontWeight = (SKFontStyleWeight)(int)FontWeight;
+            var skFontSlant = FontStyle switch
+            {
+                FontStyle.Italic => SKFontStyleSlant.Italic,
+                FontStyle.Oblique => SKFontStyleSlant.Oblique,
+                _ => SKFontStyleSlant.Upright
+            };
+            var skFontStyle = new SKFontStyle(skFontWeight, SKFontStyleWidth.Normal, skFontSlant);
+            typeface = SKTypeface.FromFamilyName(FontFamily, skFontStyle);
+        }
+
+        return new SKFont(typeface ?? SKTypeface.Default)
         {
             Size = TextSize,
         };
