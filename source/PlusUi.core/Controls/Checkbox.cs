@@ -6,7 +6,6 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Checkbox : UiElement, IToggleButtonControl
 {
-    protected override bool SkipBackground => true;
 
     public Checkbox()
     {

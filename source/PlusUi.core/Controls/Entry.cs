@@ -9,8 +9,6 @@ public partial class Entry : UiTextElement, ITextInputControl
     private bool _isSelected;
     private DateTime _selectionTime;
 
-    protected override bool SkipBackground => true;
-
     #region Padding
     internal Margin Padding
     {

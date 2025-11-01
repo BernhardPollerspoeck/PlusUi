@@ -14,7 +14,6 @@ public abstract class UiElement
 
 
     protected virtual bool NeadsMeasure { get; set; } = true;
-    protected virtual bool SkipBackground { get; set; }
 
     #region Debug
     protected bool Debug { get; private set; }
@@ -412,7 +411,7 @@ public abstract class UiElement
 
         if (IsVisible)
         {
-            if (Background is not null && !SkipBackground)
+            if (Background is not null)
             {
                 var rect = new SKRect(
                     Position.X + VisualOffset.X,

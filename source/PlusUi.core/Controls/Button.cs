@@ -7,7 +7,6 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Button : UiTextElement, IInputControl
 {
-    protected override bool SkipBackground => true;
 
     #region Padding
     internal Margin Padding

@@ -29,8 +29,6 @@ public abstract class UiPopupElement : UiElement
     public INotifyPropertyChanged ViewModel { get; }
     private UiElement _tree = new NullElement();
 
-    protected override bool SkipBackground => true;
-
     public bool CloseOnBackgroundClick { get; private set; }
     public bool CloseOnEscape { get; private set; }
 
