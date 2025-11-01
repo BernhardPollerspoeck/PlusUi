@@ -164,6 +164,70 @@ public abstract class UiElement
     }
     #endregion
 
+    #region ShadowColor
+    internal SKColor ShadowColor
+    {
+        get => field;
+        set
+        {
+            field = value;
+            ShadowPaint = CreateShadowPaint();
+        }
+    } = SKColors.Transparent;
+    public UiElement SetShadowColor(SKColor color)
+    {
+        ShadowColor = color;
+        return this;
+    }
+    public UiElement BindShadowColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => ShadowColor = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region ShadowOffset
+    internal Point ShadowOffset { get; set; } = new Point(0, 0);
+    public UiElement SetShadowOffset(Point offset)
+    {
+        ShadowOffset = offset;
+        return this;
+    }
+    public UiElement BindShadowOffset(string propertyName, Func<Point> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => ShadowOffset = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region ShadowBlur
+    internal float ShadowBlur { get; set; } = 0;
+    public UiElement SetShadowBlur(float blur)
+    {
+        ShadowBlur = blur;
+        return this;
+    }
+    public UiElement BindShadowBlur(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => ShadowBlur = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region ShadowSpread
+    internal float ShadowSpread { get; set; } = 0;
+    public UiElement SetShadowSpread(float spread)
+    {
+        ShadowSpread = spread;
+        return this;
+    }
+    public UiElement BindShadowSpread(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => ShadowSpread = propertyGetter());
+        return this;
+    }
+    #endregion
+
     #region size
     internal Size? DesiredSize
     {
@@ -303,6 +367,16 @@ public abstract class UiElement
             IsAntialias = true,
         };
     }
+
+    protected SKPaint ShadowPaint { get; set; } = null!;
+    private SKPaint CreateShadowPaint()
+    {
+        return new SKPaint
+        {
+            Color = ShadowColor,
+            IsAntialias = true,
+        };
+    }
     #endregion
 
     public virtual void BuildContent()
@@ -363,6 +437,50 @@ public abstract class UiElement
     #endregion
 
     #region rendering
+    /// <summary>
+    /// Renders the shadow for this element if shadow properties are configured.
+    /// Only renders when ShadowColor.Alpha > 0 and ShadowBlur > 0.
+    /// Default implementation renders shadow on element bounds with CornerRadius support.
+    /// Subclasses can override for custom shadow shapes.
+    /// </summary>
+    protected virtual void RenderShadow(SKCanvas canvas)
+    {
+        // Skip rendering if shadow is not visible
+        if (ShadowColor.Alpha == 0 || ShadowBlur == 0)
+            return;
+
+        // Create shadow filter
+        using var shadowFilter = SKImageFilter.CreateDropShadow(
+            ShadowOffset.X,
+            ShadowOffset.Y,
+            ShadowBlur / 2, // SkiaSharp uses sigma, which is roughly blur/2
+            ShadowBlur / 2,
+            ShadowColor);
+
+        using var shadowPaint = new SKPaint
+        {
+            IsAntialias = true,
+            ImageFilter = shadowFilter
+        };
+
+        // Calculate shadow rect with spread
+        var shadowRect = new SKRect(
+            Position.X + VisualOffset.X - ShadowSpread,
+            Position.Y + VisualOffset.Y - ShadowSpread,
+            Position.X + VisualOffset.X + ElementSize.Width + ShadowSpread,
+            Position.Y + VisualOffset.Y + ElementSize.Height + ShadowSpread);
+
+        // Draw shadow with corner radius support
+        if (CornerRadius > 0)
+        {
+            canvas.DrawRoundRect(shadowRect, CornerRadius, CornerRadius, shadowPaint);
+        }
+        else
+        {
+            canvas.DrawRect(shadowRect, shadowPaint);
+        }
+    }
+
     public virtual void Render(SKCanvas canvas)
     {
         if (Debug)
@@ -394,6 +512,9 @@ public abstract class UiElement
 
         if (IsVisible)
         {
+            // Render shadow BEFORE the element (in background layer)
+            RenderShadow(canvas);
+
             if (BackgroundColor != SKColors.Transparent && !SkipBackground)
             {
                 var rect = new SKRect(
