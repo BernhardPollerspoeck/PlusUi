@@ -21,17 +21,17 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
         return new HStack(
             new VStack(
                 new HStack(
-                    new Solid().SetBackgroundColor(new SKColor(0, 255, 255)),
-                    new Solid().SetBackgroundColor(new SKColor(255, 0, 255)).SetIsVisible(false),
-                    new Solid().SetBackgroundColor(new SKColor(255, 255, 0)).SetVisualOffset(new(0,10))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 255))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 255))).SetIsVisible(false),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 0))).SetVisualOffset(new(0,10))),
                 new HStack(
-                    new Solid().SetBackgroundColor(new SKColor(255, 0, 0)),
-                    new Solid().SetBackgroundColor(new SKColor(0, 255, 0)),
-                    new Solid().SetBackgroundColor(new SKColor(0, 0, 255))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 0, 255)))),
                 new HStack(
-                    new Solid().SetBackgroundColor(new SKColor(255, 255, 255)),
-                    new Solid().SetBackgroundColor(new SKColor(128, 128, 128)),
-                    new Solid().SetBackgroundColor(new SKColor(50, 50, 50))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 255))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(128, 128, 128))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))),
 
                 new HelloWorldControl(),
                 new Label()
@@ -50,24 +50,24 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetCommand(vm.SetColorCommand),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetBackgroundColor(new SKColor(255, 0, 0)),
+                        .SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetBackgroundColor(new SKColor(0, 255, 0)),
+                        .SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))),
 
                 new Border()
                     .AddChild(new Label().SetText("Solid Border").SetTextColor(SKColors.Black))
                     .SetStrokeColor(SKColors.Red)
                     .SetStrokeThickness(3f)
                     .SetStrokeType(StrokeType.Solid)
-                    .SetBackgroundColor(new SKColor(255, 255, 0, 100)),
+                    .SetBackground(new SolidColorBackground(new SKColor(255, 255, 0, 100))),
 
                 new Border()
                     .AddChild(new Label().SetText("Dashed").SetTextColor(SKColors.Black))
                     .SetStrokeColor(SKColors.Blue)
                     .SetStrokeThickness(2f)
                     .SetStrokeType(StrokeType.Dashed)
-                    .SetBackgroundColor(new SKColor(0, 255, 255, 100)),
+                    .SetBackground(new SolidColorBackground(new SKColor(0, 255, 255, 100))),
 
                 new Border()
                     .AddChild(new VStack(
@@ -98,7 +98,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     protected override void ConfigurePageStyles(Style pageStyle)
     {
         pageStyle.AddStyle<UiPageElement>(element
-            => element.SetBackgroundColor(new SKColor(0, 0, 0, 220)));
+            => element.SetBackground(new SolidColorBackground(new SKColor(0, 0, 0, 220))));
     }
 
     private VStack CreateTestButtons()

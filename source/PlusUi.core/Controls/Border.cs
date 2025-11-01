@@ -34,8 +34,6 @@ public enum StrokeType
 [GenerateShadowMethods]
 public partial class Border : UiLayoutElement
 {
-    protected override bool SkipBackground => true;
-
     #region StrokeColor
     internal SKColor StrokeColor
     {
@@ -142,17 +140,8 @@ public partial class Border : UiLayoutElement
 
     public override void Render(SKCanvas canvas)
     {
-        // Draw background first
-        if (Background is not null)
-        {
-            var backgroundRect = new SKRect(
-                Position.X,
-                Position.Y,
-                Position.X + ElementSize.Width,
-                Position.Y + ElementSize.Height);
-
-            Background.Render(canvas, backgroundRect, CornerRadius);
-        }
+        // Let base class render the background
+        base.Render(canvas);
 
         // Draw stroke border
         if (StrokeThickness > 0 && StrokeColor != SKColors.Transparent)

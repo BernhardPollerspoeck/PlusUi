@@ -85,7 +85,6 @@ public abstract class UiElement
         set
         {
             Background = new SolidColorBackground(value);
-            BackgroundPaint = CreateBackgroundPaint();
         }
     }
 
@@ -322,20 +321,6 @@ public abstract class UiElement
 
         return new Point(x, y);
     }
-    #endregion
-
-    #region render cache
-    protected SKPaint BackgroundPaint { get; set; } = null!;
-    #pragma warning disable CS0618 // Type or member is obsolete
-    private SKPaint CreateBackgroundPaint()
-    {
-        return new SKPaint
-        {
-            Color = BackgroundColor,
-            IsAntialias = true,
-        };
-    }
-    #pragma warning restore CS0618 // Type or member is obsolete
     #endregion
 
     public virtual void BuildContent()

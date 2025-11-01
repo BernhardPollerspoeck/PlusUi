@@ -68,7 +68,16 @@ public abstract class UiPopupElement : UiElement
 
     public override void Render(SKCanvas canvas)
     {
-        canvas.DrawRect(canvas.DeviceClipBounds, BackgroundPaint);
+        // Draw fullscreen overlay background
+        if (Background is SolidColorBackground solidBg)
+        {
+            using var overlayPaint = new SKPaint
+            {
+                Color = solidBg.Color,
+                IsAntialias = true
+            };
+            canvas.DrawRect(canvas.DeviceClipBounds, overlayPaint);
+        }
 
         base.Render(canvas);
         _tree.Render(canvas);

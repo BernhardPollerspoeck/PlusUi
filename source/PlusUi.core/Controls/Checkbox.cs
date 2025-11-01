@@ -55,15 +55,22 @@ public partial class Checkbox : UiElement, IToggleButtonControl
         {
             return;
         }
-        BackgroundPaint.StrokeWidth = 2;
-        BackgroundPaint.Style = SKPaintStyle.Stroke;
+        
+        using var strokePaint = new SKPaint
+        {
+            StrokeWidth = 2,
+            Style = SKPaintStyle.Stroke,
+            IsAntialias = true,
+            Color = SKColors.Black  // Default stroke color
+        };
+        
         var rect = new SKRect(
             Position.X + VisualOffset.X,
             Position.Y + VisualOffset.Y,
             Position.X + VisualOffset.X + ElementSize.Width,
             Position.Y + VisualOffset.Y + ElementSize.Height);
 
-        canvas.DrawRoundRect(rect, 5, 5, BackgroundPaint);
+        canvas.DrawRoundRect(rect, 5, 5, strokePaint);
 
         if (IsChecked)
         {
@@ -71,7 +78,7 @@ public partial class Checkbox : UiElement, IToggleButtonControl
             checkPath.MoveTo(Position.X + VisualOffset.X + 4, Position.Y + VisualOffset.Y + (ElementSize.Height / 2));
             checkPath.LineTo(Position.X + VisualOffset.X + (ElementSize.Width / 3), Position.Y + VisualOffset.Y + ElementSize.Height - 4);
             checkPath.LineTo(Position.X + VisualOffset.X + ElementSize.Width - 4, Position.Y + VisualOffset.Y + 4);
-            canvas.DrawPath(checkPath, BackgroundPaint);
+            canvas.DrawPath(checkPath, strokePaint);
         }
     }
 

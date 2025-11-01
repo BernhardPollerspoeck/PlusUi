@@ -9,7 +9,7 @@ public class ApplicationStyle : IApplicationStyle
     {
         style.AddStyle<UiPageElement>(page =>
         {
-            page.SetBackgroundColor(SKColors.Black);
+            page.SetBackground(new SolidColorBackground(SKColors.Black));
         });
 
         style.AddStyle<Label>(label =>

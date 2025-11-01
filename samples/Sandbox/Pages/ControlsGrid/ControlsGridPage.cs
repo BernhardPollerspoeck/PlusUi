@@ -15,11 +15,11 @@ internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm
             .AddRow(Row.Star, 2)
             .AddBoundRow(() => vm.RowHeight)
 
-            .AddChild(new Solid().SetBackgroundColor(SKColors.Green).IgnoreStyling())
-            .AddChild(column: 1, child: new Solid().SetBackgroundColor(SKColors.Yellow).IgnoreStyling())
-            .AddChild(row: 1, child: new Solid().SetBackgroundColor(SKColors.Blue).IgnoreStyling())
-            .AddChild(row: 2, columnSpan: 2, child: new Solid().SetBackgroundColor(SKColors.Red).IgnoreStyling())
-            .AddChild(row: 1, column: 2, rowSpan: 2, child: new Solid().SetBackgroundColor(SKColors.Purple).IgnoreStyling())
+            .AddChild(new Solid().SetBackground(new SolidColorBackground(SKColors.Green)).IgnoreStyling())
+            .AddChild(column: 1, child: new Solid().SetBackground(new SolidColorBackground(SKColors.Yellow)).IgnoreStyling())
+            .AddChild(row: 1, child: new Solid().SetBackground(new SolidColorBackground(SKColors.Blue)).IgnoreStyling())
+            .AddChild(row: 2, columnSpan: 2, child: new Solid().SetBackground(new SolidColorBackground(SKColors.Red)).IgnoreStyling())
+            .AddChild(row: 1, column: 2, rowSpan: 2, child: new Solid().SetBackground(new SolidColorBackground(SKColors.Purple)).IgnoreStyling())
 
             .AddChild(row: 1, column: 1, child: new VStack(
                 new Border()
@@ -28,18 +28,18 @@ internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm
                         .SetTextSize(20)
                         .SetCommand(vm.IncrementCommand)
                         .SetTextColor(SKColors.Black)
-                        .SetBackgroundColor(SKColors.White))
+                        .SetBackground(new SolidColorBackground(SKColors.White)))
                     .SetStrokeColor(SKColors.White)
                     .SetStrokeThickness(2f)
                     .SetStrokeType(StrokeType.Solid)
-                    .SetBackgroundColor(new SKColor(0, 0, 0, 150)),
+                    .SetBackground(new SolidColorBackground(new SKColor(0, 0, 0, 150))),
                 new Border()
                     .AddChild(new Button()
                         .SetText("Back")
                         .SetTextSize(20)
                         .SetCommand(vm.NavCommand)
                         .SetTextColor(SKColors.Black)
-                        .SetBackgroundColor(SKColors.White))
+                        .SetBackground(new SolidColorBackground(SKColors.White)))
                     .SetStrokeColor(SKColors.Cyan)
                     .SetStrokeThickness(3f)
                     .SetStrokeType(StrokeType.Dashed)

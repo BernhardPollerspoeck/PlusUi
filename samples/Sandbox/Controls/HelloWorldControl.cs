@@ -7,7 +7,7 @@ internal class HelloWorldControl : UserControl
 {
     public HelloWorldControl()
     {
-        SetBackgroundColor(SKColors.Red);
+        SetBackground(new SolidColorBackground(SKColors.Red));
     }
     protected override UiElement Build()
     {

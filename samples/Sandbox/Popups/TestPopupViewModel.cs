@@ -35,7 +35,7 @@ public class TestPopup(TestPopupViewModel vm) : UiPopupElement<string>(vm)
 
                 )
 
-            .SetBackgroundColor(SKColors.White);//TODO: this BG color has been lost on HotReload
+            .SetBackground(new SolidColorBackground(SKColors.White));
 
     }
 }
