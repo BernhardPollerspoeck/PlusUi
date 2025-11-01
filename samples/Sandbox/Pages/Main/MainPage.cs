@@ -23,20 +23,21 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
         return new HStack(
             new VStack(
                 new HStack(
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 255))).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new SKColor(0, 255, 255)).SetDesiredSize(new(75, 75)),
                     new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 255))).SetIsVisible(false).SetDesiredSize(new(75, 75)),
                     new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 0))).SetVisualOffset(new(0, 10)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new LinearGradient(SKColors.White, SKColors.Black, 90)).SetDesiredSize(new(75, 75))),
-                new HStack(
+                    new Solid().SetBackground(new LinearGradient(SKColors.White, SKColors.Black, 90)).SetDesiredSize(new(75, 75)),
                     new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 0, 255))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new LinearGradient(SKColors.Red, SKColors.Cyan, 45)).SetDesiredSize(new(75, 75))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))).SetDesiredSize(new(75, 75))
+                    ),
                 new HStack(
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 0, 255))).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new LinearGradient(SKColors.Red, SKColors.Cyan, 45)).SetDesiredSize(new(75, 75)),
                     new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 255))).SetDesiredSize(new(75, 75)),
                     new Solid().SetBackground(new SolidColorBackground(new SKColor(128, 128, 128))).SetDesiredSize(new(75, 75)),
                     new Solid().SetBackground(new SolidColorBackground(new SKColor(50, 50, 50))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new RadialGradient(SKColors.Yellow, SKColors.Purple)).SetDesiredSize(new(75, 75))),
+                    new Solid().SetBackground(new RadialGradient(SKColors.Yellow, SKColors.Purple)).SetDesiredSize(new(75, 75))
+                    ),
                 new HStack(
                     new Solid().SetBackground(new LinearGradient(SKColors.Lime, SKColors.Navy, 180)).SetDesiredSize(new(75, 75)),
                     new Solid().SetBackground(new RadialGradient(SKColors.White, SKColors.Black)).SetDesiredSize(new(75, 75)),
@@ -49,7 +50,8 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         0,
                         new MultiStopGradient.GradientStop(SKColors.Magenta, 0),
                         new MultiStopGradient.GradientStop(SKColors.Green, 0.5f),
-                        new MultiStopGradient.GradientStop(SKColors.Orange, 1))).SetDesiredSize(new(75, 75))),
+                        new MultiStopGradient.GradientStop(SKColors.Orange, 1))).SetDesiredSize(new(75, 75))
+                        ),
 
                 new HelloWorldControl(),
                 new Label()

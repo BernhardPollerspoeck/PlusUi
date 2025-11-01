@@ -68,6 +68,10 @@ internal static class ConcreteClassShadowBuilder
                     methodSymbol.DeclaredAccessibility == Accessibility.Public &&
                     !methodSymbol.IsStatic)
                 {
+                    // Skip methods marked with [Obsolete]
+                    if (IsObsolete(methodSymbol))
+                        continue;
+
                     // Check if return type matches one of the base types in the chain
                     if (IsReturningBaseType(methodSymbol, classSymbol) &&
                         methodSymbol.ReturnType.NullableAnnotation != NullableAnnotation.Annotated)
@@ -93,6 +97,12 @@ internal static class ConcreteClassShadowBuilder
         }
 
         return result;
+    }
+
+    private static bool IsObsolete(IMethodSymbol methodSymbol)
+    {
+        return methodSymbol.GetAttributes().Any(attr =>
+            attr.AttributeClass?.ToDisplayString() == "System.ObsoleteAttribute");
     }
 
     private static bool IsReturningBaseType(IMethodSymbol methodSymbol, INamedTypeSymbol classSymbol)
@@ -136,22 +146,17 @@ internal static class ConcreteClassShadowBuilder
     {
         if (parameter.ExplicitDefaultValue == null)
         {
-            if (parameter.Type.IsValueType)
-                return "default";
-            return "null";
+            return parameter.Type.IsValueType ? "default" : "null";
         }
 
         var value = parameter.ExplicitDefaultValue;
 
-        if (value is bool boolValue)
-            return boolValue ? "true" : "false";
-
-        if (value is string stringValue)
-            return $"\"{stringValue}\"";
-
-        if (parameter.Type.TypeKind == TypeKind.Enum)
-            return $"{parameter.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{value}";
-
-        return value.ToString();
+        return value switch
+        {
+            string stringValue => $"\"{stringValue}\"",
+            bool boolValue => boolValue ? "true" : "false",
+            _ when parameter.Type.TypeKind == TypeKind.Enum => $"{parameter.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{value}",
+            _ => value.ToString()
+        };
     }
 }

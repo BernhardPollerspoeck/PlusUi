@@ -39,27 +39,27 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                         .SetPadding(new Margin(15, 8))
                         .SetCommand(vm.SetRegularWeightCommand)
                         .SetTextColor(SKColors.Black)
-                        .SetBackgroundColor(SKColors.LightGray),
+                        .SetBackground(new SolidColorBackground(SKColors.LightGray)),
                     new Button()
                         .SetText("Bold")
                         .SetPadding(new Margin(15, 8))
                         .SetCommand(vm.SetBoldWeightCommand)
                         .SetTextColor(SKColors.Black)
-                        .SetBackgroundColor(SKColors.LightGray)
+                        .SetBackground(new SolidColorBackground(SKColors.LightGray))
                         .SetMargin(new Margin(10, 0, 0, 0)),
                     new Button()
                         .SetText("Light")
                         .SetPadding(new Margin(15, 8))
                         .SetCommand(vm.SetLightWeightCommand)
                         .SetTextColor(SKColors.Black)
-                        .SetBackgroundColor(SKColors.LightGray)
+                        .SetBackground(new SolidColorBackground(SKColors.LightGray))
                         .SetMargin(new Margin(10, 0, 0, 0)),
                     new Button()
                         .SetText("Toggle Italic")
                         .SetPadding(new Margin(15, 8))
                         .SetCommand(vm.ToggleItalicCommand)
                         .SetTextColor(SKColors.Black)
-                        .SetBackgroundColor(SKColors.LightSalmon)
+                        .SetBackground(new SolidColorBackground(SKColors.LightSalmon))
                         .SetMargin(new Margin(10, 0, 0, 0))
                 ).SetMargin(new Margin(0, 0, 0, 20)),
 
@@ -69,7 +69,7 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                     .BindFontStyle(nameof(vm.SelectedFontStyle), () => vm.SelectedFontStyle)
                     .SetTextSize(28)
                     .SetTextColor(SKColors.Yellow)
-                    .SetBackgroundColor(new SKColor(50, 50, 50))
+                    .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
                     .SetMargin(new Margin(10))
             ).SetMargin(new Margin(0, 0, 0, 30)),
 
@@ -209,7 +209,7 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                         .SetTextSize(16)
                         .SetPadding(new Margin(15, 8))
                         .SetTextColor(SKColors.Black)
-                        .SetBackgroundColor(SKColors.White),
+                        .SetBackground(new SolidColorBackground(SKColors.White)),
 
                     new Button()
                         .SetText("Bold Button")
@@ -217,7 +217,7 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                         .SetTextSize(16)
                         .SetPadding(new Margin(15, 8))
                         .SetTextColor(SKColors.White)
-                        .SetBackgroundColor(SKColors.DarkBlue)
+                        .SetBackground(new SolidColorBackground(SKColors.DarkBlue))
                         .SetMargin(new Margin(10, 0, 0, 0)),
 
                     new Button()
@@ -227,7 +227,7 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                         .SetTextSize(16)
                         .SetPadding(new Margin(15, 8))
                         .SetTextColor(SKColors.Black)
-                        .SetBackgroundColor(SKColors.LightYellow)
+                        .SetBackground(new SolidColorBackground(SKColors.LightYellow))
                         .SetMargin(new Margin(10, 0, 0, 0))
                 )
             ).SetMargin(new Margin(0, 0, 0, 20))

@@ -14,7 +14,7 @@ PlusUi is a UiFramework with Fluint style ui building.
 - Required Namespaces are: PlusUi.core, Skiasharp, System.Windows.Input.
 - command implementations are SyncCommand and AsyncCommand.
 - properties below have theyre type in brackets behind. e.g. Text(string) means the Property Text is of type string and the set and bind methods take strings. e.g. ""public UiTextElement SetText(string text)" and "public UiTextElement BindText(string propertyName, Func<string?> propertyGetter)" 
-- properties described for the element have to come first to configure the element and the more generic properties come after that. e.g. SetText(string text) comes before SetBackgroundColor(SKColor color).
+- properties described for the element have to come first to configure the element and the more generic properties come after that. e.g. SetText(string text) comes before SetBackground(IBackground background).
 
 ## Basic Blocks
 
@@ -34,7 +34,7 @@ PlusUi is a UiFramework with Fluint style ui building.
 ### UiElement
 - UiElement is the building blocks of the Ui.
 - UiElements need to inherit from UiElement or UiElement<T>.
-- UiElement provides the basic properties Debug, BackgroundColor, Margin, HorizontalAlignment, VerticalAlignment, CornerRadius, DesiredSize.
+- UiElement provides the basic properties Debug, Background, Margin, HorizontalAlignment, VerticalAlignment, CornerRadius, DesiredSize.
 
 ### UiTextElement
 - UiTextElement is the building blocks of the Ui with text.
@@ -46,6 +46,16 @@ PlusUi is a UiFramework with Fluint style ui building.
 - UiLayoutElement is the building blocks of the Ui with children.
 - UiLayoutElements need to inherit from UiLayoutElement or UiLayoutElement<T>.
 - UiLayoutElement provides the basic property Children.
+
+## Backgrounds
+
+### Background System
+- Use SetBackground(IBackground background) instead of deprecated SetBackgroundColor(SKColor color).
+- Available background types: SolidColorBackground, LinearGradient, RadialGradient, MultiStopGradient.
+- SolidColorBackground for solid colors: `.SetBackground(new SolidColorBackground(SKColors.Blue))`
+- LinearGradient for linear gradients: `.SetBackground(new LinearGradient(SKColors.Blue, SKColors.Purple, angle: 45))`
+- RadialGradient for radial gradients: `.SetBackground(new RadialGradient(SKColors.White, SKColors.Gray))`
+- MultiStopGradient for multi-color gradients: `.SetBackground(new MultiStopGradient(angle: 90, stops...))`
 
 ## Controls
 
@@ -95,7 +105,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {
-        SetBackgroundColor(SKColors.SlateBlue);
+        SetBackground(new SolidColorBackground(SKColors.SlateBlue));
         return new HStack(
             new VStack(
                 
@@ -114,7 +124,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetText("Hello World!"),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetBackgroundColor(new SKColor(255, 0, 0)),
+                        .SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))),
 
                 new Image()
                     .SetAspect(Aspect.AspectFit)
@@ -127,7 +137,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 
     protected override void ConfigurePageStyles(Style pageStyle)
     {
-        pageStyle.AddStyle<UiPageElement>(element => element.SetBackgroundColor(SKColors.Black));
+        pageStyle.AddStyle<UiPageElement>(element => element.SetBackground(new SolidColorBackground(SKColors.Black)));
     }
 
     public override void Appearing()
@@ -161,7 +171,6 @@ public class MainPageViewModel : ViewModelBase
         SetColorCommand = new Command(() => Color = Color == SKColors.White ? SKColors.Black : SKColors.White);
     }
 }
-```
 
 
 

@@ -89,7 +89,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                         .SetCommandParameter("Button 1")
                         .SetPadding(new(10, 5))
                         .SetTextColor(SKColors.White)
-                        .SetBackgroundColor(SKColors.DarkBlue)
+                        .SetBackground(new SolidColorBackground(SKColors.DarkBlue))
                         .SetMargin(new Margin(10)),
 
                     // Multiple labels to demonstrate vertical scrolling
@@ -104,7 +104,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                         .SetCommandParameter("Button 2")
                         .SetPadding(new(10, 5))
                         .SetTextColor(SKColors.White)
-                        .SetBackgroundColor(SKColors.DarkGreen)
+                        .SetBackground(new SolidColorBackground(SKColors.DarkGreen))
                         .SetMargin(new Margin(10)),
 
                     new Label()
@@ -118,7 +118,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                         .SetCommandParameter("Button 3")
                         .SetPadding(new(10, 5))
                         .SetTextColor(SKColors.White)
-                        .SetBackgroundColor(SKColors.DarkRed)
+                        .SetBackground(new SolidColorBackground(SKColors.DarkRed))
                         .SetMargin(new Margin(10)),
 
                     new Label()

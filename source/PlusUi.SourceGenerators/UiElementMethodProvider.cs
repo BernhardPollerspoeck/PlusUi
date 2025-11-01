@@ -20,6 +20,10 @@ internal static class UiElementMethodProvider
                 methodSymbol.DeclaredAccessibility == Accessibility.Public &&
                 !methodSymbol.IsStatic)
             {
+                // Skip methods marked with [Obsolete]
+                if (IsObsolete(methodSymbol))
+                    continue;
+
                 // Check if return type matches the class type (not nullable, not derived types)
                 // Only exact match and not optional/nullable
                 if (SymbolEqualityComparer.Default.Equals(methodSymbol.ReturnType, classSymbol) &&
@@ -34,7 +38,13 @@ internal static class UiElementMethodProvider
             }
         }
 
-        return methods.ToArray();
+        return [.. methods];
+    }
+
+    private static bool IsObsolete(IMethodSymbol methodSymbol)
+    {
+        return methodSymbol.GetAttributes().Any(attr =>
+            attr.AttributeClass?.ToDisplayString() == "System.ObsoleteAttribute");
     }
 
     private static MethodInfo CreateMethodInfo(IMethodSymbol methodSymbol)
@@ -63,22 +73,18 @@ internal static class UiElementMethodProvider
     {
         if (parameter.ExplicitDefaultValue == null)
         {
-            if (parameter.Type.IsValueType)
-                return "default";
-            return "null";
+            return parameter.Type.IsValueType ? "default" : "null";
         }
 
         var value = parameter.ExplicitDefaultValue;
         
-        if (value is bool boolValue)
-            return boolValue ? "true" : "false";
-        
-        if (value is string stringValue)
-            return $"\"{stringValue}\"";
-        
-        if (parameter.Type.TypeKind == TypeKind.Enum)
-            return $"{parameter.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{value}";
-
-        return value.ToString();
+        return value switch
+        {
+            bool boolValue => boolValue ? "true" : "false",
+            string stringValue => $"\"{stringValue}\"",
+            _ => parameter.Type.TypeKind == TypeKind.Enum
+                ? $"{parameter.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{value}"
+                : value.ToString()
+        };
     }
 }

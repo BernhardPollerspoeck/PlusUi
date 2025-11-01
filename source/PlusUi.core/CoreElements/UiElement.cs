@@ -66,9 +66,32 @@ public abstract class UiElement
         return this;
     }
 
+    /// <summary>
+    /// Sets a solid color background for the element.
+    /// This is a convenience overload that internally creates a SolidColorBackground.
+    /// </summary>
+    /// <param name="color">The solid color to use for the background</param>
+    public UiElement SetBackground(SKColor color)
+    {
+        Background = new SolidColorBackground(color);
+        return this;
+    }
+
     public UiElement BindBackground(string propertyName, Func<IBackground?> propertyGetter)
     {
         RegisterBinding(propertyName, () => Background = propertyGetter());
+        return this;
+    }
+
+    /// <summary>
+    /// Binds a solid color background to a property.
+    /// This is a convenience overload that internally creates a SolidColorBackground.
+    /// </summary>
+    /// <param name="propertyName">The name of the property to bind to</param>
+    /// <param name="propertyGetter">Function that returns the color from the property</param>
+    public UiElement BindBackground(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => Background = new SolidColorBackground(propertyGetter()));
         return this;
     }
     #endregion
@@ -321,11 +344,6 @@ public abstract class UiElement
         return this;
     }
 
-    protected UiElement()
-    {
-        BackgroundPaint = CreateBackgroundPaint();
-    }
-
     [EditorBrowsable(EditorBrowsableState.Never)]
     public UiElement? Parent { get; set; }
 
@@ -405,14 +423,6 @@ public abstract class UiElement
 
     #region render cache
     protected SKPaint BackgroundPaint { get; set; } = null!;
-    private SKPaint CreateBackgroundPaint()
-    {
-        return new SKPaint
-        {
-            Color = BackgroundColor,
-            IsAntialias = true,
-        };
-    }
 
     private SKImageFilter? _cachedShadowFilter;
     private SKPaint? _cachedShadowPaint;
