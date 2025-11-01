@@ -171,7 +171,7 @@ public abstract class UiElement
         set
         {
             field = value;
-            ShadowPaint = CreateShadowPaint();
+            InvalidateShadowCache();
         }
     } = SKColors.Transparent;
     public UiElement SetShadowColor(SKColor color)
@@ -187,7 +187,15 @@ public abstract class UiElement
     #endregion
 
     #region ShadowOffset
-    internal Point ShadowOffset { get; set; } = new Point(0, 0);
+    internal Point ShadowOffset
+    {
+        get => field;
+        set
+        {
+            field = value;
+            InvalidateShadowCache();
+        }
+    } = new Point(0, 0);
     public UiElement SetShadowOffset(Point offset)
     {
         ShadowOffset = offset;
@@ -201,7 +209,15 @@ public abstract class UiElement
     #endregion
 
     #region ShadowBlur
-    internal float ShadowBlur { get; set; } = 0;
+    internal float ShadowBlur
+    {
+        get => field;
+        set
+        {
+            field = value;
+            InvalidateShadowCache();
+        }
+    } = 0;
     public UiElement SetShadowBlur(float blur)
     {
         ShadowBlur = blur;
@@ -279,7 +295,6 @@ public abstract class UiElement
     protected UiElement()
     {
         BackgroundPaint = CreateBackgroundPaint();
-        ShadowPaint = CreateShadowPaint();
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -370,14 +385,42 @@ public abstract class UiElement
         };
     }
 
-    protected SKPaint ShadowPaint { get; set; } = null!;
-    private SKPaint CreateShadowPaint()
+    private SKImageFilter? _cachedShadowFilter;
+    private SKPaint? _cachedShadowPaint;
+    
+    private void InvalidateShadowCache()
     {
-        return new SKPaint
+        _cachedShadowFilter?.Dispose();
+        _cachedShadowFilter = null;
+        _cachedShadowPaint?.Dispose();
+        _cachedShadowPaint = null;
+    }
+    
+    private SKImageFilter GetShadowFilter()
+    {
+        if (_cachedShadowFilter == null)
         {
-            Color = ShadowColor,
-            IsAntialias = true,
-        };
+            _cachedShadowFilter = SKImageFilter.CreateDropShadow(
+                ShadowOffset.X,
+                ShadowOffset.Y,
+                ShadowBlur / 2, // SkiaSharp uses sigma, which is roughly blur/2
+                ShadowBlur / 2,
+                ShadowColor);
+        }
+        return _cachedShadowFilter;
+    }
+    
+    private SKPaint GetShadowPaint()
+    {
+        if (_cachedShadowPaint == null)
+        {
+            _cachedShadowPaint = new SKPaint
+            {
+                IsAntialias = true,
+                ImageFilter = GetShadowFilter()
+            };
+        }
+        return _cachedShadowPaint;
     }
     #endregion
 
@@ -447,32 +490,17 @@ public abstract class UiElement
     /// </summary>
     protected virtual void RenderShadow(SKCanvas canvas)
     {
-        // Skip rendering if shadow is not visible
         if (ShadowColor.Alpha == 0 || ShadowBlur == 0)
             return;
 
-        // Create shadow filter
-        using var shadowFilter = SKImageFilter.CreateDropShadow(
-            ShadowOffset.X,
-            ShadowOffset.Y,
-            ShadowBlur / 2, // SkiaSharp uses sigma, which is roughly blur/2
-            ShadowBlur / 2,
-            ShadowColor);
+        var shadowPaint = GetShadowPaint();
 
-        using var shadowPaint = new SKPaint
-        {
-            IsAntialias = true,
-            ImageFilter = shadowFilter
-        };
-
-        // Calculate shadow rect with spread
         var shadowRect = new SKRect(
             Position.X + VisualOffset.X - ShadowSpread,
             Position.Y + VisualOffset.Y - ShadowSpread,
             Position.X + VisualOffset.X + ElementSize.Width + ShadowSpread,
             Position.Y + VisualOffset.Y + ElementSize.Height + ShadowSpread);
 
-        // Draw shadow with corner radius support
         if (CornerRadius > 0)
         {
             canvas.DrawRoundRect(shadowRect, CornerRadius, CornerRadius, shadowPaint);
@@ -514,7 +542,6 @@ public abstract class UiElement
 
         if (IsVisible)
         {
-            // Render shadow BEFORE the element (in background layer)
             RenderShadow(canvas);
 
             if (BackgroundColor != SKColors.Transparent && !SkipBackground)

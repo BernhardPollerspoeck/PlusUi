@@ -142,27 +142,7 @@ public partial class Border : UiLayoutElement
 
     public override void Render(SKCanvas canvas)
     {
-        // Render shadow BEFORE the element (in background layer)
-        RenderShadow(canvas);
-
-        // Draw background first
-        if (BackgroundPaint is not null && BackgroundColor != SKColors.Transparent)
-        {
-            var backgroundRect = new SKRect(
-                Position.X,
-                Position.Y,
-                Position.X + ElementSize.Width,
-                Position.Y + ElementSize.Height);
-
-            if (CornerRadius > 0)
-            {
-                canvas.DrawRoundRect(backgroundRect, CornerRadius, CornerRadius, BackgroundPaint);
-            }
-            else
-            {
-                canvas.DrawRect(backgroundRect, BackgroundPaint);
-            }
-        }
+        base.Render(canvas);
 
         // Draw stroke border
         if (StrokeThickness > 0 && StrokeColor != SKColors.Transparent)
