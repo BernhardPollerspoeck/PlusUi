@@ -143,7 +143,7 @@ public partial class Border : UiLayoutElement
     public override void Render(SKCanvas canvas)
     {
         // Draw background first
-        if (BackgroundPaint is not null && BackgroundColor != SKColors.Transparent)
+        if (Background is not null)
         {
             var backgroundRect = new SKRect(
                 Position.X,
@@ -151,14 +151,7 @@ public partial class Border : UiLayoutElement
                 Position.X + ElementSize.Width,
                 Position.Y + ElementSize.Height);
 
-            if (CornerRadius > 0)
-            {
-                canvas.DrawRoundRect(backgroundRect, CornerRadius, CornerRadius, BackgroundPaint);
-            }
-            else
-            {
-                canvas.DrawRect(backgroundRect, BackgroundPaint);
-            }
+            Background.Render(canvas, backgroundRect, CornerRadius);
         }
 
         // Draw stroke border

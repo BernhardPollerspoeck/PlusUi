@@ -45,7 +45,7 @@ public abstract class UiPopupElement : UiElement
     {
         CloseOnBackgroundClick = configuration.CloseOnBackgroundClick;
         CloseOnEscape = configuration.CloseOnEscape;
-        BackgroundColor = configuration.BackgroundColor;
+        Background = new SolidColorBackground(configuration.BackgroundColor);
     }
 
     internal void BuildPopup()
