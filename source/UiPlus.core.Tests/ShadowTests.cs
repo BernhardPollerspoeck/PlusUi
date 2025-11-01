@@ -105,7 +105,6 @@ public class ShadowTests
         // Arrange
         var element = new Border();
         var isElevated = false;
-        var shadowColor = SKColors.Transparent;
 
         // Act
         element.BindShadowColor("IsElevated", () => 
@@ -116,11 +115,10 @@ public class ShadowTests
 
         // Update state
         isElevated = true;
-        shadowColor = SKColors.Black.WithAlpha(100);
         element.UpdateBindings("IsElevated");
 
         // Assert
-        Assert.AreEqual(shadowColor, element.ShadowColor);
+        Assert.AreEqual(SKColors.Black.WithAlpha(100), element.ShadowColor);
     }
 
     [TestMethod]

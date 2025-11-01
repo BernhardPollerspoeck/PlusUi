@@ -278,6 +278,8 @@ public abstract class UiElement
 
     protected UiElement()
     {
+        BackgroundPaint = CreateBackgroundPaint();
+        ShadowPaint = CreateShadowPaint();
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
