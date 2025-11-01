@@ -8,6 +8,7 @@ using Sandbox.Pages.Form;
 using Sandbox.Pages.ItemsListDemo;
 using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
+using Sandbox.Pages.ShadowDemo;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Pages.TextWrapDemo;
 using SkiaSharp;
@@ -157,6 +158,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
                 .SetCommandParameter(typeof(ItemsListDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("Shadow Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ShadowDemoPage)),
             new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
                 .SetText("RawUserControl Example")

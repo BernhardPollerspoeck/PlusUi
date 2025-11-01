@@ -10,6 +10,7 @@ using Sandbox.Pages.ItemsListDemo;
 using Sandbox.Pages.Main;
 using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
+using Sandbox.Pages.ShadowDemo;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Pages.TextWrapDemo;
 using Sandbox.Popups;
@@ -41,6 +42,7 @@ public class App : IAppConfiguration
         builder.AddPage<ItemsListDemoPage>().WithViewModel<ItemsListDemoPageViewModel>();
         builder.AddPage<ButtonDemoPage>().WithViewModel<ButtonDemoPageViewModel>();
         builder.AddPage<FontDemoPage>().WithViewModel<FontDemoPageViewModel>();
+        builder.AddPage<ShadowDemoPage>().WithViewModel<ShadowDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 
