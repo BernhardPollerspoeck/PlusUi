@@ -513,13 +513,9 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             return null;
         }
 
-        // Adjust the point based on scroll offset
-        var adjustedPoint = Orientation == Orientation.Vertical
-            ? new Point(point.X, point.Y + ScrollOffset)
-            : new Point(point.X + ScrollOffset, point.Y);
-
         // Check if any child was hit
-        var childHit = Children.Select(c => c.HitTest(adjustedPoint)).FirstOrDefault(hit => hit != null);
+        // No need to adjust the point - the child's Position was already adjusted during Arrange
+        var childHit = Children.Select(c => c.HitTest(point)).FirstOrDefault(hit => hit != null);
 
         // If no child hit, return this ItemsList
         if (childHit == null)

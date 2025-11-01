@@ -29,6 +29,17 @@ internal partial class ScrollViewExamplePageViewModel(INavigationService navigat
         set => SetProperty(ref field, value);
     } = true;
 
+    public string ButtonClickMessage
+    {
+        get => field;
+        set => SetProperty(ref field, value);
+    } = "Click a button inside the ScrollView after scrolling";
+
+    [RelayCommand]
+    private void TestButton(string buttonName)
+    {
+        ButtonClickMessage = $"Button '{buttonName}' clicked successfully!";
+    }
 
     [RelayCommand]
     private void Nav()

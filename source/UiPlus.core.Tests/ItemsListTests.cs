@@ -1,5 +1,6 @@
 using PlusUi.core;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace UiPlus.core.Tests;
 
@@ -452,5 +453,74 @@ itemsList.Children.Count, $"Virtualization should render fewer items than total.
         // Verify binding
         Assert.IsGreaterThanOrEqualTo(0, itemsList.ScrollOffset, "ScrollOffset should be bound to the property value");
         Assert.AreSame(itemsList, result2, "Method should return the ItemsList for chaining");
+    }
+
+    [TestMethod]
+    public void TestItemsList_HitTest_ButtonAfterScroll()
+    {
+        // Arrange - Create items with buttons
+        var command1 = new TestCommand();
+        var command2 = new TestCommand();
+        var command3 = new TestCommand();
+        
+        var items = new List<TestItem>
+        {
+            new TestItem { Text = "Item 1", Value = 1 },
+            new TestItem { Text = "Item 2", Value = 2 },
+            new TestItem { Text = "Item 3", Value = 3 }
+        };
+        
+        var commands = new[] { command1, command2, command3 };
+        var itemsList = new ItemsList<TestItem>()
+            .SetItemsSource(items)
+            .SetItemTemplate((item, index) => 
+                new Button()
+                    .SetText(item.Text)
+                    .SetCommand(commands[index])
+                    .SetPadding(new(10))
+            )
+            .SetOrientation(Orientation.Vertical);
+        
+        // Act - Measure and arrange with limited height to enable scrolling
+        itemsList.Measure(new Size(200, 100));
+        itemsList.Arrange(new Rect(0, 0, 200, 100));
+        
+        // Scroll down
+        itemsList.SetScrollOffset(50);
+        itemsList.Measure(new Size(200, 100));
+        itemsList.Arrange(new Rect(0, 0, 200, 100));
+        
+        // Get one of the visible buttons
+        var visibleButton = itemsList.Children
+            .OfType<Button>()
+            .FirstOrDefault(b => b.Position.Y >= 0 && b.Position.Y < 100);
+        
+        if (visibleButton != null)
+        {
+            // Hit test in the middle of the visible button
+            var hitPoint = new Point(
+                visibleButton.Position.X + visibleButton.ElementSize.Width / 2,
+                visibleButton.Position.Y + visibleButton.ElementSize.Height / 2
+            );
+            var hit = itemsList.HitTest(hitPoint);
+            
+            // Assert
+            Assert.IsNotNull(hit, $"HitTest should return a result for button at ({visibleButton.Position.X}, {visibleButton.Position.Y})");
+            Assert.AreSame(visibleButton, hit, $"HitTest should return the button after scrolling, but got {hit?.GetType().Name}");
+        }
+    }
+    
+    private class TestCommand : ICommand
+    {
+        public bool WasExecuted { get; private set; }
+        
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter) => true;
+
+        public void Execute(object? parameter)
+        {
+            WasExecuted = true;
+        }
     }
 }

@@ -13,6 +13,12 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                 .SetTextSize(24)
                 .SetMargin(new Margin(10)),
 
+            new Label()
+                .BindText(nameof(vm.ButtonClickMessage), () => vm.ButtonClickMessage)
+                .SetTextSize(14)
+                .SetTextColor(SKColors.LightGreen)
+                .SetMargin(new Margin(10)),
+
             new HStack(
                 new Label()
                     .SetText("Horizontal Scrolling:")
@@ -76,15 +82,43 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                                 .SetMargin(new Margin(5))
                                 .IgnoreStyling()),
 
+                    // Test buttons to demonstrate the fix
+                    new Button()
+                        .SetText("Button 1 - Top")
+                        .SetCommand(vm.TestButtonCommand)
+                        .SetCommandParameter("Button 1")
+                        .SetPadding(new(10, 5))
+                        .SetTextColor(SKColors.White)
+                        .SetBackgroundColor(SKColors.DarkBlue)
+                        .SetMargin(new Margin(10)),
+
                     // Multiple labels to demonstrate vertical scrolling
                     new Label()
                         .BindText(nameof(vm.LongText), () => vm.LongText)
                         .SetTextSize(18)
                         .SetMargin(new Margin(10)),
 
+                    new Button()
+                        .SetText("Button 2 - Middle")
+                        .SetCommand(vm.TestButtonCommand)
+                        .SetCommandParameter("Button 2")
+                        .SetPadding(new(10, 5))
+                        .SetTextColor(SKColors.White)
+                        .SetBackgroundColor(SKColors.DarkGreen)
+                        .SetMargin(new Margin(10)),
+
                     new Label()
                         .BindText(nameof(vm.LongText), () => vm.LongText)
                         .SetTextSize(18)
+                        .SetMargin(new Margin(10)),
+
+                    new Button()
+                        .SetText("Button 3 - Bottom")
+                        .SetCommand(vm.TestButtonCommand)
+                        .SetCommandParameter("Button 3")
+                        .SetPadding(new(10, 5))
+                        .SetTextColor(SKColors.White)
+                        .SetBackgroundColor(SKColors.DarkRed)
                         .SetMargin(new Margin(10)),
 
                     new Label()
@@ -98,7 +132,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
             .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
             .SetCornerRadius(10)
             .SetMargin(new Margin(10))
-            .SetDesiredHeight(100),
+            .SetDesiredHeight(200),
 
             new Button()
                 .SetText("Back")

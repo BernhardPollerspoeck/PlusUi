@@ -222,9 +222,9 @@ public partial class ScrollView : UiLayoutElement, IScrollableControl
             return null;
         }
         
-        // Then check if any child was hit
-        var adjustedPoint = new Point(point.X + HorizontalOffset, point.Y + VerticalOffset);
-        var childHit = _content.HitTest(adjustedPoint);
+        // Check if any child was hit
+        // No need to adjust the point - the child's Position was already adjusted during Arrange
+        var childHit = _content.HitTest(point);
         
         // If no child hit, return this ScrollView
         if (childHit == null)
