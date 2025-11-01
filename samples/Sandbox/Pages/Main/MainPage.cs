@@ -3,6 +3,7 @@ using Sandbox.Controls;
 using Sandbox.Pages.BgTest;
 using Sandbox.Pages.ButtonDemo;
 using Sandbox.Pages.ControlsGrid;
+using Sandbox.Pages.FontDemo;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.ItemsListDemo;
 using Sandbox.Pages.RawControl;
@@ -121,6 +122,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
                 .SetCommandParameter(typeof(TextWrapDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("Custom Font Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(FontDemoPage)),
             new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
                 .SetText("Go to Form")
