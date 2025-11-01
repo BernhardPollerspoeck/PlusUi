@@ -1,7 +1,7 @@
 ﻿
 namespace PlusUi.core;
 
-public interface ITextInputControl
+public interface ITextInputControl : IInteractiveControl
 {
     void SetSelectionStatus(bool isSelected);
     void HandleInput(PlusKey key);

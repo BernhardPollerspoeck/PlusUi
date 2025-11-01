@@ -146,10 +146,10 @@ public partial class Border : UiLayoutElement
         if (StrokeThickness > 0 && StrokeColor != SKColors.Transparent)
         {
             var strokeRect = new SKRect(
-                Position.X + StrokeThickness / 2,
-                Position.Y + StrokeThickness / 2,
-                Position.X + ElementSize.Width - StrokeThickness / 2,
-                Position.Y + ElementSize.Height - StrokeThickness / 2);
+                Position.X + VisualOffset.X + StrokeThickness / 2,
+                Position.Y + VisualOffset.Y + StrokeThickness / 2,
+                Position.X + VisualOffset.X + ElementSize.Width - StrokeThickness / 2,
+                Position.Y + VisualOffset.Y + ElementSize.Height - StrokeThickness / 2);
 
             if (CornerRadius > 0)
             {

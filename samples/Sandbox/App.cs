@@ -13,6 +13,7 @@ using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.ShadowDemo;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Pages.TextWrapDemo;
+using Sandbox.Pages.NewControlsDemo;
 using Sandbox.Popups;
 using Sandbox.Services;
 
@@ -43,6 +44,7 @@ public class App : IAppConfiguration
         builder.AddPage<ButtonDemoPage>().WithViewModel<ButtonDemoPageViewModel>();
         builder.AddPage<FontDemoPage>().WithViewModel<FontDemoPageViewModel>();
         builder.AddPage<ShadowDemoPage>().WithViewModel<ShadowDemoPageViewModel>();
+        builder.AddPage<NewControlsDemoPage>().WithViewModel<NewControlsDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 

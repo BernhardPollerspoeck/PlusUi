@@ -11,6 +11,7 @@ using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.ShadowDemo;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Pages.TextWrapDemo;
+using Sandbox.Pages.NewControlsDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -124,6 +125,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     private VStack CreateTestButtons()
     {
         return new VStack(
+            new Button()
+                .SetText("New Controls Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new SKColor(52, 199, 89)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(NewControlsDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
                 .SetText("Go to Grid")
                 .SetPadding(new(20, 5))
