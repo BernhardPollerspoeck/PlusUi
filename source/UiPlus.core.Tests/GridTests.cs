@@ -496,8 +496,8 @@ public sealed class GridTests
         Assert.AreEqual(30, grid.ElementSize.Height);
 
         // Out of bounds items should still be positioned somewhere reasonable
-        Assert.IsTrue(item2.Position.Y >= 0);
-        Assert.IsTrue(item3.Position.X >= 0);
+        Assert.IsGreaterThanOrEqualTo(0, item2.Position.Y);
+        Assert.IsGreaterThanOrEqualTo(0, item3.Position.X);
     }
     [TestMethod]
     public void TestGridWithZeroSizeColumns_HandlesGracefully()
@@ -554,7 +554,7 @@ public sealed class GridTests
         Assert.AreEqual(100, largeChild.ElementSize.Height);
 
         // Grid should use available space, with star column getting minimal space
-        Assert.IsTrue(grid.ElementSize.Width >= 200);
+        Assert.IsGreaterThanOrEqualTo(200, grid.ElementSize.Width);
     }
     [TestMethod]
     public void TestRemoveChildFromGrid_LayoutUpdates()

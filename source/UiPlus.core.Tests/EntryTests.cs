@@ -16,7 +16,7 @@ public class EntryTests
         entry.SetIsPassword(true);
 
         // Assert
-        Assert.AreEqual(true, entry.IsPassword);
+        Assert.IsTrue(entry.IsPassword);
     }
 
     [TestMethod]
@@ -31,14 +31,14 @@ public class EntryTests
         entry.UpdateBindings();
 
         // Assert
-        Assert.AreEqual(false, entry.IsPassword);
+        Assert.IsFalse(entry.IsPassword);
 
         // Change value and update
         isPassword = true;
         entry.UpdateBindings();
 
         // Assert
-        Assert.AreEqual(true, entry.IsPassword);
+        Assert.IsTrue(entry.IsPassword);
     }
 
     [TestMethod]
@@ -187,7 +187,7 @@ public class EntryTests
             .SetReturnKey(ReturnKeyType.Send);
 
         // Assert
-        Assert.AreEqual(true, entry.IsPassword);
+        Assert.IsTrue(entry.IsPassword);
         Assert.AreEqual('*', entry.PasswordChar);
         Assert.AreEqual(KeyboardType.Email, entry.Keyboard);
         Assert.AreEqual(ReturnKeyType.Send, entry.ReturnKey);

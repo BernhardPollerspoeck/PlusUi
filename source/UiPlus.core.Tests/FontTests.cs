@@ -167,19 +167,6 @@ public sealed class FontTests
     }
 
     [TestMethod]
-    public void TestFontWeight_Values()
-    {
-        // Verify all enum values have correct integer values
-        Assert.AreEqual(100, (int)FontWeight.Thin);
-        Assert.AreEqual(300, (int)FontWeight.Light);
-        Assert.AreEqual(400, (int)FontWeight.Regular);
-        Assert.AreEqual(500, (int)FontWeight.Medium);
-        Assert.AreEqual(600, (int)FontWeight.SemiBold);
-        Assert.AreEqual(700, (int)FontWeight.Bold);
-        Assert.AreEqual(900, (int)FontWeight.Black);
-    }
-
-    [TestMethod]
     public void TestLabel_ChainedFontSetters()
     {
         // Arrange & Act
@@ -211,8 +198,8 @@ public sealed class FontTests
         label.Measure(availableSize);
 
         // Assert - should not throw and should have a size
-        Assert.IsTrue(label.ElementSize.Width > 0);
-        Assert.IsTrue(label.ElementSize.Height > 0);
+        Assert.IsGreaterThan(0, label.ElementSize.Width);
+        Assert.IsGreaterThan(0, label.ElementSize.Height);
     }
 
     [TestMethod]

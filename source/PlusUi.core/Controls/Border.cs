@@ -140,7 +140,6 @@ public partial class Border : UiLayoutElement
 
     public override void Render(SKCanvas canvas)
     {
-        // Let base class render the background
         base.Render(canvas);
 
         // Draw stroke border
