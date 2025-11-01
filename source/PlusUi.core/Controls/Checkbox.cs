@@ -10,7 +10,7 @@ public partial class Checkbox : UiElement, IToggleButtonControl
     public Checkbox()
     {
         SetDesiredSize(new(22, 22));
-        SetBackgroundColor(SKColors.White);
+        SetColor(SKColors.White);
     }
 
     #region IsChecked
@@ -35,6 +35,27 @@ public partial class Checkbox : UiElement, IToggleButtonControl
     }
     #endregion
 
+    #region Color
+    internal SKColor Color
+    {
+        get => field;
+        set
+        {
+            field = value;
+        }
+    }
+    public Checkbox SetColor(SKColor color)
+    {
+        Color = color;
+        return this;
+    }
+    public Checkbox BindColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => Color = propertyGetter());
+        return this;
+    }
+    #endregion
+
     public void Toggle()
     {
         IsChecked = !IsChecked;
@@ -54,15 +75,15 @@ public partial class Checkbox : UiElement, IToggleButtonControl
         {
             return;
         }
-        
+
         using var strokePaint = new SKPaint
         {
             StrokeWidth = 2,
             Style = SKPaintStyle.Stroke,
             IsAntialias = true,
-            Color = SKColors.Black  // Default stroke color
+            Color = Color
         };
-        
+
         var rect = new SKRect(
             Position.X + VisualOffset.X,
             Position.Y + VisualOffset.Y,

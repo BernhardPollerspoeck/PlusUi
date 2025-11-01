@@ -25,7 +25,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 new HStack(
                     new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 255))).SetDesiredSize(new(75, 75)),
                     new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 255))).SetIsVisible(false).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 0))).SetVisualOffset(new(0,10)).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 0))).SetVisualOffset(new(0, 10)).SetDesiredSize(new(75, 75)),
                     new Solid().SetBackground(new LinearGradient(SKColors.White, SKColors.Black, 90)).SetDesiredSize(new(75, 75))),
                 new HStack(
                     new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))).SetDesiredSize(new(75, 75)),
@@ -68,10 +68,10 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetCommand(vm.SetColorCommand),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))),
+                        .SetColor(new SKColor(255, 0, 0)),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))),
+                        .SetColor(new SKColor(0, 255, 0)),
 
                 new Border()
                     .AddChild(new Label().SetText("Solid Border").SetTextColor(SKColors.Black))
