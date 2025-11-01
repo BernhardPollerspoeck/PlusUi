@@ -27,11 +27,11 @@ internal class DefaultStyle : IApplicationStyle
             .AddStyle<Entry>(element => element
                 .SetPadding(new(10, 5))
                 .SetTextColor(SKColors.White)
-                .SetBackgroundColor(SKColors.SlateGray)
+                .SetBackground(new SolidColorBackground(SKColors.SlateGray))
                 .SetDesiredWidth(200))
 
             .AddStyle<Button>(element => element
-                .SetBackgroundColor(SKColors.Green))
+                .SetBackground(new SolidColorBackground(SKColors.Green)))
 
 
 

@@ -22,17 +22,33 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
         return new HStack(
             new VStack(
                 new HStack(
-                    new Solid().SetBackgroundColor(new SKColor(0, 255, 255)),
-                    new Solid().SetBackgroundColor(new SKColor(255, 0, 255)).SetIsVisible(false),
-                    new Solid().SetBackgroundColor(new SKColor(255, 255, 0)).SetVisualOffset(new(0,10))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 255))).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 255))).SetIsVisible(false).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 0))).SetVisualOffset(new(0,10)).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new LinearGradient(SKColors.White, SKColors.Black, 90)).SetDesiredSize(new(75, 75))),
                 new HStack(
-                    new Solid().SetBackgroundColor(new SKColor(255, 0, 0)),
-                    new Solid().SetBackgroundColor(new SKColor(0, 255, 0)),
-                    new Solid().SetBackgroundColor(new SKColor(0, 0, 255))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 0, 255))).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new LinearGradient(SKColors.Red, SKColors.Cyan, 45)).SetDesiredSize(new(75, 75))),
                 new HStack(
-                    new Solid().SetBackgroundColor(new SKColor(255, 255, 255)),
-                    new Solid().SetBackgroundColor(new SKColor(128, 128, 128)),
-                    new Solid().SetBackgroundColor(new SKColor(50, 50, 50))),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 255))).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(128, 128, 128))).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new SolidColorBackground(new SKColor(50, 50, 50))).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new RadialGradient(SKColors.Yellow, SKColors.Purple)).SetDesiredSize(new(75, 75))),
+                new HStack(
+                    new Solid().SetBackground(new LinearGradient(SKColors.Lime, SKColors.Navy, 180)).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new RadialGradient(SKColors.White, SKColors.Black)).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new MultiStopGradient(
+                        90,
+                        new MultiStopGradient.GradientStop(SKColors.Red, 0),
+                        new MultiStopGradient.GradientStop(SKColors.Blue, 0.5f),
+                        new MultiStopGradient.GradientStop(SKColors.Yellow, 1))).SetDesiredSize(new(75, 75)),
+                    new Solid().SetBackground(new MultiStopGradient(
+                        0,
+                        new MultiStopGradient.GradientStop(SKColors.Magenta, 0),
+                        new MultiStopGradient.GradientStop(SKColors.Green, 0.5f),
+                        new MultiStopGradient.GradientStop(SKColors.Orange, 1))).SetDesiredSize(new(75, 75))),
 
                 new HelloWorldControl(),
                 new Label()
@@ -51,24 +67,24 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetCommand(vm.SetColorCommand),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetBackgroundColor(new SKColor(255, 0, 0)),
+                        .SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetBackgroundColor(new SKColor(0, 255, 0)),
+                        .SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))),
 
                 new Border()
                     .AddChild(new Label().SetText("Solid Border").SetTextColor(SKColors.Black))
                     .SetStrokeColor(SKColors.Red)
                     .SetStrokeThickness(3f)
                     .SetStrokeType(StrokeType.Solid)
-                    .SetBackgroundColor(new SKColor(255, 255, 0, 100)),
+                    .SetBackground(new SolidColorBackground(new SKColor(255, 255, 0, 100))),
 
                 new Border()
                     .AddChild(new Label().SetText("Dashed").SetTextColor(SKColors.Black))
                     .SetStrokeColor(SKColors.Blue)
                     .SetStrokeThickness(2f)
                     .SetStrokeType(StrokeType.Dashed)
-                    .SetBackgroundColor(new SKColor(0, 255, 255, 100)),
+                    .SetBackground(new SolidColorBackground(new SKColor(0, 255, 255, 100))),
 
                 new Border()
                     .AddChild(new VStack(
@@ -99,7 +115,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     protected override void ConfigurePageStyles(Style pageStyle)
     {
         pageStyle.AddStyle<UiPageElement>(element
-            => element.SetBackgroundColor(new SKColor(0, 0, 0, 220)));
+            => element.SetBackground(new SolidColorBackground(new SKColor(0, 0, 0, 220))));
     }
 
     private VStack CreateTestButtons()
@@ -179,15 +195,3 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
         vm.SetColorCommand.Execute(null);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
