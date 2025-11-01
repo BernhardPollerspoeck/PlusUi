@@ -54,7 +54,7 @@ public sealed class MultiStopGradient : IBackground
     /// </summary>
     public MultiStopGradient()
     {
-        Stops = Array.Empty<GradientStop>();
+        Stops = new List<GradientStop>().AsReadOnly();
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public sealed class MultiStopGradient : IBackground
     {
         if (Stops.Count < 2)
         {
-            // Need at least 2 stops for a gradient
+            // Need at least 2 stops for a gradient - render transparent as fallback
             return;
         }
 
