@@ -24,7 +24,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetText("Hello World")
                     .SetTextSize(20)
                     .SetTextColor(SKColors.Black)
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Label()
@@ -32,7 +32,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(12)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(20))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Label()
@@ -40,7 +40,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(32)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(5, 15))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Label()
@@ -48,7 +48,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(18)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(30, 5, 10, 5))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Label()
@@ -56,7 +56,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(24)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(10))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Label()
@@ -64,7 +64,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(10)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(40))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Label()
@@ -72,7 +72,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(16)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(8, 25))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling()
                 )
             )
@@ -81,7 +81,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetText("Hello World")
                     .SetTextSize(20)
                     .SetTextColor(SKColors.Black)
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Button()
@@ -89,7 +89,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(12)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(20))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Button()
@@ -97,7 +97,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(32)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(5, 15))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Button()
@@ -105,7 +105,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(18)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(30, 5, 10, 5))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Button()
@@ -113,7 +113,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(24)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(10))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Button()
@@ -121,7 +121,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(10)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(10))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Button()
@@ -129,7 +129,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(16)
                     .SetTextColor(SKColors.Black)
                     .SetMargin(new Margin(8, 25))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Button()
@@ -137,7 +137,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(16)
                     .SetTextColor(SKColors.Black)
                     .SetPadding(new Margin(10))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Button()
@@ -145,7 +145,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(16)
                     .SetTextColor(SKColors.Black)
                     .SetPadding(new Margin(20))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling(),
 
                 new Button()
@@ -153,7 +153,7 @@ public class TextRenderPage(TextRenderPageViewModel vm) : UiPageElement(vm)
                     .SetTextSize(16)
                     .SetTextColor(SKColors.Black)
                     .SetPadding(new Margin(30))
-                    .SetBackgroundColor(SKColors.White)
+                    .SetBackground(new SolidColorBackground(SKColors.White))
                     .IgnoreStyling()
                 )
             );

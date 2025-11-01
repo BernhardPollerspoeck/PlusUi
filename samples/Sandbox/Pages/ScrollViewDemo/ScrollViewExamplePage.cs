@@ -52,27 +52,27 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                         .AddRow(50)
                         .AddChild(
                             new Solid()
-                                .SetBackgroundColor(SKColors.Red)
+                                .SetBackground(new SolidColorBackground(SKColors.Red))
                                 .SetMargin(new Margin(5))
                                 .IgnoreStyling())
                         .AddChild(column: 1, child:
                             new Solid()
-                                .SetBackgroundColor(SKColors.Green)
+                                .SetBackground(new SolidColorBackground(SKColors.Green))
                                 .SetMargin(new Margin(5))
                                 .IgnoreStyling())
                         .AddChild(column: 2, child:
                             new Solid()
-                                .SetBackgroundColor(SKColors.Blue)
+                                .SetBackground(new SolidColorBackground(SKColors.Blue))
                                 .SetMargin(new Margin(5))
                                 .IgnoreStyling())
                         .AddChild(column: 3, child:
                             new Solid()
-                                .SetBackgroundColor(SKColors.Yellow)
+                                .SetBackground(new SolidColorBackground(SKColors.Yellow))
                                 .SetMargin(new Margin(5))
                                 .IgnoreStyling())
                         .AddChild(column: 4, child:
                             new Solid()
-                                .SetBackgroundColor(SKColors.Purple)
+                                .SetBackground(new SolidColorBackground(SKColors.Purple))
                                 .SetMargin(new Margin(5))
                                 .IgnoreStyling()),
 
@@ -95,7 +95,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
             )
             .BindCanScrollHorizontally(nameof(vm.IsHorizontalScrollingEnabled), () => vm.IsHorizontalScrollingEnabled)
             .BindCanScrollVertically(nameof(vm.IsVerticalScrollingEnabled), () => vm.IsVerticalScrollingEnabled)
-            .SetBackgroundColor(new SKColor(30, 30, 30))
+            .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
             .SetCornerRadius(10)
             .SetMargin(new Margin(10))
             .SetDesiredHeight(100),
@@ -106,7 +106,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                 .SetCommand(vm.NavCommand)
                 .SetPadding(new(10, 5))
                 .SetTextColor(SKColors.Black)
-                .SetBackgroundColor(SKColors.White)
+                .SetBackground(new SolidColorBackground(SKColors.White))
                 .SetMargin(new Margin(10))
         );
     }

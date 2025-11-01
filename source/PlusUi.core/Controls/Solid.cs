@@ -16,7 +16,7 @@ public partial class Solid : UiElement
         }
         if (color is not null)
         {
-            SetBackgroundColor(color.Value);
+            SetBackground(new SolidColorBackground(color.Value));
         }
     }
 }

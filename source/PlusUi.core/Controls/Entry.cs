@@ -9,8 +9,6 @@ public partial class Entry : UiTextElement, ITextInputControl
     private bool _isSelected;
     private DateTime _selectionTime;
 
-    protected override bool SkipBackground => true;
-
     #region Padding
     internal Margin Padding
     {
@@ -105,22 +103,6 @@ public partial class Entry : UiTextElement, ITextInputControl
         }
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
-        if (BackgroundPaint is not null)
-        {
-            var rect = new SKRect(
-                Position.X + VisualOffset.X,
-                Position.Y + VisualOffset.Y,
-                Position.X + VisualOffset.X + ElementSize.Width,
-                Position.Y + VisualOffset.Y + ElementSize.Height);
-            if (CornerRadius > 0)
-            {
-                canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
-            }
-            else
-            {
-                canvas.DrawRect(rect, BackgroundPaint);
-            }
-        }
 
         canvas.DrawText(
             IsPassword && !string.IsNullOrEmpty(Text) 

@@ -29,8 +29,6 @@ public abstract class UiPopupElement : UiElement
     public INotifyPropertyChanged ViewModel { get; }
     private UiElement _tree = new NullElement();
 
-    protected override bool SkipBackground => true;
-
     public bool CloseOnBackgroundClick { get; private set; }
     public bool CloseOnEscape { get; private set; }
 
@@ -45,7 +43,7 @@ public abstract class UiPopupElement : UiElement
     {
         CloseOnBackgroundClick = configuration.CloseOnBackgroundClick;
         CloseOnEscape = configuration.CloseOnEscape;
-        BackgroundColor = configuration.BackgroundColor;
+        Background = new SolidColorBackground(configuration.BackgroundColor);
     }
 
     internal void BuildPopup()
@@ -68,7 +66,16 @@ public abstract class UiPopupElement : UiElement
 
     public override void Render(SKCanvas canvas)
     {
-        canvas.DrawRect(canvas.DeviceClipBounds, BackgroundPaint);
+        // Draw fullscreen overlay background
+        if (Background is SolidColorBackground solidBg)
+        {
+            using var overlayPaint = new SKPaint
+            {
+                Color = solidBg.Color,
+                IsAntialias = true
+            };
+            canvas.DrawRect(canvas.DeviceClipBounds, overlayPaint);
+        }
 
         base.Render(canvas);
         _tree.Render(canvas);

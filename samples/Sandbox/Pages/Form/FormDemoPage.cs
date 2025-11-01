@@ -86,20 +86,20 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                             .SetMargin(new Margin(0, 20, 0, 0))
                             .SetDesiredHeight(1)
                             .SetVerticalAlignment(VerticalAlignment.Bottom)
-                            .SetBackgroundColor(new SKColor(255, 255, 255, 60)),
+                            .SetBackground(new SolidColorBackground(new SKColor(255, 255, 255, 60))),
                         new Button()
                             .SetText("Submit Form")
                             .SetCommand(vm.SubmitFormCommand)
                             .SetPadding(new Margin(30, 12))
                             .SetMargin(new Margin(0, 20))
                             .SetHorizontalAlignment(HorizontalAlignment.Center)
-                            .SetBackgroundColor(new SKColor(48, 209, 185))
+                            .SetBackground(new SolidColorBackground(new SKColor(48, 209, 185)))
                             .SetCornerRadius(20)
                     ).SetHorizontalAlignment(HorizontalAlignment.Stretch)
                 )
                 //IDEA: .IgnoreGlobalStyling()
                 //IDEA: .IgnorePageStyling()
-                .SetBackgroundColor(new SKColor(85, 70, 185))
+                .SetBackground(new SolidColorBackground(new SKColor(85, 70, 185)))
         );
     }
 
@@ -113,7 +113,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                 .SetMargin(new Margin(0, 0, 0, 10)),
             content
                 .SetMargin(new Margin(15))
-                .SetBackgroundColor(new SKColor(255, 255, 255, 40))
+                .SetBackground(new SolidColorBackground(new SKColor(255, 255, 255, 40)))
                 .SetCornerRadius(15)
         )
         .SetMargin(new Margin(0, 0, 0, 20));
@@ -126,7 +126,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
             .SetPadding(new Margin(10, 8))
             .SetTextColor(SKColors.White)
             .SetCornerRadius(10)
-            .SetBackgroundColor(new SKColor(255, 255, 255, 30));
+            .SetBackground(new SolidColorBackground(new SKColor(255, 255, 255, 30)));
 
         if (isPassword)
         {
@@ -151,14 +151,14 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
     {
         pageStyle.AddStyle<UiPageElement>(element =>
             element
-                .SetBackgroundColor(new SKColor(105, 90, 205))
+                .SetBackground(new SolidColorBackground(new SKColor(105, 90, 205)))
                 .SetCornerRadius(0)
         );
 
         pageStyle.AddStyle<Button>(button =>
             button
                 .SetTextColor(SKColors.White)
-                .SetBackgroundColor(new SKColor(0, 0, 0))
+                .SetBackground(new SolidColorBackground(new SKColor(0, 0, 0)))
         );
 
         pageStyle.AddStyle<Entry>(entry =>
@@ -166,7 +166,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
         );
 
         pageStyle.AddStyle<Checkbox>(checkbox =>
-            checkbox.SetBackgroundColor(new SKColor(0, 0, 0))
+            checkbox.SetBackground(new SolidColorBackground(new SKColor(0, 0, 0)))
         );
     }
 }

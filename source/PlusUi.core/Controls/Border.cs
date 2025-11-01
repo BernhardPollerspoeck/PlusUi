@@ -34,8 +34,6 @@ public enum StrokeType
 [GenerateShadowMethods]
 public partial class Border : UiLayoutElement
 {
-    protected override bool SkipBackground => true;
-
     #region StrokeColor
     internal SKColor StrokeColor
     {

@@ -14,7 +14,6 @@ public abstract class UiElement
 
 
     protected virtual bool NeadsMeasure { get; set; } = true;
-    protected virtual bool SkipBackground { get; set; }
 
     #region Debug
     protected bool Debug { get; private set; }
@@ -55,25 +54,55 @@ public abstract class UiElement
     }
     #endregion
 
-    #region BackgroundColor
-    internal SKColor BackgroundColor
+    #region Background
+    /// <summary>
+    /// The background of the element (gradient, solid color, or custom).
+    /// </summary>
+    internal IBackground? Background { get; set; }
+
+    public UiElement SetBackground(IBackground? background)
     {
-        get => field;
-        set
-        {
-            field = value;
-            BackgroundPaint = CreateBackgroundPaint();
-        }
-    } = SKColors.Transparent;
-    public UiElement SetBackgroundColor(SKColor color)
-    {
-        BackgroundColor = color;
+        Background = background;
         return this;
     }
+
+    public UiElement BindBackground(string propertyName, Func<IBackground?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => Background = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region BackgroundColor (Deprecated - for backward compatibility)
+    /// <summary>
+    /// [Obsolete] Use SetBackground() instead. Background color of the element.
+    /// </summary>
+    [Obsolete("Use SetBackground() instead")]
+    internal SKColor BackgroundColor
+    {
+        get => (Background as SolidColorBackground)?.Color ?? SKColors.Transparent;
+        set
+        {
+            Background = new SolidColorBackground(value);
+        }
+    }
+
+    /// <summary>
+    /// [Obsolete] Use SetBackground() instead.
+    /// </summary>
+    [Obsolete("Use SetBackground() instead")]
+    public UiElement SetBackgroundColor(SKColor color)
+    {
+        return SetBackground(new SolidColorBackground(color));
+    }
+
+    /// <summary>
+    /// [Obsolete] Use BindBackground() instead.
+    /// </summary>
+    [Obsolete("Use BindBackground() instead")]
     public UiElement BindBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
     {
-        RegisterBinding(propertyName, () => BackgroundColor = propertyGetter());
-        return this;
+        return BindBackground(propertyName, () => new SolidColorBackground(propertyGetter()));
     }
     #endregion
 
@@ -544,21 +573,15 @@ public abstract class UiElement
         {
             RenderShadow(canvas);
 
-            if (BackgroundColor != SKColors.Transparent && !SkipBackground)
+            if (Background!= SKColors.Transparent)
             {
                 var rect = new SKRect(
                     Position.X + VisualOffset.X,
                     Position.Y + VisualOffset.Y,
                     Position.X + VisualOffset.X + ElementSize.Width,
                     Position.Y + VisualOffset.Y + ElementSize.Height);
-                if (CornerRadius > 0)
-                {
-                    canvas.DrawRoundRect(rect, CornerRadius, CornerRadius, BackgroundPaint);
-                }
-                else
-                {
-                    canvas.DrawRect(rect, BackgroundPaint);
-                }
+                
+                Background.Render(canvas, rect, CornerRadius);
             }
         }
     }

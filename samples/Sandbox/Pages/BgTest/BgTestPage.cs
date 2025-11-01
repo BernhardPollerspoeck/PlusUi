@@ -6,9 +6,33 @@ public class BgTestPage(BgTestPageViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {
-        this.SetBackgroundColor(SKColors.White);
+        // Use new gradient background system instead of solid color
+        this.SetBackground(new LinearGradient(SKColors.LightBlue, SKColors.White, 180));
 
         return new VStack(
+            // Gradient background demo boxes
+            new Border()
+                .SetBackground(new LinearGradient(SKColors.Blue, SKColors.Purple, 45))
+                .SetCornerRadius(10)
+                .SetDesiredSize(new Size(200, 100))
+                .SetMargin(new(10)),
+            
+            new Border()
+                .SetBackground(new RadialGradient(SKColors.White, SKColors.Gray))
+                .SetCornerRadius(10)
+                .SetDesiredSize(new Size(200, 100))
+                .SetMargin(new(10)),
+            
+            new Border()
+                .SetBackground(new MultiStopGradient(
+                    90,
+                    new MultiStopGradient.GradientStop(SKColors.Red, 0),
+                    new MultiStopGradient.GradientStop(SKColors.Yellow, 0.5f),
+                    new MultiStopGradient.GradientStop(SKColors.Green, 1)))
+                .SetCornerRadius(10)
+                .SetDesiredSize(new Size(200, 100))
+                .SetMargin(new(10)),
+            
             new Label()
                 .SetText("https://timelane.cloud")
                 .SetTextSize(100)
