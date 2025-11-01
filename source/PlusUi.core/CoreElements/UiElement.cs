@@ -416,7 +416,7 @@ public abstract class UiElement
 
     private SKImageFilter? _cachedShadowFilter;
     private SKPaint? _cachedShadowPaint;
-    
+
     private void InvalidateShadowCache()
     {
         _cachedShadowFilter?.Dispose();
@@ -424,31 +424,25 @@ public abstract class UiElement
         _cachedShadowPaint?.Dispose();
         _cachedShadowPaint = null;
     }
-    
+
     private SKImageFilter GetShadowFilter()
     {
-        if (_cachedShadowFilter == null)
-        {
-            _cachedShadowFilter = SKImageFilter.CreateDropShadow(
+        _cachedShadowFilter ??= SKImageFilter.CreateDropShadow(
                 ShadowOffset.X,
                 ShadowOffset.Y,
                 ShadowBlur / 2, // SkiaSharp uses sigma, which is roughly blur/2
                 ShadowBlur / 2,
                 ShadowColor);
-        }
         return _cachedShadowFilter;
     }
-    
+
     private SKPaint GetShadowPaint()
     {
-        if (_cachedShadowPaint == null)
-        {
-            _cachedShadowPaint = new SKPaint
+        _cachedShadowPaint ??= new SKPaint
             {
                 IsAntialias = true,
                 ImageFilter = GetShadowFilter()
             };
-        }
         return _cachedShadowPaint;
     }
     #endregion
@@ -573,14 +567,14 @@ public abstract class UiElement
         {
             RenderShadow(canvas);
 
-            if (Background!= SKColors.Transparent)
+            if (Background is not null)
             {
                 var rect = new SKRect(
                     Position.X + VisualOffset.X,
                     Position.Y + VisualOffset.Y,
                     Position.X + VisualOffset.X + ElementSize.Width,
                     Position.Y + VisualOffset.Y + ElementSize.Height);
-                
+
                 Background.Render(canvas, rect, CornerRadius);
             }
         }

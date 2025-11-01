@@ -134,8 +134,8 @@ public class ButtonTests
         //Assert
         // Without actual icon resource, _iconImage will be null and size will be zero
         // This test verifies that setting an icon doesn't crash the button
-        Assert.IsTrue(button.ElementSize.Width >= 0);
-        Assert.IsTrue(button.ElementSize.Height >= 0);
+        Assert.IsGreaterThanOrEqualTo(0, button.ElementSize.Width);
+        Assert.IsGreaterThanOrEqualTo(0, button.ElementSize.Height);
     }
 
     [TestMethod]
@@ -166,7 +166,7 @@ public class ButtonTests
         button.Measure(new Size(200, 200));
         //Assert
         // Without actual icon resource, width should be at least text width
-        Assert.IsTrue(button.ElementSize.Width >= textWidth);
+        Assert.IsGreaterThanOrEqualTo(textWidth, button.ElementSize.Width);
     }
 
     [TestMethod]
@@ -185,7 +185,7 @@ public class ButtonTests
         button.Measure(new Size(200, 200));
         //Assert
         // Without actual icon resource, width should be at least text width
-        Assert.IsTrue(button.ElementSize.Width >= textWidth);
+        Assert.IsGreaterThanOrEqualTo(textWidth, button.ElementSize.Width);
     }
 
     [TestMethod]
@@ -204,7 +204,7 @@ public class ButtonTests
         button.Measure(new Size(200, 200));
         //Assert
         // Without actual icon resource, width should be at least text width
-        Assert.IsTrue(button.ElementSize.Width >= textWidth);
+        Assert.IsGreaterThanOrEqualTo(textWidth, button.ElementSize.Width);
     }
 
     [TestMethod]

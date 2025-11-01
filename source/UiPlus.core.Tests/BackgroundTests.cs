@@ -132,7 +132,7 @@ public class BackgroundTests
 
         // Assert
         Assert.AreEqual(90f, gradient.Angle);
-        Assert.AreEqual(3, gradient.Stops.Count);
+        Assert.HasCount(3, gradient.Stops);
         Assert.AreEqual(SKColors.Red, gradient.Stops[0].Color);
         Assert.AreEqual(0f, gradient.Stops[0].Position);
         Assert.AreEqual(SKColors.Yellow, gradient.Stops[1].Color);
