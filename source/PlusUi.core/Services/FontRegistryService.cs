@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -14,6 +15,33 @@ public interface IFontRegistryService
 public class FontRegistryService : IFontRegistryService
 {
     private readonly ConcurrentDictionary<string, SKTypeface> _fontCache = new();
+    private bool _initialized = false;
+    private readonly object _initLock = new();
+    private readonly IServiceProvider _serviceProvider;
+
+    public FontRegistryService(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    private void EnsureInitialized()
+    {
+        if (_initialized) return;
+
+        lock (_initLock)
+        {
+            if (_initialized) return;
+
+            // Load all registered fonts
+            var registrations = _serviceProvider.GetServices<IFontRegistration>();
+            foreach (var registration in registrations)
+            {
+                RegisterFont(registration.ResourcePath, registration.FontFamily, registration.FontWeight, registration.FontStyle);
+            }
+
+            _initialized = true;
+        }
+    }
 
     public void RegisterFont(Stream fontStream, string fontFamily, FontWeight fontWeight = FontWeight.Regular, FontStyle fontStyle = FontStyle.Normal)
     {
@@ -51,6 +79,8 @@ public class FontRegistryService : IFontRegistryService
 
     public SKTypeface? GetTypeface(string? fontFamily, FontWeight fontWeight, FontStyle fontStyle)
     {
+        EnsureInitialized();
+
         if (string.IsNullOrEmpty(fontFamily))
         {
             return null;

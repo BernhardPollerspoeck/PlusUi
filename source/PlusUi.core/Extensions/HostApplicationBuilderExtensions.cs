@@ -85,13 +85,30 @@ public static class HostApplicationBuilderExtensions
         FontWeight fontWeight = FontWeight.Regular,
         FontStyle fontStyle = FontStyle.Normal)
     {
-        var services = builder.Services;
-        services.AddSingleton(sp =>
+        // Store font registrations to be executed when the service provider is built
+        builder.Services.AddSingleton<IFontRegistration>(new FontRegistration
         {
-            var fontRegistry = sp.GetRequiredService<IFontRegistryService>();
-            fontRegistry.RegisterFont(resourcePath, fontFamily, fontWeight, fontStyle);
-            return fontRegistry;
+            ResourcePath = resourcePath,
+            FontFamily = fontFamily,
+            FontWeight = fontWeight,
+            FontStyle = fontStyle
         });
         return builder;
     }
+}
+
+internal interface IFontRegistration
+{
+    string ResourcePath { get; }
+    string FontFamily { get; }
+    FontWeight FontWeight { get; }
+    FontStyle FontStyle { get; }
+}
+
+internal class FontRegistration : IFontRegistration
+{
+    public required string ResourcePath { get; init; }
+    public required string FontFamily { get; init; }
+    public FontWeight FontWeight { get; init; }
+    public FontStyle FontStyle { get; init; }
 }
