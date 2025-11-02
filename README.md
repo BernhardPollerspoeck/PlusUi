@@ -2,9 +2,20 @@
 
 A fully cross-platform UI Framework for .NET, delivering consistent user experiences across iOS, Android, Windows, Mac, and Linux. Built with SkiaSharp as the rendering layer, PlusUi ensures that all platforms look, feel, and behave exactly the same.
 
-[![nuget](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml/badge.svg)](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml)
-![NuGet Version](https://img.shields.io/nuget/v/PlusUi.core?label=PlusUi.core&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FPlusUi.core)
-![NuGet Version](https://img.shields.io/nuget/v/PlusUi.desktop?&label=PlusUi.desktop&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FPlusUi.desktop)
+[![Build Status](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml/badge.svg)](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml)
+
+## Supported Platforms
+
+| Platform | Package | Status | NuGet |
+|----------|---------|--------|-------|
+| Windows | PlusUi.desktop | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
+| macOS | PlusUi.desktop | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
+| Linux | PlusUi.desktop | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
+| iOS | PlusUi.ios | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.ios.svg)](https://www.nuget.org/packages/PlusUi.ios) |
+| Android | PlusUi.droid | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.droid.svg)](https://www.nuget.org/packages/PlusUi.droid) |
+| **Video Rendering** | **PlusUi.h264** | ✅ **Stable** | [![NuGet](https://img.shields.io/nuget/v/PlusUi.h264.svg)](https://www.nuget.org/packages/PlusUi.h264) |
+
+**Core Library:** [![NuGet](https://img.shields.io/nuget/v/PlusUi.core.svg)](https://www.nuget.org/packages/PlusUi.core) (Required by all platforms)
 
 ---
 
@@ -215,19 +226,6 @@ By using a consistent rendering approach, PlusUi isn't constrained by platform-s
 - Local images (embedded resources)
 - Web images (async loading with caching)
 - Custom fonts
-
----
-
-## Supported Platforms
-
-| Platform | Package | Status |
-|----------|---------|--------|
-| Windows | PlusUi.desktop | ✅ Stable |
-| macOS | PlusUi.desktop | ✅ Stable |
-| Linux | PlusUi.desktop | ✅ Stable |
-| iOS | PlusUi.ios | 🚧 In Development |
-| Android | PlusUi.droid | 🚧 In Development |
-| **Video Rendering** | **PlusUi.h264** | ✅ **Stable** |
 
 ---
 
