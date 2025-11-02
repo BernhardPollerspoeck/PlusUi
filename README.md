@@ -161,7 +161,7 @@ dotnet run --project YourDesktopProject
 dotnet test
 ```
 
-For detailed setup instructions, platform-specific configurations, and more examples, visit the [GitHub Wiki](https://github.com/BernhardPollerspoeck/PlusUi/wiki).
+For more examples, explore the `samples/Sandbox` project in this repository.
 
 ---
 
@@ -345,21 +345,6 @@ For more examples and interactive demos, explore the `samples/Sandbox` project i
 
 ---
 
-## Documentation
-
-Comprehensive documentation is available in the [GitHub Wiki](https://github.com/BernhardPollerspoeck/PlusUi/wiki):
-
-- Getting Started Guide
-- Control Reference
-- Data Binding Tutorial
-- Styling & Themes
-- Navigation Patterns
-- Platform-Specific Setup
-- Migration Guides
-- Advanced Topics
-
----
-
 ## Building from Source
 
 ### Clone the Repository
@@ -469,7 +454,7 @@ We welcome contributions! Please open an issue to discuss any planned changes be
 5. **Small PRs:** Keep pull requests focused and manageable
 
 We also welcome contributions to:
-- Documentation and wiki pages
+- Documentation improvements
 - Sample applications
 - Bug reports and feature requests
 - Code reviews and discussions
