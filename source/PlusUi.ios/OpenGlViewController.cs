@@ -38,9 +38,8 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
 
         builder.UsePlusUiInternal(app, []);
         builder.Services.AddSingleton<OpenGlViewController>();
-        //builder.Services.AddSingleton<TapGestureListener>();
-        //builder.Services.AddSingleton<KeyCaptureEditText>();
-        //builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<KeyCaptureEditText>());
+        builder.Services.AddSingleton<KeyboardTextField>();
+        builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<KeyboardTextField>());
 
         builder.ConfigurePlusUiApp(app);
 
@@ -52,10 +51,14 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
 
 public class OpenGlViewController(
     RenderService renderService,
+    PlusUiNavigationService plusUiNavigationService,
+    InputService inputService,
+    KeyboardTextField keyboardTextField,
     ILogger<OpenGlViewController> logger)
     : UIViewController
 {
     private SKCanvasView? _canvasView;
+    private TouchGestureRecognizer? _gestureRecognizer;
 
     public override void ViewDidLoad()
     {
@@ -77,6 +80,17 @@ public class OpenGlViewController(
 
         View.AddSubview(_canvasView);
         View.BackgroundColor = UIColor.White;
+
+        // Add touch gesture recognizer
+        _gestureRecognizer = new TouchGestureRecognizer(inputService, renderService);
+        View.AddGestureRecognizer(_gestureRecognizer);
+
+        // Add invisible keyboard text field
+        keyboardTextField.Frame = new CGRect(0, 0, 1, 1);
+        View.AddSubview(keyboardTextField);
+
+        // Initialize navigation service
+        plusUiNavigationService.Initialize();
     }
 
     private void OnCanvasPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
