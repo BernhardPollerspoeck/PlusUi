@@ -59,18 +59,12 @@ public partial class Link : UiTextElement, IInputControl
 
     private static void OpenUrl(string url)
     {
-        // Try to get the URL launcher service from DI
-        var urlLauncher = ServiceProviderService.ServiceProvider?.GetService<IUrlLauncherService>();
+        // Try to get the platform service from DI
+        var platformService = ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
 
-        if (urlLauncher != null)
+        if (platformService != null)
         {
-            urlLauncher.OpenUrl(url);
-        }
-        else
-        {
-            // Fallback to default implementation if service is not registered
-            var defaultLauncher = new UrlLauncherService();
-            defaultLauncher.OpenUrl(url);
+            platformService.OpenUrl(url);
         }
     }
     #endregion

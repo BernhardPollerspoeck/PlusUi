@@ -94,8 +94,8 @@ public abstract class PlusUiActivity : Activity
         }
         builder.Services.AddSingleton<Activity>(this);
         builder.Services.AddSingleton(ApplicationContext);
-        builder.Services.AddSingleton<IUrlLauncherService>(sp =>
-            new UrlLauncherService(sp.GetRequiredService<Android.Content.Context>()));
+        builder.Services.AddSingleton<AndroidPlatformService>();
+        builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<AndroidPlatformService>());
         builder.Services.AddSingleton<SilkRenderer>();
         builder.Services.AddSingleton<TapGestureListener>();
         builder.Services.AddSingleton<KeyCaptureEditText>();

@@ -16,7 +16,8 @@ public class PlusUiApp(string[] args)
 
         builder.UsePlusUiInternal(app, args);
 
-        builder.Services.AddSingleton<IUrlLauncherService, UrlLauncherService>();
+        builder.Services.AddSingleton<DesktopPlatformService>();
+        builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<DesktopPlatformService>());
         builder.Services.AddSingleton<DesktopKeyboardHandler>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<DesktopKeyboardHandler>());
         builder.Services.AddHostedService<WindowManager>();
