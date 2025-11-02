@@ -221,26 +221,26 @@ By using a consistent rendering approach, PlusUi isn't constrained by platform-s
 | Windows | PlusUi.desktop | ✅ Stable |
 | macOS | PlusUi.desktop | ✅ Stable |
 | Linux | PlusUi.desktop | ✅ Stable |
-| iOS | PlusUi.ios | ✅ Stable |
-| Android | PlusUi.droid | ✅ Stable |
+| iOS | PlusUi.ios | 🚧 In Development |
+| Android | PlusUi.droid | 🚧 In Development |
 
 ---
 
 ## Examples
 
-The following examples demonstrate how PlusUi code translates into UI across platforms:
+The following example demonstrates how PlusUi code translates into UI. This shows the complete flow from code to visual output:
 
-### Button Demo with Icons
-![Button Demo](https://github.com/user-attachments/assets/5ad0c960-35c1-409a-878e-1237d8c32925)
+**1. Page Definition**
+![Page Code](https://github.com/user-attachments/assets/5ad0c960-35c1-409a-878e-1237d8c32925)
 
-### Grid Layout
-![Grid Layout](https://github.com/user-attachments/assets/cdb360c7-e6ed-440e-981e-fb62fb0eacab)
+**2. ViewModel**
+![ViewModel Code](https://github.com/user-attachments/assets/cdb360c7-e6ed-440e-981e-fb62fb0eacab)
 
-### Form with Data Binding
-![Form Demo](https://github.com/user-attachments/assets/d01227b8-b556-4316-887d-ecd5aba9f54c)
+**3. Styling**
+![Styling Code](https://github.com/user-attachments/assets/d01227b8-b556-4316-887d-ecd5aba9f54c)
 
-### Text Rendering
-![Text Rendering](https://github.com/user-attachments/assets/f96d219c-9a22-416b-9e6e-4e8ba3fc8ea0)
+**4. Resulting UI**
+![Final UI](https://github.com/user-attachments/assets/f96d219c-9a22-416b-9e6e-4e8ba3fc8ea0)
 
 For more examples and interactive demos, explore the `samples/Sandbox` project in this repository.
 
