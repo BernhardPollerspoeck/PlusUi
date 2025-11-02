@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
+using PlusUi.core.Services;
 using Silk.NET.Maths;
 using SkiaSharp.Views.iOS;
 using System.Numerics;
@@ -37,6 +38,7 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
         var app = CreateApp(builder);
 
         builder.UsePlusUiInternal(app, []);
+        builder.Services.AddSingleton<IUrlLauncherService, UrlLauncherService>();
         builder.Services.AddSingleton<OpenGlViewController>();
         //builder.Services.AddSingleton<TapGestureListener>();
         //builder.Services.AddSingleton<KeyCaptureEditText>();

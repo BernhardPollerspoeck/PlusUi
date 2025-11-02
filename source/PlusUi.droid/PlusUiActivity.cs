@@ -4,6 +4,7 @@ using Android.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PlusUi.core;
+using PlusUi.core.Services;
 
 namespace PlusUi.droid;
 
@@ -93,6 +94,8 @@ public abstract class PlusUiActivity : Activity
         }
         builder.Services.AddSingleton<Activity>(this);
         builder.Services.AddSingleton(ApplicationContext);
+        builder.Services.AddSingleton<IUrlLauncherService>(sp =>
+            new UrlLauncherService(sp.GetRequiredService<Android.Content.Context>()));
         builder.Services.AddSingleton<SilkRenderer>();
         builder.Services.AddSingleton<TapGestureListener>();
         builder.Services.AddSingleton<KeyCaptureEditText>();

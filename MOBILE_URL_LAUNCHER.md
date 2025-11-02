@@ -1,47 +1,33 @@
-# Mobile URL Launcher Setup
+# Link Control - URL Launcher
 
 ## Overview
 
-The `Link` control uses the `IUrlLauncherService` to open URLs in the system's default browser. Platform-specific implementations are provided for Android and iOS.
+The `Link` control uses the `IUrlLauncherService` to open URLs in the system's default browser. Platform-specific implementations are automatically registered for Desktop, Android, and iOS platforms.
 
-## Desktop Platforms (Windows, Linux, macOS)
+## Automatic Platform Registration
 
-The default `UrlLauncherService` implementation works automatically for desktop platforms. No additional setup is required.
+The `IUrlLauncherService` is **automatically registered** for all platforms when you use PlusUi. You don't need to manually register the service in your app.
 
-## Android Setup
+### Desktop Platforms (Windows, Linux, macOS)
 
-To enable URL launching on Android, register the Android-specific implementation in your app's startup code:
+The default `UrlLauncherService` is automatically registered in `PlusUi.desktop.PlusUiApp`:
+- Windows: Uses `Process.Start` with `UseShellExecute`
+- Linux: Uses `xdg-open`
+- macOS: Uses `open`
 
-```csharp
-// In your MainActivity.cs or application startup
-using PlusUi.droid;
-using PlusUi.core.Services;
-using Microsoft.Extensions.DependencyInjection;
+### Android Platform
 
-// During service registration
-services.AddSingleton<IUrlLauncherService>(sp =>
-    new UrlLauncherService(Android.App.Application.Context));
-```
+The Android-specific implementation is automatically registered in `PlusUi.droid.PlusUiActivity`:
+- Uses `Intent.ActionView` to open URLs in the default browser
+- Automatically gets the application context from the dependency injection container
 
-The Android implementation uses `Intent.ActionView` to open URLs in the default browser.
+### iOS Platform
 
-## iOS Setup
+The iOS-specific implementation is automatically registered in `PlusUi.ios.PlusUiAppDelegate`:
+- Uses `UIApplication.SharedApplication.OpenUrl` to open URLs
+- Compatible with iOS 10+ with fallback for older versions
 
-To enable URL launching on iOS, register the iOS-specific implementation in your app's startup code:
-
-```csharp
-// In your AppDelegate.cs or application startup
-using PlusUi.ios;
-using PlusUi.core.Services;
-using Microsoft.Extensions.DependencyInjection;
-
-// During service registration
-services.AddSingleton<IUrlLauncherService, UrlLauncherService>();
-```
-
-The iOS implementation uses `UIApplication.SharedApplication.OpenUrl` to open URLs.
-
-### iOS Info.plist Configuration
+#### iOS Info.plist Configuration
 
 For iOS 9+, you may need to declare the URL schemes you want to open in your `Info.plist`:
 
@@ -64,8 +50,12 @@ var link = new Link()
 
 When the link is clicked (via `IInputControl.InvokeCommand()`), it will automatically use the appropriate platform-specific implementation to open the URL.
 
-## Fallback Behavior
+## Implementation Details
 
-If no `IUrlLauncherService` is registered in the dependency injection container, the `Link` control will fall back to the default desktop implementation, which may or may not work on mobile platforms depending on the .NET runtime capabilities.
+The `Link` control automatically uses dependency injection to get the platform-specific `IUrlLauncherService`:
 
-For best results, always register the appropriate platform-specific implementation for mobile apps.
+```csharp
+var urlLauncher = ServiceProviderService.ServiceProvider?.GetService<IUrlLauncherService>();
+```
+
+If for some reason the service is not registered, it falls back to the default desktop implementation.
