@@ -34,6 +34,10 @@ dotnet add package PlusUi.ios
 # For Android
 dotnet add package PlusUi.core
 dotnet add package PlusUi.droid
+
+# For Video Rendering (H264)
+dotnet add package PlusUi.core
+dotnet add package PlusUi.h264
 ```
 
 ### Hello World Example
@@ -223,6 +227,99 @@ By using a consistent rendering approach, PlusUi isn't constrained by platform-s
 | Linux | PlusUi.desktop | ✅ Stable |
 | iOS | PlusUi.ios | 🚧 In Development |
 | Android | PlusUi.droid | 🚧 In Development |
+| **Video Rendering** | **PlusUi.h264** | ✅ **Stable** |
+
+---
+
+## Video Rendering (PlusUi.h264)
+
+The **PlusUi.h264** package provides a unique capability: rendering your PlusUi application directly to an H264 video file. This is perfect for creating animated demos, promotional videos, tutorials, or any scenario where you need to convert your UI into video format.
+
+### Features
+
+- **Video Output:** Renders UI to MP4 files with configurable resolution, frame rate, and duration
+- **Audio Support:** Synchronize audio tracks with your UI animations using `AudioDefinition`
+- **Animation System:** Built-in animation support for smooth transitions
+- **FFmpeg Integration:** Includes FFmpeg binaries for Windows, macOS, and Linux
+- **Progress Tracking:** Real-time rendering progress with Spectre.Console
+
+### Example Usage
+
+**VideoApp.cs**
+```csharp
+using Microsoft.Extensions.Hosting;
+using PlusUi.core;
+using PlusUi.h264;
+
+public class VideoApp : IVideoAppConfiguration
+{
+    public void ConfigureVideo(VideoConfiguration config)
+    {
+        config.Width = 1920;
+        config.Height = 1080;
+        config.OutputFilePath = "output.mp4";
+        config.FrameRate = 60;
+        config.Duration = TimeSpan.FromSeconds(10);
+    }
+
+    public void ConfigureApp(HostApplicationBuilder builder)
+    {
+        builder.AddPage<MainPage>().WithViewModel<MainPageViewModel>();
+        builder.StylePlusUi<MyCustomStyle>();
+    }
+
+    public UiPageElement GetRootPage(IServiceProvider serviceProvider)
+    {
+        return serviceProvider.GetRequiredService<MainPage>();
+    }
+
+    public IAudioSequenceProvider? GetAudioSequenceProvider(IServiceProvider serviceProvider)
+    {
+        // Return null for no audio, or implement IAudioSequenceProvider
+        return null;
+    }
+}
+```
+
+**Program.cs**
+```csharp
+using PlusUi.h264;
+
+var app = new PlusUiApp(args);
+app.CreateApp(builder => new VideoApp());
+```
+
+### Adding Audio
+
+Implement `IAudioSequenceProvider` to add synchronized audio:
+
+```csharp
+public class MyAudioProvider : IAudioSequenceProvider
+{
+    public IEnumerable<AudioDefinition> GetAudioSequence()
+    {
+        yield return new AudioDefinition(
+            FilePath: "background-music.mp3",
+            StartTime: TimeSpan.Zero,
+            Volume: 0.8f
+        );
+
+        yield return new AudioDefinition(
+            FilePath: "sound-effect.wav",
+            StartTime: TimeSpan.FromSeconds(2.5),
+            Volume: 1.0f
+        );
+    }
+}
+```
+
+### Use Cases
+
+- **Promotional Videos:** Create product demos and marketing materials
+- **Tutorials:** Generate step-by-step tutorial videos
+- **Automated Testing:** Record UI test runs
+- **Documentation:** Visual documentation of UI features
+- **Social Media:** Export UI animations for social media posts
 
 ---
 
@@ -230,16 +327,20 @@ By using a consistent rendering approach, PlusUi isn't constrained by platform-s
 
 The following example demonstrates how PlusUi code translates into UI. This shows the complete flow from code to visual output:
 
-**1. Page Definition**
+### 1. Page Definition
+
 ![Page Code](https://github.com/user-attachments/assets/5ad0c960-35c1-409a-878e-1237d8c32925)
 
-**2. ViewModel**
+### 2. ViewModel
+
 ![ViewModel Code](https://github.com/user-attachments/assets/cdb360c7-e6ed-440e-981e-fb62fb0eacab)
 
-**3. Styling**
+### 3. Styling
+
 ![Styling Code](https://github.com/user-attachments/assets/d01227b8-b556-4316-887d-ecd5aba9f54c)
 
-**4. Resulting UI**
+### 4. Resulting UI
+
 ![Final UI](https://github.com/user-attachments/assets/f96d219c-9a22-416b-9e6e-4e8ba3fc8ea0)
 
 For more examples and interactive demos, explore the `samples/Sandbox` project in this repository.
