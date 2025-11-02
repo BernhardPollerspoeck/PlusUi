@@ -1,89 +1,392 @@
 # PlusUi
 
-PlusUi is a cutting-edge, fully cross-platform UI Framework designed to deliver a seamless and consistent user experience across iOS, Android, Windows, Mac, and Linux. Leveraging hardware acceleration through Silk.NET and utilizing SkiaSharp as the rendering layer, PlusUi ensures that all platforms look, feel, and behave exactly the same. This approach guarantees high performance and visual fidelity, making PlusUi an ideal choice for modern, responsive applications.
+A fully cross-platform UI Framework for .NET, delivering consistent user experiences across iOS, Android, Windows, Mac, and Linux. Built with SkiaSharp as the rendering layer, PlusUi ensures that all platforms look, feel, and behave exactly the same.
 
-## The Journey Behind PlusUi
+[![nuget](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml/badge.svg)](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml)
+![NuGet Version](https://img.shields.io/nuget/v/PlusUi.core?label=PlusUi.core&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FPlusUi.core)
+![NuGet Version](https://img.shields.io/nuget/v/PlusUi.desktop?&label=PlusUi.desktop&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FPlusUi.desktop)
 
-After years of working with various cross-platform UI frameworks and repeatedly encountering inconsistencies between platforms, I decided to explore a different path. PlusUi wasn't born from a belief that I could outdo established solutions, but from genuine curiosity: what if I approached the cross-platform challenge with consistency as the absolute priority? This project represents that personal journey—an attempt to create something where what you design is exactly what users see, regardless of device. It's about seeing the results emerge when building things to work as I imagined they should.
+---
+
+## Quick Start
+
+### Prerequisites
+
+- .NET 9.0 SDK
+- **Windows:** Windows 11 or later
+- **Android:** Android 8.0 (API 26) or later
+- **iOS:** iOS 11 or later
+- **Linux/Mac:** No specific version requirements
+
+### Installation
+
+Install the PlusUi packages via NuGet:
+
+```bash
+# For Desktop applications (Windows, Mac, Linux)
+dotnet add package PlusUi.core
+dotnet add package PlusUi.desktop
+
+# For iOS
+dotnet add package PlusUi.core
+dotnet add package PlusUi.ios
+
+# For Android
+dotnet add package PlusUi.core
+dotnet add package PlusUi.droid
+```
+
+### Hello World Example
+
+Create a simple counter application:
+
+**App.cs**
+```csharp
+using Microsoft.Extensions.Hosting;
+using PlusUi.core;
+
+namespace MyFirstApp;
+
+public class App : IAppConfiguration
+{
+    public void ConfigureWindow(PlusUiConfiguration config)
+    {
+        config.Title = "My First PlusUi App";
+        config.Size = new SizeI(800, 600);
+    }
+
+    public void ConfigureApp(HostApplicationBuilder builder)
+    {
+        // Register your pages
+        builder.AddPage<MainPage>().WithViewModel<MainPageViewModel>();
+    }
+
+    public UiPageElement GetRootPage(IServiceProvider serviceProvider)
+    {
+        return serviceProvider.GetRequiredService<MainPage>();
+    }
+}
+```
+
+**MainPage.cs**
+```csharp
+using PlusUi.core;
+using SkiaSharp;
+
+namespace MyFirstApp;
+
+public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
+{
+    protected override UiElement Build()
+    {
+        return new VStack(
+            // Label showing the counter
+            new Label()
+                .SetText("Counter App")
+                .SetTextSize(32)
+                .SetTextColor(SKColors.White)
+                .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
+                .SetMargin(new Margin(0, 20)),
+
+            // Display current count with data binding
+            new Label()
+                .BindText(nameof(vm.Count), () => $"Count: {vm.Count}")
+                .SetTextSize(24)
+                .SetTextColor(SKColors.LightGray)
+                .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
+                .SetMargin(new Margin(0, 10)),
+
+            // Button to increment counter
+            new Button()
+                .SetText("Click Me!")
+                .SetPadding(new Margin(20, 10))
+                .SetBackground(new SolidColorBackground(SKColors.DodgerBlue))
+                .SetCornerRadius(8)
+                .SetCommand(vm.IncrementCommand)
+                .SetMargin(new Margin(20))
+        ).SetHorizontalAlignment(HorizontalAlignment.Center)
+         .SetVerticalAlignment(VerticalAlignment.Center);
+    }
+}
+```
+
+**MainPageViewModel.cs**
+```csharp
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+namespace MyFirstApp;
+
+public partial class MainPageViewModel : ObservableObject
+{
+    public int Count
+    {
+        get => field;
+        set => SetProperty(ref field, value);
+    }
+
+    [RelayCommand]
+    private void Increment()
+    {
+        Count++;
+    }
+}
+```
+
+### Build and Run
+
+```bash
+# Build the solution
+dotnet build
+
+# Run on Desktop
+dotnet run --project YourDesktopProject
+
+# Run tests
+dotnet test
+```
+
+For detailed setup instructions, platform-specific configurations, and more examples, visit the [GitHub Wiki](https://github.com/BernhardPollerspoeck/PlusUi/wiki).
+
+---
 
 ## Why Choose PlusUi?
 
-In a landscape filled with cross-platform solutions like MAUI, Uno, Avalonia, and Blazor Desktop, PlusUi stands out for several key reasons:
+### True Visual Consistency
+Unlike frameworks that adapt to native controls, PlusUi renders identically across all platforms through SkiaSharp. What you design is exactly what users see, regardless of device.
 
-- **True Visual Consistency**: Unlike frameworks that adapt to native controls, PlusUi renders identically across all platforms through SkiaSharp, ensuring your app looks and behaves exactly the same everywhere.
-  
-- **Performance First**: Built with hardware acceleration at its core, PlusUi delivers superior performance for graphics-intensive applications and smooth animations.
+### Simple Programming Model
+Clean, intuitive MVVM binding with a pure C# approach. No XAML to learn, no complex markup languages - just straightforward code that's familiar to .NET developers.
 
-- **Lightweight Footprint**: PlusUi maintains a smaller resource footprint than alternatives that need to incorporate multiple platform-specific rendering engines.
+### Fluent API Design
+Method chaining makes UI construction readable and maintainable:
 
-- **Simple Programming Model**: Clean, intuitive MVVM binding with a pure C# approach. No XAML to learn, no complex markup languages or designers - just straightforward code that's familiar to .NET developers.
+```csharp
+new Button()
+    .SetText("Save")
+    .SetIcon("save.png")
+    .SetPadding(new Margin(15, 10))
+    .SetBackground(new SolidColorBackground(SKColors.ForestGreen))
+    .SetCornerRadius(8)
+    .SetCommand(vm.SaveCommand)
+```
 
-- **Freedom from Platform Limitations**: By using a consistent rendering approach, PlusUi isn't constrained by platform-specific UI capabilities or limitations.
+### Freedom from Platform Limitations
+By using a consistent rendering approach, PlusUi isn't constrained by platform-specific UI capabilities or limitations.
 
-----
-### To get in touch regarding Support, Feedback or just a quick chat about your experiences the discord server would be the best place. See you there!
-
-[![Discord Banner 3](https://discord.com/api/guilds/1342509628948484287/widget.png?style=banner3)](https://discord.gg/Je3kNpcmqn)
-
-
-## Releases
-- [![nuget](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml/badge.svg)](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml)
-- ![NuGet Version](https://img.shields.io/nuget/v/PlusUi.core?label=PlusUi.core&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FPlusUi.core)
-- ![NuGet Version](https://img.shields.io/nuget/v/PlusUi.desktop?&label=PlusUi.desktop&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FPlusUi.desktop)
-
+---
 
 ## Features
 
-The following is a list of some of the features currently available in PlusUi. This section will be further expanded as the project evolves and may not list all features.
+### UI Components
+- **Layouts:** `VStack`, `HStack`, `Grid`, `ScrollView`, `Border`
+- **Controls:** `Label`, `Button`, `Entry`, `Checkbox`, `Image`
+- **Custom Drawing:** `Solid`, `UserControl`, `RawUserControl`
+- **Lists:** `ItemsList` for dynamic, data-bound lists
 
-- Cross-platform support: 
-  - iOS
-  - Android
-  - Windows
-  - Mac
-  - Linux
-- Easy to use and extend
-- Mvvm Data Binding
-- Modern UI components
-- Customizable themes
+### Styling & Theming
+- Solid colors, linear gradients, radial gradients, multi-stop gradients
+- Corner radius, borders (solid, dashed, dotted)
+- Shadows with customizable blur and offset
+- Custom fonts with `FontRegistryService`
+- Theme support with `IApplicationStyle`
+
+### Data Binding
+- Two-way MVVM binding
+- Property change notifications
+- Command binding with parameters
+- Uses CommunityToolkit.Mvvm
+
+### Navigation & Popups
+- Page-based navigation with `INavigationService`
+- Modal popups with `IPopupService`
+- Configurable popup behavior (background click, escape key)
+
+### Cross-Platform Input
+- Mouse and touch input
+- Keyboard support with customizable handlers
+- Scroll gestures
+
+### Asset Loading
+- Local images (embedded resources)
+- Web images (async loading with caching)
+- Custom fonts
+
+---
+
+## Supported Platforms
+
+| Platform | Package | Status |
+|----------|---------|--------|
+| Windows | PlusUi.desktop | ✅ Stable |
+| macOS | PlusUi.desktop | ✅ Stable |
+| Linux | PlusUi.desktop | ✅ Stable |
+| iOS | PlusUi.ios | ✅ Stable |
+| Android | PlusUi.droid | ✅ Stable |
+
+---
+
+## Examples
+
+The following examples demonstrate how PlusUi code translates into UI across platforms:
+
+### Button Demo with Icons
+![Button Demo](https://github.com/user-attachments/assets/5ad0c960-35c1-409a-878e-1237d8c32925)
+
+### Grid Layout
+![Grid Layout](https://github.com/user-attachments/assets/cdb360c7-e6ed-440e-981e-fb62fb0eacab)
+
+### Form with Data Binding
+![Form Demo](https://github.com/user-attachments/assets/d01227b8-b556-4316-887d-ecd5aba9f54c)
+
+### Text Rendering
+![Text Rendering](https://github.com/user-attachments/assets/f96d219c-9a22-416b-9e6e-4e8ba3fc8ea0)
+
+For more examples and interactive demos, explore the `samples/Sandbox` project in this repository.
+
+---
 
 ## Documentation
 
-All the controls, samples, and project setup instructions can be found in the [GitHub Wiki](https://github.com/BernhardPollerspoeck/PlusUi/wiki). For more detailed information, including advanced usage and troubleshooting, please refer to the comprehensive guides and FAQs available in the wiki.
+Comprehensive documentation is available in the [GitHub Wiki](https://github.com/BernhardPollerspoeck/PlusUi/wiki):
 
-## Example
-This quick Example shows a simple Sample on how the code written for this framework translates into UI.
-![image](https://github.com/user-attachments/assets/5ad0c960-35c1-409a-878e-1237d8c32925)
-![image](https://github.com/user-attachments/assets/cdb360c7-e6ed-440e-981e-fb62fb0eacab)
-![image](https://github.com/user-attachments/assets/d01227b8-b556-4316-887d-ecd5aba9f54c)
-![image](https://github.com/user-attachments/assets/f96d219c-9a22-416b-9e6e-4e8ba3fc8ea0)
+- Getting Started Guide
+- Control Reference
+- Data Binding Tutorial
+- Styling & Themes
+- Navigation Patterns
+- Platform-Specific Setup
+- Migration Guides
+- Advanced Topics
 
+---
+
+## Building from Source
+
+### Clone the Repository
+```bash
+git clone https://github.com/BernhardPollerspoeck/PlusUi.git
+cd PlusUi
+```
+
+### Build Commands
+```bash
+# Build entire solution
+dotnet build PlusUi.sln
+
+# Build with minimal output
+dotnet build PlusUi.sln -v q
+
+# Run all tests
+dotnet test PlusUi.sln
+
+# Run a specific test
+dotnet test PlusUi.sln --filter "FullyQualifiedName~UiPlus.core.Tests.LabelTests"
+```
+
+### Project Structure
+```
+PlusUi/
+├── source/
+│   ├── PlusUi.core/          # Core framework (cross-platform)
+│   ├── PlusUi.desktop/       # Desktop implementation
+│   ├── PlusUi.ios/           # iOS implementation
+│   ├── PlusUi.droid/         # Android implementation
+│   └── PlusUi.SourceGenerators/  # Code generation tools
+├── samples/
+│   └── Sandbox/              # Example application
+└── tests/
+    └── UiPlus.core.Tests/    # Unit tests
+```
+
+---
+
+## Roadmap
+
+We're actively working on the following features for upcoming releases:
+
+### Planned Features
+- **GridControl Enhancement:** Advanced grid capabilities with sorting and filtering
+- **dotnet new Templates:** Quick project scaffolding with `dotnet new plusui`
+- **Rendering Optimization:** Internal rendering engine improvements for better performance
+
+### Future Considerations
+- Additional UI controls (DatePicker, Slider, ProgressBar)
+- Animation framework
+- Accessibility improvements
+- Hot reload enhancements
+
+Want to see something specific? Open an issue and let us know!
+
+---
 
 ## Technical Architecture
 
-### How PlusUi Works Under the Hood
+PlusUi implements a custom UI framework with a clean separation of concerns:
 
-PlusUi implements a custom UI framework with a clean separation of concerns across multiple architectural layers:
+### Core Rendering Pipeline
 
-#### Core Rendering Pipeline
+1. **SkiaSharp Rendering Layer:** All rendering is handled by SkiaSharp, providing direct access to the 2D graphics canvas. This ensures consistent visual output across all platforms.
 
-1. **Silk.NET Foundation**: PlusUi uses Silk.NET for its windowing and input capabilities. This provides low-level access to platform-specific windowing systems and input devices through a unified API.
+2. **Custom Layout Engine:** The framework implements a measurement and arrangement system similar to WPF/MAUI, where every UI element:
+   - Measures its desired size based on content and constraints
+   - Arranges itself and its children within an allocated space
+   - Supports flexible layouts with alignment, margins, and padding
 
-2. **SkiaSharp Rendering Layer**: The rendering is handled by SkiaSharp, coordinating between OpenGL contexts and SkiaSharp's canvas. Every UI element utilizes SkiaSharp's drawing primitives for consistent cross-platform visuals.
+3. **Platform Abstraction:** Platform-specific hosts (Desktop, iOS, Android) provide:
+   - Window/View creation and management
+   - Input event handling (mouse, touch, keyboard)
+   - Integration with SkiaSharp's rendering context
 
-3. **Custom Layout Engine**: The framework implements a measurement and arrangement system.
+### Component Model
 
-This architecture allows PlusUi to deliver a consistent user experience across platforms while maintaining good performance through direct rendering. The component model and binding system provide a familiar programming pattern for .NET developers without requiring XAML or other markup languages.
+- **Base Elements:** All UI components inherit from `UiElement` or `UiLayoutElement`
+- **Pages:** Top-level containers inherit from `UiPageElement`
+- **Data Binding:** Property change notifications integrated with MVVM pattern
+- **Fluent API:** Method chaining with `.Set*()` methods for readable UI construction
 
+This architecture allows PlusUi to deliver consistent user experiences across platforms while maintaining flexibility and performance.
+
+---
+
+## Community & Support
+
+Join our Discord community to get support, share feedback, or discuss your experiences with PlusUi:
+
+[![Discord Banner 3](https://discord.com/api/guilds/1342509628948484287/widget.png?style=banner3)](https://discord.gg/Je3kNpcmqn)
+
+---
 
 ## Contributing
 
-We welcome contributions! Please open an issue to discuss any planned changes before submitting a pull request. This helps us ensure that your contribution aligns with the project's goals and avoids duplication of effort. 
+We welcome contributions! Please open an issue to discuss any planned changes before submitting a pull request. This helps ensure that your contribution aligns with the project's goals and avoids duplication of effort.
 
-When submitting a pull request, please ensure that your code follows the project's coding standards and includes appropriate tests. We also encourage you to update the documentation if your changes affect it. Contributions to documentation, samples, the README, or the wiki are also welcome.
+### Contribution Guidelines
+
+1. **Discuss First:** Open an issue to propose changes before starting work
+2. **Code Standards:** Follow the project's coding standards (see CLAUDE.md for details)
+3. **Tests:** Include appropriate tests for new features or bug fixes
+4. **Documentation:** Update documentation for any user-facing changes
+5. **Small PRs:** Keep pull requests focused and manageable
+
+We also welcome contributions to:
+- Documentation and wiki pages
+- Sample applications
+- Bug reports and feature requests
+- Code reviews and discussions
 
 Thank you for your interest in contributing to PlusUi!
 
+---
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. The MIT License was chosen for its permissiveness and simplicity, allowing for wide usage and contribution. It ensures that the project remains open and accessible to developers while protecting the original authors.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+The MIT License allows for wide usage and contribution while remaining open and accessible to developers.
+
+---
+
+## About the Project
+
+After years of working with various cross-platform UI frameworks and encountering inconsistencies between platforms, PlusUi was born from curiosity: what if consistency was the absolute priority? This project represents a journey to create something where what you design is exactly what users see, regardless of device.
