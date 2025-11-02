@@ -1,7 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.Services;
 using SkiaSharp;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace PlusUi.core;
 
@@ -59,29 +59,18 @@ public partial class Link : UiTextElement, IInputControl
 
     private static void OpenUrl(string url)
     {
-        try
+        // Try to get the URL launcher service from DI
+        var urlLauncher = ServiceProviderService.ServiceProvider?.GetService<IUrlLauncherService>();
+
+        if (urlLauncher != null)
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                Process.Start("xdg-open", url);
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                Process.Start("open", url);
-            }
-            else
-            {
-                // Fallback
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-            }
+            urlLauncher.OpenUrl(url);
         }
-        catch
+        else
         {
-            // Silently fail if URL can't be opened
+            // Fallback to default implementation if service is not registered
+            var defaultLauncher = new UrlLauncherService();
+            defaultLauncher.OpenUrl(url);
         }
     }
     #endregion
