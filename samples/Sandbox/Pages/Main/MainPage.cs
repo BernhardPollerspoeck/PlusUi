@@ -6,6 +6,7 @@ using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.FontDemo;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.ItemsListDemo;
+using Sandbox.Pages.LinkDemo;
 using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.ShadowDemo;
@@ -159,6 +160,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
                 .SetCommandParameter(typeof(ButtonDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("Go to Link Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(LinkDemoPage)),
             new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
                 .SetText("Popup")
