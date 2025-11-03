@@ -1,7 +1,8 @@
 using PlusUi.core;
 using UIKit;
 using Foundation;
-using KeyboardType = PlusUi.core.KeyboardType;
+using PlusKeyboardType = PlusUi.core.KeyboardType;
+using PlusReturnKeyType = PlusUi.core.ReturnKeyType;
 
 namespace PlusUi.ios;
 
@@ -34,29 +35,29 @@ public class KeyboardTextField : UITextField, IKeyboardHandler, IUITextFieldDele
 
     public void Show()
     {
-        Show(KeyboardType.Default, ReturnKeyType.Default, false);
+        Show(PlusKeyboardType.Default, PlusReturnKeyType.Default, false);
     }
 
-    public void Show(KeyboardType keyboardType, ReturnKeyType returnKeyType, bool isPassword)
+    public void Show(PlusKeyboardType keyboardType, PlusReturnKeyType returnKeyType, bool isPassword)
     {
         // Set keyboard type
         KeyboardType = keyboardType switch
         {
-            KeyboardType.Numeric => UIKeyboardType.NumberPad,
-            KeyboardType.Email => UIKeyboardType.EmailAddress,
-            KeyboardType.Telephone => UIKeyboardType.PhonePad,
-            KeyboardType.Url => UIKeyboardType.Url,
+            PlusKeyboardType.Numeric => UIKeyboardType.NumberPad,
+            PlusKeyboardType.Email => UIKeyboardType.EmailAddress,
+            PlusKeyboardType.Telephone => UIKeyboardType.PhonePad,
+            PlusKeyboardType.Url => UIKeyboardType.Url,
             _ => UIKeyboardType.Default
         };
 
         // Set return key type
         ReturnKeyType = returnKeyType switch
         {
-            ReturnKeyType.Go => UIReturnKeyType.Go,
-            ReturnKeyType.Send => UIReturnKeyType.Send,
-            ReturnKeyType.Search => UIReturnKeyType.Search,
-            ReturnKeyType.Next => UIReturnKeyType.Next,
-            ReturnKeyType.Done => UIReturnKeyType.Done,
+            PlusReturnKeyType.Go => UIReturnKeyType.Go,
+            PlusReturnKeyType.Send => UIReturnKeyType.Send,
+            PlusReturnKeyType.Search => UIReturnKeyType.Search,
+            PlusReturnKeyType.Next => UIReturnKeyType.Next,
+            PlusReturnKeyType.Done => UIReturnKeyType.Done,
             _ => UIReturnKeyType.Default
         };
 
@@ -94,14 +95,14 @@ public class KeyboardTextField : UITextField, IKeyboardHandler, IUITextFieldDele
     }
 
     [Export("textFieldShouldReturn:")]
-    public bool ShouldReturn(UITextField textField)
+    public new bool ShouldReturn(UITextField textField)
     {
         KeyInput?.Invoke(this, PlusKey.Enter);
         return true;
     }
 
     [Export("textField:shouldChangeCharactersInRange:replacementString:")]
-    public bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
+    public new bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
     {
         return true;
     }

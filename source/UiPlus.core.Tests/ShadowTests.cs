@@ -234,7 +234,7 @@ public class ShadowTests
         var border = new Border();
 
         // Act
-        border.SetBackgroundColor(SKColors.White)
+        border.SetBackground(SKColors.White)
               .SetCornerRadius(8f)
               .SetShadowColor(SKColors.Black.WithAlpha(50))
               .SetShadowOffset(new Point(0, 2))
