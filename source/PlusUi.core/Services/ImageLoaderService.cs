@@ -1,6 +1,7 @@
 using SkiaSharp;
 using System.Collections.Concurrent;
 using PlusUi.core.Models;
+using Microsoft.Extensions.Logging;
 
 namespace PlusUi.core;
 
@@ -17,6 +18,11 @@ internal static class ImageLoaderService
     {
         Timeout = TimeSpan.FromSeconds(30) // Add timeout for web requests
     };
+
+    /// <summary>
+    /// Optional logger for diagnostic messages. Can be set from the application host.
+    /// </summary>
+    public static ILogger? Logger { get; set; }
 
     /// <summary>
     /// Loads an image from the specified source (resource, file, or URL).
@@ -140,8 +146,7 @@ internal static class ImageLoaderService
         }
         catch (Exception ex)
         {
-            // Log error and invoke callback with null
-            System.Diagnostics.Debug.WriteLine($"Failed to load image from {url}: {ex.Message}");
+            Logger?.LogError(ex, "Failed to load image from URL: {Url}", url);
             onImageLoaded?.Invoke(null);
         }
     }
@@ -151,13 +156,17 @@ internal static class ImageLoaderService
         try
         {
             if (!System.IO.File.Exists(filePath))
+            {
+                Logger?.LogWarning("Image file not found: {FilePath}", filePath);
                 return (null, null);
+            }
 
             using var stream = System.IO.File.OpenRead(filePath);
             return LoadImageFromStream(stream);
         }
-        catch
+        catch (Exception ex)
         {
+            Logger?.LogError(ex, "Failed to load image from file: {FilePath}", filePath);
             return (null, null);
         }
     }
@@ -252,7 +261,7 @@ internal static class ImageLoaderService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to load image from stream: {ex.Message}");
+            Logger?.LogError(ex, "Failed to load image from stream");
             return (null, null);
         }
     }
@@ -352,7 +361,7 @@ internal static class ImageLoaderService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to load animated image: {ex.Message}");
+            Logger?.LogError(ex, "Failed to load animated image");
             return new AnimatedImageInfo([], [], 0, 0);
         }
     }

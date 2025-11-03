@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -18,10 +19,12 @@ public class FontRegistryService : IFontRegistryService
     private bool _initialized = false;
     private readonly object _initLock = new();
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<FontRegistryService>? _logger;
 
-    public FontRegistryService(IServiceProvider serviceProvider)
+    public FontRegistryService(IServiceProvider serviceProvider, ILogger<FontRegistryService>? logger = null)
     {
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     private void EnsureInitialized()
@@ -52,11 +55,16 @@ public class FontRegistryService : IFontRegistryService
             {
                 var key = GetFontKey(fontFamily, fontWeight, fontStyle);
                 _fontCache[key] = typeface;
+                _logger?.LogDebug("Registered font: {FontFamily} {FontWeight} {FontStyle}", fontFamily, fontWeight, fontStyle);
+            }
+            else
+            {
+                _logger?.LogWarning("Failed to create typeface from stream for font: {FontFamily} {FontWeight} {FontStyle}", fontFamily, fontWeight, fontStyle);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Silently fail - font registration is optional
+            _logger?.LogError(ex, "Error registering font from stream: {FontFamily} {FontWeight} {FontStyle}", fontFamily, fontWeight, fontStyle);
         }
     }
 
@@ -70,10 +78,14 @@ public class FontRegistryService : IFontRegistryService
             {
                 RegisterFont(stream, fontFamily, fontWeight, fontStyle);
             }
+            else
+            {
+                _logger?.LogWarning("Font resource not found: {ResourcePath} in assembly {AssemblyName}", resourcePath, assembly.GetName().Name);
+            }
         }
-        catch
+        catch (Exception ex)
         {
-            // Silently fail - font registration is optional
+            _logger?.LogError(ex, "Error registering font from resource: {ResourcePath} {FontFamily} {FontWeight} {FontStyle}", resourcePath, fontFamily, fontWeight, fontStyle);
         }
     }
 
