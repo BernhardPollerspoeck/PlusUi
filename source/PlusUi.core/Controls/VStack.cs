@@ -2,6 +2,34 @@
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A vertical stack layout that arranges child elements from top to bottom.
+/// Inherits from <see cref="UiLayoutElement"/> and automatically manages child layout.
+/// </summary>
+/// <remarks>
+/// Elements are positioned vertically with optional spacing. The stack respects each
+/// child's vertical alignment and automatically calculates the required size.
+/// </remarks>
+/// <example>
+/// <code>
+/// // Simple vertical layout
+/// new VStack(
+///     new Label().SetText("Title"),
+///     new Label().SetText("Subtitle").SetFontSize(12),
+///     new Button().SetText("Action")
+/// ).SetSpacing(8);
+///
+/// // Form layout
+/// new VStack(
+///     new Label().SetText("Username"),
+///     new Entry().SetPlaceholder("Enter username"),
+///     new Label().SetText("Password"),
+///     new Entry().SetIsPassword(true)
+/// )
+/// .SetSpacing(4)
+/// .SetPadding(new Margin(16));
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class VStack : UiLayoutElement
 {

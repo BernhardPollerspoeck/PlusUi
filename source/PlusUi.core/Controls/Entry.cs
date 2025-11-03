@@ -3,6 +3,29 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// Represents a single-line text input control for user text entry.
+/// Supports password masking, placeholders, keyboard types, and two-way data binding.
+/// Inherits from <see cref="UiTextElement"/> and implements <see cref="ITextInputControl"/>.
+/// </summary>
+/// <example>
+/// <code>
+/// // Simple text entry
+/// new Entry()
+///     .SetPlaceholder("Enter your name...")
+///     .BindText(nameof(vm.Name), () => vm.Name, value => vm.Name = value);
+///
+/// // Password entry
+/// new Entry()
+///     .SetIsPassword(true)
+///     .SetPlaceholder("Password");
+///
+/// // Email entry with mobile keyboard
+/// new Entry()
+///     .SetKeyboardType(KeyboardType.Email)
+///     .SetReturnKeyType(ReturnKeyType.Done);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class Entry : UiTextElement, ITextInputControl
 {

@@ -3,6 +3,26 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// Represents a non-editable text label control for displaying static or dynamic text.
+/// Inherits from <see cref="UiTextElement"/> and supports all text formatting options.
+/// </summary>
+/// <example>
+/// <code>
+/// // Simple label
+/// new Label().SetText("Hello World");
+///
+/// // Styled label
+/// new Label()
+///     .SetText("Title")
+///     .SetFontSize(24)
+///     .SetFontWeight(FontWeight.Bold)
+///     .SetTextColor(Colors.Blue);
+///
+/// // Data-bound label
+/// new Label().BindText(nameof(viewModel.UserName), () => viewModel.UserName);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class Label : UiTextElement
 {

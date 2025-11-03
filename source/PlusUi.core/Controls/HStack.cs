@@ -2,6 +2,31 @@
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A horizontal stack layout that arranges child elements from left to right.
+/// Inherits from <see cref="UiLayoutElement"/> and automatically manages child layout.
+/// </summary>
+/// <remarks>
+/// Elements are positioned horizontally with optional spacing. The stack respects each
+/// child's horizontal alignment and automatically calculates the required size.
+/// </remarks>
+/// <example>
+/// <code>
+/// // Simple horizontal layout
+/// new HStack(
+///     new Label().SetText("Name:"),
+///     new Entry().SetPlaceholder("Enter name")
+/// ).SetSpacing(8);
+///
+/// // Aligned buttons
+/// new HStack(
+///     new Button().SetText("Cancel"),
+///     new Button().SetText("OK")
+/// )
+/// .SetSpacing(12)
+/// .SetHorizontalAlignment(HorizontalAlignment.Right);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class HStack : UiLayoutElement
 {
