@@ -275,11 +275,6 @@ internal static class ImageLoaderService
                         {
                             canvas.Clear(SKColors.Transparent);
                         }
-                        // RestoreBGColor: clear to transparent
-                        else if (prevFrameInfo.DisposalMethod == SKCodecAnimationDisposalMethod.RestoreBGColor)
-                        {
-                            canvas.Clear(SKColors.Transparent);
-                        }
                         // Keep: keep the canvas as-is (do nothing)
                     }
                     else
