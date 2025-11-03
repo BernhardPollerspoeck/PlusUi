@@ -1,23 +1,14 @@
-using Foundation;
 using PlusUi.core;
 using PlusUi.core.Services;
-using UIKit;
 
 namespace PlusUi.ios;
 
 /// <summary>
 /// iOS platform service implementation
 /// </summary>
-public class iOSPlatformService : IPlatformService
+public class IosPlatformService(RenderService renderService) : IPlatformService
 {
-    private readonly RenderService _renderService;
-    private Size _windowSize;
-
-    public iOSPlatformService(RenderService renderService)
-    {
-        _renderService = renderService;
-        _windowSize = new Size(0, 0);
-    }
+    private Size _windowSize = new(0, 0);
 
     /// <summary>
     /// Updates the window size (called by OpenGlViewController when view layout changes)
@@ -31,7 +22,7 @@ public class iOSPlatformService : IPlatformService
 
     public Size WindowSize => _windowSize;
 
-    public float DisplayDensity => _renderService.DisplayDensity;
+    public float DisplayDensity => renderService.DisplayDensity;
 
     public bool OpenUrl(string url)
     {
