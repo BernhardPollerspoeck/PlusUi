@@ -58,7 +58,9 @@ public partial class Button : UiTextElement, IInputControl
         set
         {
             field = value;
-            _iconImage = ImageLoaderService.LoadImage(value, OnIconLoadedFromWeb);
+            // For button icons, we only support static images (no animation)
+            var (staticImage, _) = ImageLoaderService.LoadImage(value, OnIconLoadedFromWeb, null);
+            _iconImage = staticImage;
             InvalidateMeasure();
         }
     }

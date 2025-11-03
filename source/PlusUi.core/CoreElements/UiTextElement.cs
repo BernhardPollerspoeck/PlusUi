@@ -511,4 +511,15 @@ public abstract class UiTextElement : UiElement
         return text.Substring(0, startChars) + ellipsis + text.Substring(text.Length - endChars);
     }
     #endregion
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+     // Dispose SKPaint and SKFont resources
+      Paint?.Dispose();
+            Font?.Dispose();
+        }
+        base.Dispose(disposing);
+}
 }

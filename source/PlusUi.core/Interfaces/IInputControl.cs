@@ -1,6 +1,6 @@
 ﻿namespace PlusUi.core;
 
-public interface IInputControl
+public interface IInputControl : IInteractiveControl
 {
     void InvokeCommand();
 }

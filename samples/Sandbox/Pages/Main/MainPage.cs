@@ -6,11 +6,13 @@ using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.FontDemo;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.ItemsListDemo;
+using Sandbox.Pages.LinkDemo;
 using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.ShadowDemo;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Pages.TextWrapDemo;
+using Sandbox.Pages.NewControlsDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -23,35 +25,52 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
         return new HStack(
             new VStack(
                 new HStack(
-                    new Solid().SetBackground(new SKColor(0, 255, 255)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 255))).SetIsVisible(false).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 0))).SetVisualOffset(new(0, 10)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new LinearGradient(SKColors.White, SKColors.Black, 90)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))).SetDesiredSize(new(75, 75))
+                    new VStack(
+                        new HStack(
+                            new Solid().SetBackground(new SKColor(0, 255, 255)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 255))).SetIsVisible(false).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 0))).SetVisualOffset(new(0, 10)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new LinearGradient(SKColors.White, SKColors.Black, 90)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))).SetDesiredSize(new(75, 75))
+                            ),
+                        new HStack(
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 0, 255))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new LinearGradient(SKColors.Red, SKColors.Cyan, 45)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 255))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(128, 128, 128))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(50, 50, 50))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new RadialGradient(SKColors.Yellow, SKColors.Purple)).SetDesiredSize(new(75, 75))
+                            ),
+                        new HStack(
+                            new Solid().SetBackground(new LinearGradient(SKColors.Lime, SKColors.Navy, 180)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new RadialGradient(SKColors.White, SKColors.Black)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new MultiStopGradient(
+                                90,
+                                new MultiStopGradient.GradientStop(SKColors.Red, 0),
+                                new MultiStopGradient.GradientStop(SKColors.Blue, 0.5f),
+                                new MultiStopGradient.GradientStop(SKColors.Yellow, 1))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new MultiStopGradient(
+                                0,
+                                new MultiStopGradient.GradientStop(SKColors.Magenta, 0),
+                                new MultiStopGradient.GradientStop(SKColors.Green, 0.5f),
+                                new MultiStopGradient.GradientStop(SKColors.Orange, 1))).SetDesiredSize(new(75, 75))
+                                )),
+                    new VStack(
+                        new Label()
+                            .SetText("Animated GIFs:")
+                            .SetTextColor(SKColors.White),
+                        new Image()
+                            .SetAspect(Aspect.AspectFit)
+                            .SetImageSource("https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif")
+                            .SetDesiredWidth(150)
+                            .SetDesiredHeight(150),
+                        new Image()
+                            .SetAspect(Aspect.AspectFit)
+                            .SetImageSource("https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXBvaHU3dDE3aXpobncxY3R1YzZxMm90ZWR6azF2YjZzZGd0MTkxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/a8v7h37XBEj865P0fH/giphy.gif")
+                            .SetDesiredWidth(150)
+                            .SetDesiredHeight(150))
                     ),
-                new HStack(
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 0, 255))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new LinearGradient(SKColors.Red, SKColors.Cyan, 45)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 255))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(128, 128, 128))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(50, 50, 50))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new RadialGradient(SKColors.Yellow, SKColors.Purple)).SetDesiredSize(new(75, 75))
-                    ),
-                new HStack(
-                    new Solid().SetBackground(new LinearGradient(SKColors.Lime, SKColors.Navy, 180)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new RadialGradient(SKColors.White, SKColors.Black)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new MultiStopGradient(
-                        90,
-                        new MultiStopGradient.GradientStop(SKColors.Red, 0),
-                        new MultiStopGradient.GradientStop(SKColors.Blue, 0.5f),
-                        new MultiStopGradient.GradientStop(SKColors.Yellow, 1))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new MultiStopGradient(
-                        0,
-                        new MultiStopGradient.GradientStop(SKColors.Magenta, 0),
-                        new MultiStopGradient.GradientStop(SKColors.Green, 0.5f),
-                        new MultiStopGradient.GradientStop(SKColors.Orange, 1))).SetDesiredSize(new(75, 75))
-                        ),
 
                 new HelloWorldControl(),
                 new Label()
@@ -125,6 +144,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     {
         return new VStack(
             new Button()
+                .SetText("New Controls Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new SKColor(52, 199, 89)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(NewControlsDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
                 .SetText("Go to Grid")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
@@ -159,6 +185,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
                 .SetCommandParameter(typeof(ButtonDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("Go to Link Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(LinkDemoPage)),
             new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
                 .SetText("Popup")

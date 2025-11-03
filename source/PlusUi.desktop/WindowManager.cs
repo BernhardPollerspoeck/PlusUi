@@ -17,6 +17,7 @@ internal class WindowManager(
     RenderService renderService,
     InputService inputService,
     DesktopKeyboardHandler desktopKeyboardHandler,
+    DesktopPlatformService platformService,
     PlusUiNavigationService plusUiNavigationService,
     NavigationContainer navigationContainer,
     IHostApplicationLifetime appLifetime,
@@ -49,6 +50,7 @@ internal class WindowManager(
         };
 
         _window = Window.Create(options);
+        platformService.SetWindow(_window);
 
         _window.Closing += HandleWindowClosing;
         _window.Render += HandleWindowRender;

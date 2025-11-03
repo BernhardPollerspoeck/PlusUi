@@ -1,4 +1,5 @@
 ﻿using PlusUi.core.Attributes;
+using PlusUi.core.Models;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -13,15 +14,34 @@ public partial class Image : UiElement
         set
         {
             field = value;
-            _image = ImageLoaderService.LoadImage(value, OnImageLoadedFromWeb);
+
+            // Clean up previous animation if any
+            StopAnimation();
+
+            var (staticImage, animatedImage) = ImageLoaderService.LoadImage(value, OnImageLoadedFromWeb, OnAnimatedImageLoadedFromWeb);
+
+            if (animatedImage != null)
+            {
+                _animatedImageInfo = animatedImage;
+                _image = null;
+                StartAnimation();
+            }
+            else
+            {
+                _image = staticImage;
+                _animatedImageInfo = null;
+            }
+
+            // Force re-render when image source changes
+            InvalidateMeasure();
         }
     }
-    public UiElement SetImageSource(string imageSource)
+    public Image SetImageSource(string imageSource)
     {
         ImageSource = imageSource;
         return this;
     }
-    public UiElement BindImageSource(string propertyName, Func<string?> propertyGetter)
+    public Image BindImageSource(string propertyName, Func<string?> propertyGetter)
     {
         RegisterBinding(propertyName, () => ImageSource = propertyGetter());
         return this;
@@ -50,54 +70,140 @@ public partial class Image : UiElement
 
     #endregion
 
-    #region render cache
+    #region render cache and animation
     private SKImage? _image;
+    private AnimatedImageInfo? _animatedImageInfo;
+    private int _currentFrameIndex = 0;
+    private System.Threading.Timer? _animationTimer;
 
     private void OnImageLoadedFromWeb(SKImage? image)
     {
         // Update the image if this is still the active source
         if (image != null)
         {
+            StopAnimation();
             _image = image;
+            _animatedImageInfo = null;
+
+            // Trigger UI update
+            InvalidateMeasure();
         }
+    }
+
+    private void OnAnimatedImageLoadedFromWeb(AnimatedImageInfo? animatedImage)
+    {
+        // Update the animated image if this is still the active source
+        if (animatedImage != null)
+        {
+            StopAnimation();
+            _animatedImageInfo = animatedImage;
+            _image = null;
+            StartAnimation();
+
+            // Trigger UI update
+            InvalidateMeasure();
+        }
+    }
+
+    private void StartAnimation()
+    {
+        if (_animatedImageInfo == null || _animatedImageInfo.FrameCount == 0)
+            return;
+
+        _currentFrameIndex = 0;
+
+        // Create timer for frame updates
+        _animationTimer = new System.Threading.Timer(
+   callback: _ => OnAnimationTick(),
+            state: null,
+  dueTime: _animatedImageInfo.FrameDelays[0],
+            period: System.Threading.Timeout.Infinite);
+    }
+
+    private void StopAnimation()
+    {
+        _animationTimer?.Dispose();
+        _animationTimer = null;
+        _currentFrameIndex = 0;
+    }
+
+    private void OnAnimationTick()
+    {
+        if (_animatedImageInfo == null)
+            return;
+
+        // Move to next frame
+        _currentFrameIndex = (_currentFrameIndex + 1) % _animatedImageInfo.FrameCount;
+
+        // Trigger UI invalidation to re-render with new frame
+        // This is critical for animated GIFs to actually show animation
+        InvalidateMeasure();
+
+        // Schedule next frame
+        var delay = _animatedImageInfo.FrameDelays[_currentFrameIndex];
+        _animationTimer?.Change(delay, System.Threading.Timeout.Infinite);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            StopAnimation();
+            _animatedImageInfo?.Dispose();
+        }
+        base.Dispose(disposing);
     }
     #endregion
 
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
-        if (_image == null)
+
+        if (!IsVisible)
         {
             return;
         }
-        if (!IsVisible)
+
+        SKImage? imageToRender = null;
+
+        // Determine which image to render (static or current animation frame)
+        if (_animatedImageInfo != null && _animatedImageInfo.FrameCount > 0)
+        {
+            imageToRender = _animatedImageInfo.Frames[_currentFrameIndex];
+        }
+        else if (_image != null)
+        {
+            imageToRender = _image;
+        }
+
+        if (imageToRender == null)
         {
             return;
         }
 
         var destRect = new SKRect(
             Position.X + VisualOffset.X,
-            Position.Y + VisualOffset.Y,
-            Position.X + VisualOffset.X + ElementSize.Width,
-            Position.Y + VisualOffset.Y + ElementSize.Height);
-        var srcRect = new SKRect(0, 0, _image.Width, _image.Height);
+                 Position.Y + VisualOffset.Y,
+                 Position.X + VisualOffset.X + ElementSize.Width,
+             Position.Y + VisualOffset.Y + ElementSize.Height);
+        var srcRect = new SKRect(0, 0, imageToRender.Width, imageToRender.Height);
         var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear);
 
         switch (Aspect)
         {
             case Aspect.Fill:
-                canvas.DrawImage(_image, destRect, samplingOptions);
+                canvas.DrawImage(imageToRender, destRect, samplingOptions);
                 break;
             case Aspect.AspectFit:
                 var aspectFitRect = SKRect.Create(destRect.Left, destRect.Top, destRect.Width, destRect.Height);
                 aspectFitRect = aspectFitRect.AspectFit(srcRect.Size);
 
-                canvas.DrawImage(_image, srcRect, aspectFitRect, samplingOptions);
+                canvas.DrawImage(imageToRender, srcRect, aspectFitRect, samplingOptions);
                 break;
             case Aspect.AspectFill:
                 var aspectFillRect = SKRect.Create(destRect.Left, destRect.Top, destRect.Width, destRect.Height);
                 aspectFillRect = aspectFillRect.AspectFill(srcRect.Size);
-                canvas.DrawImage(_image, srcRect, aspectFillRect, samplingOptions);
+                canvas.DrawImage(imageToRender, srcRect, aspectFillRect, samplingOptions);
                 break;
         }
     }

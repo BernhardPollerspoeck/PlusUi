@@ -1,6 +1,6 @@
 ﻿namespace PlusUi.core;
 
-public interface IToggleButtonControl
+public interface IToggleButtonControl : IInteractiveControl
 {
     void Toggle();
 }

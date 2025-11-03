@@ -13,6 +13,7 @@ namespace PlusUi.droid;
 internal class SilkRenderer(
     PlusUiNavigationService plusUiNavigationService,
     RenderService renderService,
+    AndroidPlatformService platformService,
     ILogger<SilkRenderer> logger,
     Context context)
     : Java.Lang.Object, GLSurfaceView.IRenderer
@@ -66,6 +67,7 @@ internal class SilkRenderer(
         renderService.DisplayDensity = density;
 
         _size = new Vector2D<int>(width, height);
+        platformService.SetWindowSize(width, height);
         _glContext.Viewport(0, 0, (uint)width, (uint)height);
         var glInterface = GRGlInterface.Create();
         _grContext = GRContext.CreateGl(glInterface);
