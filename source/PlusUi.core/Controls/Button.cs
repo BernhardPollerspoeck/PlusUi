@@ -5,8 +5,7 @@ using System.Windows.Input;
 namespace PlusUi.core;
 
 /// <summary>
-/// Represents a clickable button control that can display text and execute commands.
-/// Inherits from <see cref="UiTextElement"/> and supports command binding for MVVM patterns.
+/// A clickable button control that can display text and execute commands.
 /// </summary>
 /// <example>
 /// <code>

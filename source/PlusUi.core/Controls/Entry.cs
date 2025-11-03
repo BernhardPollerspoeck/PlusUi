@@ -4,9 +4,8 @@ using SkiaSharp;
 namespace PlusUi.core;
 
 /// <summary>
-/// Represents a single-line text input control for user text entry.
+/// A single-line text input control for user text entry.
 /// Supports password masking, placeholders, keyboard types, and two-way data binding.
-/// Inherits from <see cref="UiTextElement"/> and implements <see cref="ITextInputControl"/>.
 /// </summary>
 /// <example>
 /// <code>

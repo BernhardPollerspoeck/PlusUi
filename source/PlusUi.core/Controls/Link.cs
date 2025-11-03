@@ -5,6 +5,24 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A clickable hyperlink control that opens URLs when clicked.
+/// </summary>
+/// <example>
+/// <code>
+/// // Simple link
+/// new Link()
+///     .SetText("Visit Website")
+///     .SetUrl("https://example.com");
+///
+/// // Styled link
+/// new Link()
+///     .SetText("Documentation")
+///     .SetUrl("https://docs.example.com")
+///     .SetTextColor(Colors.Blue)
+///     .SetFontWeight(FontWeight.SemiBold);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class Link : UiTextElement, IInputControl
 {

@@ -10,7 +10,7 @@ public interface IPopupService
     /// <summary>
     /// Shows a modal popup of the specified type with optional arguments and configuration.
     /// </summary>
-    /// <typeparam name="TPopup">The type of popup to show. Must inherit from <see cref="UiPopupElement{TArg}"/>.</typeparam>
+    /// <typeparam name="TPopup">The type of popup to show.</typeparam>
     /// <typeparam name="TArg">The type of argument to pass to the popup.</typeparam>
     /// <param name="arg">Optional argument to pass to the popup.</param>
     /// <param name="onClosed">Optional callback invoked when the popup is closed successfully.</param>

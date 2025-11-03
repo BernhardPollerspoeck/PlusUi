@@ -4,8 +4,7 @@ using PlusUi.core.CoreElements;
 
 namespace PlusUi.core;
 
-//TODO: internal
-public class PlusUiPopupService(IServiceProvider serviceProvider, ILogger<PlusUiPopupService>? logger = null) : IPopupService
+internal class PlusUiPopupService(IServiceProvider serviceProvider, ILogger<PlusUiPopupService>? logger = null) : IPopupService
 {
     internal UiPopupElement? CurrentPopup { get; private set; }
     private readonly ILogger<PlusUiPopupService>? _logger = logger;

@@ -4,6 +4,33 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// Displays static and animated images from various sources (embedded resources, files, URLs).
+/// Supports automatic GIF animation playback and aspect ratio control.
+/// </summary>
+/// <remarks>
+/// Image sources can use different prefixes:
+/// - No prefix: Embedded resource in any loaded assembly
+/// - "file:": Local file path (e.g., "file:/path/to/image.png")
+/// - "http://" or "https://": Web image (loaded asynchronously)
+/// </remarks>
+/// <example>
+/// <code>
+/// // Embedded resource
+/// new Image().SetImageSource("logo.png");
+///
+/// // Local file
+/// new Image().SetImageSource("file:/images/photo.jpg");
+///
+/// // Web image
+/// new Image().SetImageSource("https://example.com/image.png");
+///
+/// // With aspect ratio
+/// new Image()
+///     .SetImageSource("photo.jpg")
+///     .SetAspect(Aspect.AspectFill);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class Image : UiElement
 {

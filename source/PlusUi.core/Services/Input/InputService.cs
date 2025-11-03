@@ -126,7 +126,6 @@ public class InputService
 
     public void HandleKeyInput(object? sender, PlusKey key)
     {
-        //TODO: keyInputControl
         _textInputControl?.HandleInput(key);
     }
     

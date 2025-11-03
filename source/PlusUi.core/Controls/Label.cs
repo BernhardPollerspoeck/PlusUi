@@ -4,8 +4,7 @@ using SkiaSharp;
 namespace PlusUi.core;
 
 /// <summary>
-/// Represents a non-editable text label control for displaying static or dynamic text.
-/// Inherits from <see cref="UiTextElement"/> and supports all text formatting options.
+/// A non-editable text label control for displaying static or dynamic text.
 /// </summary>
 /// <example>
 /// <code>

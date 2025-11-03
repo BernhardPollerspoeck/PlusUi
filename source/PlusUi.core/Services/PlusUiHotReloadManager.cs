@@ -39,7 +39,7 @@ internal class PlusUiHotReloadManager
             .Any(t => t.IsAssignableTo(typeof(UiPopupElement))) is true)
         {
             var internalPopupService = ServiceProviderService.ServiceProvider?.GetRequiredService<PlusUiPopupService>();
-            internalPopupService?.Build();//TODO: Bg color lost => reconstruct
+            internalPopupService?.Build();
         }
     }
 }

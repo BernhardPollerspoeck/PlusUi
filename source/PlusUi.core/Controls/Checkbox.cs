@@ -3,6 +3,21 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A checkbox control for binary on/off selection with a checkmark indicator.
+/// Supports two-way data binding for MVVM patterns.
+/// </summary>
+/// <example>
+/// <code>
+/// // Simple checkbox
+/// new Checkbox()
+///     .SetIsChecked(true);
+///
+/// // Data-bound checkbox
+/// new Checkbox()
+///     .BindIsChecked(nameof(vm.AcceptTerms), () => vm.AcceptTerms, value => vm.AcceptTerms = value);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class Checkbox : UiElement, IToggleButtonControl
 {

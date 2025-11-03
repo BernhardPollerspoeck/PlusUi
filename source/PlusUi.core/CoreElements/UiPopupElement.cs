@@ -48,7 +48,6 @@ public abstract class UiPopupElement : UiElement
 
     internal void BuildPopup()
     {
-        //TODO: make propper wrapper for working resize calculations
         _tree = new Grid()
             .AddChild(Build())
             .SetHorizontalAlignment(HorizontalAlignment.Center)

@@ -3,6 +3,28 @@ using PlusUi.core.Controls.GridHelper;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A flexible grid layout that arranges child elements in rows and columns.
+/// Supports absolute, proportional (star), and auto-sizing for rows and columns.
+/// </summary>
+/// <remarks>
+/// Grid uses row and column definitions to create a flexible layout:
+/// - Absolute: Fixed pixel size
+/// - Star (*): Proportional sizing (e.g., 1*, 2*, 3* divides available space)
+/// - Auto: Sizes to fit content
+/// </remarks>
+/// <example>
+/// <code>
+/// // 2x2 grid with fixed sizes
+/// new Grid()
+///     .AddRowDefinition(Row.Absolute, 50)
+///     .AddRowDefinition(Row.Auto)
+///     .AddColumnDefinition(Column.Star, 1)
+///     .AddColumnDefinition(Column.Star, 2)
+///     .AddChild(new Label().SetText("Top Left"), row: 0, column: 0)
+///     .AddChild(new Button().SetText("Top Right"), row: 0, column: 1);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class Grid : UiLayoutElement
 {

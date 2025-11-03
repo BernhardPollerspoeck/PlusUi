@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 
 namespace PlusUi.core;
 
-//TODO: interface
 public class RenderService(NavigationContainer navigationContainer, PlusUiPopupService popupService, ILogger<RenderService>? logger = null)
 {
     private readonly ILogger<RenderService>? _logger = logger;

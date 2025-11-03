@@ -3,6 +3,23 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A simple rectangular element with a solid color background.
+/// Useful for creating spacers, dividers, or colored blocks in layouts.
+/// </summary>
+/// <example>
+/// <code>
+/// // Fixed size colored rectangle
+/// new Solid(width: 100, height: 50, color: SKColors.Blue);
+///
+/// // Spacer that stretches
+/// new Solid()
+///     .SetBackground(new SolidColorBackground(SKColors.LightGray));
+///
+/// // Vertical divider
+/// new Solid(width: 1, height: null, color: SKColors.Gray);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class Solid : UiElement
 {

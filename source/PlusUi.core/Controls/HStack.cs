@@ -4,7 +4,6 @@ namespace PlusUi.core;
 
 /// <summary>
 /// A horizontal stack layout that arranges child elements from left to right.
-/// Inherits from <see cref="UiLayoutElement"/> and automatically manages child layout.
 /// </summary>
 /// <remarks>
 /// Elements are positioned horizontally with optional spacing. The stack respects each
