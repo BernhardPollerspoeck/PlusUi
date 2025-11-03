@@ -111,7 +111,22 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetImageSource("https://picsum.photos/100")
                         .SetVerticalAlignment(VerticalAlignment.Bottom)
                         .SetDesiredWidth(100)
-                        .SetDesiredHeight(100))))
+                        .SetDesiredHeight(100)),
+
+                new Label()
+                    .SetText("Animated GIF Demo:")
+                    .SetTextColor(SKColors.White),
+                new HStack(
+                    new Image()
+                        .SetAspect(Aspect.AspectFit)
+                        .SetImageSource("https://media.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.gif")
+                        .SetDesiredWidth(200)
+                        .SetDesiredHeight(200),
+                    new Image()
+                        .SetAspect(Aspect.AspectFit)
+                        .SetImageSource("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxvZHVtM3ZqZGFjOHd3OXFwcDJhMjQxZ3N1aGZ3ZnRkOW1oenZkaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bcKmIWkUMCjVm/giphy.gif")
+                        .SetDesiredWidth(150)
+                        .SetDesiredHeight(150))))
             ,
             CreateTestButtons()
                     );
