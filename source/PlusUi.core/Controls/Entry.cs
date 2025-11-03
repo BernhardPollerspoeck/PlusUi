@@ -59,6 +59,48 @@ public partial class Entry : UiTextElement, ITextInputControl
     }
     #endregion
 
+    #region Placeholder
+    internal string? Placeholder { get; set; }
+    public Entry SetPlaceholder(string placeholder)
+    {
+        Placeholder = placeholder;
+        return this;
+    }
+    public Entry BindPlaceholder(string propertyName, Func<string?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => Placeholder = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region PlaceholderColor
+    internal SKColor PlaceholderColor { get; set; } = new SKColor(180, 180, 180);
+    public Entry SetPlaceholderColor(SKColor color)
+    {
+        PlaceholderColor = color;
+        return this;
+    }
+    public Entry BindPlaceholderColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => PlaceholderColor = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region MaxLength
+    internal int? MaxLength { get; set; }
+    public Entry SetMaxLength(int maxLength)
+    {
+        MaxLength = maxLength;
+        return this;
+    }
+    public Entry BindMaxLength(string propertyName, Func<int> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => MaxLength = propertyGetter());
+        return this;
+    }
+    #endregion
+
     #region Keyboard
     internal KeyboardType Keyboard { get; set; } = KeyboardType.Default;
     public Entry SetKeyboard(KeyboardType keyboard)
@@ -104,25 +146,44 @@ public partial class Entry : UiTextElement, ITextInputControl
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
+        // Determine what text to display
+        var hasText = !string.IsNullOrEmpty(Text);
+        var displayText = hasText
+            ? (IsPassword ? new string(PasswordChar, Text.Length) : Text!)
+            : (Placeholder ?? string.Empty);
+
+        // Save original color and temporarily change if showing placeholder
+        var originalColor = Paint.Color;
+        var showingPlaceholder = !hasText && !string.IsNullOrEmpty(Placeholder);
+
+        if (showingPlaceholder)
+        {
+            Paint.Color = PlaceholderColor;
+        }
+
         canvas.DrawText(
-            IsPassword && !string.IsNullOrEmpty(Text) 
-                ? new string(PasswordChar, Text.Length) 
-                : Text ?? string.Empty,
+            displayText,
             Position.X + VisualOffset.X + Padding.Left,
             Position.Y + VisualOffset.Y + textHeight,
             (SKTextAlign)HorizontalTextAlignment,
             Font,
             Paint);
 
+        // Restore original color
+        if (showingPlaceholder)
+        {
+            Paint.Color = originalColor;
+        }
+
+        // Show cursor when selected
         if (_isSelected)
         {
             var elapsedMilliseconds = (DateTime.Now - _selectionTime).TotalMilliseconds;
             if ((elapsedMilliseconds % 1600) < 800)
             {
-                var displayText = IsPassword && !string.IsNullOrEmpty(Text) 
-                    ? new string(PasswordChar, Text.Length) 
-                    : Text ?? string.Empty;
-                var cursorX = Position.X + VisualOffset.X + Padding.Left + Font.MeasureText(displayText) + 2;
+                // Cursor position: at end of actual text (not placeholder text)
+                var textForCursor = hasText ? displayText : string.Empty;
+                var cursorX = Position.X + VisualOffset.X + Padding.Left + Font.MeasureText(textForCursor) + 2;
                 var cursorYStart = Position.Y + VisualOffset.Y + Padding.Top + (textHeight * 0.1f);
                 var cursorYEnd = Position.Y + VisualOffset.Y + Padding.Top + textHeight - (textHeight * 0.1f);
 
@@ -172,6 +233,12 @@ public partial class Entry : UiTextElement, ITextInputControl
     }
     public void HandleInput(char chr)
     {
+        // Check MaxLength before adding character
+        if (MaxLength.HasValue && (Text?.Length ?? 0) >= MaxLength.Value)
+        {
+            return;
+        }
+
         Text += chr;
         if (_setter.TryGetValue(nameof(Text), out var textSetter))
         {

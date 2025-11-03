@@ -33,12 +33,12 @@ public partial class Image : UiElement
             }
         }
     }
-    public UiElement SetImageSource(string imageSource)
+    public Image SetImageSource(string imageSource)
     {
         ImageSource = imageSource;
         return this;
     }
-    public UiElement BindImageSource(string propertyName, Func<string?> propertyGetter)
+    public Image BindImageSource(string propertyName, Func<string?> propertyGetter)
     {
         RegisterBinding(propertyName, () => ImageSource = propertyGetter());
         return this;

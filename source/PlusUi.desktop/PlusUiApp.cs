@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PlusUi.core;
+using PlusUi.core.Services;
 
 namespace PlusUi.desktop;
 
@@ -15,6 +16,8 @@ public class PlusUiApp(string[] args)
 
         builder.UsePlusUiInternal(app, args);
 
+        builder.Services.AddSingleton<DesktopPlatformService>();
+        builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<DesktopPlatformService>());
         builder.Services.AddSingleton<DesktopKeyboardHandler>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<DesktopKeyboardHandler>());
         builder.Services.AddHostedService<WindowManager>();

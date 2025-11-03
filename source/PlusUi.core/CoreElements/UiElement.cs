@@ -13,7 +13,7 @@ public abstract class UiElement
     protected bool _ignoreStyling;
 
 
-    protected virtual bool NeadsMeasure { get; set; } = true;
+    protected virtual bool NeedsMeasure { get; set; } = true;
 
     #region Debug
     protected bool Debug { get; private set; }
@@ -357,7 +357,7 @@ public abstract class UiElement
     #region Measuring
     public Size Measure(Size availableSize, bool dontStretch = false)
     {
-        if (NeadsMeasure || dontStretch)
+        if (NeedsMeasure || dontStretch)
         {
             var measuredSize = MeasureInternal(availableSize, dontStretch);
 
@@ -378,7 +378,7 @@ public abstract class UiElement
             // Constrain to available size
             ElementSize = new Size(desiredWidth, desiredHeight);
 
-            NeadsMeasure = dontStretch;//if we ignore stretching it is a pure calculation pass. so we need to remeasure again
+            NeedsMeasure = dontStretch;//if we ignore stretching it is a pure calculation pass. so we need to remeasure again
         }
         return ElementSize;
     }
@@ -390,7 +390,7 @@ public abstract class UiElement
     }
     public void InvalidateMeasure()
     {
-        NeadsMeasure = true;
+        NeedsMeasure = true;
         Parent?.InvalidateMeasure();
     }
     #endregion

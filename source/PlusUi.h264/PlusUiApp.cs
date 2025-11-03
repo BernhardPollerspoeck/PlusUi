@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
+using PlusUi.core.Services;
 using PlusUi.h264.Animations;
 using System.Threading.Channels;
 
@@ -24,6 +25,9 @@ public class PlusUiApp(string[] args)
         builder.Services.Configure<VideoConfiguration>(videoApp.ConfigureVideo);
 
         builder.UsePlusUiInternal(app, args);
+
+        builder.Services.AddSingleton<H264PlatformService>();
+        builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<H264PlatformService>());
 
         builder.Services.AddSingleton(sp => Channel.CreateUnbounded<IVideoFrame>());
         builder.Services.AddSingleton(sp => sp.GetRequiredService<Channel<IVideoFrame>>().Reader);

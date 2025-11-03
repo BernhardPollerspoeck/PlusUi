@@ -9,7 +9,7 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
     public INotifyPropertyChanged ViewModel { get; } = vm;
     private UiElement _tree = new NullElement();
 
-    protected override bool NeadsMeasure => true;
+    protected override bool NeedsMeasure => true;
 
     protected abstract UiElement Build();
     protected virtual void ConfigurePageStyles(Style pageStyle) { }

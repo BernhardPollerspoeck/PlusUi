@@ -11,6 +11,7 @@ public class InputService
     private readonly IKeyboardHandler _keyboardHandler;
     private Vector2 _lastMousePosition;
     private IScrollableControl? _activeScrollControl;
+    private IDraggableControl? _activeDragControl;
 
     public InputService(
         NavigationContainer navigationContainer,
@@ -34,15 +35,21 @@ public class InputService
         _isMousePressed = true;
         _lastMousePosition = location;
 
-        // Check if we're starting a scroll operation
+        // Check if we're starting a scroll or drag operation
         var currentPopup = _popupService.CurrentPopup;
         var hitControl = (currentPopup) switch
         {
             not null => currentPopup.HitTest(new(location.X, location.Y)),
             _ => _navigationContainer.Page.HitTest(new(location.X, location.Y))
         };
-        
-        if (hitControl is IScrollableControl scrollControl)
+
+        // Check for draggable control first (higher priority than scrollable)
+        if (hitControl is IDraggableControl dragControl)
+        {
+            _activeDragControl = dragControl;
+            _activeDragControl.IsDragging = true;
+        }
+        else if (hitControl is IScrollableControl scrollControl)
         {
             _activeScrollControl = scrollControl;
             _activeScrollControl.IsScrolling = true;
@@ -58,7 +65,14 @@ public class InputService
             return;
         }
         _isMousePressed = false;
-        
+
+        // End any active drag operation
+        if (_activeDragControl != null)
+        {
+            _activeDragControl.IsDragging = false;
+            _activeDragControl = null;
+        }
+
         // End any active scrolling operation
         if (_activeScrollControl != null)
         {
@@ -123,15 +137,23 @@ public class InputService
     
     public void MouseMove(Vector2 location)
     {
+        // Handle dragging if active
+        if (_isMousePressed && _activeDragControl != null)
+        {
+            float deltaX = location.X - _lastMousePosition.X;
+            float deltaY = location.Y - _lastMousePosition.Y;
+
+            _activeDragControl.HandleDrag(deltaX, deltaY);
+        }
         // Handle scrolling if active
-        if (_isMousePressed && _activeScrollControl != null)
+        else if (_isMousePressed && _activeScrollControl != null)
         {
             float deltaX = _lastMousePosition.X - location.X;
             float deltaY = _lastMousePosition.Y - location.Y;
-            
+
             _activeScrollControl.HandleScroll(deltaX, deltaY);
         }
-        
+
         _lastMousePosition = location;
     }
     

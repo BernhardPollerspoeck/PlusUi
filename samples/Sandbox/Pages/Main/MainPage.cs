@@ -6,11 +6,13 @@ using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.FontDemo;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.ItemsListDemo;
+using Sandbox.Pages.LinkDemo;
 using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
 using Sandbox.Pages.ShadowDemo;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Pages.TextWrapDemo;
+using Sandbox.Pages.NewControlsDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -125,6 +127,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     {
         return new VStack(
             new Button()
+                .SetText("New Controls Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new SKColor(52, 199, 89)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(NewControlsDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
                 .SetText("Go to Grid")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
@@ -159,6 +168,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
                 .SetCommandParameter(typeof(ButtonDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("Go to Link Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(LinkDemoPage)),
             new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
                 .SetText("Popup")
