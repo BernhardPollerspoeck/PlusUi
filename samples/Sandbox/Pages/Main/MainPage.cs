@@ -62,12 +62,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                             .SetTextColor(SKColors.White),
                         new Image()
                             .SetAspect(Aspect.AspectFit)
-                            .SetImageSource("https://upload.wikimedia.org/wikipedia/commons/2/2c/Rotating_earth_%28large%29.gif")
+                            .SetImageSource("https://media.tenor.com/wpSo-8CrXqUAAAAi/loading-loading-forever.gif")
                             .SetDesiredWidth(150)
                             .SetDesiredHeight(150),
                         new Image()
                             .SetAspect(Aspect.AspectFit)
-                            .SetImageSource("https://i.imgur.com/2WZJmGS.gif")
+                            .SetImageSource("https://media.tenor.com/On7kvXhvml4AAAAj/loading-gif.gif")
                             .SetDesiredWidth(150)
                             .SetDesiredHeight(150))
                     ),
