@@ -243,7 +243,7 @@ internal static class ImageLoaderService
             for (int i = 0; i < frameCount; i++)
             {
                 // Get frame info for timing
-                var frameInfo = codec.GetFrameInfo(i);
+                codec.GetFrameInfo(i, out var frameInfo);
 
                 // Frame duration in milliseconds (default to 100ms if not specified or invalid)
                 var duration = frameInfo.Duration > 0 ? frameInfo.Duration : 100;
@@ -251,7 +251,7 @@ internal static class ImageLoaderService
 
                 // Decode the frame
                 using var bitmap = new SKBitmap(info);
-                var opts = new SKCodecOptions(i, frameInfo.RequiredFrame);
+                var opts = new SKCodecOptions(i);
                 var result = codec.GetPixels(bitmap.Info, bitmap.GetPixels(), opts);
 
                 if (result == SKCodecResult.Success)
