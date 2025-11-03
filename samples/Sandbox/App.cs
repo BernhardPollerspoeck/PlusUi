@@ -7,6 +7,7 @@ using Sandbox.Pages.ControlsGrid;
 using Sandbox.Pages.FontDemo;
 using Sandbox.Pages.Form;
 using Sandbox.Pages.ItemsListDemo;
+using Sandbox.Pages.LinkDemo;
 using Sandbox.Pages.Main;
 using Sandbox.Pages.RawControl;
 using Sandbox.Pages.ScrollViewDemo;
@@ -42,6 +43,7 @@ public class App : IAppConfiguration
         builder.AddPage<RawUserControlPage>().WithViewModel<RawUserControlPageViewModel>();
         builder.AddPage<ItemsListDemoPage>().WithViewModel<ItemsListDemoPageViewModel>();
         builder.AddPage<ButtonDemoPage>().WithViewModel<ButtonDemoPageViewModel>();
+        builder.AddPage<LinkDemoPage>().WithViewModel<LinkDemoPageViewModel>();
         builder.AddPage<FontDemoPage>().WithViewModel<FontDemoPageViewModel>();
         builder.AddPage<ShadowDemoPage>().WithViewModel<ShadowDemoPageViewModel>();
         builder.AddPage<NewControlsDemoPage>().WithViewModel<NewControlsDemoPageViewModel>();

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
+using PlusUi.core.Services;
 using Silk.NET.Maths;
 using SkiaSharp.Views.iOS;
 using System.Numerics;
@@ -37,6 +38,8 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
         var app = CreateApp(builder);
 
         builder.UsePlusUiInternal(app, []);
+        builder.Services.AddSingleton<iOSPlatformService>();
+        builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<iOSPlatformService>());
         builder.Services.AddSingleton<OpenGlViewController>();
         //builder.Services.AddSingleton<TapGestureListener>();
         //builder.Services.AddSingleton<KeyCaptureEditText>();
@@ -52,6 +55,7 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
 
 public class OpenGlViewController(
     RenderService renderService,
+    iOSPlatformService platformService,
     ILogger<OpenGlViewController> logger)
     : UIViewController
 {
@@ -67,6 +71,7 @@ public class OpenGlViewController(
         }
 
         renderService.DisplayDensity = (float)UIScreen.MainScreen.Scale;
+        platformService.SetWindowSize((float)View.Bounds.Width, (float)View.Bounds.Height);
 
         _canvasView = new SKCanvasView(View.Bounds)
         {
@@ -92,6 +97,7 @@ public class OpenGlViewController(
         if (this is { View: not null, _canvasView: not null })
         {
             _canvasView.Frame = View.Bounds;
+            platformService.SetWindowSize((float)View.Bounds.Width, (float)View.Bounds.Height);
         }
     }
 
