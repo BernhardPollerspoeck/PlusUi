@@ -81,7 +81,6 @@ public partial class Image : UiElement
             StopAnimation();
             _image = image;
             _animatedImageInfo = null;
-            Invalidate();
         }
     }
 
@@ -94,7 +93,6 @@ public partial class Image : UiElement
             _animatedImageInfo = animatedImage;
             _image = null;
             StartAnimation();
-            Invalidate();
         }
     }
 
@@ -127,9 +125,6 @@ public partial class Image : UiElement
 
         // Move to next frame
         _currentFrameIndex = (_currentFrameIndex + 1) % _animatedImageInfo.FrameCount;
-
-        // Request redraw
-        Invalidate();
 
         // Schedule next frame
         var delay = _animatedImageInfo.FrameDelays[_currentFrameIndex];

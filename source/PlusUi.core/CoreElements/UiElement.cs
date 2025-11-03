@@ -6,7 +6,7 @@ using System.ComponentModel;
 namespace PlusUi.core;
 
 [GenerateGenericWrapper]
-public abstract class UiElement
+public abstract class UiElement : IDisposable
 {
     private readonly Dictionary<string, List<Action>> _bindings = [];
     protected readonly Dictionary<string, List<Action<object>>> _setter = [];
@@ -610,5 +610,29 @@ public abstract class UiElement
         var style = ServiceProviderService.ServiceProvider?.GetRequiredService<Style>();
         style?.ApplyStyle(this);
     }
+
+    #region IDisposable
+    private bool _disposed;
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                // Dispose managed resources
+                InvalidateShadowCache();
+            }
+
+            _disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+    #endregion
 }
 
