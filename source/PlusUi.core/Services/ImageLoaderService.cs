@@ -231,6 +231,7 @@ internal static class ImageLoaderService
 
     /// <summary>
     /// Loads all frames from an animated image (e.g., GIF) along with their timing information.
+    /// Properly handles frame composition and disposal methods.
     /// </summary>
     private static AnimatedImageInfo LoadAnimatedImage(SKCodec codec, int frameCount)
     {
@@ -240,29 +241,78 @@ internal static class ImageLoaderService
             var frameDelays = new int[frameCount];
             var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
 
+            // Create a canvas bitmap that will accumulate frames
+            using var canvasBitmap = new SKBitmap(info);
+
             for (int i = 0; i < frameCount; i++)
             {
-                // Get frame info for timing
+                // Get frame info for timing and disposal
                 codec.GetFrameInfo(i, out var frameInfo);
 
                 // Frame duration in milliseconds (default to 100ms if not specified or invalid)
                 var duration = frameInfo.Duration > 0 ? frameInfo.Duration : 100;
                 frameDelays[i] = duration;
 
-                // Decode the frame
-                using var bitmap = new SKBitmap(info);
+                // Create a bitmap for the current frame
+                var frameBitmap = new SKBitmap(info);
+
+                // Decode the frame with proper options
                 var opts = new SKCodecOptions(i);
-                var result = codec.GetPixels(bitmap.Info, bitmap.GetPixels(), opts);
+                var result = codec.GetPixels(frameBitmap.Info, frameBitmap.GetPixels(), opts);
 
                 if (result == SKCodecResult.Success)
                 {
-                    frames[i] = SKImage.FromBitmap(bitmap);
+                    // Create a canvas to compose the frame
+                    using var canvas = new SKCanvas(canvasBitmap);
+
+                    // Handle disposal method from previous frame
+                    if (i > 0)
+                    {
+                        codec.GetFrameInfo(i - 1, out var prevFrameInfo);
+
+                        // RestoreBGColor: clear to transparent/background
+                        if (prevFrameInfo.DisposalMethod == SKCodecAnimationDisposalMethod.RestoreBGColor)
+                        {
+                            canvas.Clear(SKColors.Transparent);
+                        }
+                        // RestorePrevious: keep the canvas as-is (do nothing)
+                        // Keep: keep the canvas as-is (do nothing)
+                    }
+                    else
+                    {
+                        // First frame: clear to transparent
+                        canvas.Clear(SKColors.Transparent);
+                    }
+
+                    // Draw the new frame onto the canvas
+                    canvas.DrawBitmap(frameBitmap, 0, 0);
+                    canvas.Flush();
+
+                    // Create an image from the accumulated canvas bitmap
+                    // We need to make a copy because canvasBitmap will be reused
+                    var frameCopy = new SKBitmap(info);
+                    canvasBitmap.CopyTo(frameCopy);
+                    frames[i] = SKImage.FromBitmap(frameCopy);
+                    frameCopy.Dispose();
                 }
                 else
                 {
-                    // If frame failed to load, use a blank image
-                    frames[i] = SKImage.FromBitmap(new SKBitmap(info));
+                    // If frame failed to load, use previous frame or blank
+                    if (i > 0)
+                    {
+                        // Reuse previous frame
+                        var prevBitmap = new SKBitmap(info);
+                        canvasBitmap.CopyTo(prevBitmap);
+                        frames[i] = SKImage.FromBitmap(prevBitmap);
+                        prevBitmap.Dispose();
+                    }
+                    else
+                    {
+                        frames[i] = SKImage.FromBitmap(new SKBitmap(info));
+                    }
                 }
+
+                frameBitmap.Dispose();
             }
 
             return new AnimatedImageInfo(frames, frameDelays, info.Width, info.Height);
