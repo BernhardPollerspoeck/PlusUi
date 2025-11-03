@@ -31,6 +31,9 @@ public partial class Image : UiElement
                 _image = staticImage;
                 _animatedImageInfo = null;
             }
+
+            // Force re-render when image source changes
+            InvalidateMeasure();
         }
     }
     public Image SetImageSource(string imageSource)
@@ -81,6 +84,9 @@ public partial class Image : UiElement
             StopAnimation();
             _image = image;
             _animatedImageInfo = null;
+
+            // Trigger UI update
+            InvalidateMeasure();
         }
     }
 
@@ -93,6 +99,9 @@ public partial class Image : UiElement
             _animatedImageInfo = animatedImage;
             _image = null;
             StartAnimation();
+
+            // Trigger UI update
+            InvalidateMeasure();
         }
     }
 
@@ -105,9 +114,9 @@ public partial class Image : UiElement
 
         // Create timer for frame updates
         _animationTimer = new System.Threading.Timer(
-            callback: _ => OnAnimationTick(),
+   callback: _ => OnAnimationTick(),
             state: null,
-            dueTime: _animatedImageInfo.FrameDelays[0],
+  dueTime: _animatedImageInfo.FrameDelays[0],
             period: System.Threading.Timeout.Infinite);
     }
 
@@ -125,6 +134,10 @@ public partial class Image : UiElement
 
         // Move to next frame
         _currentFrameIndex = (_currentFrameIndex + 1) % _animatedImageInfo.FrameCount;
+
+        // Trigger UI invalidation to re-render with new frame
+        // This is critical for animated GIFs to actually show animation
+        InvalidateMeasure();
 
         // Schedule next frame
         var delay = _animatedImageInfo.FrameDelays[_currentFrameIndex];
@@ -170,9 +183,9 @@ public partial class Image : UiElement
 
         var destRect = new SKRect(
             Position.X + VisualOffset.X,
-            Position.Y + VisualOffset.Y,
-            Position.X + VisualOffset.X + ElementSize.Width,
-            Position.Y + VisualOffset.Y + ElementSize.Height);
+                 Position.Y + VisualOffset.Y,
+                 Position.X + VisualOffset.X + ElementSize.Width,
+             Position.Y + VisualOffset.Y + ElementSize.Height);
         var srcRect = new SKRect(0, 0, imageToRender.Width, imageToRender.Height);
         var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear);
 

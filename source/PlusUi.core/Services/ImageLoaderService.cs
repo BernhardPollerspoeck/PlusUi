@@ -13,7 +13,10 @@ internal static class ImageLoaderService
 {
     private static readonly ConcurrentDictionary<string, WeakReference<SKImage>> _imageCache = new();
     private static readonly ConcurrentDictionary<string, WeakReference<AnimatedImageInfo>> _animatedImageCache = new();
-    private static readonly System.Net.Http.HttpClient _httpClient = new();
+    private static readonly System.Net.Http.HttpClient _httpClient = new()
+    {
+        Timeout = TimeSpan.FromSeconds(30) // Add timeout for web requests
+    };
 
     /// <summary>
     /// Loads an image from the specified source (resource, file, or URL).
@@ -58,7 +61,7 @@ internal static class ImageLoaderService
         else if (imageSource.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
         {
             const string filePrefix = "file:";
-            var filePath = imageSource.Substring(filePrefix.Length);
+            var filePath = imageSource[filePrefix.Length..];
             var (image, animatedImage) = TryLoadImageFromFile(filePath);
             // Cache using weak reference if image was loaded successfully
             if (image != null)
@@ -99,8 +102,24 @@ internal static class ImageLoaderService
     {
         try
         {
-            using var stream = await _httpClient.GetStreamAsync(url).ConfigureAwait(false);
-            var (staticImage, animatedImage) = LoadImageFromStream(stream);
+            // Add retry logic for better reliability
+            var response = await _httpClient.GetAsync(url).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // Failed to load - invoke callbacks with null
+                onImageLoaded?.Invoke(null);
+                return;
+            }
+
+            using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+
+            // Create a memory stream to allow multiple reads (needed for SKCodec)
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream).ConfigureAwait(false);
+            memoryStream.Position = 0;
+
+            var (staticImage, animatedImage) = LoadImageFromStream(memoryStream);
 
             if (staticImage != null)
             {
@@ -119,8 +138,10 @@ internal static class ImageLoaderService
                 onImageLoaded?.Invoke(null);
             }
         }
-        catch
+        catch (Exception ex)
         {
+            // Log error and invoke callback with null
+            System.Diagnostics.Debug.WriteLine($"Failed to load image from {url}: {ex.Message}");
             onImageLoaded?.Invoke(null);
         }
     }
@@ -200,6 +221,12 @@ internal static class ImageLoaderService
     {
         try
         {
+            // Ensure stream is at the beginning
+            if (stream.CanSeek)
+            {
+                stream.Position = 0;
+            }
+
             using var codec = SKCodec.Create(stream);
             if (codec == null)
                 return (null, null);
@@ -223,8 +250,9 @@ internal static class ImageLoaderService
                 return (SKImage.FromBitmap(bitmap), null);
             }
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Failed to load image from stream: {ex.Message}");
             return (null, null);
         }
     }
@@ -239,7 +267,7 @@ internal static class ImageLoaderService
         {
             var frames = new SKImage[frameCount];
             var frameDelays = new int[frameCount];
-            var info = new SKImageInfo(codec.Info.Width, codec.Info.Height);
+            var info = new SKImageInfo(codec.Info.Width, codec.Info.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
 
             // Create a canvas bitmap that will accumulate frames
             using var canvasBitmap = new SKBitmap(info);
@@ -253,42 +281,45 @@ internal static class ImageLoaderService
                 var duration = frameInfo.Duration > 0 ? frameInfo.Duration : 100;
                 frameDelays[i] = duration;
 
-                // Create a bitmap for the current frame
-                var frameBitmap = new SKBitmap(info);
-
                 // Decode the frame with proper options
                 var opts = new SKCodecOptions(i);
-                var result = codec.GetPixels(frameBitmap.Info, frameBitmap.GetPixels(), opts);
 
-                if (result == SKCodecResult.Success)
+                // Handle disposal method from previous frame BEFORE decoding new frame
+                if (i > 0)
                 {
-                    // Create a canvas to compose the frame
+                    codec.GetFrameInfo(i - 1, out var prevFrameInfo);
+
                     using var canvas = new SKCanvas(canvasBitmap);
 
-                    // Handle disposal method from previous frame
-                    if (i > 0)
+                    // RestorePrevious or RestoreBackground: clear the previous frame's area
+                    if (prevFrameInfo.DisposalMethod == SKCodecAnimationDisposalMethod.RestorePrevious ||
+                        prevFrameInfo.DisposalMethod == SKCodecAnimationDisposalMethod.RestoreBackgroundColor)
                     {
-                        codec.GetFrameInfo(i - 1, out var prevFrameInfo);
+                        // Clear the area where the previous frame was drawn
+                        var clearRect = new SKRectI(
+                            prevFrameInfo.FrameRect.Left,
+                            prevFrameInfo.FrameRect.Top,
+                            prevFrameInfo.FrameRect.Right,
+                            prevFrameInfo.FrameRect.Bottom);
 
-                        // RestorePrevious: clear to transparent/background
-                        if (prevFrameInfo.DisposalMethod == SKCodecAnimationDisposalMethod.RestorePrevious)
-                        {
-                            canvas.Clear(SKColors.Transparent);
-                        }
-                        // Keep: keep the canvas as-is (do nothing)
+                        using var clearPaint = new SKPaint { BlendMode = SKBlendMode.Clear };
+                        canvas.DrawRect(clearRect, clearPaint);
                     }
-                    else
-                    {
-                        // First frame: clear to transparent
-                        canvas.Clear(SKColors.Transparent);
-                    }
+                    // Keep: keep the canvas as-is (do nothing)
+                }
+                else
+                {
+                    // First frame: clear to transparent
+                    using var canvas = new SKCanvas(canvasBitmap);
+                    canvas.Clear(SKColors.Transparent);
+                }
 
-                    // Draw the new frame onto the canvas
-                    canvas.DrawBitmap(frameBitmap, 0, 0);
-                    canvas.Flush();
+                // Decode the frame onto the canvas
+                var result = codec.GetPixels(canvasBitmap.Info, canvasBitmap.GetPixels(), opts);
 
+                if (result == SKCodecResult.Success || result == SKCodecResult.IncompleteInput)
+                {
                     // Create an image from the accumulated canvas bitmap
-                    // We need to make a copy because canvasBitmap will be reused
                     var frameCopy = new SKBitmap(info);
                     canvasBitmap.CopyTo(frameCopy);
                     frames[i] = SKImage.FromBitmap(frameCopy);
@@ -297,7 +328,7 @@ internal static class ImageLoaderService
                 else
                 {
                     // If frame failed to load, use previous frame or blank
-                    if (i > 0)
+                    if (i > 0 && frames[i - 1] != null)
                     {
                         // Reuse previous frame
                         var prevBitmap = new SKBitmap(info);
@@ -307,18 +338,22 @@ internal static class ImageLoaderService
                     }
                     else
                     {
-                        frames[i] = SKImage.FromBitmap(new SKBitmap(info));
+                        // Create blank frame
+                        var blankBitmap = new SKBitmap(info);
+                        using var canvas = new SKCanvas(blankBitmap);
+                        canvas.Clear(SKColors.Transparent);
+                        frames[i] = SKImage.FromBitmap(blankBitmap);
+                        blankBitmap.Dispose();
                     }
                 }
-
-                frameBitmap.Dispose();
             }
 
             return new AnimatedImageInfo(frames, frameDelays, info.Width, info.Height);
         }
-        catch
+        catch (Exception ex)
         {
-            return new AnimatedImageInfo(Array.Empty<SKImage>(), Array.Empty<int>(), 0, 0);
+            System.Diagnostics.Debug.WriteLine($"Failed to load animated image: {ex.Message}");
+            return new AnimatedImageInfo([], [], 0, 0);
         }
     }
 }
