@@ -25,35 +25,52 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
         return new HStack(
             new VStack(
                 new HStack(
-                    new Solid().SetBackground(new SKColor(0, 255, 255)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 255))).SetIsVisible(false).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 0))).SetVisualOffset(new(0, 10)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new LinearGradient(SKColors.White, SKColors.Black, 90)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))).SetDesiredSize(new(75, 75))
+                    new VStack(
+                        new HStack(
+                            new Solid().SetBackground(new SKColor(0, 255, 255)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 255))).SetIsVisible(false).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 0))).SetVisualOffset(new(0, 10)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new LinearGradient(SKColors.White, SKColors.Black, 90)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))).SetDesiredSize(new(75, 75))
+                            ),
+                        new HStack(
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 0, 255))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new LinearGradient(SKColors.Red, SKColors.Cyan, 45)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 255))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(128, 128, 128))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new SKColor(50, 50, 50))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new RadialGradient(SKColors.Yellow, SKColors.Purple)).SetDesiredSize(new(75, 75))
+                            ),
+                        new HStack(
+                            new Solid().SetBackground(new LinearGradient(SKColors.Lime, SKColors.Navy, 180)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new RadialGradient(SKColors.White, SKColors.Black)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new MultiStopGradient(
+                                90,
+                                new MultiStopGradient.GradientStop(SKColors.Red, 0),
+                                new MultiStopGradient.GradientStop(SKColors.Blue, 0.5f),
+                                new MultiStopGradient.GradientStop(SKColors.Yellow, 1))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new MultiStopGradient(
+                                0,
+                                new MultiStopGradient.GradientStop(SKColors.Magenta, 0),
+                                new MultiStopGradient.GradientStop(SKColors.Green, 0.5f),
+                                new MultiStopGradient.GradientStop(SKColors.Orange, 1))).SetDesiredSize(new(75, 75))
+                                )),
+                    new VStack(
+                        new Label()
+                            .SetText("Animated GIFs:")
+                            .SetTextColor(SKColors.White),
+                        new Image()
+                            .SetAspect(Aspect.AspectFit)
+                            .SetImageSource("https://media.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.gif")
+                            .SetDesiredWidth(150)
+                            .SetDesiredHeight(150),
+                        new Image()
+                            .SetAspect(Aspect.AspectFit)
+                            .SetImageSource("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxvZHVtM3ZqZGFjOHd3OXFwcDJhMjQxZ3N1aGZ3ZnRkOW1oenZkaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bcKmIWkUMCjVm/giphy.gif")
+                            .SetDesiredWidth(150)
+                            .SetDesiredHeight(150))
                     ),
-                new HStack(
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 0, 255))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new LinearGradient(SKColors.Red, SKColors.Cyan, 45)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 255))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(128, 128, 128))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new SolidColorBackground(new SKColor(50, 50, 50))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new RadialGradient(SKColors.Yellow, SKColors.Purple)).SetDesiredSize(new(75, 75))
-                    ),
-                new HStack(
-                    new Solid().SetBackground(new LinearGradient(SKColors.Lime, SKColors.Navy, 180)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new RadialGradient(SKColors.White, SKColors.Black)).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new MultiStopGradient(
-                        90,
-                        new MultiStopGradient.GradientStop(SKColors.Red, 0),
-                        new MultiStopGradient.GradientStop(SKColors.Blue, 0.5f),
-                        new MultiStopGradient.GradientStop(SKColors.Yellow, 1))).SetDesiredSize(new(75, 75)),
-                    new Solid().SetBackground(new MultiStopGradient(
-                        0,
-                        new MultiStopGradient.GradientStop(SKColors.Magenta, 0),
-                        new MultiStopGradient.GradientStop(SKColors.Green, 0.5f),
-                        new MultiStopGradient.GradientStop(SKColors.Orange, 1))).SetDesiredSize(new(75, 75))
-                        ),
 
                 new HelloWorldControl(),
                 new Label()
@@ -111,22 +128,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetImageSource("https://picsum.photos/100")
                         .SetVerticalAlignment(VerticalAlignment.Bottom)
                         .SetDesiredWidth(100)
-                        .SetDesiredHeight(100)),
-
-                new Label()
-                    .SetText("Animated GIF Demo:")
-                    .SetTextColor(SKColors.White),
-                new HStack(
-                    new Image()
-                        .SetAspect(Aspect.AspectFit)
-                        .SetImageSource("https://media.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.gif")
-                        .SetDesiredWidth(200)
-                        .SetDesiredHeight(200),
-                    new Image()
-                        .SetAspect(Aspect.AspectFit)
-                        .SetImageSource("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxvZHVtM3ZqZGFjOHd3OXFwcDJhMjQxZ3N1aGZ3ZnRkOW1oenZkaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bcKmIWkUMCjVm/giphy.gif")
-                        .SetDesiredWidth(150)
-                        .SetDesiredHeight(150))))
+                        .SetDesiredHeight(100))))
             ,
             CreateTestButtons()
                     );
