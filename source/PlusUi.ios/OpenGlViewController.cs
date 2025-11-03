@@ -38,8 +38,8 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
         var app = CreateApp(builder);
 
         builder.UsePlusUiInternal(app, []);
-        builder.Services.AddSingleton<iOSPlatformService>();
-        builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<iOSPlatformService>());
+        builder.Services.AddSingleton<IosPlatformService>();
+        builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<IosPlatformService>());
         builder.Services.AddSingleton<OpenGlViewController>();
         builder.Services.AddSingleton<KeyboardTextField>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<KeyboardTextField>());
@@ -57,7 +57,7 @@ public class OpenGlViewController(
     PlusUiNavigationService plusUiNavigationService,
     InputService inputService,
     KeyboardTextField keyboardTextField,
-    iOSPlatformService platformService,
+    IosPlatformService platformService,
     ILogger<OpenGlViewController> logger)
     : UIViewController
 {
