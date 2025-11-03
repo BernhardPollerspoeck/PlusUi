@@ -9,13 +9,21 @@ public class LinkDemoPage(LinkDemoPageViewModel vm) : UiPageElement(vm)
     {
         return new ScrollView(
             new VStack(
-                // Page Title
-                new Label()
-                    .SetText("Link Control Demo")
-                    .SetTextSize(32)
-                    .SetTextColor(SKColors.White)
-                    .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
-                    .SetMargin(new Margin(0, 20, 0, 30)),
+                // Header with back button and page title
+                new HStack(
+                    new Button()
+                        .SetText("← Back")
+                        .SetTextSize(18)
+                        .SetCommand(vm.NavCommand)
+                        .SetTextColor(SKColors.White)
+                        .SetPadding(new Margin(10, 5)),
+                    new Label()
+                        .SetText("Link Control Demo")
+                        .SetTextSize(32)
+                        .SetTextColor(SKColors.White)
+                        .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
+                        .SetMargin(new Margin(20, 0, 0, 30))
+                ).SetMargin(new Margin(0, 0, 0, 20)),
 
                 // Section: Basic Links
                 CreateSection("Basic Links",

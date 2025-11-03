@@ -27,15 +27,7 @@ public partial class Link : UiTextElement, IInputControl
     #endregion
 
     #region UnderlineThickness
-    internal float UnderlineThickness
-    {
-        get => field;
-        set
-        {
-            field = value;
-            InvalidateRender();
-        }
-    } = 1f;
+    internal float UnderlineThickness { get; set; } = 1f;
     public Link SetUnderlineThickness(float thickness)
     {
         UnderlineThickness = thickness;
