@@ -70,5 +70,13 @@ public abstract class UserControl : UiElement<UserControl>
         _content.ApplyStyles();
     }
 
-
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            // Dispose content
+            _content.Dispose();
+        }
+        base.Dispose(disposing);
+    }
 }

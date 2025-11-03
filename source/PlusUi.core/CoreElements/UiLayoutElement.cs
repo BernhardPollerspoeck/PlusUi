@@ -111,4 +111,17 @@ public abstract class UiLayoutElement : UiElement
             child.ApplyStyles();
         }
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            // Dispose all children
+            foreach (var child in Children)
+            {
+                child.Dispose();
+            }
+        }
+        base.Dispose(disposing);
+    }
 }

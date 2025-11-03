@@ -77,4 +77,13 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
         _tree.ApplyStyles();
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            // Dispose the page tree
+            _tree.Dispose();
+        }
+        base.Dispose(disposing);
+    }
 }
