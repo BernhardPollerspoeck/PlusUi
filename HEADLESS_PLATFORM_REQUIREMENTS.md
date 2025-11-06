@@ -27,11 +27,6 @@ Das zentrale Interface umfasst **Rendering + Input + Konfiguration** - es ist da
 - ✅ Schlank und fokussiert: Konfiguration erfolgt beim Startup, nicht zur Laufzeit
 - ✅ Nutzt Standard `IAppConfiguration` wie Desktop (maximale Konsistenz!)
 
-**Alternative Namen (verworfen):**
-- `IHeadlessRenderService` - Zu eingeschränkt (nur Rendering im Namen, aber Interface macht auch Input)
-- `IFrameCaptureService` - Zu fokussiert auf Capturing (Input fehlt im Namen)
-- `IHeadlessUiService` - Weniger klar in der Zugehörigkeit zu PlusUi
-
 **Design-Entscheidung:**
 - **Keine** custom `IHeadlessAppConfiguration` - wir nutzen Standard `IAppConfiguration`!
 - **Keine** `HeadlessConfiguration` Klasse - nicht benötigt!
@@ -620,23 +615,3 @@ public class TestHeadlessApp : IAppConfiguration
 ```
 PlusUi.Headless/
 ├── Services/
-│   ├── IPlusUiHeadlessService.cs        ← Public Interface
-│   ├── PlusUiHeadlessService.cs         ← Internal Implementation
-│   ├── HeadlessPlatformService.cs       ← IPlatformService
-│   └── HeadlessKeyboardHandler.cs       ← IKeyboardHandler
-├── Enumerations/
-│   └── ImageFormat.cs                   ← PNG, JPEG, WebP
-├── PlusUiHeadless.cs                    ← Factory-Klasse (static)
-├── PlusUiHeadlessWrapper.cs             ← Wrapper (IDisposable)
-└── PlusUi.Headless.csproj
-
-PlusUi.Headless.Tests/
-├── VisualRegressionTests.cs
-├── InteractionTests.cs
-├── NavigationTests.cs
-├── Baselines/
-│   ├── MainPage_InitialState.png
-│   └── ...
-└── PlusUi.Headless.Tests.csproj
-```
-
