@@ -21,9 +21,10 @@ Das zentrale Interface umfasst **Rendering + Input + Konfiguration** - es ist da
 
 **Begründung:**
 - ✅ Macht klar: DAS zentrale Interface für Headless-Interaktion mit PlusUi
-- ✅ Umfasst Rendering, Input-Handling und Lifecycle-Management
+- ✅ Umfasst Rendering und Input-Handling
 - ✅ Folgt PlusUi Naming-Konvention mit `IPlusUi*` Präfix
 - ✅ Generisch genug für alle Headless-Szenarien (Tests, Remote, CI/CD)
+- ✅ Schlank und fokussiert: Konfiguration erfolgt beim Startup, nicht zur Laufzeit
 
 **Alternative Namen (verworfen):**
 - `IHeadlessRenderService` - Zu eingeschränkt (nur Rendering im Namen, aber Interface macht auch Input)
@@ -48,8 +49,6 @@ Das zentrale Interface umfasst **Rendering + Input + Konfiguration** - es ist da
 │  ┌─────────────────────────────────────────────┐    │
 │  │ Rendering                                   │    │
 │  │  + Task<byte[]> GetCurrentFrameAsync()      │    │
-│  │  + Size FrameSize { get; set; }             │    │
-│  │  + ImageFormat Format { get; set; }         │    │
 │  └─────────────────────────────────────────────┘    │
 │  ┌─────────────────────────────────────────────┐    │
 │  │ Input                                       │    │
@@ -59,11 +58,6 @@ Das zentrale Interface umfasst **Rendering + Input + Konfiguration** - es ist da
 │  │  + MouseWheel(float deltaX, float deltaY)   │    │
 │  │  + KeyPress(PlusKey key)                    │    │
 │  │  + CharInput(char c)                        │    │
-│  └─────────────────────────────────────────────┘    │
-│  ┌─────────────────────────────────────────────┐    │
-│  │ Utilities                                   │    │
-│  │  + WaitForAnimationsAsync()                 │    │
-│  │  + WaitForBindingUpdatesAsync()             │    │
 │  └─────────────────────────────────────────────┘    │
 └────────────────┬────────────────────────────────────┘
                  │
@@ -106,8 +100,8 @@ namespace PlusUi.Headless.Services;
 
 /// <summary>
 /// Zentrales Interface für Headless-Betrieb von PlusUi-Anwendungen.
-/// Ermöglicht programmatische Input-Simulation, Frame-Capturing und Konfiguration.
-/// Kombiniert Rendering, Input-Handling und Lifecycle-Management.
+/// Ermöglicht programmatische Input-Simulation und Frame-Capturing.
+/// Frame-Größe und Format werden beim Startup konfiguriert.
 /// </summary>
 public interface IPlusUiHeadlessService
 {
@@ -117,17 +111,6 @@ public interface IPlusUiHeadlessService
     /// </summary>
     /// <returns>Frame als Byte-Array im konfigurierten Format (PNG/JPEG/etc.)</returns>
     Task<byte[]> GetCurrentFrameAsync();
-
-    /// <summary>
-    /// Frame-Größe (Breite x Höhe in Pixel).
-    /// Änderungen triggern neues Layout.
-    /// </summary>
-    Size FrameSize { get; set; }
-
-    /// <summary>
-    /// Ausgabeformat der Frames (PNG, JPEG, WebP).
-    /// </summary>
-    ImageFormat Format { get; set; }
 
     /// <summary>
     /// Bewegt die Maus zur angegebenen Position.
@@ -158,18 +141,6 @@ public interface IPlusUiHeadlessService
     /// Simuliert Zeichen-Eingabe (für Text-Input).
     /// </summary>
     void CharInput(char c);
-
-    /// <summary>
-    /// Wartet auf das Abschließen aller laufenden Animationen.
-    /// Nützlich für stabile Screenshots.
-    /// </summary>
-    Task WaitForAnimationsAsync(TimeSpan? timeout = null);
-
-    /// <summary>
-    /// Wartet auf das Abschließen aller laufenden Property-Bindings.
-    /// Nützlich nach ViewModel-Änderungen.
-    /// </summary>
-    Task WaitForBindingUpdatesAsync();
 }
 ```
 
@@ -300,23 +271,23 @@ public class PlusUiHeadlessService : IPlusUiHeadlessService
     private readonly HeadlessKeyboardHandler _keyboardHandler;
 
     private Vector2 _currentMousePosition;
-    private Size _frameSize;
-    private ImageFormat _format = ImageFormat.Png;
+    private readonly Size _frameSize;
+    private readonly ImageFormat _format;
 
-    public Size FrameSize
+    public PlusUiHeadlessService(
+        RenderService renderService,
+        InputService inputService,
+        HeadlessPlatformService platformService,
+        HeadlessKeyboardHandler keyboardHandler,
+        Size frameSize,
+        ImageFormat format)
     {
-        get => _frameSize;
-        set
-        {
-            _frameSize = value;
-            _platformService.WindowSize = value;
-        }
-    }
-
-    public ImageFormat Format
-    {
-        get => _format;
-        set => _format = value;
+        _renderService = renderService;
+        _inputService = inputService;
+        _platformService = platformService;
+        _keyboardHandler = keyboardHandler;
+        _frameSize = frameSize;
+        _format = format;
     }
 
     public Task<byte[]> GetCurrentFrameAsync()
@@ -377,6 +348,7 @@ public class PlusUiHeadlessService : IPlusUiHeadlessService
         _keyboardHandler.RaiseCharInput(c);
     }
 
+    // Private helper für Format-Konvertierung
     private byte[] EncodeToFormat(SKBitmap bitmap, ImageFormat format)
     {
         using var image = SKImage.FromBitmap(bitmap);
@@ -389,20 +361,6 @@ public class PlusUiHeadlessService : IPlusUiHeadlessService
         };
 
         return data.ToArray();
-    }
-
-    public async Task WaitForAnimationsAsync(TimeSpan? timeout = null)
-    {
-        // TODO: Hook into Animation-System
-        // For now: simple delay
-        await Task.Delay(timeout ?? TimeSpan.FromSeconds(1));
-    }
-
-    public async Task WaitForBindingUpdatesAsync()
-    {
-        // TODO: Hook into Binding-System
-        // For now: single frame delay
-        await Task.Yield();
     }
 }
 ```
@@ -421,13 +379,14 @@ public static class HostApplicationBuilderExtensions
     public static IHostApplicationBuilder UsePlusUiHeadless(
         this IHostApplicationBuilder builder,
         IAppConfiguration appConfiguration,
-        Size initialFrameSize)
+        Size frameSize,
+        ImageFormat format = ImageFormat.Png)
     {
         // Core PlusUi Services
         builder.UsePlusUiInternal(appConfiguration);
 
         // Headless Platform Service
-        var platformService = new HeadlessPlatformService(initialFrameSize);
+        var platformService = new HeadlessPlatformService(frameSize);
         builder.Services.AddSingleton<HeadlessPlatformService>(platformService);
         builder.Services.AddSingleton<IPlatformService>(platformService);
 
@@ -436,10 +395,16 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<HeadlessKeyboardHandler>(keyboardHandler);
         builder.Services.AddSingleton<IKeyboardHandler>(keyboardHandler);
 
-        // Headless Service (zentrale Schnittstelle)
-        builder.Services.AddSingleton<PlusUiHeadlessService>();
-        builder.Services.AddSingleton<IPlusUiHeadlessService>(
-            sp => sp.GetRequiredService<PlusUiHeadlessService>()
+        // Headless Service (zentrale Schnittstelle) - mit Konfiguration
+        builder.Services.AddSingleton<IPlusUiHeadlessService>(sp =>
+            new PlusUiHeadlessService(
+                sp.GetRequiredService<RenderService>(),
+                sp.GetRequiredService<InputService>(),
+                sp.GetRequiredService<HeadlessPlatformService>(),
+                sp.GetRequiredService<HeadlessKeyboardHandler>(),
+                frameSize,
+                format
+            )
         );
 
         return builder;
@@ -456,7 +421,8 @@ var builder = Host.CreateApplicationBuilder();
 
 builder.UsePlusUiHeadless(
     appConfiguration: new MyAppConfiguration(),
-    initialFrameSize: new Size(1920, 1080)
+    frameSize: new Size(1920, 1080),
+    format: ImageFormat.Png  // Optional, default ist PNG
 );
 
 var host = builder.Build();
@@ -499,8 +465,8 @@ public class VisualRegressionTests
     {
         var builder = Host.CreateApplicationBuilder();
         builder.UsePlusUiHeadless(
-            new TestAppConfiguration(),
-            new Size(1280, 720)
+            appConfiguration: new TestAppConfiguration(),
+            frameSize: new Size(1280, 720)
         );
 
         _host = builder.Build();
@@ -523,8 +489,6 @@ public class VisualRegressionTests
         var navigation = _host!.Services.GetRequiredService<INavigationService>();
         navigation.NavigateTo<MainPage>();
 
-        await _headless!.WaitForBindingUpdatesAsync();
-
         // Act
         var frame = await _headless.GetCurrentFrameAsync();
 
@@ -542,7 +506,6 @@ public class VisualRegressionTests
 
         // Act - Move mouse to button
         _headless!.MouseMove(640, 360); // Center of 1280x720
-        await _headless.WaitForAnimationsAsync();
 
         var frame = await _headless.GetCurrentFrameAsync();
 
@@ -580,8 +543,6 @@ public async Task Entry_TypeText_UpdatesValue()
     {
         _headless.CharInput(c);
     }
-
-    await _headless.WaitForBindingUpdatesAsync();
 
     // Assert
     Assert.AreEqual("testuser", viewModel.Username);
@@ -760,28 +721,12 @@ PlusUi.Headless.Tests/
 
 ---
 
-## 11. Offene Fragen / TODOs
-
-### Muss entschieden werden:
-- [ ] **Animation-Wartemechanismus**: Wie erkennt man, dass Animationen fertig sind?
-- [ ] **Binding-Propagation**: Wie wartet man auf abgeschlossene Binding-Updates?
-- [ ] **Multi-Instance**: Unterstützt RenderService mehrere parallele Instanzen?
-- [ ] **Dirty-Tracking**: Brauchen wir einen Mechanismus um zu wissen, wann neu gerendert werden muss?
-
-### Nice-to-have Features:
-- [ ] **Frame-Differencing**: Nur Änderungen zwischen Frames berechnen
-- [ ] **Recording-Mode**: Sequenz von Frames aufzeichnen (für GIF/Video)
-- [ ] **Element-Highlighting**: Test-Hilfsmethode um Element-Bounds zu zeichnen
-- [ ] **Debug-Overlay**: Zeige Layout-Bounds, HitTest-Bereiche, etc.
-
----
-
-## 12. Implementierungsplan (Phasen)
+## 11. Implementierungsplan (Phasen)
 
 ### Phase 1: Grundstruktur (Minimal Viable Product)
 1. PlusUi.Headless Projekt anlegen
 2. `ImageFormat` Enum erstellen
-3. `IHeadlessRenderService` Interface definieren
+3. `IPlusUiHeadlessService` Interface definieren
 4. `HeadlessPlatformService` implementieren
 5. `HeadlessKeyboardHandler` implementieren
 6. `PlatformType.Headless` zu Enum hinzufügen
@@ -805,25 +750,12 @@ PlusUi.Headless.Tests/
 
 ### Phase 5: Polish & Documentation
 18. JPEG/WebP Format-Support
-19. `WaitForAnimations()` implementieren
-20. `WaitForBindingUpdates()` implementieren
-21. Performance-Optimierungen
-22. Dokumentation & Beispiele
+19. Performance-Optimierungen
+20. Dokumentation & Beispiele
 
 ---
 
-## 13. Risiken & Mitigations
-
-| Risiko | Wahrscheinlichkeit | Impact | Mitigation |
-|--------|-------------------|--------|------------|
-| RenderService nicht thread-safe | Hoch | Hoch | Lock-Mechanismus in PlusUiHeadlessService |
-| Memory Leaks bei häufigen Frames | Mittel | Hoch | Strikte Disposal-Pattern, Pooling |
-| Animation-Timing instabil | Mittel | Mittel | Configurable Delays, Event-basiertes Warten |
-| Multi-Instance Support fehlt | Niedrig | Mittel | Pro Test eigene Host-Instanz |
-
----
-
-## Zusammenfassung
+## 12. Zusammenfassung
 
 Die Headless Platform ist ein **schlankes Add-on** zum bestehenden PlusUi-Framework:
 
