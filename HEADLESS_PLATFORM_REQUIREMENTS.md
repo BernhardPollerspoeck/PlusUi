@@ -13,33 +13,63 @@ Die Headless Platform ermöglicht die Ausführung von PlusUi-Anwendungen ohne gr
 
 ---
 
+## Interface-Namenskonzept
+
+Das zentrale Interface umfasst **Rendering + Input + Konfiguration** - es ist das Haupt-Interface für alle Headless-Operationen.
+
+### Name: `IPlusUiHeadlessService`
+
+**Begründung:**
+- ✅ Macht klar: DAS zentrale Interface für Headless-Interaktion mit PlusUi
+- ✅ Umfasst Rendering, Input-Handling und Lifecycle-Management
+- ✅ Folgt PlusUi Naming-Konvention mit `IPlusUi*` Präfix
+- ✅ Generisch genug für alle Headless-Szenarien (Tests, Remote, CI/CD)
+
+**Alternative Namen (verworfen):**
+- `IHeadlessRenderService` - Zu eingeschränkt (nur Rendering im Namen, aber Interface macht auch Input)
+- `IFrameCaptureService` - Zu fokussiert auf Capturing (Input fehlt im Namen)
+- `IHeadlessUiService` - Weniger klar in der Zugehörigkeit zu PlusUi
+
+---
+
 ## Architektur-Übersicht
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │                Test/Client Code                      │
-│  - Ruft IHeadlessRenderService auf                  │
+│  - Ruft IPlusUiHeadlessService auf                  │
 │  - Simuliert Input (Mouse, Keyboard)                │
 │  - Erhält Frames als PNG                            │
 └────────────────┬────────────────────────────────────┘
                  │
                  ▼
 ┌─────────────────────────────────────────────────────┐
-│            IHeadlessRenderService                    │
-│  + Task<byte[]> GetCurrentFrameAsync()              │
-│  + MouseMove(float x, float y)                      │
-│  + MouseDown()                                       │
-│  + MouseUp()                                         │
-│  + MouseWheel(float deltaX, float deltaY)           │
-│  + KeyPress(PlusKey key)                            │
-│  + CharInput(char c)                                │
-│  + Size FrameSize { get; set; }                     │
-│  + ImageFormat Format { get; set; }                 │
+│            IPlusUiHeadlessService                    │
+│  ┌─────────────────────────────────────────────┐    │
+│  │ Rendering                                   │    │
+│  │  + Task<byte[]> GetCurrentFrameAsync()      │    │
+│  │  + Size FrameSize { get; set; }             │    │
+│  │  + ImageFormat Format { get; set; }         │    │
+│  └─────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────┐    │
+│  │ Input                                       │    │
+│  │  + MouseMove(float x, float y)              │    │
+│  │  + MouseDown()                              │    │
+│  │  + MouseUp()                                │    │
+│  │  + MouseWheel(float deltaX, float deltaY)   │    │
+│  │  + KeyPress(PlusKey key)                    │    │
+│  │  + CharInput(char c)                        │    │
+│  └─────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────┐    │
+│  │ Utilities                                   │    │
+│  │  + WaitForAnimationsAsync()                 │    │
+│  │  + WaitForBindingUpdatesAsync()             │    │
+│  └─────────────────────────────────────────────┘    │
 └────────────────┬────────────────────────────────────┘
                  │
                  ▼
 ┌─────────────────────────────────────────────────────┐
-│         HeadlessRenderService (Implementation)       │
+│         PlusUiHeadlessService (Implementation)       │
 │  - Verwaltet aktuellen Frame-State                  │
 │  - Nutzt RenderService für Layout/Rendering         │
 │  - Nutzt InputService für Input-Propagation         │
@@ -69,16 +99,17 @@ Die Headless Platform ermöglicht die Ausführung von PlusUi-Anwendungen ohne gr
 
 ## 1. Service-Interface Design
 
-### IHeadlessRenderService Interface
+### IPlusUiHeadlessService Interface
 
 ```csharp
 namespace PlusUi.Headless.Services;
 
 /// <summary>
-/// Service für Headless-Rendering von PlusUi-Anwendungen.
-/// Ermöglicht programmatische Input-Simulation und Frame-Capturing.
+/// Zentrales Interface für Headless-Betrieb von PlusUi-Anwendungen.
+/// Ermöglicht programmatische Input-Simulation, Frame-Capturing und Konfiguration.
+/// Kombiniert Rendering, Input-Handling und Lifecycle-Management.
 /// </summary>
-public interface IHeadlessRenderService
+public interface IPlusUiHeadlessService
 {
     /// <summary>
     /// Rendert den aktuellen Frame on-demand und gibt ihn als Bilddaten zurück.
@@ -251,7 +282,7 @@ public class HeadlessKeyboardHandler : IKeyboardHandler
 
 ## 4. Render-Service Implementation
 
-### HeadlessRenderService
+### PlusUiHeadlessService
 
 **Verantwortlichkeiten:**
 - Frame-Rendering on-demand (kein kontinuierlicher Loop)
@@ -261,7 +292,7 @@ public class HeadlessKeyboardHandler : IKeyboardHandler
 
 **Technischer Ansatz:**
 ```csharp
-public class HeadlessRenderService : IHeadlessRenderService
+public class PlusUiHeadlessService : IPlusUiHeadlessService
 {
     private readonly RenderService _renderService;
     private readonly InputService _inputService;
@@ -405,10 +436,10 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<HeadlessKeyboardHandler>(keyboardHandler);
         builder.Services.AddSingleton<IKeyboardHandler>(keyboardHandler);
 
-        // Headless Render Service
-        builder.Services.AddSingleton<HeadlessRenderService>();
-        builder.Services.AddSingleton<IHeadlessRenderService>(
-            sp => sp.GetRequiredService<HeadlessRenderService>()
+        // Headless Service (zentrale Schnittstelle)
+        builder.Services.AddSingleton<PlusUiHeadlessService>();
+        builder.Services.AddSingleton<IPlusUiHeadlessService>(
+            sp => sp.GetRequiredService<PlusUiHeadlessService>()
         );
 
         return builder;
@@ -430,8 +461,8 @@ builder.UsePlusUiHeadless(
 
 var host = builder.Build();
 
-// Headless-Service holen
-var headless = host.Services.GetRequiredService<IHeadlessRenderService>();
+// Headless-Service holen (zentrale Schnittstelle für alles)
+var headless = host.Services.GetRequiredService<IPlusUiHeadlessService>();
 
 // Navigation zur Startseite
 var navigation = host.Services.GetRequiredService<INavigationService>();
@@ -461,7 +492,7 @@ frameBytes = await headless.GetCurrentFrameAsync();
 public class VisualRegressionTests
 {
     private IHost? _host;
-    private IHeadlessRenderService? _headless;
+    private IPlusUiHeadlessService? _headless;
 
     [TestInitialize]
     public async Task Setup()
@@ -475,7 +506,7 @@ public class VisualRegressionTests
         _host = builder.Build();
         await _host.StartAsync();
 
-        _headless = _host.Services.GetRequiredService<IHeadlessRenderService>();
+        _headless = _host.Services.GetRequiredService<IPlusUiHeadlessService>();
     }
 
     [TestCleanup]
@@ -600,9 +631,9 @@ public async Task ScrollView_MouseWheel_ScrollsContent()
 [Route("api/ui")]
 public class RemoteUiController : ControllerBase
 {
-    private readonly IHeadlessRenderService _headless;
+    private readonly IPlusUiHeadlessService _headless;
 
-    public RemoteUiController(IHeadlessRenderService headless)
+    public RemoteUiController(IPlusUiHeadlessService headless)
     {
         _headless = headless;
     }
@@ -649,8 +680,8 @@ public class RemoteUiController : ControllerBase
 ```
 PlusUi.Headless/
 ├── Services/
-│   ├── IHeadlessRenderService.cs
-│   ├── HeadlessRenderService.cs
+│   ├── IPlusUiHeadlessService.cs        ← Zentrales Interface
+│   ├── PlusUiHeadlessService.cs         ← Implementation
 │   ├── HeadlessPlatformService.cs
 │   └── HeadlessKeyboardHandler.cs
 ├── Enumerations/
@@ -756,7 +787,7 @@ PlusUi.Headless.Tests/
 6. `PlatformType.Headless` zu Enum hinzufügen
 
 ### Phase 2: Core Rendering
-7. `HeadlessRenderService` Grundgerüst
+7. `PlusUiHeadlessService` Grundgerüst (Implementation von `IPlusUiHeadlessService`)
 8. `GetCurrentFrameAsync()` mit PNG-Encoding
 9. Integration mit bestehendem `RenderService`
 10. Extension Method `UsePlusUiHeadless()`
@@ -785,7 +816,7 @@ PlusUi.Headless.Tests/
 
 | Risiko | Wahrscheinlichkeit | Impact | Mitigation |
 |--------|-------------------|--------|------------|
-| RenderService nicht thread-safe | Hoch | Hoch | Lock-Mechanismus in HeadlessRenderService |
+| RenderService nicht thread-safe | Hoch | Hoch | Lock-Mechanismus in PlusUiHeadlessService |
 | Memory Leaks bei häufigen Frames | Mittel | Hoch | Strikte Disposal-Pattern, Pooling |
 | Animation-Timing instabil | Mittel | Mittel | Configurable Delays, Event-basiertes Warten |
 | Multi-Instance Support fehlt | Niedrig | Mittel | Pro Test eigene Host-Instanz |
