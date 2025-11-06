@@ -25,11 +25,18 @@ Das zentrale Interface umfasst **Rendering + Input + Konfiguration** - es ist da
 - ✅ Folgt PlusUi Naming-Konvention mit `IPlusUi*` Präfix
 - ✅ Generisch genug für alle Headless-Szenarien (Tests, Remote, CI/CD)
 - ✅ Schlank und fokussiert: Konfiguration erfolgt beim Startup, nicht zur Laufzeit
+- ✅ Nutzt Standard `IAppConfiguration` wie Desktop (maximale Konsistenz!)
 
 **Alternative Namen (verworfen):**
 - `IHeadlessRenderService` - Zu eingeschränkt (nur Rendering im Namen, aber Interface macht auch Input)
 - `IFrameCaptureService` - Zu fokussiert auf Capturing (Input fehlt im Namen)
 - `IHeadlessUiService` - Weniger klar in der Zugehörigkeit zu PlusUi
+
+**Design-Entscheidung:**
+- **Keine** custom `IHeadlessAppConfiguration` - wir nutzen Standard `IAppConfiguration`!
+- Frame-Größe kommt aus `PlusUiConfiguration.Size` (wie Desktop Window-Size)
+- Nur `ImageFormat` ist headless-spezifisch (als Parameter bei `CreateApp()`)
+- Desktop-Pattern: **Maximal einfach, maximale Konsistenz!**
 
 ---
 
@@ -149,18 +156,17 @@ public interface IPlusUiHeadlessService
 ```csharp
 namespace PlusUi.Headless;
 
+/// <summary>
+/// Headless-spezifische Konfiguration (zusätzlich zu Standard PlusUiConfiguration).
+/// </summary>
 public class HeadlessConfiguration
 {
-    /// <summary>Frame-Breite in Pixel</summary>
-    public int Width { get; set; } = 1280;
-
-    /// <summary>Frame-Höhe in Pixel</summary>
-    public int Height { get; set; } = 720;
-
-    /// <summary>Ausgabeformat der Frames</summary>
+    /// <summary>Ausgabeformat der Frames (Standard: PNG)</summary>
     public ImageFormat Format { get; set; } = ImageFormat.Png;
 }
 ```
+
+**Hinweis:** Frame-Größe wird aus `PlusUiConfiguration.Size` übernommen (wie Desktop)!
 
 ### ImageFormat Enumeration
 
@@ -177,34 +183,6 @@ public enum ImageFormat
 
     /// <summary>WebP - Modern, gute Kompression</summary>
     WebP
-}
-```
-
-### IHeadlessAppConfiguration Interface
-
-```csharp
-namespace PlusUi.Headless;
-
-/// <summary>
-/// Konfigurationsinterface für Headless-Anwendungen.
-/// Erweitert das Standard-Pattern um headless-spezifische Konfiguration.
-/// </summary>
-public interface IHeadlessAppConfiguration
-{
-    /// <summary>
-    /// Konfiguriert die Headless-spezifischen Einstellungen (Frame-Größe, Format).
-    /// </summary>
-    void ConfigureHeadless(HeadlessConfiguration configuration);
-
-    /// <summary>
-    /// Konfiguriert zusätzliche Services und Dependencies.
-    /// </summary>
-    void ConfigureApp(HostApplicationBuilder builder);
-
-    /// <summary>
-    /// Gibt die Root-Page der Anwendung zurück.
-    /// </summary>
-    UiPageElement GetRootPage(IServiceProvider serviceProvider);
 }
 ```
 
@@ -415,36 +393,36 @@ public class PlusUiHeadlessService : IPlusUiHeadlessService
 
 ## 5. PlusUiApp & Service Registration
 
-### PlusUiApp Klasse (analog zu Desktop/H.264)
+### PlusUiApp Klasse (exakt wie Desktop)
 
 ```csharp
 namespace PlusUi.Headless;
 
 /// <summary>
 /// Entry-Point für Headless PlusUi-Anwendungen.
-/// Folgt dem gleichen Pattern wie Desktop und H.264 Plattformen.
+/// Folgt dem gleichen Pattern wie Desktop-Plattform.
 /// </summary>
 public class PlusUiApp(string[] args)
 {
-    public void CreateApp(Func<HostApplicationBuilder, IHeadlessAppConfiguration> appBuilder)
+    public void CreateApp(
+        Func<HostApplicationBuilder, IAppConfiguration> appBuilder,
+        ImageFormat format = ImageFormat.Png)
     {
         var builder = Host.CreateApplicationBuilder(args);
 
-        // User-Konfiguration holen
-        var headlessApp = appBuilder(builder);
+        // User-Konfiguration holen (Standard IAppConfiguration!)
+        var app = appBuilder(builder);
 
-        // Headless-Konfiguration via Options-Pattern
-        builder.Services.Configure<HeadlessConfiguration>(headlessApp.ConfigureHeadless);
+        // Core PlusUi Services registrieren
+        builder.UsePlusUiInternal(app, args);
 
-        // Core PlusUi Services registrieren (Navigation, Rendering, etc.)
-        var internalApp = new InternalAppWrapper(headlessApp);
-        builder.UsePlusUiInternal(internalApp, args);
+        // Frame-Größe aus PlusUiConfiguration extrahieren
+        var plusUiConfig = new PlusUiConfiguration();
+        app.ConfigureWindow(plusUiConfig);
+        var frameSize = new Size(plusUiConfig.Size.X, plusUiConfig.Size.Y);
 
         // Headless Platform Service
-        var config = new HeadlessConfiguration();
-        headlessApp.ConfigureHeadless(config);
-
-        var platformService = new HeadlessPlatformService(new Size(config.Width, config.Height));
+        var platformService = new HeadlessPlatformService(frameSize);
         builder.Services.AddSingleton<HeadlessPlatformService>(platformService);
         builder.Services.AddSingleton<IPlatformService>(platformService);
 
@@ -460,13 +438,13 @@ public class PlusUiApp(string[] args)
                 sp.GetRequiredService<InputService>(),
                 sp.GetRequiredService<HeadlessPlatformService>(),
                 sp.GetRequiredService<HeadlessKeyboardHandler>(),
-                new Size(config.Width, config.Height),
-                config.Format
+                frameSize,
+                format
             )
         );
 
         // User-App konfigurieren lassen
-        builder.ConfigurePlusUiApp(internalApp);
+        builder.ConfigurePlusUiApp(app);
 
         var host = builder.Build();
 
@@ -474,36 +452,41 @@ public class PlusUiApp(string[] args)
         // User hat volle Kontrolle über Lifecycle
     }
 
-    public IHost Build(Func<HostApplicationBuilder, IHeadlessAppConfiguration> appBuilder)
+    public IHost Build(
+        Func<HostApplicationBuilder, IAppConfiguration> appBuilder,
+        ImageFormat format = ImageFormat.Png)
     {
         var builder = Host.CreateApplicationBuilder(args);
-        var headlessApp = appBuilder(builder);
+        var app = appBuilder(builder);
 
-        // ... gleiche Registrierung wie oben ...
+        builder.UsePlusUiInternal(app, args);
+
+        var plusUiConfig = new PlusUiConfiguration();
+        app.ConfigureWindow(plusUiConfig);
+        var frameSize = new Size(plusUiConfig.Size.X, plusUiConfig.Size.Y);
+
+        var platformService = new HeadlessPlatformService(frameSize);
+        builder.Services.AddSingleton<HeadlessPlatformService>(platformService);
+        builder.Services.AddSingleton<IPlatformService>(platformService);
+
+        var keyboardHandler = new HeadlessKeyboardHandler();
+        builder.Services.AddSingleton<HeadlessKeyboardHandler>(keyboardHandler);
+        builder.Services.AddSingleton<IKeyboardHandler>(keyboardHandler);
+
+        builder.Services.AddSingleton<IPlusUiHeadlessService>(sp =>
+            new PlusUiHeadlessService(
+                sp.GetRequiredService<RenderService>(),
+                sp.GetRequiredService<InputService>(),
+                sp.GetRequiredService<HeadlessPlatformService>(),
+                sp.GetRequiredService<HeadlessKeyboardHandler>(),
+                frameSize,
+                format
+            )
+        );
+
+        builder.ConfigurePlusUiApp(app);
 
         return builder.Build();
-    }
-}
-```
-
-### InternalAppWrapper (Helper-Klasse)
-
-```csharp
-internal class InternalAppWrapper(IHeadlessAppConfiguration headlessApp) : IAppConfiguration
-{
-    public void ConfigureWindow(PlusUiConfiguration configuration)
-    {
-        // Headless braucht kein Window - no-op
-    }
-
-    public void ConfigureApp(HostApplicationBuilder builder)
-    {
-        headlessApp.ConfigureApp(builder);
-    }
-
-    public UiPageElement GetRootPage(IServiceProvider serviceProvider)
-    {
-        return headlessApp.GetRootPage(serviceProvider);
     }
 }
 ```
@@ -511,14 +494,15 @@ internal class InternalAppWrapper(IHeadlessAppConfiguration headlessApp) : IAppC
 ### Usage Example
 
 ```csharp
-// Headless-App Konfiguration
-public class MyHeadlessApp : IHeadlessAppConfiguration
+// Headless-App Konfiguration (Standard IAppConfiguration wie Desktop!)
+public class MyHeadlessApp : IAppConfiguration
 {
-    public void ConfigureHeadless(HeadlessConfiguration configuration)
+    public void ConfigureWindow(PlusUiConfiguration configuration)
     {
-        configuration.Width = 1920;
-        configuration.Height = 1080;
-        configuration.Format = ImageFormat.Png;
+        // Nur Size wird verwendet für Frame-Größe
+        configuration.Size = new SizeI(1920, 1080);
+
+        // Andere Properties werden ignoriert (Title, WindowState, etc.)
     }
 
     public void ConfigureApp(HostApplicationBuilder builder)
@@ -534,9 +518,12 @@ public class MyHeadlessApp : IHeadlessAppConfiguration
     }
 }
 
-// Test oder Headless-Nutzung
+// App starten (genau wie Desktop, nur mit optionalem Format-Parameter)
 var app = new PlusUiApp(args);
-var host = app.Build(builder => new MyHeadlessApp());
+var host = app.Build(
+    builder => new MyHeadlessApp(),
+    format: ImageFormat.Png  // Optional, default ist PNG
+);
 
 await host.StartAsync();
 
@@ -586,14 +573,13 @@ public class VisualRegressionTests
     }
 }
 
-// Test-App Konfiguration
-public class TestHeadlessApp : IHeadlessAppConfiguration
+// Test-App Konfiguration (Standard IAppConfiguration!)
+public class TestHeadlessApp : IAppConfiguration
 {
-    public void ConfigureHeadless(HeadlessConfiguration configuration)
+    public void ConfigureWindow(PlusUiConfiguration configuration)
     {
-        configuration.Width = 1280;
-        configuration.Height = 720;
-        configuration.Format = ImageFormat.Png;
+        configuration.Size = new SizeI(1280, 720);
+        // Andere Properties ignoriert (Title, WindowState, etc.)
     }
 
     public void ConfigureApp(HostApplicationBuilder builder)
@@ -778,10 +764,8 @@ PlusUi.Headless/
 │   └── HeadlessKeyboardHandler.cs
 ├── Enumerations/
 │   └── ImageFormat.cs
-├── HeadlessConfiguration.cs             ← Konfigurationsklasse
-├── IHeadlessAppConfiguration.cs         ← App-Konfig-Interface
-├── PlusUiApp.cs                         ← Entry-Point (wie Desktop/H.264)
-├── InternalAppWrapper.cs                ← Helper für IAppConfiguration
+├── HeadlessConfiguration.cs             ← Minimale Config (nur Format)
+├── PlusUiApp.cs                         ← Entry-Point (wie Desktop)
 └── PlusUi.Headless.csproj
 
 PlusUi.Headless.Tests/
@@ -859,35 +843,33 @@ PlusUi.Headless.Tests/
 ### Phase 1: Grundstruktur (Minimal Viable Product)
 1. PlusUi.Headless Projekt anlegen
 2. `ImageFormat` Enum erstellen
-3. `HeadlessConfiguration` Klasse erstellen
-4. `IHeadlessAppConfiguration` Interface definieren
-5. `IPlusUiHeadlessService` Interface definieren
-6. `HeadlessPlatformService` implementieren
-7. `HeadlessKeyboardHandler` implementieren
-8. `PlatformType.Headless` zu Enum hinzufügen
+3. `HeadlessConfiguration` Klasse erstellen (minimale Config)
+4. `IPlusUiHeadlessService` Interface definieren
+5. `HeadlessPlatformService` implementieren
+6. `HeadlessKeyboardHandler` implementieren
+7. `PlatformType.Headless` zu Enum hinzufügen
 
 ### Phase 2: Core Rendering & App Setup
-9. `PlusUiHeadlessService` Grundgerüst (Implementation von `IPlusUiHeadlessService`)
-10. `GetCurrentFrameAsync()` mit PNG-Encoding
-11. Integration mit bestehendem `RenderService`
-12. `PlusUiApp` Klasse erstellen (analog zu Desktop/H.264)
-13. `InternalAppWrapper` Helper-Klasse
+8. `PlusUiHeadlessService` Grundgerüst (Implementation von `IPlusUiHeadlessService`)
+9. `GetCurrentFrameAsync()` mit PNG-Encoding
+10. Integration mit bestehendem `RenderService`
+11. `PlusUiApp` Klasse erstellen (exakt wie Desktop, nutzt `IAppConfiguration`)
 
 ### Phase 3: Input-System
-14. Mouse-Input-Methoden implementieren
-15. Keyboard-Input-Methoden implementieren
-16. Integration mit bestehendem `InputService`
+12. Mouse-Input-Methoden implementieren
+13. Keyboard-Input-Methoden implementieren
+14. Integration mit bestehendem `InputService`
 
 ### Phase 4: Testing & Validation
-17. Erstes Test-Projekt erstellen
-18. Sample-App für Headless-Tests (mit `IHeadlessAppConfiguration`)
-19. Visual Regression Test schreiben
-20. Interaction Test schreiben
+15. Erstes Test-Projekt erstellen
+16. Sample-App für Headless-Tests (mit Standard `IAppConfiguration`)
+17. Visual Regression Test schreiben
+18. Interaction Test schreiben
 
 ### Phase 5: Polish & Documentation
-21. JPEG/WebP Format-Support
-22. Performance-Optimierungen
-23. Dokumentation & Beispiele
+19. JPEG/WebP Format-Support
+20. Performance-Optimierungen
+21. Dokumentation & Beispiele
 
 ---
 
