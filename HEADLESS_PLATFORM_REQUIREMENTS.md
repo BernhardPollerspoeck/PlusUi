@@ -613,122 +613,9 @@ public class TestHeadlessApp : IAppConfiguration
 }
 ```
 
-### 6.2 Interaction Testing
-
-```csharp
-[TestMethod]
-public async Task Entry_TypeText_UpdatesValue()
-{
-    // Arrange
-    var navigation = _host!.Services.GetRequiredService<INavigationService>();
-    navigation.NavigateTo<LoginPage>();
-
-    var viewModel = _host.Services.GetRequiredService<LoginViewModel>();
-
-    // Act - Click on entry field
-    _headless!.MouseMove(400, 300);
-    _headless.MouseDown();
-    _headless.MouseUp();
-
-    // Type text
-    foreach (var c in "testuser")
-    {
-        _headless.CharInput(c);
-    }
-
-    // Assert
-    Assert.AreEqual("testuser", viewModel.Username);
-
-    // Visual verification
-    var frame = await _headless.GetCurrentFrameAsync();
-    File.WriteAllBytes("test_output.png", frame);
-}
-```
-
-### 6.3 Scroll Testing
-
-```csharp
-[TestMethod]
-public async Task ScrollView_MouseWheel_ScrollsContent()
-{
-    // Arrange
-    var navigation = _host!.Services.GetRequiredService<INavigationService>();
-    navigation.NavigateTo<ScrollTestPage>();
-
-    // Capture initial state
-    var frameBefore = await _headless!.GetCurrentFrameAsync();
-
-    // Act - Scroll down
-    _headless.MouseMove(640, 360);
-    _headless.MouseWheel(0, -100); // Negative = scroll down
-
-    await Task.Delay(100); // Allow scroll animation
-
-    var frameAfter = await _headless.GetCurrentFrameAsync();
-
-    // Assert - Frames should be different
-    Assert.IsFalse(frameBefore.SequenceEqual(frameAfter));
-}
-```
-
 ---
 
-## 7. Remote/Cloud Usage Scenario
-
-### Frame-Streaming Server (Konzept)
-
-```csharp
-// WebAPI Endpoint für Remote-Rendering
-
-[ApiController]
-[Route("api/ui")]
-public class RemoteUiController : ControllerBase
-{
-    private readonly IPlusUiHeadlessService _headless;
-
-    public RemoteUiController(IPlusUiHeadlessService headless)
-    {
-        _headless = headless;
-    }
-
-    [HttpGet("frame")]
-    public async Task<IActionResult> GetFrame()
-    {
-        var frame = await _headless.GetCurrentFrameAsync();
-        return File(frame, "image/png");
-    }
-
-    [HttpPost("input/mouse/move")]
-    public IActionResult MouseMove([FromBody] MousePosition pos)
-    {
-        _headless.MouseMove(pos.X, pos.Y);
-        return Ok();
-    }
-
-    [HttpPost("input/mouse/click")]
-    public IActionResult MouseClick()
-    {
-        _headless.MouseDown();
-        _headless.MouseUp();
-        return Ok();
-    }
-
-    [HttpPost("input/keyboard")]
-    public IActionResult KeyPress([FromBody] KeyInput input)
-    {
-        if (input.Char.HasValue)
-            _headless.CharInput(input.Char.Value);
-        else if (input.Key.HasValue)
-            _headless.KeyPress(input.Key.Value);
-
-        return Ok();
-    }
-}
-```
-
----
-
-## 8. Projektstruktur
+## 7. Projektstruktur
 
 ```
 PlusUi.Headless/
@@ -755,7 +642,7 @@ PlusUi.Headless.Tests/
 
 ---
 
-## 9. Dependencies
+## 8. Dependencies
 
 **PlusUi.Headless.csproj:**
 ```xml
@@ -795,7 +682,7 @@ PlusUi.Headless.Tests/
 
 ---
 
-## 10. Performance-Überlegungen
+## 9. Performance-Überlegungen
 
 ### Memory Management
 - **SKBitmap Disposal**: Jeder Frame muss ordnungsgemäß disposed werden
@@ -813,7 +700,7 @@ PlusUi.Headless.Tests/
 
 ---
 
-## 11. Implementierungsplan (Phasen)
+## 10. Implementierungsplan (Phasen)
 
 ### Phase 1: Grundstruktur (Minimal Viable Product)
 1. PlusUi.Headless Projekt anlegen
@@ -848,7 +735,7 @@ PlusUi.Headless.Tests/
 
 ---
 
-## 12. Zusammenfassung
+## 11. Zusammenfassung
 
 Die Headless Platform ist ein **schlankes Add-on** zum bestehenden PlusUi-Framework:
 
