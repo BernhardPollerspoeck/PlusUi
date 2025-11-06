@@ -35,8 +35,10 @@ Das zentrale Interface umfasst **Rendering + Input + Konfiguration** - es ist da
 **Design-Entscheidung:**
 - **Keine** custom `IHeadlessAppConfiguration` - wir nutzen Standard `IAppConfiguration`!
 - **Keine** `HeadlessConfiguration` Klasse - nicht benötigt!
+- **Zwei Nutzungsmuster**: `AddPlusUiHeadless()` Extension (Hauptweg) + `PlusUiApp` (optional)
 - Frame-Größe kommt aus `PlusUiConfiguration.Size` (wie Desktop Window-Size)
-- ImageFormat als einfacher Parameter bei `CreateApp()/Build()`
+- ImageFormat als einfacher Parameter bei `AddPlusUiHeadless()/Build()`
+- **Integration First**: Extension Method für Einbetten in bestehende Apps (Tests, Services)
 - Desktop-Pattern: **Maximal einfach, maximale Konsistenz!**
 
 ---
@@ -375,9 +377,135 @@ public class PlusUiHeadlessService : IPlusUiHeadlessService
 
 ---
 
-## 5. PlusUiApp & Service Registration
+## 5. Integration & Service Registration
 
-### PlusUiApp Klasse (exakt wie Desktop)
+### Zwei Nutzungs-Szenarien
+
+**Szenario 1: Standalone** (einfache Nutzung, eigener Host)
+- Für schnelle Tests, Prototyping, einfache Szenarien
+- `PlusUiApp` erstellt eigenen Host
+
+**Szenario 2: Integration** (in bestehende App einbetten)
+- Für komplexe Test-Infrastruktur, Web-Services, CI/CD
+- Extension Method registriert Services in bestehendem Host
+
+---
+
+### Integration: Extension Method (empfohlen für Tests)
+
+```csharp
+namespace PlusUi.Headless.Extensions;
+
+/// <summary>
+/// Extension Methods für Integration von PlusUi Headless in bestehende Hosts.
+/// </summary>
+public static class HostApplicationBuilderExtensions
+{
+    /// <summary>
+    /// Registriert PlusUi Headless in einem bestehenden HostApplicationBuilder.
+    /// Für Integration in Test-Infrastruktur, Web-Services, etc.
+    /// </summary>
+    public static IHostApplicationBuilder AddPlusUiHeadless(
+        this IHostApplicationBuilder builder,
+        IAppConfiguration appConfiguration,
+        ImageFormat format = ImageFormat.Png)
+    {
+        // Core PlusUi Services registrieren
+        builder.UsePlusUiInternal(appConfiguration, args: null);
+
+        // Frame-Größe aus PlusUiConfiguration extrahieren
+        var plusUiConfig = new PlusUiConfiguration();
+        appConfiguration.ConfigureWindow(plusUiConfig);
+        var frameSize = new Size(plusUiConfig.Size.X, plusUiConfig.Size.Y);
+
+        // Headless Platform Service
+        var platformService = new HeadlessPlatformService(frameSize);
+        builder.Services.AddSingleton<HeadlessPlatformService>(platformService);
+        builder.Services.AddSingleton<IPlatformService>(platformService);
+
+        // Headless Keyboard Handler
+        var keyboardHandler = new HeadlessKeyboardHandler();
+        builder.Services.AddSingleton<HeadlessKeyboardHandler>(keyboardHandler);
+        builder.Services.AddSingleton<IKeyboardHandler>(keyboardHandler);
+
+        // Headless Service (zentrale Schnittstelle)
+        builder.Services.AddSingleton<IPlusUiHeadlessService>(sp =>
+            new PlusUiHeadlessService(
+                sp.GetRequiredService<RenderService>(),
+                sp.GetRequiredService<InputService>(),
+                sp.GetRequiredService<HeadlessPlatformService>(),
+                sp.GetRequiredService<HeadlessKeyboardHandler>(),
+                frameSize,
+                format
+            )
+        );
+
+        // User-App konfigurieren lassen
+        builder.ConfigurePlusUiApp(appConfiguration);
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Registriert PlusUi Headless mit Func-basierter App-Konfiguration.
+    /// </summary>
+    public static IHostApplicationBuilder AddPlusUiHeadless(
+        this IHostApplicationBuilder builder,
+        Func<HostApplicationBuilder, IAppConfiguration> appBuilder,
+        ImageFormat format = ImageFormat.Png)
+    {
+        var appConfig = appBuilder(builder);
+        return builder.AddPlusUiHeadless(appConfig, format);
+    }
+}
+```
+
+### Integration: Usage Example
+
+```csharp
+// In Test-Projekt - Integration in bestehenden Host
+public class VisualRegressionTests
+{
+    private IHost? _host;
+    private IPlusUiHeadlessService? _headless;
+
+    [TestInitialize]
+    public async Task Setup()
+    {
+        // Bestehender Builder (z.B. aus Test-Infrastruktur)
+        var builder = Host.CreateApplicationBuilder();
+
+        // Weitere Test-Services registrieren
+        builder.Services.AddSingleton<ITestLogger, TestLogger>();
+        builder.Services.AddSingleton<IScreenshotComparer, ScreenshotComparer>();
+
+        // PlusUi Headless integrieren
+        builder.AddPlusUiHeadless(
+            appConfiguration: new TestHeadlessApp(),
+            format: ImageFormat.Png
+        );
+
+        _host = builder.Build();
+        await _host.StartAsync();
+
+        _headless = _host.Services.GetRequiredService<IPlusUiHeadlessService>();
+    }
+
+    [TestCleanup]
+    public async Task Cleanup()
+    {
+        if (_host is not null)
+            await _host.StopAsync();
+    }
+}
+
+// Oder mit Func-basiertem Builder
+var builder = Host.CreateApplicationBuilder();
+builder.AddPlusUiHeadless(b => new MyHeadlessApp());
+var host = builder.Build();
+```
+
+### Standalone: PlusUiApp Klasse (für einfache Szenarien)
 
 ```csharp
 namespace PlusUi.Headless;
@@ -475,25 +603,20 @@ public class PlusUiApp(string[] args)
 }
 ```
 
-### Usage Example
+### Usage Example (Integration Pattern)
 
 ```csharp
-// Headless-App Konfiguration (Standard IAppConfiguration wie Desktop!)
-public class MyHeadlessApp : IAppConfiguration
+// Test-App Konfiguration (Standard IAppConfiguration!)
+public class TestHeadlessApp : IAppConfiguration
 {
     public void ConfigureWindow(PlusUiConfiguration configuration)
     {
-        // Nur Size wird verwendet für Frame-Größe
-        configuration.Size = new SizeI(1920, 1080);
-
-        // Andere Properties werden ignoriert (Title, WindowState, etc.)
+        configuration.Size = new SizeI(1280, 720);
     }
 
     public void ConfigureApp(HostApplicationBuilder builder)
     {
-        // Pages und ViewModels registrieren
         builder.AddPage<MainPage>().WithViewModel<MainViewModel>();
-        builder.StylePlusUi<MyAppStyles>();
     }
 
     public UiPageElement GetRootPage(IServiceProvider serviceProvider)
@@ -502,35 +625,31 @@ public class MyHeadlessApp : IAppConfiguration
     }
 }
 
-// App starten (genau wie Desktop, nur mit optionalem Format-Parameter)
-var app = new PlusUiApp(args);
-var host = app.Build(
-    builder => new MyHeadlessApp(),
-    format: ImageFormat.Png  // Optional, default ist PNG
-);
+// Integration in Test-Framework
+[TestClass]
+public class MyTests
+{
+    private IHost? _host;
+    private IPlusUiHeadlessService? _headless;
 
-await host.StartAsync();
+    [TestInitialize]
+    public async Task Setup()
+    {
+        var builder = Host.CreateApplicationBuilder();
 
-// Headless-Service holen
-var headless = host.Services.GetRequiredService<IPlusUiHeadlessService>();
+        // PlusUi Headless integrieren
+        builder.AddPlusUiHeadless(new TestHeadlessApp(), ImageFormat.Png);
 
-// Navigation zur Startseite (passiert automatisch durch GetRootPage)
-var navigation = host.Services.GetRequiredService<INavigationService>();
+        _host = builder.Build();
+        await _host.StartAsync();
 
-// Frame rendern
-var frameBytes = await headless.GetCurrentFrameAsync();
-File.WriteAllBytes("screenshot.png", frameBytes);
+        _headless = _host.Services.GetRequiredService<IPlusUiHeadlessService>();
+    }
 
-// Input simulieren
-headless.MouseMove(100, 200);
-headless.MouseDown();
-headless.MouseUp();
+    [TestCleanup]
 
-// Neuen Frame nach Interaktion
-frameBytes = await headless.GetCurrentFrameAsync();
-
-await host.StopAsync();
-```
+**Empfehlung:** Für Tests und komplexe Szenarien → `AddPlusUiHeadless()` Extension
+Für schnelle Prototypen → `PlusUiApp`
 
 ---
 
@@ -548,9 +667,12 @@ public class VisualRegressionTests
     [TestInitialize]
     public async Task Setup()
     {
-        var app = new PlusUiApp(Array.Empty<string>());
-        _host = app.Build(builder => new TestHeadlessApp());
+        var builder = Host.CreateApplicationBuilder();
 
+        // PlusUi Headless integrieren
+        builder.AddPlusUiHeadless(new TestHeadlessApp());
+
+        _host = builder.Build();
         await _host.StartAsync();
 
         _headless = _host.Services.GetRequiredService<IPlusUiHeadlessService>();
@@ -746,9 +868,11 @@ PlusUi.Headless/
 │   ├── PlusUiHeadlessService.cs         ← Implementation
 │   ├── HeadlessPlatformService.cs
 │   └── HeadlessKeyboardHandler.cs
+├── Extensions/
+│   └── HostApplicationBuilderExtensions.cs  ← AddPlusUiHeadless() - HAUPTWEG
 ├── Enumerations/
 │   └── ImageFormat.cs
-├── PlusUiApp.cs                         ← Entry-Point (wie Desktop)
+├── PlusUiApp.cs                         ← Standalone Entry-Point (optional)
 └── PlusUi.Headless.csproj
 
 PlusUi.Headless.Tests/
@@ -835,23 +959,24 @@ PlusUi.Headless.Tests/
 7. `PlusUiHeadlessService` Grundgerüst (Implementation von `IPlusUiHeadlessService`)
 8. `GetCurrentFrameAsync()` mit PNG-Encoding
 9. Integration mit bestehendem `RenderService`
-10. `PlusUiApp` Klasse erstellen (exakt wie Desktop, nutzt `IAppConfiguration`)
+10. **`AddPlusUiHeadless()` Extension Method** (Integration-Pattern - Hauptweg!)
+11. `PlusUiApp` Klasse erstellen (Standalone-Pattern - optional)
 
 ### Phase 3: Input-System
-11. Mouse-Input-Methoden implementieren
-12. Keyboard-Input-Methoden implementieren
-13. Integration mit bestehendem `InputService`
+12. Mouse-Input-Methoden implementieren
+13. Keyboard-Input-Methoden implementieren
+14. Integration mit bestehendem `InputService`
 
 ### Phase 4: Testing & Validation
-14. Erstes Test-Projekt erstellen
-15. Sample-App für Headless-Tests (mit Standard `IAppConfiguration`)
-16. Visual Regression Test schreiben
-17. Interaction Test schreiben
+15. Erstes Test-Projekt erstellen (mit `AddPlusUiHeadless()`)
+16. Sample-App für Headless-Tests (mit Standard `IAppConfiguration`)
+17. Visual Regression Test schreiben
+18. Interaction Test schreiben
 
 ### Phase 5: Polish & Documentation
-18. JPEG/WebP Format-Support
-19. Performance-Optimierungen
-20. Dokumentation & Beispiele
+19. JPEG/WebP Format-Support
+20. Performance-Optimierungen
+21. Dokumentation & Beispiele
 
 ---
 
