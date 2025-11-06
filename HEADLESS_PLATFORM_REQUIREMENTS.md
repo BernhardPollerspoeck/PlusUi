@@ -34,8 +34,9 @@ Das zentrale Interface umfasst **Rendering + Input + Konfiguration** - es ist da
 
 **Design-Entscheidung:**
 - **Keine** custom `IHeadlessAppConfiguration` - wir nutzen Standard `IAppConfiguration`!
+- **Keine** `HeadlessConfiguration` Klasse - nicht benötigt!
 - Frame-Größe kommt aus `PlusUiConfiguration.Size` (wie Desktop Window-Size)
-- Nur `ImageFormat` ist headless-spezifisch (als Parameter bei `CreateApp()`)
+- ImageFormat als einfacher Parameter bei `CreateApp()/Build()`
 - Desktop-Pattern: **Maximal einfach, maximale Konsistenz!**
 
 ---
@@ -150,23 +151,6 @@ public interface IPlusUiHeadlessService
     void CharInput(char c);
 }
 ```
-
-### HeadlessConfiguration Klasse
-
-```csharp
-namespace PlusUi.Headless;
-
-/// <summary>
-/// Headless-spezifische Konfiguration (zusätzlich zu Standard PlusUiConfiguration).
-/// </summary>
-public class HeadlessConfiguration
-{
-    /// <summary>Ausgabeformat der Frames (Standard: PNG)</summary>
-    public ImageFormat Format { get; set; } = ImageFormat.Png;
-}
-```
-
-**Hinweis:** Frame-Größe wird aus `PlusUiConfiguration.Size` übernommen (wie Desktop)!
 
 ### ImageFormat Enumeration
 
@@ -764,7 +748,6 @@ PlusUi.Headless/
 │   └── HeadlessKeyboardHandler.cs
 ├── Enumerations/
 │   └── ImageFormat.cs
-├── HeadlessConfiguration.cs             ← Minimale Config (nur Format)
 ├── PlusUiApp.cs                         ← Entry-Point (wie Desktop)
 └── PlusUi.Headless.csproj
 
@@ -843,33 +826,32 @@ PlusUi.Headless.Tests/
 ### Phase 1: Grundstruktur (Minimal Viable Product)
 1. PlusUi.Headless Projekt anlegen
 2. `ImageFormat` Enum erstellen
-3. `HeadlessConfiguration` Klasse erstellen (minimale Config)
-4. `IPlusUiHeadlessService` Interface definieren
-5. `HeadlessPlatformService` implementieren
-6. `HeadlessKeyboardHandler` implementieren
-7. `PlatformType.Headless` zu Enum hinzufügen
+3. `IPlusUiHeadlessService` Interface definieren
+4. `HeadlessPlatformService` implementieren
+5. `HeadlessKeyboardHandler` implementieren
+6. `PlatformType.Headless` zu Enum hinzufügen
 
 ### Phase 2: Core Rendering & App Setup
-8. `PlusUiHeadlessService` Grundgerüst (Implementation von `IPlusUiHeadlessService`)
-9. `GetCurrentFrameAsync()` mit PNG-Encoding
-10. Integration mit bestehendem `RenderService`
-11. `PlusUiApp` Klasse erstellen (exakt wie Desktop, nutzt `IAppConfiguration`)
+7. `PlusUiHeadlessService` Grundgerüst (Implementation von `IPlusUiHeadlessService`)
+8. `GetCurrentFrameAsync()` mit PNG-Encoding
+9. Integration mit bestehendem `RenderService`
+10. `PlusUiApp` Klasse erstellen (exakt wie Desktop, nutzt `IAppConfiguration`)
 
 ### Phase 3: Input-System
-12. Mouse-Input-Methoden implementieren
-13. Keyboard-Input-Methoden implementieren
-14. Integration mit bestehendem `InputService`
+11. Mouse-Input-Methoden implementieren
+12. Keyboard-Input-Methoden implementieren
+13. Integration mit bestehendem `InputService`
 
 ### Phase 4: Testing & Validation
-15. Erstes Test-Projekt erstellen
-16. Sample-App für Headless-Tests (mit Standard `IAppConfiguration`)
-17. Visual Regression Test schreiben
-18. Interaction Test schreiben
+14. Erstes Test-Projekt erstellen
+15. Sample-App für Headless-Tests (mit Standard `IAppConfiguration`)
+16. Visual Regression Test schreiben
+17. Interaction Test schreiben
 
 ### Phase 5: Polish & Documentation
-19. JPEG/WebP Format-Support
-20. Performance-Optimierungen
-21. Dokumentation & Beispiele
+18. JPEG/WebP Format-Support
+19. Performance-Optimierungen
+20. Dokumentation & Beispiele
 
 ---
 
