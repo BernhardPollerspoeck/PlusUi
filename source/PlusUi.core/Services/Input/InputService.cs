@@ -67,18 +67,12 @@ public class InputService
         _isMousePressed = false;
 
         // End any active drag operation
-        if (_activeDragControl != null)
-        {
-            _activeDragControl.IsDragging = false;
-            _activeDragControl = null;
-        }
+        _activeDragControl?.IsDragging = false;
+        _activeDragControl = null;
 
         // End any active scrolling operation
-        if (_activeScrollControl != null)
-        {
-            _activeScrollControl.IsScrolling = false;
-            _activeScrollControl = null;
-        }
+        _activeScrollControl?.IsScrolling = false;
+        _activeScrollControl = null;
 
         //we have an up action
         var currentPopup = _popupService.CurrentPopup;

@@ -1,5 +1,4 @@
-﻿using Silk.NET.Maths;
-using Silk.NET.OpenGL;
+﻿using Silk.NET.OpenGL;
 using SkiaSharp;
 using System.Numerics;
 using Microsoft.Extensions.Logging;

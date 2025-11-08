@@ -152,7 +152,7 @@ public abstract class UiElement : IDisposable
     #endregion
 
     #region HorizontalAlignment
-    internal HorizontalAlignment HorizontalAlignment
+    internal virtual HorizontalAlignment HorizontalAlignment
     {
         get => field;
         set
@@ -174,7 +174,7 @@ public abstract class UiElement : IDisposable
     #endregion
 
     #region VerticalAlignment
-    internal VerticalAlignment VerticalAlignment
+    internal virtual VerticalAlignment VerticalAlignment
     {
         get => field;
         set
@@ -297,7 +297,7 @@ public abstract class UiElement : IDisposable
     #endregion
 
     #region size
-    internal Size? DesiredSize
+    internal virtual Size? DesiredSize
     {
         get => field;
         set
@@ -365,14 +365,14 @@ public abstract class UiElement : IDisposable
             var desiredWidth = DesiredSize?.Width >= 0
                 ? Math.Min(DesiredSize.Value.Width, availableSize.Width)
                 : !dontStretch && HorizontalAlignment == HorizontalAlignment.Stretch
-                    ? availableSize.Width
+                    ? availableSize.Width - Margin.Horizontal
                     : Math.Min(measuredSize.Width, availableSize.Width);
 
             // For height: Use DesiredSize if set, or stretch to available height if alignment is Stretch, otherwise use measured height
             var desiredHeight = DesiredSize?.Height >= 0
                 ? Math.Min(DesiredSize.Value.Height, availableSize.Height)
                 : !dontStretch && VerticalAlignment == VerticalAlignment.Stretch
-                    ? availableSize.Height
+                    ? availableSize.Height - Margin.Vertical
                     : Math.Min(measuredSize.Height, availableSize.Height);
 
             // Constrain to available size
@@ -449,10 +449,10 @@ public abstract class UiElement : IDisposable
     private SKPaint GetShadowPaint()
     {
         _cachedShadowPaint ??= new SKPaint
-            {
-                IsAntialias = true,
-                ImageFilter = GetShadowFilter()
-            };
+        {
+            IsAntialias = true,
+            ImageFilter = GetShadowFilter()
+        };
         return _cachedShadowPaint;
     }
     #endregion

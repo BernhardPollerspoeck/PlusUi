@@ -171,7 +171,7 @@ public partial class Entry : UiTextElement, ITextInputControl
         // Determine what text to display
         var hasText = !string.IsNullOrEmpty(Text);
         var displayText = hasText
-            ? (IsPassword ? new string(PasswordChar, Text.Length) : Text!)
+            ? (IsPassword ? new string(PasswordChar, Text!.Length) : Text!)
             : (Placeholder ?? string.Empty);
 
         // Save original color and temporarily change if showing placeholder

@@ -41,7 +41,24 @@ public partial class HStack : UiLayoutElement
     #region measure/arrange
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        Children.ForEach(c => c.Measure(availableSize, dontStretch));
+        var childAvailableSize = new Size(availableSize.Width, availableSize.Height);
+
+        //first measure all not stretching children
+        foreach (var child in Children.Where(c => c.HorizontalAlignment is not HorizontalAlignment.Stretch))
+        {
+            var result = child.Measure(childAvailableSize, dontStretch);
+            childAvailableSize = new Size(
+                Math.Max(0, childAvailableSize.Width - (result.Width + child.Margin.Horizontal)),
+                childAvailableSize.Height);
+        }
+
+        //split available space for stretching children
+        var stretchingChildren = Children.Where(c => c.HorizontalAlignment is HorizontalAlignment.Stretch).ToList();
+        var stretchWidth = stretchingChildren.Count > 0
+            ? childAvailableSize.Width / stretchingChildren.Count
+            : 0;
+        stretchingChildren.ForEach(child => child.Measure(new Size(stretchWidth, childAvailableSize.Height), dontStretch));
+
         var width = Children.Sum(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right);
         var height = Children.Max(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom);
         return new Size(width, height);

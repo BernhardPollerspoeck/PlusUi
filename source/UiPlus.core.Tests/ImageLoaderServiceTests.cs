@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using PlusUi.core;
 using SkiaSharp;
 
@@ -10,26 +11,38 @@ namespace UiPlus.core.Tests;
 [TestClass]
 public sealed class ImageLoaderServiceTests
 {
+
+    private ImageLoaderService _imageLoaderService = null!;
+
+    [TestInitialize]
+    public void Setup()
+    {
+        var configuration = new PlusUiConfiguration();
+        var options = Options.Create(configuration);
+        _imageLoaderService = new ImageLoaderService(options);
+    }
+
+
     [TestMethod]
     public void TestImageLoader_NullSource_DoesNotThrow()
     {
         // Arrange & Act
-        var result = ImageLoaderService.LoadImage(null);
+        var (staticImage, animatedImage) = _imageLoaderService.LoadImage(null);
 
         // Assert - Should return (null, null) without throwing
-        Assert.IsNull(result.staticImage);
-        Assert.IsNull(result.animatedImage);
+        Assert.IsNull(staticImage);
+        Assert.IsNull(animatedImage);
     }
 
     [TestMethod]
     public void TestImageLoader_EmptySource_DoesNotThrow()
     {
         // Arrange & Act
-        var result = ImageLoaderService.LoadImage("");
+        var (staticImage, animatedImage) = _imageLoaderService.LoadImage("");
 
         // Assert - Should return (null, null) without throwing
-        Assert.IsNull(result.staticImage);
-        Assert.IsNull(result.animatedImage);
+        Assert.IsNull(staticImage);
+        Assert.IsNull(animatedImage);
     }
 
     [TestMethod]
@@ -39,11 +52,11 @@ public sealed class ImageLoaderServiceTests
         var nonExistentResource = "definitely.does.not.exist.in.any.assembly.png";
 
         // Act
-        var result = ImageLoaderService.LoadImage(nonExistentResource);
+        var (staticImage, animatedImage) = _imageLoaderService.LoadImage(nonExistentResource);
 
         // Assert - Should return null gracefully, not crash
-        Assert.IsNull(result.staticImage);
-        Assert.IsNull(result.animatedImage);
+        Assert.IsNull(staticImage);
+        Assert.IsNull(animatedImage);
     }
 
     [TestMethod]
@@ -53,11 +66,11 @@ public sealed class ImageLoaderServiceTests
         var nonExistentPath = "file:/this/path/definitely/does/not/exist/image.png";
 
         // Act
-        var result = ImageLoaderService.LoadImage(nonExistentPath);
+        var (staticImage, animatedImage) = _imageLoaderService.LoadImage(nonExistentPath);
 
         // Assert - Should return null gracefully
-        Assert.IsNull(result.staticImage);
-        Assert.IsNull(result.animatedImage);
+        Assert.IsNull(staticImage);
+        Assert.IsNull(animatedImage);
     }
 
     [TestMethod]
@@ -78,13 +91,13 @@ public sealed class ImageLoaderServiceTests
             }
 
             // Act
-            var result = ImageLoaderService.LoadImage($"file:{tempPath}");
+            var (staticImage, animatedImage) = _imageLoaderService.LoadImage($"file:{tempPath}");
 
             // Assert - Should successfully load the image
-            Assert.IsNotNull(result.staticImage, "Should load static image from file");
-            Assert.IsNull(result.animatedImage, "PNG should not be detected as animated");
-            Assert.AreEqual(5, result.staticImage.Width);
-            Assert.AreEqual(5, result.staticImage.Height);
+            Assert.IsNotNull(staticImage, "Should load static image from file");
+            Assert.IsNull(animatedImage, "PNG should not be detected as animated");
+            Assert.AreEqual(5, staticImage.Width);
+            Assert.AreEqual(5, staticImage.Height);
         }
         finally
         {
@@ -101,18 +114,16 @@ public sealed class ImageLoaderServiceTests
     {
         // Arrange
         var webUrl = "https://example.com/image.png";
-        bool callbackInvoked = false;
-        void OnLoaded(SKImage? image)
+        static void OnLoaded(SKImage? image)
         {
-            callbackInvoked = true;
         }
 
         // Act
-        var result = ImageLoaderService.LoadImage(webUrl, OnLoaded);
+        var (staticImage, animatedImage) = _imageLoaderService.LoadImage(webUrl, OnLoaded);
 
         // Assert - Should return null immediately (async loading)
-        Assert.IsNull(result.staticImage, "Web images should return null immediately");
-        Assert.IsNull(result.animatedImage, "Web images should return null immediately");
+        Assert.IsNull(staticImage, "Web images should return null immediately");
+        Assert.IsNull(animatedImage, "Web images should return null immediately");
 
         // Note: We don't assert callback is invoked because network request will fail
         // This test just ensures the async loading doesn't crash
@@ -125,11 +136,11 @@ public sealed class ImageLoaderServiceTests
         var upperCaseUrl = "HTTP://EXAMPLE.COM/IMAGE.PNG";
 
         // Act
-        var result = ImageLoaderService.LoadImage(upperCaseUrl);
+        var (staticImage, animatedImage) = _imageLoaderService.LoadImage(upperCaseUrl);
 
         // Assert - Should recognize HTTP prefix regardless of case
-        Assert.IsNull(result.staticImage, "HTTP source should start async loading");
-        Assert.IsNull(result.animatedImage);
+        Assert.IsNull(staticImage, "HTTP source should start async loading");
+        Assert.IsNull(animatedImage);
     }
 
     [TestMethod]
@@ -139,11 +150,11 @@ public sealed class ImageLoaderServiceTests
         var upperCasePath = "FILE:/NONEXISTENT/PATH.PNG";
 
         // Act
-        var result = ImageLoaderService.LoadImage(upperCasePath);
+        var (staticImage, animatedImage) = _imageLoaderService.LoadImage(upperCasePath);
 
         // Assert - Should recognize FILE prefix regardless of case
-        Assert.IsNull(result.staticImage);
-        Assert.IsNull(result.animatedImage);
+        Assert.IsNull(staticImage);
+        Assert.IsNull(animatedImage);
     }
 
     [TestMethod]
@@ -165,13 +176,13 @@ public sealed class ImageLoaderServiceTests
             var source = $"file:{tempPath}";
 
             // Act - Load the same source twice
-            var result1 = ImageLoaderService.LoadImage(source);
-            var result2 = ImageLoaderService.LoadImage(source);
+            var (staticImage, animatedImage) = _imageLoaderService.LoadImage(source);
+            var result2 = _imageLoaderService.LoadImage(source);
 
             // Assert - Should return cached image (same instance)
-            Assert.IsNotNull(result1.staticImage);
+            Assert.IsNotNull(staticImage);
             Assert.IsNotNull(result2.staticImage);
-            Assert.AreSame(result1.staticImage, result2.staticImage, "Cache should return the same image instance");
+            Assert.AreSame(staticImage, result2.staticImage, "Cache should return the same image instance");
         }
         finally
         {
@@ -202,8 +213,8 @@ public sealed class ImageLoaderServiceTests
 
             // Act - Load image, let it go out of scope, force GC
             {
-                var result = ImageLoaderService.LoadImage(source);
-                Assert.IsNotNull(result.staticImage);
+                var (staticImage, animatedImage) = _imageLoaderService.LoadImage(source);
+                Assert.IsNotNull(staticImage);
             }
 
             // Force garbage collection
@@ -212,7 +223,7 @@ public sealed class ImageLoaderServiceTests
             GC.Collect();
 
             // Act - Load again
-            var resultAfterGC = ImageLoaderService.LoadImage(source);
+            var resultAfterGC = _imageLoaderService.LoadImage(source);
 
             // Assert - Should load successfully even after GC
             // (Weak reference allows collection, so new load might be different instance)
