@@ -1,4 +1,4 @@
-using PlusUi.core.Enumerations;
+using PlusUi.core;
 
 namespace PlusUi.Headless.Services;
 
@@ -7,7 +7,7 @@ namespace PlusUi.Headless.Services;
 /// Ermöglicht programmatische Input-Simulation und Frame-Capturing.
 /// Frame-Größe und Format werden beim Startup konfiguriert.
 /// </summary>
-public interface IPlusUiHeadlessService
+public interface IPlusUiHeadlessService : IDisposable
 {
     /// <summary>
     /// Rendert den aktuellen Frame on-demand und gibt ihn als Bilddaten zurück.
