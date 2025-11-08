@@ -8,7 +8,8 @@ public enum PlatformType
     Desktop,
     Android,
     iOS,
-    Web
+    Web,
+    Headless
 }
 
 /// <summary>
