@@ -2,6 +2,33 @@
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A vertical stack layout that arranges child elements from top to bottom.
+/// </summary>
+/// <remarks>
+/// Elements are positioned vertically with optional spacing. The stack respects each
+/// child's vertical alignment and automatically calculates the required size.
+/// </remarks>
+/// <example>
+/// <code>
+/// // Simple vertical layout
+/// new VStack(
+///     new Label().SetText("Title"),
+///     new Label().SetText("Subtitle").SetFontSize(12),
+///     new Button().SetText("Action")
+/// ).SetSpacing(8);
+///
+/// // Form layout
+/// new VStack(
+///     new Label().SetText("Username"),
+///     new Entry().SetPlaceholder("Enter username"),
+///     new Label().SetText("Password"),
+///     new Entry().SetIsPassword(true)
+/// )
+/// .SetSpacing(4)
+/// .SetPadding(new Margin(16));
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class VStack : UiLayoutElement
 {
@@ -17,7 +44,24 @@ public partial class VStack : UiLayoutElement
     #region measure/arrange
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        Children.ForEach(c => c.Measure(availableSize, dontStretch));
+        var childAvailableSize = new Size(availableSize.Width, availableSize.Height);
+
+        //first measure all not stretching children
+        foreach (var child in Children.Where(c => c.VerticalAlignment is not VerticalAlignment.Stretch))
+        {
+            var result = child.Measure(childAvailableSize, dontStretch);
+            childAvailableSize = new Size(
+                childAvailableSize.Width,
+                Math.Max(0, childAvailableSize.Height - (result.Height + child.Margin.Vertical)));
+        }
+
+        //split available space for stretching children
+        var stretchingChildren = Children.Where(c => c.VerticalAlignment is VerticalAlignment.Stretch).ToList();
+        var stretchHeight = stretchingChildren.Count > 0
+            ? childAvailableSize.Height / stretchingChildren.Count
+            : 0;
+        stretchingChildren.ForEach(child => child.Measure(new Size(childAvailableSize.Width, stretchHeight), dontStretch));
+
         var width = Children.Max(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right);
         var height = Children.Sum(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom);
         return new Size(width, height);

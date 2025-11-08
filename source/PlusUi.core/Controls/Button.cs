@@ -5,6 +5,24 @@ using System.Windows.Input;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A clickable button control that can display text and execute commands.
+/// </summary>
+/// <example>
+/// <code>
+/// // Simple button with text
+/// new Button()
+///     .SetText("Click Me")
+///     .SetCommand(myCommand);
+///
+/// // Button with styling
+/// new Button()
+///     .SetText("Submit")
+///     .SetPadding(new Margin(12, 8))
+///     .SetBackground(new SolidColorBackground(Colors.Blue))
+///     .SetFontSize(16);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class Button : UiTextElement, IInputControl
 {

@@ -5,6 +5,38 @@ using System.Collections.Specialized;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A high-performance virtualized list control for displaying large collections of data.
+/// Only renders visible items to optimize memory and performance.
+/// Supports vertical and horizontal orientations and observable collections.
+/// </summary>
+/// <typeparam name="T">The type of items in the list.</typeparam>
+/// <remarks>
+/// ItemsList uses UI virtualization to render only visible items, making it efficient for
+/// large data sets (thousands of items). Automatically responds to collection changes when
+/// using ObservableCollection.
+/// </remarks>
+/// <example>
+/// <code>
+/// // Simple list
+/// new ItemsList<Person>()
+///     .SetItemsSource(people)
+///     .SetItemTemplate((person, index) =>
+///         new Label().SetText(person.Name)
+///     );
+///
+/// // Horizontal list
+/// new ItemsList<Product>()
+///     .SetItemsSource(products)
+///     .SetOrientation(Orientation.Horizontal)
+///     .SetItemTemplate((product, index) =>
+///         new VStack(
+///             new Image().SetImageSource(product.ImageUrl),
+///             new Label().SetText(product.Name)
+///         )
+///     );
+/// </code>
+/// </example>
 public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
 {
     private IEnumerable<T>? _itemsSource;

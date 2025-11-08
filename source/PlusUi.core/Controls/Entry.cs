@@ -3,6 +3,28 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A single-line text input control for user text entry.
+/// Supports password masking, placeholders, keyboard types, and two-way data binding.
+/// </summary>
+/// <example>
+/// <code>
+/// // Simple text entry
+/// new Entry()
+///     .SetPlaceholder("Enter your name...")
+///     .BindText(nameof(vm.Name), () => vm.Name, value => vm.Name = value);
+///
+/// // Password entry
+/// new Entry()
+///     .SetIsPassword(true)
+///     .SetPlaceholder("Password");
+///
+/// // Email entry with mobile keyboard
+/// new Entry()
+///     .SetKeyboardType(KeyboardType.Email)
+///     .SetReturnKeyType(ReturnKeyType.Done);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class Entry : UiTextElement, ITextInputControl
 {
@@ -149,7 +171,7 @@ public partial class Entry : UiTextElement, ITextInputControl
         // Determine what text to display
         var hasText = !string.IsNullOrEmpty(Text);
         var displayText = hasText
-            ? (IsPassword ? new string(PasswordChar, Text.Length) : Text!)
+            ? (IsPassword ? new string(PasswordChar, Text!.Length) : Text!)
             : (Placeholder ?? string.Empty);
 
         // Save original color and temporarily change if showing placeholder

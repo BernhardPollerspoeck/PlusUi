@@ -3,6 +3,33 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// Creates custom controls with direct SkiaSharp rendering.
+/// Use this for custom drawing, charts, graphs, or any UI that requires direct canvas access.
+/// </summary>
+/// <remarks>
+/// RawUserControl gives you direct access to the SkiaSharp bitmap for custom rendering.
+/// Use this for performance-critical rendering or when you need full control over drawing.
+/// </remarks>
+/// <example>
+/// <code>
+/// public class CircleControl : RawUserControl
+/// {
+///     public override Size Size => new(100, 100);
+///
+///     public override void RenderControl(SKBitmap bitmap)
+///     {
+///         using var canvas = new SKCanvas(bitmap);
+///         using var paint = new SKPaint
+///         {
+///             Color = SKColors.Blue,
+///             IsAntialias = true
+///         };
+///         canvas.DrawCircle(50, 50, 40, paint);
+///     }
+/// }
+/// </code>
+/// </example>
 [GenerateGenericWrapper]
 public abstract class RawUserControl : UiElement
 {

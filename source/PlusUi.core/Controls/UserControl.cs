@@ -3,6 +3,34 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// Creates reusable custom controls by composing other UI elements.
+/// Define your control's UI by implementing the Build method.
+/// </summary>
+/// <remarks>
+/// UserControl enables component composition, allowing you to create complex, reusable UI components
+/// from simpler elements.
+/// </remarks>
+/// <example>
+/// <code>
+/// public class UserCard : UserControl
+/// {
+///     public string Name { get; set; }
+///     public string Email { get; set; }
+///
+///     protected override UiElement Build() =>
+///         new VStack(
+///             new Label().SetText(Name).SetFontWeight(FontWeight.Bold),
+///             new Label().SetText(Email).SetFontSize(12)
+///         )
+///         .SetSpacing(4)
+///         .SetPadding(new Margin(12));
+/// }
+///
+/// // Usage
+/// new UserCard { Name = "John Doe", Email = "john@example.com" }
+/// </code>
+/// </example>
 [GenerateGenericWrapper]
 public abstract class UserControl : UiElement<UserControl>
 {

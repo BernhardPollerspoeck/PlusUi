@@ -234,6 +234,17 @@ public class NewControlsDemoPage(NewControlsDemoPageViewModel vm) : UiPageElemen
                                     .SetColor(new SKColor(175, 82, 222))
                                     .SetDesiredSize(new(60, 60))
                                     .SetMargin(new Margin(0, 10))
+                            ).SetMargin(new Margin(10)),
+
+                            new VStack(
+                                new Label()
+                                    .SetText("Thick Stroke")
+                                    .SetTextColor(SKColors.LightGray)
+                                    .SetHorizontalTextAlignment(HorizontalTextAlignment.Center),
+                                new ActivityIndicator()
+                                    .SetColor(new SKColor(175, 82, 222))
+                                    .SetStrokeThickness(8)
+                                    .SetMargin(new Margin(0, 10))
                             ).SetMargin(new Margin(10))
                         ).SetHorizontalAlignment(HorizontalAlignment.Center)
                     )

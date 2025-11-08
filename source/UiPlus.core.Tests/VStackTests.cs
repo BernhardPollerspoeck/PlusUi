@@ -727,4 +727,35 @@ public sealed class VStackTests
         Assert.AreEqual(40, stack.Children[1].Position.Y);
     }
 
+    [TestMethod]
+    public void TestVStackMeasure_ForBorderAndSolid()
+    {
+        //Arrange
+        var solid = new Solid();
+        var border = new Border()
+            .SetMargin(new(10))
+            .SetStrokeThickness(2)
+            .AddChild(solid);
+        var stack = new VStack(border);
+        var availableSize = new Size(100, 100);
+        //Act
+        stack.Measure(availableSize);
+        stack.Arrange(new Rect(0, 0, 100, 100));
+        //Assert
+        Assert.AreEqual(0, stack.Position.X);
+        Assert.AreEqual(0, stack.Position.Y);
+        Assert.AreEqual(100, stack.ElementSize.Width);
+        Assert.AreEqual(100, stack.ElementSize.Height);
+
+        Assert.AreEqual(10, border.Position.X);
+        Assert.AreEqual(10, border.Position.Y);
+        Assert.AreEqual(80, border.ElementSize.Width);
+        Assert.AreEqual(80, border.ElementSize.Height);
+
+        Assert.AreEqual(12, solid.Position.X);
+        Assert.AreEqual(12, solid.Position.Y);
+        Assert.AreEqual(76, solid.ElementSize.Width);
+        Assert.AreEqual(76, solid.ElementSize.Height);
+    }
+
 }

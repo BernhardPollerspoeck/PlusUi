@@ -93,6 +93,21 @@ public partial class ActivityIndicator : UiElement
     }
     #endregion
 
+    #region StrokeThickness
+    internal float StrokeThickness { get; set; } = 3.0f;
+    public ActivityIndicator SetStrokeThickness(float thickness)
+    {
+        StrokeThickness = thickness;
+        return this;
+    }
+    public ActivityIndicator BindStrokeThickness(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => StrokeThickness = propertyGetter());
+        return this;
+    }
+
+    #endregion
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
@@ -113,7 +128,7 @@ public partial class ActivityIndicator : UiElement
         {
             Color = Color,
             Style = SKPaintStyle.Stroke,
-            StrokeWidth = 3,
+            StrokeWidth = StrokeThickness,
             IsAntialias = true,
             StrokeCap = SKStrokeCap.Round
         };

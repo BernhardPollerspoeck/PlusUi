@@ -2,6 +2,30 @@
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A horizontal stack layout that arranges child elements from left to right.
+/// </summary>
+/// <remarks>
+/// Elements are positioned horizontally with optional spacing. The stack respects each
+/// child's horizontal alignment and automatically calculates the required size.
+/// </remarks>
+/// <example>
+/// <code>
+/// // Simple horizontal layout
+/// new HStack(
+///     new Label().SetText("Name:"),
+///     new Entry().SetPlaceholder("Enter name")
+/// ).SetSpacing(8);
+///
+/// // Aligned buttons
+/// new HStack(
+///     new Button().SetText("Cancel"),
+///     new Button().SetText("OK")
+/// )
+/// .SetSpacing(12)
+/// .SetHorizontalAlignment(HorizontalAlignment.Right);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class HStack : UiLayoutElement
 {
@@ -17,7 +41,24 @@ public partial class HStack : UiLayoutElement
     #region measure/arrange
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        Children.ForEach(c => c.Measure(availableSize, dontStretch));
+        var childAvailableSize = new Size(availableSize.Width, availableSize.Height);
+
+        //first measure all not stretching children
+        foreach (var child in Children.Where(c => c.HorizontalAlignment is not HorizontalAlignment.Stretch))
+        {
+            var result = child.Measure(childAvailableSize, dontStretch);
+            childAvailableSize = new Size(
+                Math.Max(0, childAvailableSize.Width - (result.Width + child.Margin.Horizontal)),
+                childAvailableSize.Height);
+        }
+
+        //split available space for stretching children
+        var stretchingChildren = Children.Where(c => c.HorizontalAlignment is HorizontalAlignment.Stretch).ToList();
+        var stretchWidth = stretchingChildren.Count > 0
+            ? childAvailableSize.Width / stretchingChildren.Count
+            : 0;
+        stretchingChildren.ForEach(child => child.Measure(new Size(stretchWidth, childAvailableSize.Height), dontStretch));
+
         var width = Children.Sum(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right);
         var height = Children.Max(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom);
         return new Size(width, height);

@@ -3,6 +3,29 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A scrollable container that allows scrolling through content larger than the visible area.
+/// Supports both horizontal and vertical scrolling with mouse wheel and drag gestures.
+/// </summary>
+/// <example>
+/// <code>
+/// // Vertical scrolling
+/// new ScrollView(
+///     new VStack(
+///         new Label().SetText("Item 1"),
+///         new Label().SetText("Item 2"),
+///         // ... many more items
+///     )
+/// )
+/// .SetCanScrollHorizontally(false)
+/// .SetCanScrollVertically(true);
+///
+/// // Both directions
+/// new ScrollView(largeContent)
+///     .SetCanScrollHorizontally(true)
+///     .SetCanScrollVertically(true);
+/// </code>
+/// </example>
 [GenerateShadowMethods]
 public partial class ScrollView : UiLayoutElement, IScrollableControl
 {

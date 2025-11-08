@@ -103,6 +103,43 @@ public partial class Border : UiLayoutElement
     }
     #endregion
 
+    #region UiElement
+    internal override HorizontalAlignment HorizontalAlignment
+    {
+        get => this.Children.FirstOrDefault() is { DesiredSize.Width: > 0 }
+            ? field
+            : this.Children.FirstOrDefault()?.HorizontalAlignment ?? field;
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    } = HorizontalAlignment.Left;
+
+    internal override VerticalAlignment VerticalAlignment
+    {
+        get => this.Children.FirstOrDefault() is { DesiredSize.Height: > 0 }
+            ? field
+            : this.Children.FirstOrDefault()?.VerticalAlignment ?? field;
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    } = VerticalAlignment.Top;
+
+    internal override Size? DesiredSize
+    {
+        get => this.Children.FirstOrDefault()?.DesiredSize ?? field;
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    }
+
+    #endregion
+
     protected SKPaint StrokePaint { get; set; } = null!;
 
     public Border()
@@ -172,8 +209,8 @@ public partial class Border : UiLayoutElement
     {
         var borderThickness = StrokeThickness * 2; // Both sides
         var availableChildSize = new Size(
-            Math.Max(0, availableSize.Width - borderThickness),
-            Math.Max(0, availableSize.Height - borderThickness));
+            Math.Max(0, availableSize.Width - borderThickness - Margin.Horizontal),
+            Math.Max(0, availableSize.Height - borderThickness - Margin.Vertical));
 
         Size childSize = Size.Empty;
 
@@ -194,7 +231,7 @@ public partial class Border : UiLayoutElement
     protected override Point ArrangeInternal(Rect bounds)
     {
         var position = base.ArrangeInternal(bounds);
-        
+
         // Arrange the single child with border spacing
         if (Children.Count > 0)
         {
@@ -204,7 +241,7 @@ public partial class Border : UiLayoutElement
                 position.Y + StrokeThickness,
                 ElementSize.Width - StrokeThickness * 2,
                 ElementSize.Height - StrokeThickness * 2);
-            
+
             child.Arrange(childBounds);
         }
 
