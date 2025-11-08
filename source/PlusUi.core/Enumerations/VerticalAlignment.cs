@@ -5,6 +5,15 @@
 /// </summary>
 public enum VerticalAlignment
 {
+
+    /// <summary>
+    /// Represents an undefined or uninitialized value.
+    /// </summary>
+    /// <remarks>Use this member to indicate that a value has not been set or is not applicable in the current
+    /// context. The specific meaning of 'undefined' may vary depending on how this member is used within the
+    /// application.</remarks>
+    Undefined,
+
     /// <summary>
     /// Aligns the element to the top edge of the parent container.
     /// </summary>

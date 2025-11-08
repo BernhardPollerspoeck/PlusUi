@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="plusuiv2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="plusuiv2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
   </ItemGroup>
 

@@ -106,27 +106,27 @@ public partial class Border : UiLayoutElement
     #region UiElement
     internal override HorizontalAlignment HorizontalAlignment
     {
-        get => this.Children.FirstOrDefault() is { DesiredSize.Width: > 0 }
-            ? field
-            : this.Children.FirstOrDefault()?.HorizontalAlignment ?? field;
+        get => field is HorizontalAlignment.Undefined && this.Children.FirstOrDefault() is not { DesiredSize.Width: > 0 }
+            ? this.Children.FirstOrDefault()?.HorizontalAlignment ?? field
+            : field;
         set
         {
             field = value;
             InvalidateMeasure();
         }
-    } = HorizontalAlignment.Left;
+    }
 
     internal override VerticalAlignment VerticalAlignment
     {
-        get => this.Children.FirstOrDefault() is { DesiredSize.Height: > 0 }
-            ? field
-            : this.Children.FirstOrDefault()?.VerticalAlignment ?? field;
+        get => field is VerticalAlignment.Undefined && this.Children.FirstOrDefault() is not { DesiredSize.Height: > 0 }
+            ? this.Children.FirstOrDefault()?.VerticalAlignment ?? field
+            : field;
         set
         {
             field = value;
             InvalidateMeasure();
         }
-    } = VerticalAlignment.Top;
+    }
 
     internal override Size? DesiredSize
     {

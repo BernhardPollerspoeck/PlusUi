@@ -58,7 +58,6 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     {
         return new HStack(
             BuildNavBar(),
-            BuildWelcomeSection(),
             BuildWelcomeSection());
     }
 
@@ -68,14 +67,28 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
             .AddChild(new Solid()
                 .SetDesiredWidth(200)
                 )
-            .SetMargin(new(10,10,5,10));
+            .SetMargin(new(10, 10, 5, 10));
     }
 
     private UiElement BuildWelcomeSection()
     {
         return new Border()
-            .AddChild(new Solid()
+            .AddChild(new VStack(
+                new Label()
+                    .SetText("Welcome to the PlusUi Control Demo")
+                    .SetTextColor(SKColors.White)
+                    .SetTextSize(20),
+                new Image()
+                    .SetImageSource("plusuiv2.png")
+                    .SetAspect(Aspect.AspectFit)
+                    .SetDesiredSize(new(250, 250))
+                    .SetHorizontalAlignment(HorizontalAlignment.Center)
+                    )
+                .SetVerticalAlignment(VerticalAlignment.Center)
+                .SetHorizontalAlignment(HorizontalAlignment.Center)
                 )
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+            .SetVerticalAlignment(VerticalAlignment.Stretch)
             .SetMargin(new(5, 10, 10, 10));
     }
 

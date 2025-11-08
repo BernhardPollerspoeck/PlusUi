@@ -160,7 +160,7 @@ public abstract class UiElement : IDisposable
             field = value;
             InvalidateMeasure();
         }
-    } = HorizontalAlignment.Left;
+    } = HorizontalAlignment.Undefined;
     public UiElement SetHorizontalAlignment(HorizontalAlignment alignment)
     {
         HorizontalAlignment = alignment;
@@ -182,7 +182,7 @@ public abstract class UiElement : IDisposable
             field = value;
             InvalidateMeasure();
         }
-    } = VerticalAlignment.Top;
+    } = VerticalAlignment.Undefined;
     public UiElement SetVerticalAlignment(VerticalAlignment alignment)
     {
         VerticalAlignment = alignment;
