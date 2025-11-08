@@ -3,7 +3,7 @@ using PlusUi.Headless.Enumerations;
 using Sandbox;
 using System.IO;
 
-using var headless = PlusUiHeadless.Create(new App(), ImageFormat.Png);
+using var headless = PlusUiHeadless.Create(new App(loadImagesSynchronously: true), ImageFormat.Png);
 
 var frame = await headless.GetCurrentFrameAsync();
 await File.WriteAllBytesAsync("screenshot_01_initial.png", frame);

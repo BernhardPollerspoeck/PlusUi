@@ -1,4 +1,5 @@
-﻿using PlusUi.core.Attributes;
+﻿using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core.Attributes;
 using PlusUi.core.Models;
 using SkiaSharp;
 
@@ -7,6 +8,8 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Image : UiElement
 {
+    private IImageLoaderService? _imageLoaderService;
+
     #region ImageSource
     internal string? ImageSource
     {
@@ -18,7 +21,8 @@ public partial class Image : UiElement
             // Clean up previous animation if any
             StopAnimation();
 
-            var (staticImage, animatedImage) = ImageLoaderService.LoadImage(value, OnImageLoadedFromWeb, OnAnimatedImageLoadedFromWeb);
+            _imageLoaderService ??= ServiceProviderService.ServiceProvider?.GetRequiredService<IImageLoaderService>();
+            var (staticImage, animatedImage) = _imageLoaderService?.LoadImage(value, OnImageLoadedFromWeb, OnAnimatedImageLoadedFromWeb) ?? (default, default);
 
             if (animatedImage != null)
             {

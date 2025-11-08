@@ -35,6 +35,7 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
         builder.Services.AddSingleton<IFontRegistryService, FontRegistryService>();
+        builder.Services.AddSingleton<IImageLoaderService, ImageLoaderService>();
 
         builder.Services.AddSingleton(sp => TimeProvider.System);
         builder.Services.AddSingleton<PlusUiPopupService>();

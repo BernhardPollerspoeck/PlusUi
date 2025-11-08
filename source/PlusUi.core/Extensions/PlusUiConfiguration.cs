@@ -11,4 +11,5 @@ public class PlusUiConfiguration
     public WindowBorder WindowBorder { get; set; } = WindowBorder.Resizable;
     public bool IsWindowTopMost { get; set; } = false;
     public bool IsWindowTransparent { get; set; } = false;
+    public bool LoadImagesSynchronously { get; set; } = false;
 }

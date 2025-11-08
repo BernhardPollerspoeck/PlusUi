@@ -1,4 +1,5 @@
-﻿using PlusUi.core.Attributes;
+﻿using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core.Attributes;
 using SkiaSharp;
 using System.Windows.Input;
 
@@ -7,6 +8,7 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Button : UiTextElement, IInputControl
 {
+    private IImageLoaderService? _imageLoaderService;
 
     #region Padding
     internal Margin Padding
@@ -59,7 +61,8 @@ public partial class Button : UiTextElement, IInputControl
         {
             field = value;
             // For button icons, we only support static images (no animation)
-            var (staticImage, _) = ImageLoaderService.LoadImage(value, OnIconLoadedFromWeb, null);
+            _imageLoaderService ??= ServiceProviderService.ServiceProvider?.GetRequiredService<IImageLoaderService>();
+            var (staticImage, _) = _imageLoaderService?.LoadImage(value, OnIconLoadedFromWeb, null) ?? (default, default);
             _iconImage = staticImage;
             InvalidateMeasure();
         }
@@ -135,8 +138,6 @@ public partial class Button : UiTextElement, IInputControl
         {
             return;
         }
-        Font.GetFontMetrics(out var fontMetrics);
-        var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         var textRect = new SKRect(
             Position.X + VisualOffset.X + Padding.Left,
@@ -208,20 +209,20 @@ public partial class Button : UiTextElement, IInputControl
         var hasText = !string.IsNullOrEmpty(Text);
         var hasLeadingIcon = _iconImage != null && IconPosition.HasFlag(IconPosition.Leading);
         var hasTrailingIcon = _iconImage != null && IconPosition.HasFlag(IconPosition.Trailing);
-        
+
         var textWidth = hasText ? Font.MeasureText(Text!) : 0f;
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
-        
+
         // Icon size matches text size
         var iconSize = TextSize;
         var iconSpacing = hasText ? 8f : 0f; // Spacing between icon and text
-        
+
         // Calculate total width
         var leadingIconWidth = hasLeadingIcon ? iconSize + iconSpacing : 0f;
         var trailingIconWidth = hasTrailingIcon ? iconSize + iconSpacing : 0f;
         var totalWidth = leadingIconWidth + textWidth + trailingIconWidth;
-        
+
         // Height is determined by the larger of text or icon
         var contentHeight = Math.Max(textHeight, iconSize);
 
