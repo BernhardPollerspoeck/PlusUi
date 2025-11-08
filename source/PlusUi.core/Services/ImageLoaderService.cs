@@ -1,6 +1,7 @@
 using SkiaSharp;
 using System.Collections.Concurrent;
 using PlusUi.core.Models;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 
 namespace PlusUi.core;
@@ -10,7 +11,7 @@ namespace PlusUi.core;
 /// Uses weak reference caching to prevent memory bloat in long-running applications.
 /// Supports animated GIF loading with frame extraction.
 /// </summary>
-internal static class ImageLoaderService
+internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) : IImageLoaderService
 {
     private static readonly ConcurrentDictionary<string, WeakReference<SKImage>> _imageCache = new();
     private static readonly ConcurrentDictionary<string, WeakReference<AnimatedImageInfo>> _animatedImageCache = new();
@@ -23,7 +24,7 @@ internal static class ImageLoaderService
     /// Optional logger for diagnostic messages. Can be set from the application host.
     /// </summary>
     public static ILogger? Logger { get; set; }
-
+    //TODO: logger not static and from DI
     /// <summary>
     /// Loads an image from the specified source (resource, file, or URL).
     /// Returns a tuple with either a static image or animated image info.
@@ -33,7 +34,7 @@ internal static class ImageLoaderService
     /// <param name="onImageLoaded">Optional callback when async web image loads</param>
     /// <param name="onAnimatedImageLoaded">Optional callback when async animated web image loads</param>
     /// <returns>Tuple of (static image, animated image info)</returns>
-    public static (SKImage? staticImage, AnimatedImageInfo? animatedImage) LoadImage(
+    public (SKImage? staticImage, AnimatedImageInfo? animatedImage) LoadImage(
         string? imageSource,
         Action<SKImage?>? onImageLoaded = null,
         Action<AnimatedImageInfo?>? onAnimatedImageLoaded = null)
@@ -60,8 +61,7 @@ internal static class ImageLoaderService
             imageSource.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
         {
             // Web images are loaded asynchronously, don't cache null here
-            TryLoadImageFromWeb(imageSource, onImageLoaded, onAnimatedImageLoaded);
-            return (null, null);
+            return TryLoadImageFromWeb(imageSource, onImageLoaded, onAnimatedImageLoaded);
         }
         // Check for file: prefix
         else if (imageSource.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
@@ -97,14 +97,22 @@ internal static class ImageLoaderService
         }
     }
 
-    private static void TryLoadImageFromWeb(string url, Action<SKImage?>? onImageLoaded, Action<AnimatedImageInfo?>? onAnimatedImageLoaded)
+    private (SKImage?, AnimatedImageInfo?) TryLoadImageFromWeb(string url, Action<SKImage?>? onImageLoaded, Action<AnimatedImageInfo?>? onAnimatedImageLoaded)
     {
+        if (configuration.Value.LoadImagesSynchronously)
+        {
+            // Synchronous loading (not recommended for UI thread - but this is explicitly set by the user)
+            var task = LoadImageFromWebAsync(url, null, null);
+            task.Wait();
+            return task.Result;
+        }
         // Start loading the image asynchronously in the background
         // Return immediately to avoid blocking the UI thread
         _ = LoadImageFromWebAsync(url, onImageLoaded, onAnimatedImageLoaded);
+        return (null, null);
     }
 
-    private static async Task LoadImageFromWebAsync(string url, Action<SKImage?>? onImageLoaded, Action<AnimatedImageInfo?>? onAnimatedImageLoaded)
+    private async Task<ValueTuple<SKImage?, AnimatedImageInfo?>> LoadImageFromWebAsync(string url, Action<SKImage?>? onImageLoaded, Action<AnimatedImageInfo?>? onAnimatedImageLoaded)
     {
         try
         {
@@ -114,8 +122,11 @@ internal static class ImageLoaderService
             if (!response.IsSuccessStatusCode)
             {
                 // Failed to load - invoke callbacks with null
-                onImageLoaded?.Invoke(null);
-                return;
+                if (!configuration.Value.LoadImagesSynchronously)
+                {
+                    onImageLoaded?.Invoke(null);
+                }
+                return (null, null);
             }
 
             using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
@@ -131,23 +142,36 @@ internal static class ImageLoaderService
             {
                 // Cache using weak reference
                 _imageCache[url] = new WeakReference<SKImage>(staticImage);
-                onImageLoaded?.Invoke(staticImage);
+                if (!configuration.Value.LoadImagesSynchronously)
+                {
+                    onImageLoaded?.Invoke(staticImage);
+                }
             }
             else if (animatedImage != null)
             {
                 // Cache using weak reference
                 _animatedImageCache[url] = new WeakReference<AnimatedImageInfo>(animatedImage);
-                onAnimatedImageLoaded?.Invoke(animatedImage);
+                if (!configuration.Value.LoadImagesSynchronously)
+                {
+                    onAnimatedImageLoaded?.Invoke(animatedImage);
+                }
             }
-            else
+            else if (!configuration.Value.LoadImagesSynchronously)
             {
                 onImageLoaded?.Invoke(null);
             }
+
+            return (staticImage, animatedImage);
         }
         catch (Exception ex)
         {
+            // Log error and invoke callback with null
             Logger?.LogError(ex, "Failed to load image from URL: {Url}", url);
-            onImageLoaded?.Invoke(null);
+            if (!configuration.Value.LoadImagesSynchronously)
+            {
+                onImageLoaded?.Invoke(null);
+            }
+            return (null, null);
         }
     }
 

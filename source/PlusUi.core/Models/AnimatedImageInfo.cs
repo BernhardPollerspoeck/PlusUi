@@ -5,7 +5,7 @@ namespace PlusUi.core.Models;
 /// <summary>
 /// Contains information about an animated image (e.g., GIF) including all frames and their delays.
 /// </summary>
-internal class AnimatedImageInfo : IDisposable
+public class AnimatedImageInfo : IDisposable
 {
     /// <summary>
     /// Array of image frames.
@@ -51,5 +51,7 @@ internal class AnimatedImageInfo : IDisposable
         {
             frame?.Dispose();
         }
+
+        GC.SuppressFinalize(this);
     }
 }

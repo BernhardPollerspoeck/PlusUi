@@ -20,12 +20,14 @@ using Sandbox.Services;
 
 namespace Sandbox;
 
-public class App : IAppConfiguration
+public class App(bool loadImagesSynchronously = false) : IAppConfiguration
 {
     public void ConfigureWindow(PlusUiConfiguration configuration)
     {
         configuration.Title = "Sandbox";
         configuration.Size = new SizeI(1200, 800);
+
+        configuration.LoadImagesSynchronously = loadImagesSynchronously;
         //configuration.IsWindowTransparent = true;
         //configuration.WindowBorder = Silk.NET.Windowing.WindowBorder.Hidden;
         //configuration.WindowState = Silk.NET.Windowing.WindowState.Maximized;
