@@ -165,7 +165,7 @@ internal class WindowManager(
     {
         _surface?.Dispose();
         CreateSurface(newSize);
-        navigationContainer.Page.InvalidateMeasure();
+        navigationContainer.CurrentPage.InvalidateMeasure();
     }
     #endregion
 

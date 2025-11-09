@@ -21,9 +21,9 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
             gl?.Clear((uint)ClearBufferMask.ColorBufferBit);
             canvas.Clear(SKColors.Transparent);
 
-            navigationContainer.Page.Measure(new Size(canvasSize.X, canvasSize.Y));
-            navigationContainer.Page.Arrange(new Rect(0, 0, canvasSize.X, canvasSize.Y));
-            navigationContainer.Page.Render(canvas);
+            navigationContainer.CurrentPage.Measure(new Size(canvasSize.X, canvasSize.Y));
+            navigationContainer.CurrentPage.Arrange(new Rect(0, 0, canvasSize.X, canvasSize.Y));
+            navigationContainer.CurrentPage.Render(canvas);
 
             var popup = popupService.CurrentPopup;
             if (popup is not null)

@@ -46,7 +46,8 @@ public static class HostApplicationBuilderExtensions
         {
             var appConfiguration = sp.GetRequiredService<IAppConfiguration>();
             var mainPage = appConfiguration.GetRootPage(sp);
-            return new NavigationContainer(mainPage);
+            var configuration = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value;
+            return new NavigationContainer(mainPage, configuration);
         });
         return builder;
 
