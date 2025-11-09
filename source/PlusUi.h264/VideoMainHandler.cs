@@ -42,7 +42,7 @@ internal class VideoMainHandler(
             progressService.UpdateRenderingProgress(frameInformationService.CurrentFrame);
 
             // Update UI bindings and render frame
-            navigationContainer.Page.UpdateBindings();
+            navigationContainer.CurrentPage.UpdateBindings();
             renderService.Render(null, canvas, null, canvasSize);
 
             // Create and write video frame

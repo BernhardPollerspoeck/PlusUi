@@ -19,7 +19,7 @@ internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm
             .AddColumn(50)
             .AddRow(Row.Star)
             .AddRow(Row.Star, 2)
-            .AddBoundRow(() => vm.RowHeight)
+            .AddBoundRow(nameof(vm.RowHeight), () => vm.RowHeight)
 
             .AddChild(new Solid().SetBackground(new SolidColorBackground(SKColors.Green)).IgnoreStyling())
             .AddChild(column: 1, child: new Solid().SetBackground(new SolidColorBackground(SKColors.Yellow)).IgnoreStyling())

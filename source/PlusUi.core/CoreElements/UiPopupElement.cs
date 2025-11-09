@@ -29,14 +29,16 @@ public abstract class UiPopupElement : UiElement
     public INotifyPropertyChanged ViewModel { get; }
     private UiElement _tree = new NullElement();
 
+    protected override bool SkipBackgroundRendering => true;
+
     public bool CloseOnBackgroundClick { get; private set; }
     public bool CloseOnEscape { get; private set; }
 
     protected UiPopupElement(INotifyPropertyChanged vm)
     {
         ViewModel = vm;
-        SetHorizontalAlignment(HorizontalAlignment.Center);
-        SetVerticalAlignment(VerticalAlignment.Center);
+        SetHorizontalAlignment(HorizontalAlignment.Stretch);
+        SetVerticalAlignment(VerticalAlignment.Stretch);
     }
 
     internal void SetConfiguration(IPopupConfiguration configuration)
@@ -49,11 +51,13 @@ public abstract class UiPopupElement : UiElement
     internal void BuildPopup()
     {
         _tree = new Grid()
-            .AddChild(Build())
+            .AddChild(Build(), 0, 0, 1, 1)
             .SetHorizontalAlignment(HorizontalAlignment.Center)
             .SetVerticalAlignment(VerticalAlignment.Center);
+        _tree.Context = ViewModel;
         _tree.BuildContent();
         _tree.ApplyStyles();
+        InvalidateMeasure();
         Appearing();
     }
 
@@ -80,6 +84,11 @@ public abstract class UiPopupElement : UiElement
         _tree.Render(canvas);
     }
 
+    public override void InvalidateMeasure()
+    {
+        base.InvalidateMeasure();
+        _tree.InvalidateMeasure();
+    }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {

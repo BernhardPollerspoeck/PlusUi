@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using System.ComponentModel;
@@ -78,20 +79,36 @@ public class NavigationStackTests
         protected override UiElement Build() => new Label();
     }
 
-    private IServiceProvider CreateServiceProvider(PlusUiConfiguration? config = null)
+    private class TestAppConfiguration : IAppConfiguration
+    {
+        public void ConfigureApp(HostApplicationBuilder builder)
+        {
+        }
+
+        public void ConfigureWindow(PlusUiConfiguration configuration)
+        {
+        }
+
+        public UiPageElement GetRootPage(IServiceProvider serviceProvider)
+        {
+            return serviceProvider.GetRequiredService<TestPageA>();
+        }
+    }
+
+    private static ServiceProvider CreateServiceProvider(PlusUiConfiguration? config = null)
     {
         var services = new ServiceCollection();
-        services.AddTransient<TestViewModel>();
-        services.AddTransient<TestPageA>();
-        services.AddTransient<TestPageB>();
-        services.AddTransient<TestPageC>();
+        services.AddSingleton<TestViewModel>();
+        services.AddSingleton<TestPageA>();
+        services.AddSingleton<TestPageB>();
+        services.AddSingleton<TestPageC>();
+
+        services.AddSingleton<IAppConfiguration, TestAppConfiguration>();
 
         config ??= new PlusUiConfiguration();
 
         // Register NavigationContainer
-        var vm = new TestViewModel();
-        var rootPage = new TestPageA(vm);
-        services.AddSingleton(new NavigationContainer(rootPage, config));
+        services.AddSingleton(new NavigationContainer(config));
 
         return services.BuildServiceProvider();
     }
@@ -107,7 +124,8 @@ public class NavigationStackTests
         var rootPage = new TestPageA(vm);
 
         // Act
-        var container = new NavigationContainer(rootPage, config);
+        var container = new NavigationContainer(config);
+        container.Push(rootPage);
 
         // Assert
         Assert.IsFalse(container.IsStackEnabled);
@@ -124,7 +142,8 @@ public class NavigationStackTests
         var rootPage = new TestPageA(vm);
 
         // Act
-        var container = new NavigationContainer(rootPage, config);
+        var container = new NavigationContainer(config);
+        container.Push(rootPage);
 
         // Assert
         Assert.IsTrue(container.IsStackEnabled);
@@ -139,7 +158,8 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var vm = new TestViewModel();
         var rootPage = new TestPageA(vm);
-        var container = new NavigationContainer(rootPage, config);
+        var container = new NavigationContainer(config);
+        container.Push(rootPage);
         var newPage = new TestPageB(vm);
 
         // Act
@@ -158,7 +178,8 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var vm = new TestViewModel();
         var rootPage = new TestPageA(vm);
-        var container = new NavigationContainer(rootPage, config);
+        var container = new NavigationContainer(config);
+        container.Push(rootPage);
         var newPage = new TestPageB(vm);
         var parameter = new { Id = 42, Name = "Test" };
 
@@ -176,7 +197,8 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var vm = new TestViewModel();
         var rootPage = new TestPageA(vm);
-        var container = new NavigationContainer(rootPage, config);
+        var container = new NavigationContainer(config);
+        container.Push(rootPage);
         var newPage = new TestPageB(vm);
         container.Push(newPage);
 
@@ -190,17 +212,16 @@ public class NavigationStackTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void TestNavigationContainer_Pop_AtRoot_ThrowsException()
     {
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var vm = new TestViewModel();
         var rootPage = new TestPageA(vm);
-        var container = new NavigationContainer(rootPage, config);
+        var container = new NavigationContainer(config);
 
         // Act
-        container.Pop();
+        Assert.ThrowsExactly<InvalidOperationException>(container.Pop);
 
         // Assert - Exception expected
     }
@@ -212,7 +233,8 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var vm = new TestViewModel();
         var rootPage = new TestPageA(vm);
-        var container = new NavigationContainer(rootPage, config);
+        var container = new NavigationContainer(config);
+        container.Push(rootPage);
         var pageB = new TestPageB(vm);
         var pageC = new TestPageC(vm);
         container.Push(pageB);
@@ -228,19 +250,19 @@ public class NavigationStackTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void TestNavigationContainer_MaxStackDepth_ThrowsException()
     {
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = true, MaxStackDepth = 3 };
         var vm = new TestViewModel();
         var rootPage = new TestPageA(vm);
-        var container = new NavigationContainer(rootPage, config);
+        var container = new NavigationContainer(config);
 
-        // Act - Push 3 pages (total 4 including root, exceeds max of 3)
+        // Act - Push 4 pages (total 4 exceeds max of 3)
         container.Push(new TestPageB(vm));
         container.Push(new TestPageC(vm));
-        container.Push(new TestPageA(vm)); // This should throw
+        container.Push(new TestPageC(vm));
+        Assert.ThrowsExactly<InvalidOperationException>(() => container.Push(new TestPageA(vm))); // This should throw
 
         // Assert - Exception expected
     }
@@ -252,7 +274,8 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = false };
         var vm = new TestViewModel();
         var rootPage = new TestPageA(vm);
-        var container = new NavigationContainer(rootPage, config);
+        var container = new NavigationContainer(config);
+        container.Push(rootPage);
         var newPage = new TestPageB(vm);
 
         // Act
@@ -275,7 +298,8 @@ public class NavigationStackTests
         };
         var vm = new TestViewModel();
         var rootPage = new TestPageA(vm);
-        var container = new NavigationContainer(rootPage, config);
+        var container = new NavigationContainer(config);
+        container.Push(rootPage);
         var pageB = new TestPageB(vm);
         var pageC = new TestPageC(vm);
 
@@ -298,10 +322,10 @@ public class NavigationStackTests
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
+        var rootPage = serviceProvider.GetRequiredService<TestPageA>();
         var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
         var container = serviceProvider.GetRequiredService<NavigationContainer>();
-        var rootPage = (TestPageA)container.CurrentPage;
 
         // Act
         navigationService.NavigateTo<TestPageB>();
@@ -340,6 +364,7 @@ public class NavigationStackTests
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
+        var rootPage = serviceProvider.GetRequiredService<TestPageA>();
         var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
         var container = serviceProvider.GetRequiredService<NavigationContainer>();
@@ -348,7 +373,6 @@ public class NavigationStackTests
         navigationService.NavigateTo<TestPageB>();
 
         // Reset flags
-        var rootPage = (TestPageA)container.PeekPrevious()!;
         var pageB = (TestPageB)container.CurrentPage;
 
         // Act
@@ -360,33 +384,33 @@ public class NavigationStackTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void TestNavigationService_GoBack_StackDisabled_ThrowsException()
     {
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = false };
         var serviceProvider = CreateServiceProvider(config);
+        var rootPage = serviceProvider.GetRequiredService<TestPageA>();
         var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
 
         // Act
-        navigationService.GoBack();
+        Assert.ThrowsExactly<InvalidOperationException>(navigationService.GoBack);
 
         // Assert - Exception expected
     }
 
     [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void TestNavigationService_GoBack_AtRoot_ThrowsException()
     {
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
+        var rootPage = serviceProvider.GetRequiredService<TestPageA>();
         var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
 
         // Act
-        navigationService.GoBack();
+        Assert.ThrowsExactly<InvalidOperationException>(navigationService.GoBack);
 
         // Assert - Exception expected
     }
@@ -397,10 +421,10 @@ public class NavigationStackTests
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
+        var rootPage = serviceProvider.GetRequiredService<TestPageA>();
         var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
         var container = serviceProvider.GetRequiredService<NavigationContainer>();
-        var rootPage = container.CurrentPage;
 
         // Navigate through multiple pages
         navigationService.NavigateTo<TestPageB>();
@@ -462,6 +486,7 @@ public class NavigationStackTests
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
+        var rootPage = serviceProvider.GetRequiredService<TestPageA>();
         var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
 

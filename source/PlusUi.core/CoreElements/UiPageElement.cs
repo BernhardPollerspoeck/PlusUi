@@ -16,6 +16,7 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
     public void BuildPage()
     {
         _tree = Build();
+        _tree.Context = ViewModel;
 
         var themeService = ServiceProviderService.ServiceProvider?.GetRequiredService<IThemeService>();
         var mainStyle = ServiceProviderService.ServiceProvider?.GetRequiredService<Style>();

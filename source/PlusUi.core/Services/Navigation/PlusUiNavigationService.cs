@@ -4,7 +4,9 @@ using System.ComponentModel;
 
 namespace PlusUi.core;
 
-public class PlusUiNavigationService(IServiceProvider serviceProvider, ILogger<PlusUiNavigationService>? logger = null) : INavigationService
+public class PlusUiNavigationService(
+    IServiceProvider serviceProvider,
+    ILogger<PlusUiNavigationService>? logger = null) : INavigationService
 {
     private NavigationContainer? _navigationContainer;
     private readonly ILogger<PlusUiNavigationService>? _logger = logger;
@@ -242,6 +244,8 @@ public class PlusUiNavigationService(IServiceProvider serviceProvider, ILogger<P
     public void Initialize()
     {
         _navigationContainer ??= serviceProvider.GetRequiredService<NavigationContainer>();
-        NavigateToInternal(_navigationContainer.CurrentPage.GetType(), null, true);
+        var appConfiguration = serviceProvider.GetRequiredService<IAppConfiguration>();
+        var mainPage = appConfiguration.GetRootPage(serviceProvider);
+        NavigateToInternal(mainPage.GetType(), null, true);
     }
 }

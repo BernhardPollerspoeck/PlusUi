@@ -47,16 +47,13 @@ public class NavigationContainer
     /// </summary>
     /// <param name="rootPage">The initial page to display.</param>
     /// <param name="configuration">The PlusUi configuration containing navigation settings.</param>
-    public NavigationContainer(UiPageElement rootPage, PlusUiConfiguration configuration)
+    public NavigationContainer(PlusUiConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(rootPage);
         ArgumentNullException.ThrowIfNull(configuration);
 
         _stackEnabled = configuration.EnableNavigationStack;
         _preservePageState = configuration.PreservePageState;
         _maxStackDepth = configuration.MaxStackDepth;
-
-        _navigationStack.Push(new NavigationStackItem(rootPage));
     }
 
     /// <summary>

@@ -13,7 +13,9 @@ public abstract class UiTextElement : UiElement
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
+            InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
     }
@@ -35,8 +37,10 @@ public abstract class UiTextElement : UiElement
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
             Font = CreateFont();
+            InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
     } = 12;
@@ -58,6 +62,7 @@ public abstract class UiTextElement : UiElement
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
             Paint = CreatePaint();
         }
@@ -80,8 +85,10 @@ public abstract class UiTextElement : UiElement
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
             Font = CreateFont();
+            InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
     }
@@ -103,8 +110,10 @@ public abstract class UiTextElement : UiElement
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
             Font = CreateFont();
+            InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
     } = FontWeight.Regular;
@@ -126,8 +135,10 @@ public abstract class UiTextElement : UiElement
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
             Font = CreateFont();
+            InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
     } = FontStyle.Normal;
@@ -149,6 +160,7 @@ public abstract class UiTextElement : UiElement
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
             InvalidateMeasure();
         }
@@ -171,7 +183,9 @@ public abstract class UiTextElement : UiElement
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
+            InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
     } = TextWrapping.NoWrap;
@@ -193,7 +207,9 @@ public abstract class UiTextElement : UiElement
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
+            InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
     }
@@ -215,7 +231,9 @@ public abstract class UiTextElement : UiElement
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
+            InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
     } = TextTruncation.None;
@@ -237,6 +255,23 @@ public abstract class UiTextElement : UiElement
         Font = CreateFont();
     }
 
+    #region Text Layout Cache
+    private string? _cachedWrapText;
+    private float _cachedWrapMaxWidth;
+    private List<string>? _cachedWrapResult;
+
+    private string? _cachedTruncText;
+    private float _cachedTruncMaxWidth;
+    private string? _cachedTruncResult;
+
+    private void InvalidateTextLayoutCache()
+    {
+        _cachedWrapText = null;
+        _cachedWrapResult = null;
+        _cachedTruncText = null;
+        _cachedTruncResult = null;
+    }
+    #endregion
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
@@ -336,10 +371,19 @@ public abstract class UiTextElement : UiElement
     #region Text wrapping and truncation helpers
     protected List<string> WrapText(string text, float maxWidth)
     {
+        // Check cache
+        if (_cachedWrapText == text && Math.Abs(_cachedWrapMaxWidth - maxWidth) < 0.01f && _cachedWrapResult != null)
+        {
+            return _cachedWrapResult;
+        }
+
         var lines = new List<string>();
         if (string.IsNullOrEmpty(text) || maxWidth <= 0)
         {
             lines.Add(text);
+            _cachedWrapText = text;
+            _cachedWrapMaxWidth = maxWidth;
+            _cachedWrapResult = lines;
             return lines;
         }
 
@@ -397,32 +441,53 @@ public abstract class UiTextElement : UiElement
             }
         }
 
-        return lines.Count > 0 ? lines : new List<string> { text };
+        var result = lines.Count > 0 ? lines : new List<string> { text };
+        _cachedWrapText = text;
+        _cachedWrapMaxWidth = maxWidth;
+        _cachedWrapResult = result;
+        return result;
     }
 
     protected string ApplyTruncation(string text, float maxWidth)
     {
+        // Check cache
+        if (_cachedTruncText == text && Math.Abs(_cachedTruncMaxWidth - maxWidth) < 0.01f && _cachedTruncResult != null)
+        {
+            return _cachedTruncResult;
+        }
+
         if (TextTruncation == TextTruncation.None || string.IsNullOrEmpty(text))
         {
+            _cachedTruncText = text;
+            _cachedTruncMaxWidth = maxWidth;
+            _cachedTruncResult = text;
             return text;
         }
 
         var textWidth = Font.MeasureText(text);
         if (textWidth <= maxWidth)
         {
+            _cachedTruncText = text;
+            _cachedTruncMaxWidth = maxWidth;
+            _cachedTruncResult = text;
             return text;
         }
 
         const string ellipsis = " ... ";
         var ellipsisWidth = Font.MeasureText(ellipsis);
 
-        return TextTruncation switch
+        var result = TextTruncation switch
         {
             TextTruncation.Start => TruncateStart(text, maxWidth, ellipsis, ellipsisWidth),
             TextTruncation.Middle => TruncateMiddle(text, maxWidth, ellipsis, ellipsisWidth),
             TextTruncation.End => TruncateEnd(text, maxWidth, ellipsis, ellipsisWidth),
             _ => text,
         };
+
+        _cachedTruncText = text;
+        _cachedTruncMaxWidth = maxWidth;
+        _cachedTruncResult = result;
+        return result;
     }
 
     private string TruncateEnd(string text, float maxWidth, string ellipsis, float ellipsisWidth)
