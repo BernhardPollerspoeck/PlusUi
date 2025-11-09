@@ -16,13 +16,7 @@ public class PlusUiNavigationService(IServiceProvider serviceProvider, ILogger<P
     public int StackDepth => _navigationContainer?.StackDepth ?? 0;
 
     /// <inheritdoc/>
-    public void NavigateTo<TPage>() where TPage : UiPageElement
-    {
-        NavigateTo<TPage>(null);
-    }
-
-    /// <inheritdoc/>
-    public void NavigateTo<TPage>(object? parameter) where TPage : UiPageElement
+    public void NavigateTo<TPage>(object? parameter = null) where TPage : UiPageElement
     {
         NavigateToInternal(typeof(TPage), parameter, false);
     }
@@ -196,8 +190,7 @@ public class PlusUiNavigationService(IServiceProvider serviceProvider, ILogger<P
         try
         {
             // Resolve the new page
-            var page = serviceProvider.GetRequiredService(pageType) as UiPageElement;
-            if (page is null)
+            if (serviceProvider.GetRequiredService(pageType) is not UiPageElement page)
             {
                 var exception = new InvalidOperationException(
                     $"Page of type {pageType.Name} could not be resolved or is not a UiPageElement. " +

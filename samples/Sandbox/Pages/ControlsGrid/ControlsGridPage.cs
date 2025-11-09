@@ -5,6 +5,12 @@ namespace Sandbox.Pages.ControlsGrid;
 
 internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm)
 {
+    public override void OnNavigatedTo(object? parameter)
+    {
+        base.OnNavigatedTo(parameter);
+        vm.Title = parameter as string;
+    }
+
     protected override UiElement Build()
     {
         return new Grid()
@@ -24,7 +30,7 @@ internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm
             .AddChild(row: 1, column: 1, child: new VStack(
                 new Border()
                     .AddChild(new Button()
-                        .SetText("Increment")
+                        .BindText(nameof(vm.Title), () => $"Increment {vm.Title}")
                         .SetTextSize(20)
                         .SetCommand(vm.IncrementCommand)
                         .SetTextColor(SKColors.Black)

@@ -6,16 +6,6 @@
 public interface INavigationService
 {
     /// <summary>
-    /// Navigates to a page of the specified type. The page must be registered in the service collection.
-    /// </summary>
-    /// <typeparam name="TPage">The type of page to navigate to.</typeparam>
-    /// <remarks>
-    /// The page type must be registered via dependency injection in your application startup (e.g., services.AddTransient&lt;MyPage&gt;()).
-    /// </remarks>
-    /// <exception cref="InvalidOperationException">Thrown if the page is not registered in the service collection.</exception>
-    void NavigateTo<TPage>() where TPage : UiPageElement;
-
-    /// <summary>
     /// Navigates to a page of the specified type with an optional parameter.
     /// The page must be registered in the service collection.
     /// </summary>
@@ -26,7 +16,7 @@ public interface INavigationService
     /// The parameter will be passed to the page's OnNavigatedTo method.
     /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown if the page is not registered in the service collection.</exception>
-    void NavigateTo<TPage>(object? parameter) where TPage : UiPageElement;
+    void NavigateTo<TPage>(object? parameter = null) where TPage : UiPageElement;
 
     /// <summary>
     /// Navigates back to the previous page in the navigation stack.

@@ -10,7 +10,7 @@ public class ThemeService : IThemeService
     {
         CurrentTheme = theme.ToString();
         var container = ServiceProviderService.ServiceProvider?.GetRequiredService<NavigationContainer>();
-        container?.Page.ApplyStyles();
+        container?.CurrentPage.ApplyStyles();
         return true;
     }
 
@@ -18,7 +18,7 @@ public class ThemeService : IThemeService
     {
         CurrentTheme = theme;
         var container = ServiceProviderService.ServiceProvider?.GetRequiredService<NavigationContainer>();
-        container?.Page.ApplyStyles();
+        container?.CurrentPage.ApplyStyles();
         return true;
     }
 }
