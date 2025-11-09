@@ -36,10 +36,48 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
         Appearing();
     }
 
+    /// <summary>
+    /// Called when the page is about to appear on screen.
+    /// This is called after the page tree is built and before rendering begins.
+    /// </summary>
     public virtual void Appearing()
     {
     }
+
+    /// <summary>
+    /// Called when the page is about to disappear from screen.
+    /// This is called before navigating to another page.
+    /// </summary>
     public virtual void Disappearing()
+    {
+    }
+
+    /// <summary>
+    /// Called when the page is navigated to with an optional parameter.
+    /// This method is called after Appearing() and after the page tree is built.
+    /// Use this to handle navigation parameters and initialize page state based on the parameter.
+    /// </summary>
+    /// <param name="parameter">
+    /// The parameter passed during navigation via NavigateTo&lt;TPage&gt;(parameter).
+    /// Can be null if no parameter was provided.
+    /// </param>
+    /// <remarks>
+    /// This method is part of the navigation lifecycle and is called every time the page is navigated to,
+    /// including when using GoBack() if the navigation stack is enabled.
+    /// </remarks>
+    public virtual void OnNavigatedTo(object? parameter)
+    {
+    }
+
+    /// <summary>
+    /// Called when the page is being navigated away from.
+    /// This is called before Disappearing() and before the new page is shown.
+    /// Use this to clean up resources, save state, or cancel ongoing operations.
+    /// </summary>
+    /// <remarks>
+    /// This method is part of the navigation lifecycle and is called every time navigation occurs away from this page.
+    /// </remarks>
+    public virtual void OnNavigatedFrom()
     {
     }
 

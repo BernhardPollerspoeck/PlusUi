@@ -40,7 +40,7 @@ public class InputService
         var hitControl = (currentPopup) switch
         {
             not null => currentPopup.HitTest(new(location.X, location.Y)),
-            _ => _navigationContainer.Page.HitTest(new(location.X, location.Y))
+            _ => _navigationContainer.CurrentPage.HitTest(new(location.X, location.Y))
         };
 
         // Check for draggable control first (higher priority than scrollable)
@@ -80,7 +80,7 @@ public class InputService
         var hitControl = (currentPopup) switch
         {
             not null => currentPopup.HitTest(new(location.X, location.Y)),
-            _ => _navigationContainer.Page.HitTest(new(location.X, location.Y))
+            _ => _navigationContainer.CurrentPage.HitTest(new(location.X, location.Y))
         };
         if (hitControl is IInputControl inputControl)
         {
@@ -157,7 +157,7 @@ public class InputService
         var hitControl = (currentPopup) switch
         {
             not null => currentPopup.HitTest(new(location.X, location.Y)),
-            _ => _navigationContainer.Page.HitTest(new(location.X, location.Y))
+            _ => _navigationContainer.CurrentPage.HitTest(new(location.X, location.Y))
         };
         
         // Scroll the control if it's scrollable

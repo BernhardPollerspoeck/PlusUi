@@ -151,9 +151,9 @@ public sealed class GridTests
         var dynamicColumnWidth = 80;
 
         var grid = new Grid()
-            .AddBoundColumn(() => dynamicColumnWidth)
+            .AddBoundColumn(nameof(dynamicColumnWidth), () => dynamicColumnWidth)
             .AddColumn(Column.Auto)
-            .AddBoundRow(() => dynamicRowHeight)
+            .AddBoundRow(nameof(dynamicRowHeight), () => dynamicRowHeight)
             .AddRow(Row.Auto)
             .AddChild(new Solid().SetDesiredSize(new Size(30, 30)), 0, 0)
             .AddChild(new Solid().SetDesiredSize(new Size(50, 40)), 1, 1)
@@ -280,7 +280,7 @@ public sealed class GridTests
         var item2 = new Solid().SetDesiredSize(new Size(20, 20));
 
         var grid = new Grid()
-            .AddBoundColumn(() => dynamicWidth)  // Dynamic width column
+            .AddBoundColumn(nameof(dynamicWidth), () => dynamicWidth)  // Dynamic width column
             .AddColumn(Column.Star)              // Remaining space
             .AddRow(Row.Absolute, 40)
             .AddChild(item1, 0, 0)               // First column
@@ -301,6 +301,7 @@ public sealed class GridTests
 
         // Change the dynamic width and verify positioning updates
         dynamicWidth = 100;
+        grid.InvalidateMeasure();
         grid.Measure(new Size(200, 100));
         grid.Arrange(new Rect(0, 0, 200, 40));
 
@@ -581,6 +582,7 @@ public sealed class GridTests
 
         //Act
         grid.RemoveChild(child2);
+        grid.InvalidateMeasure();
         grid.Measure(new Size(200, 200));
         grid.Arrange(new Rect(0, 0, 200, 200));
 
@@ -597,8 +599,8 @@ public sealed class GridTests
         var dynamicHeight = 40f;
 
         var grid = new Grid()
-            .AddBoundColumn(() => dynamicWidth)
-            .AddBoundRow(() => dynamicHeight)
+            .AddBoundColumn(nameof(dynamicWidth), () => dynamicWidth)
+            .AddBoundRow(nameof(dynamicHeight), () => dynamicHeight)
             .AddChild(new Solid())
             .SetHorizontalAlignment(HorizontalAlignment.Left)
             .SetVerticalAlignment(VerticalAlignment.Top);
@@ -615,6 +617,7 @@ public sealed class GridTests
         dynamicHeight = 80f;
 
         // This should trigger size change events internally
+        grid.InvalidateMeasure();
         grid.Measure(new Size(200, 200));
         grid.Arrange(new Rect(0, 0, 200, 200));
 

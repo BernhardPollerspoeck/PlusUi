@@ -27,7 +27,7 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
             canvas.Clear(SKColors.Transparent);
 
             var measureTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
-            navigationContainer.Page.Measure(new Size(canvasSize.X, canvasSize.Y));
+            navigationContainer.CurrentPage.Measure(new Size(canvasSize.X, canvasSize.Y));
             if (measureTimer != null)
             {
                 measureTimer.Stop();
@@ -35,7 +35,7 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
             }
 
             var arrangeTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
-            navigationContainer.Page.Arrange(new Rect(0, 0, canvasSize.X, canvasSize.Y));
+            navigationContainer.CurrentPage.Arrange(new Rect(0, 0, canvasSize.X, canvasSize.Y));
             if (arrangeTimer != null)
             {
                 arrangeTimer.Stop();
@@ -43,7 +43,7 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
             }
 
             var renderTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
-            navigationContainer.Page.Render(canvas);
+            navigationContainer.CurrentPage.Render(canvas);
 
             var popup = popupService.CurrentPopup;
             if (popup is not null)

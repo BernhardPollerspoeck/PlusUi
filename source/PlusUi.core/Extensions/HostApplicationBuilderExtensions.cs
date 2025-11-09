@@ -31,7 +31,12 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<Style>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();
         builder.Services.AddHostedService<StartupStyleService>();
-        builder.Services.AddSingleton(sp => new PlusUiNavigationService(sp));
+        builder.Services.AddSingleton(sp =>
+        {
+            var appConfiguration = sp.GetRequiredService<IAppConfiguration>();
+            var mainPage = appConfiguration.GetRootPage(sp);
+            return new PlusUiNavigationService(sp, mainPage);
+        });
         builder.Services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
         builder.Services.AddSingleton<IFontRegistryService, FontRegistryService>();
@@ -44,9 +49,8 @@ public static class HostApplicationBuilderExtensions
 
         builder.Services.AddSingleton(sp =>
         {
-            var appConfiguration = sp.GetRequiredService<IAppConfiguration>();
-            var mainPage = appConfiguration.GetRootPage(sp);
-            return new NavigationContainer(mainPage);
+            var configuration = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value;
+            return new NavigationContainer(configuration);
         });
         return builder;
 

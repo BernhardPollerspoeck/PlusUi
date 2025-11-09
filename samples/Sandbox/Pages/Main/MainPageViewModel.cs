@@ -42,7 +42,7 @@ public partial class MainPageViewModel(INavigationService navigationService, IPo
             typeof(INavigationService)
                 .GetMethod(nameof(INavigationService.NavigateTo))
                 ?.MakeGenericMethod(pageType)
-                .Invoke(navigationService, null);
+                .Invoke(navigationService, ["Tree is tall"]);
         }
     }
 
