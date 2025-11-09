@@ -28,8 +28,6 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Grid : UiLayoutElement
 {
-    protected override bool NeedsMeasure => true;
-
     #region Children
     private readonly List<GridItem> _children = [];
     public override List<UiElement> Children => [.. _children.Select(c => c.Element)];

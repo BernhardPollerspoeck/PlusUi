@@ -14,6 +14,7 @@ public abstract class UiElement : IDisposable
 
 
     protected virtual bool NeedsMeasure { get; set; } = true;
+    protected virtual bool NeedsArrange { get; set; } = true;
 
     #region Debug
     protected bool Debug { get; private set; }
@@ -135,6 +136,7 @@ public abstract class UiElement : IDisposable
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
             InvalidateMeasure();
         }
@@ -157,6 +159,7 @@ public abstract class UiElement : IDisposable
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
             InvalidateMeasure();
         }
@@ -179,6 +182,7 @@ public abstract class UiElement : IDisposable
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
             InvalidateMeasure();
         }
@@ -302,6 +306,7 @@ public abstract class UiElement : IDisposable
         get => field;
         set
         {
+            if (field == value) return;
             field = value;
             InvalidateMeasure();
         }
@@ -391,14 +396,25 @@ public abstract class UiElement : IDisposable
     public void InvalidateMeasure()
     {
         NeedsMeasure = true;
+        InvalidateArrange(); // Size changes require position recalculation
         Parent?.InvalidateMeasure();
+    }
+
+    public void InvalidateArrange()
+    {
+        NeedsArrange = true;
+        Parent?.InvalidateArrange();
     }
     #endregion
 
     #region Arranging
     public Point Arrange(Rect bounds)
     {
-        Position = ArrangeInternal(bounds);
+        if (NeedsArrange)
+        {
+            Position = ArrangeInternal(bounds);
+            NeedsArrange = false;
+        }
         return Position;
     }
     protected virtual Point ArrangeInternal(Rect bounds)
