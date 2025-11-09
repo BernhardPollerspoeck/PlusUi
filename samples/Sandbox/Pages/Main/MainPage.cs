@@ -13,6 +13,7 @@ using Sandbox.Pages.ShadowDemo;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Pages.TextWrapDemo;
 using Sandbox.Pages.NewControlsDemo;
+using Sandbox.Pages.StyleDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -143,6 +144,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     private VStack CreateTestButtons()
     {
         return new VStack(
+            new Button()
+                .SetText("🎨 PlusUiStyle Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new SKColor(37, 99, 235)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(StyleDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
             new Button()
                 .SetText("New Controls Demo")
                 .SetPadding(new(20, 5))
