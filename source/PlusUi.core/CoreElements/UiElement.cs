@@ -60,7 +60,7 @@ public abstract class UiElement : IDisposable
     /// The background of the element (gradient, solid color, or custom).
     /// </summary>
     internal IBackground? Background { get; set; }
-
+    protected virtual bool SkipBackgroundRendering => false;
     public UiElement SetBackground(IBackground? background)
     {
         Background = background;
@@ -136,7 +136,7 @@ public abstract class UiElement : IDisposable
         get => field;
         set
         {
-            if (field == value) return;
+            if (field.Equals(value)) return;
             field = value;
             InvalidateMeasure();
         }
@@ -306,7 +306,7 @@ public abstract class UiElement : IDisposable
         get => field;
         set
         {
-            if (field == value) return;
+            if (field.HasValue && field.Equals(value)) return;
             field = value;
             InvalidateMeasure();
         }
@@ -359,6 +359,8 @@ public abstract class UiElement : IDisposable
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Point Position { get; protected set; }
 
+    public virtual INotifyPropertyChanged? Context { get; internal set; }
+
     #region Measuring
     public Size Measure(Size availableSize, bool dontStretch = false)
     {
@@ -393,17 +395,23 @@ public abstract class UiElement : IDisposable
             Math.Min(0, availableSize.Width),
             Math.Min(0, availableSize.Height));
     }
-    public void InvalidateMeasure()
+    public virtual void InvalidateMeasure()
     {
         NeedsMeasure = true;
+        if (Parent is { NeedsMeasure: false })
+        {
+            Parent?.InvalidateMeasure();
+        }
         InvalidateArrange(); // Size changes require position recalculation
-        Parent?.InvalidateMeasure();
     }
 
     public void InvalidateArrange()
     {
         NeedsArrange = true;
-        Parent?.InvalidateArrange();
+        if (Parent is { NeedsArrange: false })
+        {
+            Parent?.InvalidateArrange();
+        }
     }
     #endregion
 
@@ -593,7 +601,7 @@ public abstract class UiElement : IDisposable
         {
             RenderShadow(canvas);
 
-            if (Background is not null)
+            if (!SkipBackgroundRendering && Background is not null)
             {
                 var rect = new SKRect(
                     Position.X + VisualOffset.X,

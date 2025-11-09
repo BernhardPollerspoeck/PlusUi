@@ -54,9 +54,9 @@ public partial class MainPageViewModel(INavigationService navigationService, IPo
             onClosed: () => Color = SKColors.Green,
             configure: cfg =>
             {
-                cfg.CloseOnBackgroundClick = true;
+                cfg.CloseOnBackgroundClick = false;
                 cfg.CloseOnEscape = true;
-                cfg.BackgroundColor = new SKColor(0, 0, 0, 220);
+                cfg.BackgroundColor = new SKColor(200, 0, 0, 220);
             });
     }
 

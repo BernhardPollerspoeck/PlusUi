@@ -1,5 +1,6 @@
 ﻿using PlusUi.core.Attributes;
 using PlusUi.core.Controls.GridHelper;
+using System.ComponentModel;
 
 namespace PlusUi.core;
 
@@ -28,10 +29,40 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Grid : UiLayoutElement
 {
+    public override INotifyPropertyChanged? Context
+    {
+        get => base.Context;
+        internal set
+        {
+            if (base.Context is not null)
+            {
+                base.Context.PropertyChanged -= HandleContextPropertyChanged;
+            }
+            base.Context = value;
+            if (value is not null)
+            {
+                value.PropertyChanged += HandleContextPropertyChanged;
+            }
+        }
+    }
+    private void HandleContextPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        foreach (var column in Columns.Where(c => c.PropertyName == e.PropertyName))
+        {
+            column.GetSize();
+        }
+        foreach (var row in Rows.Where(r => r.PropertyName == e.PropertyName))
+        {
+            row.GetSize();
+        }
+    }
+
+
     #region Children
     private readonly List<GridItem> _children = [];
     public override List<UiElement> Children => [.. _children.Select(c => c.Element)];
 
+    //TODO: method shadowing creates only the 1 arugment one from layout.
     public Grid AddChild(UiElement child, int row = 0, int column = 0, int rowSpan = 1, int columnSpan = 1)
     {
         child.Parent = this;
@@ -59,7 +90,7 @@ public partial class Grid : UiLayoutElement
     public IReadOnlyList<RowColumnItem<Column>> Columns => _columns;
     public Grid AddColumn(Column column, float size = 1)
     {
-        var columnItem = new RowColumnItem<Column>(column, size);
+        var columnItem = new RowColumnItem<Column>(null, column, size);
         columnItem.SizeChanged += OnRowColumnSizeChanged;
         _columns.Add(columnItem);
         return this;
@@ -68,16 +99,16 @@ public partial class Grid : UiLayoutElement
     {
         return AddColumn(Column.Absolute, size);
     }
-    public Grid AddBoundColumn(Column column, Func<float> sizeGetter)
+    public Grid AddBoundColumn(string propertyName, Column column, Func<float> sizeGetter)
     {
-        var columnItem = new RowColumnItem<Column>(column, null, sizeGetter);
+        var columnItem = new RowColumnItem<Column>(propertyName, column, null, sizeGetter);
         columnItem.SizeChanged += OnRowColumnSizeChanged;
         _columns.Add(columnItem);
         return this;
     }
-    public Grid AddBoundColumn(Func<float> sizeGetter)
+    public Grid AddBoundColumn(string propertyName, Func<float> sizeGetter)
     {
-        return AddBoundColumn(Column.Absolute, sizeGetter);
+        return AddBoundColumn(propertyName, Column.Absolute, sizeGetter);
     }
     #endregion
 
@@ -86,7 +117,7 @@ public partial class Grid : UiLayoutElement
     public IReadOnlyList<RowColumnItem<Row>> Rows => _rows;
     public Grid AddRow(Row row, int size = 1)
     {
-        var rowItem = new RowColumnItem<Row>(row, size);
+        var rowItem = new RowColumnItem<Row>(null, row, size);
         rowItem.SizeChanged += OnRowColumnSizeChanged;
         _rows.Add(rowItem);
         return this;
@@ -95,16 +126,16 @@ public partial class Grid : UiLayoutElement
     {
         return AddRow(Row.Absolute, size);
     }
-    public Grid AddBoundRow(Row row, Func<float> sizeGetter)
+    public Grid AddBoundRow(string propertyName, Row row, Func<float> sizeGetter)
     {
-        var rowItem = new RowColumnItem<Row>(row, null, sizeGetter);
+        var rowItem = new RowColumnItem<Row>(propertyName, row, null, sizeGetter);
         rowItem.SizeChanged += OnRowColumnSizeChanged;
         _rows.Add(rowItem);
         return this;
     }
-    public Grid AddBoundRow(Func<float> sizeGetter)
+    public Grid AddBoundRow(string propertyName, Func<float> sizeGetter)
     {
-        return AddBoundRow(Row.Absolute, sizeGetter);
+        return AddBoundRow(propertyName, Row.Absolute, sizeGetter);
     }
     #endregion
 
@@ -117,10 +148,6 @@ public partial class Grid : UiLayoutElement
     private void OnRowColumnSizeChanged()
     {
         InvalidateMeasure();
-        foreach (var child in _children)
-        {
-            child.Element.InvalidateMeasure();
-        }
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
@@ -319,7 +346,7 @@ public partial class Grid : UiLayoutElement
     {
         // First call base.ArrangeInternal to get the grid's position with margin applied
         var gridPosition = base.ArrangeInternal(bounds);
-        
+
         var columnWidths = _columns.Select(c => c.MeasuredSize).ToArray();
         var rowHeights = _rows.Select(r => r.MeasuredSize).ToArray();
 
