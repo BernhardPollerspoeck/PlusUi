@@ -6,7 +6,6 @@ namespace PlusUi.core;
 
 public class PlusUiNavigationService(
     IServiceProvider serviceProvider,
-    UiPageElement rootPage,
     ILogger<PlusUiNavigationService>? logger = null) : INavigationService
 {
     private NavigationContainer? _navigationContainer;
@@ -245,6 +244,8 @@ public class PlusUiNavigationService(
     public void Initialize()
     {
         _navigationContainer ??= serviceProvider.GetRequiredService<NavigationContainer>();
-        NavigateToInternal(rootPage.GetType(), null, true);
+        var appConfiguration = serviceProvider.GetRequiredService<IAppConfiguration>();
+        var mainPage = appConfiguration.GetRootPage(serviceProvider);
+        NavigateToInternal(mainPage.GetType(), null, true);
     }
 }

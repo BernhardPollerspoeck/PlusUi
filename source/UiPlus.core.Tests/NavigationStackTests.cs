@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using System.ComponentModel;
@@ -78,6 +79,22 @@ public class NavigationStackTests
         protected override UiElement Build() => new Label();
     }
 
+    private class TestAppConfiguration : IAppConfiguration
+    {
+        public void ConfigureApp(HostApplicationBuilder builder)
+        {
+        }
+
+        public void ConfigureWindow(PlusUiConfiguration configuration)
+        {
+        }
+
+        public UiPageElement GetRootPage(IServiceProvider serviceProvider)
+        {
+            return serviceProvider.GetRequiredService<TestPageA>();
+        }
+    }
+
     private static ServiceProvider CreateServiceProvider(PlusUiConfiguration? config = null)
     {
         var services = new ServiceCollection();
@@ -85,6 +102,8 @@ public class NavigationStackTests
         services.AddSingleton<TestPageA>();
         services.AddSingleton<TestPageB>();
         services.AddSingleton<TestPageC>();
+
+        services.AddSingleton<IAppConfiguration, TestAppConfiguration>();
 
         config ??= new PlusUiConfiguration();
 
@@ -304,7 +323,7 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
         var rootPage = serviceProvider.GetRequiredService<TestPageA>();
-        var navigationService = new PlusUiNavigationService(serviceProvider, rootPage);
+        var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
         var container = serviceProvider.GetRequiredService<NavigationContainer>();
 
@@ -325,8 +344,7 @@ public class NavigationStackTests
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
-        var rootPage = serviceProvider.GetRequiredService<TestPageA>();
-        var navigationService = new PlusUiNavigationService(serviceProvider, rootPage);
+        var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
         var container = serviceProvider.GetRequiredService<NavigationContainer>();
         var parameter = new { Id = 123, Name = "TestParam" };
@@ -347,7 +365,7 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
         var rootPage = serviceProvider.GetRequiredService<TestPageA>();
-        var navigationService = new PlusUiNavigationService(serviceProvider, rootPage);
+        var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
         var container = serviceProvider.GetRequiredService<NavigationContainer>();
 
@@ -372,7 +390,7 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = false };
         var serviceProvider = CreateServiceProvider(config);
         var rootPage = serviceProvider.GetRequiredService<TestPageA>();
-        var navigationService = new PlusUiNavigationService(serviceProvider, rootPage);
+        var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
 
         // Act
@@ -388,7 +406,7 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
         var rootPage = serviceProvider.GetRequiredService<TestPageA>();
-        var navigationService = new PlusUiNavigationService(serviceProvider, rootPage);
+        var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
 
         // Act
@@ -404,7 +422,7 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
         var rootPage = serviceProvider.GetRequiredService<TestPageA>();
-        var navigationService = new PlusUiNavigationService(serviceProvider, rootPage);
+        var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
         var container = serviceProvider.GetRequiredService<NavigationContainer>();
 
@@ -427,8 +445,7 @@ public class NavigationStackTests
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
-        var rootPage = serviceProvider.GetRequiredService<TestPageA>();
-        var navigationService = new PlusUiNavigationService(serviceProvider, rootPage);
+        var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
 
         // Act & Assert
@@ -447,8 +464,7 @@ public class NavigationStackTests
         // Arrange
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
-        var rootPage = serviceProvider.GetRequiredService<TestPageA>();
-        var navigationService = new PlusUiNavigationService(serviceProvider, rootPage);
+        var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
 
         // Act & Assert
@@ -471,7 +487,7 @@ public class NavigationStackTests
         var config = new PlusUiConfiguration { EnableNavigationStack = true };
         var serviceProvider = CreateServiceProvider(config);
         var rootPage = serviceProvider.GetRequiredService<TestPageA>();
-        var navigationService = new PlusUiNavigationService(serviceProvider, rootPage);
+        var navigationService = new PlusUiNavigationService(serviceProvider);
         navigationService.Initialize();
 
         // Act
