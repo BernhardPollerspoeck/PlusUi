@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.Services;
 using SkiaSharp;
 using System.Windows.Input;
 
@@ -31,7 +32,7 @@ namespace PlusUi.core;
 public partial class Toolbar : UiLayoutElement<Toolbar>
 {
     private Label? _titleLabel;
-    private Button? _overflowButton;
+    internal Button? _overflowButton;
     private List<UiElement> _overflowItems = new();
     private IImageLoaderService? _imageLoaderService;
     private SKImage? _overflowIconImage;
@@ -40,6 +41,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     private List<Button> _overflowMenuButtons = new();
     private IOverlayService? _overlayService;
     private ToolbarOverflowMenuOverlay? _overflowMenuOverlay;
+    private IPlatformService? _platformService;
 
     #region Title
     internal string? Title
@@ -438,7 +440,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
                 .SetPadding(new Margin(8, 4))
                 .SetBackground(new SolidColorBackground(SKColors.Transparent))
                 .SetTextColor(TitleColor)
-                .SetCommand(new RelayCommand(ShowOverflowMenu));
+                .SetOnClick(ShowOverflowMenu);
             _overflowButton.Parent = this;
         }
 
@@ -543,8 +545,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
             item.SetIsVisible(visibleRightItems.Contains(item));
         }
 
-        // Measure overflow menu if open
-        MeasureOverflowMenu();
+        // Note: Overflow menu is measured/arranged by ToolbarOverflowMenuOverlay
 
         return new Size(availableSize.Width, maxHeight + ContentPadding.Vertical);
     }
@@ -616,8 +617,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
             CenterContent.Arrange(new Rect(centerX, centerY, CenterContent.ElementSize.Width, CenterContent.ElementSize.Height));
         }
 
-        // Arrange overflow menu if open
-        ArrangeOverflowMenu();
+        // Note: Overflow menu is measured/arranged by ToolbarOverflowMenuOverlay
 
         return new Point(positionX, positionY);
     }
@@ -681,6 +681,26 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
                 _overflowItems.Add(item);
             }
         }
+    }
+
+    public override void InvalidateMeasure()
+    {
+        base.InvalidateMeasure();
+
+        // Invalidate items that are not in Children collection
+        foreach (var item in LeftItems)
+        {
+            item.InvalidateMeasure();
+        }
+        foreach (var item in RightItems)
+        {
+            item.InvalidateMeasure();
+        }
+        _titleLabel?.InvalidateMeasure();
+        CenterContent?.InvalidateMeasure();
+        _overflowButton?.InvalidateMeasure();
+        // Note: _overflowMenuContent is not invalidated here as it's rendered via OverlayService
+        // and has Parent=this which would cause infinite recursion
     }
     #endregion
 
@@ -775,7 +795,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     /// <summary>
     /// Closes the overflow menu.
     /// </summary>
-    private void CloseOverflowMenu()
+    internal void CloseOverflowMenu()
     {
         _isOverflowMenuOpen = false;
         UnregisterOverflowMenuOverlay();
@@ -810,6 +830,9 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         _overflowMenuButtons.Clear();
         _overflowMenuContent = new VStack();
         _overflowMenuContent.Parent = this;
+        // Ensure VStack has no background (overlay draws the background) and ignore styling
+        _overflowMenuContent.SetBackground(new SolidColorBackground(SKColors.Transparent));
+        _overflowMenuContent.IgnoreStyling();
 
         foreach (var item in _overflowItems)
         {
@@ -818,6 +841,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
                 // Create a menu button that mirrors the overflow item
                 var menuButton = new Button()
                     .SetText(btn.Text ?? string.Empty)
+                    .SetTextSize(14)
                     .SetPadding(new Margin(16, 12))
                     .SetBackground(new SolidColorBackground(OverflowMenuItemBackground))
                     .SetHoverBackground(new SolidColorBackground(OverflowMenuItemHoverBackground))
@@ -829,29 +853,17 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
                     menuButton.SetIcon(btn.Icon);
                 }
 
-                // Create command that executes the original and closes menu
+                // Set click handler to close menu, and pass through original command
+                menuButton.SetOnClick(() =>
+                {
+                    CloseOverflowMenu();
+                    InvalidateMeasure();
+                });
+
                 if (btn.Command != null)
                 {
-                    var originalCommand = btn.Command;
-                    var originalParameter = btn.CommandParameter;
-                    menuButton.SetCommand(new RelayCommand(() =>
-                    {
-                        CloseOverflowMenu();
-                        InvalidateMeasure();
-                        if (originalCommand.CanExecute(originalParameter))
-                        {
-                            originalCommand.Execute(originalParameter);
-                        }
-                    }));
-                }
-                else
-                {
-                    // If no command, just close menu on click
-                    menuButton.SetCommand(new RelayCommand(() =>
-                    {
-                        CloseOverflowMenu();
-                        InvalidateMeasure();
-                    }));
+                    menuButton.SetCommand(btn.Command);
+                    menuButton.SetCommandParameter(btn.CommandParameter);
                 }
 
                 menuButton.Parent = _overflowMenuContent;
@@ -867,6 +879,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
                     {
                         var menuButton = new Button()
                             .SetText(groupBtn.Text ?? string.Empty)
+                            .SetTextSize(14)
                             .SetPadding(new Margin(16, 12))
                             .SetBackground(new SolidColorBackground(OverflowMenuItemBackground))
                             .SetHoverBackground(new SolidColorBackground(OverflowMenuItemHoverBackground))
@@ -878,27 +891,17 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
                             menuButton.SetIcon(groupBtn.Icon);
                         }
 
+                        // Set click handler to close menu, and pass through original command
+                        menuButton.SetOnClick(() =>
+                        {
+                            CloseOverflowMenu();
+                            InvalidateMeasure();
+                        });
+
                         if (groupBtn.Command != null)
                         {
-                            var originalCommand = groupBtn.Command;
-                            var originalParameter = groupBtn.CommandParameter;
-                            menuButton.SetCommand(new RelayCommand(() =>
-                            {
-                                CloseOverflowMenu();
-                                InvalidateMeasure();
-                                if (originalCommand.CanExecute(originalParameter))
-                                {
-                                    originalCommand.Execute(originalParameter);
-                                }
-                            }));
-                        }
-                        else
-                        {
-                            menuButton.SetCommand(new RelayCommand(() =>
-                            {
-                                CloseOverflowMenu();
-                                InvalidateMeasure();
-                            }));
+                            menuButton.SetCommand(groupBtn.Command);
+                            menuButton.SetCommandParameter(groupBtn.CommandParameter);
                         }
 
                         menuButton.Parent = _overflowMenuContent;
@@ -925,22 +928,43 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     }
 
     /// <summary>
-    /// Arranges the overflow menu below the overflow button.
+    /// Arranges the overflow menu with intelligent positioning.
+    /// Opens upward if there's not enough space below.
     /// </summary>
     private void ArrangeOverflowMenu()
     {
         if (!_isOverflowMenuOpen || _overflowMenuContent == null || _overflowButton == null)
             return;
 
-        // Position menu below the overflow button, aligned to the right
-        var menuX = _overflowButton.Position.X + _overflowButton.ElementSize.Width - _overflowMenuContent.ElementSize.Width;
-        var menuY = _overflowButton.Position.Y + _overflowButton.ElementSize.Height + 4;
+        var menuWidth = _overflowMenuContent.ElementSize.Width;
+        var menuHeight = _overflowMenuContent.ElementSize.Height;
+        var buttonBottom = _overflowButton.Position.Y + _overflowButton.ElementSize.Height;
+        var buttonTop = _overflowButton.Position.Y;
 
-        _overflowMenuContent.Arrange(new Rect(
-            menuX,
-            menuY,
-            _overflowMenuContent.ElementSize.Width,
-            _overflowMenuContent.ElementSize.Height));
+        // Get window size to check available space
+        _platformService ??= ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
+        var windowHeight = _platformService?.WindowSize.Height ?? 800f;
+
+        // Check if menu fits below
+        var spaceBelow = windowHeight - buttonBottom - 4;
+        var opensUpward = spaceBelow < menuHeight && buttonTop > spaceBelow;
+
+        // Position menu aligned to the right of the button
+        var menuX = _overflowButton.Position.X + _overflowButton.ElementSize.Width - menuWidth;
+
+        float menuY;
+        if (opensUpward)
+        {
+            // Open upward
+            menuY = buttonTop - menuHeight - 4;
+        }
+        else
+        {
+            // Open downward (default)
+            menuY = buttonBottom + 4;
+        }
+
+        _overflowMenuContent.Arrange(new Rect(menuX, menuY, menuWidth, menuHeight));
     }
 
     #endregion
@@ -948,20 +972,8 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     #region Hit Testing
     public override UiElement? HitTest(Point point)
     {
-        // Test overflow menu first if open (it's rendered on top)
-        if (_isOverflowMenuOpen && _overflowMenuContent != null)
-        {
-            var result = _overflowMenuContent.HitTest(point);
-            if (result != null) return result;
-
-            // If click is outside the menu and toolbar, close the menu
-            var toolbarBounds = new Rect(Position.X, Position.Y, ElementSize.Width, ElementSize.Height);
-            if (!toolbarBounds.Contains(point))
-            {
-                CloseOverflowMenu();
-                InvalidateMeasure();
-            }
-        }
+        // Overflow menu clicks are handled by the overlay
+        // Click outside is handled by InputService dismissing overlays
 
         // Test overflow button
         if (_overflowButton != null && _overflowItems.Count > 0)
@@ -1025,77 +1037,5 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
             _overflowMenuContent?.Dispose();
         }
         base.Dispose(disposing);
-    }
-}
-
-// Helper command for overflow button
-internal class RelayCommand : ICommand
-{
-    private readonly Action _execute;
-
-    public RelayCommand(Action execute)
-    {
-        _execute = execute;
-    }
-
-    public event EventHandler? CanExecuteChanged;
-
-    public bool CanExecute(object? parameter) => true;
-
-    public void Execute(object? parameter) => _execute();
-}
-
-/// <summary>
-/// Overlay element that renders the toolbar overflow menu above all page content.
-/// </summary>
-internal class ToolbarOverflowMenuOverlay : UiElement
-{
-    private readonly Toolbar _toolbar;
-
-    public ToolbarOverflowMenuOverlay(Toolbar toolbar)
-    {
-        _toolbar = toolbar;
-    }
-
-    public override void Render(SKCanvas canvas)
-    {
-        if (_toolbar._overflowMenuContent == null || !_toolbar._isOverflowMenuOpen)
-            return;
-
-        var menuContent = _toolbar._overflowMenuContent;
-
-        // Draw menu background with shadow
-        var menuRect = new SKRect(
-            menuContent.Position.X,
-            menuContent.Position.Y,
-            menuContent.Position.X + menuContent.ElementSize.Width,
-            menuContent.Position.Y + menuContent.ElementSize.Height);
-
-        // Draw shadow
-        using var shadowPaint = new SKPaint
-        {
-            Color = new SKColor(0, 0, 0, 80),
-            ImageFilter = SKImageFilter.CreateDropShadow(2, 2, 4, 4, new SKColor(0, 0, 0, 80))
-        };
-        canvas.DrawRoundRect(menuRect, 4, 4, shadowPaint);
-
-        // Draw background
-        using var bgPaint = new SKPaint
-        {
-            Color = _toolbar.OverflowMenuBackground,
-            IsAntialias = true
-        };
-        canvas.DrawRoundRect(menuRect, 4, 4, bgPaint);
-
-        // Render menu content
-        menuContent.Render(canvas);
-    }
-
-    public override UiElement? HitTest(Point point)
-    {
-        if (_toolbar._overflowMenuContent == null || !_toolbar._isOverflowMenuOpen)
-            return null;
-
-        return _toolbar._overflowMenuContent.HitTest(point);
     }
 }

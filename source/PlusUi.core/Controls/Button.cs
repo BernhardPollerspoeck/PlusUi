@@ -94,6 +94,13 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl
         RegisterBinding(propertyName, () => CommandParameter = propertyGetter());
         return this;
     }
+
+    internal Action? OnClick { get; set; }
+    public Button SetOnClick(Action onClick)
+    {
+        OnClick = onClick;
+        return this;
+    }
     #endregion
 
     #region Icon
@@ -166,6 +173,7 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl
     #region IInputControl
     public void InvokeCommand()
     {
+        OnClick?.Invoke();
         if (Command?.CanExecute(CommandParameter) ?? false)
         {
             Command.Execute(CommandParameter);

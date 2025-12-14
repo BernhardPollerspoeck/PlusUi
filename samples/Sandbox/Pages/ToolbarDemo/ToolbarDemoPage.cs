@@ -9,13 +9,20 @@ public class ToolbarDemoPage(ToolbarDemoPageViewModel vm) : UiPageElement(vm)
     {
         return new ScrollView(
             new VStack(
-                // Page Title
-                new Label()
-                    .SetText("Toolbar Demo")
-                    .SetTextSize(32)
-                    .SetTextColor(SKColors.White)
-                    .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
-                    .SetMargin(new Margin(0, 20, 0, 10)),
+                // Header with back button
+                new HStack(
+                    new Button()
+                        .SetText("← Back")
+                        .SetTextSize(16)
+                        .SetCommand(vm.GoBackCommand)
+                        .SetTextColor(SKColors.White)
+                        .SetPadding(new Margin(10, 5)),
+                    new Label()
+                        .SetText("Toolbar Demo")
+                        .SetTextSize(24)
+                        .SetTextColor(SKColors.White)
+                        .SetMargin(new Margin(20, 0, 0, 0))
+                ).SetMargin(new Margin(10, 10, 0, 10)),
 
                 // Status display for interactive toolbars
                 new Border()
