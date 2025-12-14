@@ -16,7 +16,7 @@ public sealed class ToolbarTests
     {
         // Arrange
         var toolbar = new Toolbar()
-            .SetHeight(56);
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56);
 
         // Act
@@ -36,7 +36,7 @@ public sealed class ToolbarTests
         var toolbar = new Toolbar()
             .SetTitle("My App")
             .SetTitleAlignment(TitleAlignment.Center)
-            .SetHeight(56);
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56);
 
         // Act
@@ -56,7 +56,7 @@ public sealed class ToolbarTests
         var toolbar = new Toolbar()
             .SetTitle("My App")
             .SetTitleAlignment(TitleAlignment.Left)
-            .SetHeight(56);
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56);
 
         // Act
@@ -73,13 +73,13 @@ public sealed class ToolbarTests
         // Arrange
         var menuButton = new Button()
             .SetText("Menu")
-            .SetWidth(40)
-            .SetHeight(40);
+            .SetDesiredWidth(40)
+            .SetDesiredHeight(40);
 
         var toolbar = new Toolbar()
             .SetTitle("My App")
-            .AddLeftIcon(menuButton)
-            .SetHeight(56);
+            .AddLeft(menuButton)
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56);
 
         // Act
@@ -97,13 +97,13 @@ public sealed class ToolbarTests
         // Arrange
         var searchButton = new Button()
             .SetText("Search")
-            .SetWidth(40)
-            .SetHeight(40);
+            .SetDesiredWidth(40)
+            .SetDesiredHeight(40);
 
         var toolbar = new Toolbar()
             .SetTitle("My App")
-            .AddRightIcon(searchButton)
-            .SetHeight(56);
+            .AddRight(searchButton)
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56);
 
         // Act
@@ -121,18 +121,18 @@ public sealed class ToolbarTests
         // Arrange
         var menuButton = new Button()
             .SetText("Menu")
-            .SetWidth(40)
-            .SetHeight(40);
+            .SetDesiredWidth(40)
+            .SetDesiredHeight(40);
         var searchButton = new Button()
             .SetText("Search")
-            .SetWidth(40)
-            .SetHeight(40);
+            .SetDesiredWidth(40)
+            .SetDesiredHeight(40);
 
         var toolbar = new Toolbar()
             .SetTitle("My App")
-            .AddLeftIcon(menuButton)
-            .AddRightIcon(searchButton)
-            .SetHeight(56);
+            .AddLeft(menuButton)
+            .AddRight(searchButton)
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56);
 
         // Act
@@ -152,8 +152,8 @@ public sealed class ToolbarTests
     public void TestToolbarIconGroup_Creation()
     {
         // Arrange
-        var icon1 = new Button().SetText("Icon1").SetWidth(24).SetHeight(24);
-        var icon2 = new Button().SetText("Icon2").SetWidth(24).SetHeight(24);
+        var icon1 = new Button().SetText("Icon1").SetDesiredWidth(24).SetDesiredHeight(24);
+        var icon2 = new Button().SetText("Icon2").SetDesiredWidth(24).SetDesiredHeight(24);
 
         // Act
         var group = new ToolbarIconGroup(icon1, icon2)
@@ -171,7 +171,7 @@ public sealed class ToolbarTests
     {
         // Arrange
         var group = new ToolbarIconGroup();
-        var icon = new Button().SetText("Icon").SetWidth(24).SetHeight(24);
+        var icon = new Button().SetText("Icon").SetDesiredWidth(24).SetDesiredHeight(24);
 
         // Act
         group.AddIcon(icon);
@@ -185,8 +185,8 @@ public sealed class ToolbarTests
     public void TestToolbarIconGroup_Spacing()
     {
         // Arrange
-        var icon1 = new Button().SetText("Icon1").SetWidth(24).SetHeight(24);
-        var icon2 = new Button().SetText("Icon2").SetWidth(24).SetHeight(24);
+        var icon1 = new Button().SetText("Icon1").SetDesiredWidth(24).SetDesiredHeight(24);
+        var icon2 = new Button().SetText("Icon2").SetDesiredWidth(24).SetDesiredHeight(24);
         var group = new ToolbarIconGroup(icon1, icon2)
             .SetSpacing(8);
         var availableSize = new Size(200, 56);
@@ -204,8 +204,8 @@ public sealed class ToolbarTests
     public void TestToolbarIconGroup_MeasureAndArrange()
     {
         // Arrange
-        var icon1 = new Button().SetText("Icon1").SetWidth(24).SetHeight(24);
-        var icon2 = new Button().SetText("Icon2").SetWidth(24).SetHeight(24);
+        var icon1 = new Button().SetText("Icon1").SetDesiredWidth(24).SetDesiredHeight(24);
+        var icon2 = new Button().SetText("Icon2").SetDesiredWidth(24).SetDesiredHeight(24);
         var group = new ToolbarIconGroup(icon1, icon2)
             .SetSpacing(4);
         var availableSize = new Size(200, 56);
@@ -227,15 +227,15 @@ public sealed class ToolbarTests
     public void TestToolbar_AddLeftGroup()
     {
         // Arrange
-        var icon1 = new Button().SetText("Undo").SetWidth(24).SetHeight(24);
-        var icon2 = new Button().SetText("Redo").SetWidth(24).SetHeight(24);
+        var icon1 = new Button().SetText("Undo").SetDesiredWidth(24).SetDesiredHeight(24);
+        var icon2 = new Button().SetText("Redo").SetDesiredWidth(24).SetDesiredHeight(24);
         var group = new ToolbarIconGroup(icon1, icon2)
             .SetSeparator(true);
 
         var toolbar = new Toolbar()
             .SetTitle("Editor")
             .AddLeftGroup(group)
-            .SetHeight(56);
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56);
 
         // Act
@@ -251,14 +251,14 @@ public sealed class ToolbarTests
     public void TestToolbar_AddRightGroup()
     {
         // Arrange
-        var icon1 = new Button().SetText("Share").SetWidth(24).SetHeight(24);
-        var icon2 = new Button().SetText("More").SetWidth(24).SetHeight(24);
+        var icon1 = new Button().SetText("Share").SetDesiredWidth(24).SetDesiredHeight(24);
+        var icon2 = new Button().SetText("More").SetDesiredWidth(24).SetDesiredHeight(24);
         var group = new ToolbarIconGroup(icon1, icon2);
 
         var toolbar = new Toolbar()
             .SetTitle("Document")
             .AddRightGroup(group)
-            .SetHeight(56);
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56);
 
         // Act
@@ -275,15 +275,15 @@ public sealed class ToolbarTests
     {
         // Arrange
         var group1 = new ToolbarIconGroup(
-            new Button().SetText("Undo").SetWidth(24).SetHeight(24),
-            new Button().SetText("Redo").SetWidth(24).SetHeight(24))
+            new Button().SetText("Undo").SetDesiredWidth(24).SetDesiredHeight(24),
+            new Button().SetText("Redo").SetDesiredWidth(24).SetDesiredHeight(24))
             .SetSeparator(true)
             .SetPriority(10);
 
         var group2 = new ToolbarIconGroup(
-            new Button().SetText("Cut").SetWidth(24).SetHeight(24),
-            new Button().SetText("Copy").SetWidth(24).SetHeight(24),
-            new Button().SetText("Paste").SetWidth(24).SetHeight(24))
+            new Button().SetText("Cut").SetDesiredWidth(24).SetDesiredHeight(24),
+            new Button().SetText("Copy").SetDesiredWidth(24).SetDesiredHeight(24),
+            new Button().SetText("Paste").SetDesiredWidth(24).SetDesiredHeight(24))
             .SetSeparator(true)
             .SetPriority(5);
 
@@ -291,7 +291,7 @@ public sealed class ToolbarTests
             .SetTitle("Editor")
             .AddLeftGroup(group1)
             .AddLeftGroup(group2)
-            .SetHeight(56);
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56);
 
         // Act
@@ -336,18 +336,18 @@ public sealed class ToolbarTests
     public void TestToolbar_OverflowDetection_WideEnough()
     {
         // Arrange
-        var icon1 = new Button().SetText("Icon1").SetWidth(40).SetHeight(40);
-        var icon2 = new Button().SetText("Icon2").SetWidth(40).SetHeight(40);
-        var icon3 = new Button().SetText("Icon3").SetWidth(40).SetHeight(40);
+        var icon1 = new Button().SetText("Icon1").SetDesiredWidth(40).SetDesiredHeight(40);
+        var icon2 = new Button().SetText("Icon2").SetDesiredWidth(40).SetDesiredHeight(40);
+        var icon3 = new Button().SetText("Icon3").SetDesiredWidth(40).SetDesiredHeight(40);
 
         var toolbar = new Toolbar()
             .SetTitle("My App")
-            .AddLeftIcon(icon1)
-            .AddLeftIcon(icon2)
-            .AddLeftIcon(icon3)
+            .AddLeft(icon1)
+            .AddLeft(icon2)
+            .AddLeft(icon3)
             .SetOverflowBehavior(OverflowBehavior.CollapseToMenu)
             .SetOverflowThreshold(400)
-            .SetHeight(56);
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56); // Wide enough
 
         // Act
@@ -363,28 +363,32 @@ public sealed class ToolbarTests
     [TestMethod]
     public void TestToolbar_OverflowDetection_TooNarrow()
     {
-        // Arrange
-        var icon1 = new Button().SetText("Icon1").SetWidth(40).SetHeight(40);
-        var icon2 = new Button().SetText("Icon2").SetWidth(40).SetHeight(40);
-        var icon3 = new Button().SetText("Icon3").SetWidth(40).SetHeight(40);
+        // Arrange - Use larger buttons to ensure overflow triggers
+        var icon1 = new Button().SetText("Icon1").SetDesiredWidth(80).SetDesiredHeight(40);
+        var icon2 = new Button().SetText("Icon2").SetDesiredWidth(80).SetDesiredHeight(40);
+        var icon3 = new Button().SetText("Icon3").SetDesiredWidth(80).SetDesiredHeight(40);
+        var icon4 = new Button().SetText("Icon4").SetDesiredWidth(80).SetDesiredHeight(40);
+        var icon5 = new Button().SetText("Icon5").SetDesiredWidth(80).SetDesiredHeight(40);
 
         var toolbar = new Toolbar()
-            .SetTitle("My App")
-            .AddLeftIcon(icon1)
-            .AddLeftIcon(icon2)
-            .AddLeftIcon(icon3)
+            .SetTitle("My App Title Here")
+            .AddLeft(icon1)
+            .AddLeft(icon2)
+            .AddLeft(icon3)
+            .AddLeft(icon4)
+            .AddLeft(icon5)
             .SetOverflowBehavior(OverflowBehavior.CollapseToMenu)
             .SetOverflowThreshold(800)
-            .SetHeight(56);
-        var availableSize = new Size(300, 56); // Too narrow
+            .SetDesiredHeight(56);
+        var availableSize = new Size(200, 56); // Very narrow to ensure overflow
 
         // Act
         toolbar.Measure(availableSize);
-        toolbar.Arrange(new Rect(0, 0, 300, 56));
+        toolbar.Arrange(new Rect(0, 0, 200, 56));
 
         // Assert - Some items should be hidden (in overflow)
-        var visibleCount = new[] { icon1, icon2, icon3 }.Count(i => i.IsVisible);
-        Assert.IsTrue(visibleCount < 3, "Some items should be in overflow menu");
+        var visibleCount = new[] { icon1, icon2, icon3, icon4, icon5 }.Count(i => i.IsVisible);
+        Assert.IsTrue(visibleCount < 5, "Some items should be in overflow menu");
     }
 
     [TestMethod]
@@ -392,11 +396,11 @@ public sealed class ToolbarTests
     {
         // Arrange
         var highPriorityGroup = new ToolbarIconGroup(
-            new Button().SetText("Undo").SetWidth(40).SetHeight(40))
+            new Button().SetText("Undo").SetDesiredWidth(40).SetDesiredHeight(40))
             .SetPriority(10);
 
         var lowPriorityGroup = new ToolbarIconGroup(
-            new Button().SetText("Format").SetWidth(40).SetHeight(40))
+            new Button().SetText("Format").SetDesiredWidth(40).SetDesiredHeight(40))
             .SetPriority(1);
 
         var toolbar = new Toolbar()
@@ -405,7 +409,7 @@ public sealed class ToolbarTests
             .AddLeftGroup(lowPriorityGroup)
             .SetOverflowBehavior(OverflowBehavior.CollapseToMenu)
             .SetOverflowThreshold(800)
-            .SetHeight(56);
+            .SetDesiredHeight(56);
         var availableSize = new Size(200, 56); // Very narrow
 
         // Act
@@ -415,6 +419,53 @@ public sealed class ToolbarTests
         // Assert - High priority group should be more likely to stay visible
         // (exact behavior depends on available space)
         Assert.IsNotNull(toolbar);
+    }
+
+    [TestMethod]
+    public void TestToolbar_OverflowItems_ShouldNotOverlapWithTitle()
+    {
+        // BUG: ScrollView measures at large width, arranges at narrow width
+        // Visibility is set during Measure, but Arrange uses different bounds
+        var toolbar = new Toolbar()
+            .SetTitle("Overflow Demo")
+            .SetTitleAlignment(TitleAlignment.Center)
+            .SetOverflowBehavior(OverflowBehavior.CollapseToMenu)
+            .SetDesiredHeight(56);
+
+        toolbar.AddLeft(new Button().SetText("File").SetPadding(new Margin(12, 8)));
+        toolbar.AddLeft(new Button().SetText("Edit").SetPadding(new Margin(12, 8)));
+        toolbar.AddLeft(new Button().SetText("View").SetPadding(new Margin(12, 8)));
+        toolbar.AddLeft(new Button().SetText("Tools").SetPadding(new Margin(12, 8)));
+
+        toolbar.AddRight(new Button().SetText("Search").SetPadding(new Margin(12, 8)));
+        toolbar.AddRight(new Button().SetText("Settings").SetPadding(new Margin(12, 8)));
+        toolbar.AddRight(new Button().SetText("Help").SetPadding(new Margin(12, 8)));
+        toolbar.AddRight(new Button().SetText("About").SetPadding(new Margin(12, 8)));
+
+        // Measure at large width, arrange at narrow width (like ScrollView does)
+        toolbar.Measure(new Size(1000, 56));
+        toolbar.Arrange(new Rect(0, 0, 550, 56));
+
+        // Get title position
+        var titleLabel = toolbar.GetType()
+            .GetField("_titleLabel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            ?.GetValue(toolbar) as Label;
+        Assert.IsNotNull(titleLabel);
+
+        var titleX = titleLabel.Position.X;
+        var titleRight = titleX + titleLabel.ElementSize.Width;
+
+        // Get item edges
+        var rightmostLeft = toolbar.LeftItems.Where(i => i.IsVisible)
+            .Select(i => i.Position.X + i.ElementSize.Width).DefaultIfEmpty(0).Max();
+        var leftmostRight = toolbar.RightItems.Where(i => i.IsVisible)
+            .Select(i => i.Position.X).DefaultIfEmpty(550).Min();
+
+        // Assert no overlap with title
+        Assert.IsTrue(rightmostLeft <= titleX,
+            $"Left items overlap with title: {rightmostLeft} > {titleX}");
+        Assert.IsTrue(leftmostRight >= titleRight,
+            $"Right items overlap with title: {leftmostRight} < {titleRight}");
     }
 
     #endregion
@@ -486,11 +537,11 @@ public sealed class ToolbarTests
         // Arrange
         var customContent = new Label()
             .SetText("Custom Title")
-            .SetFontSize(18);
+            .SetTextSize(18);
 
         var toolbar = new Toolbar()
             .SetCenterContent(customContent)
-            .SetHeight(56);
+            .SetDesiredHeight(56);
         var availableSize = new Size(800, 56);
 
         // Act

@@ -13,6 +13,7 @@ using Sandbox.Pages.ShadowDemo;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Pages.TextWrapDemo;
 using Sandbox.Pages.NewControlsDemo;
+using Sandbox.Pages.ToolbarDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -225,7 +226,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetText("BgTest Example")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(BgTestPage))
+                .SetCommandParameter(typeof(BgTestPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("Toolbar Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ToolbarDemoPage))
 
         );
     }

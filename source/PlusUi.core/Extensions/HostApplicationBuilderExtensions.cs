@@ -42,6 +42,9 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<IPopupService>(sp => sp.GetRequiredService<PlusUiPopupService>());
         builder.Services.AddTransient<IPopupConfiguration, PopupConfiguration>();
 
+        builder.Services.AddSingleton<OverlayService>();
+        builder.Services.AddSingleton<IOverlayService>(sp => sp.GetRequiredService<OverlayService>());
+
         builder.Services.AddSingleton(sp =>
         {
             var appConfiguration = sp.GetRequiredService<IAppConfiguration>();
