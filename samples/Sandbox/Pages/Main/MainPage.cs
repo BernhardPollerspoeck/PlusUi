@@ -138,7 +138,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     protected override void ConfigurePageStyles(Style pageStyle)
     {
         pageStyle.AddStyle<UiPageElement>(element
-            => element.SetBackground(new SolidColorBackground(new SKColor(0, 0, 0, 220))));
+            => element.SetBackground(new SolidColorBackground(SKColors.White)));
     }
 
     private VStack CreateTestButtons()

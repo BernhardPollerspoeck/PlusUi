@@ -1,5 +1,5 @@
-﻿using PlusUi.core.Attributes;
-using SkiaSharp;
+﻿using SkiaSharp;
+using System.ComponentModel;
 
 namespace PlusUi.core;
 
@@ -26,6 +26,19 @@ public abstract class UiLayoutElement<T> : UiLayoutElement where T : UiLayoutEle
 
 public abstract class UiLayoutElement : UiElement
 {
+
+    public override INotifyPropertyChanged? Context
+    {
+        get => base.Context;
+        internal set
+        {
+            base.Context = value;
+            foreach (var child in Children)
+            {
+                child.Context = value;
+            }
+        }
+    }
 
     #region children
     public virtual List<UiElement> Children { get; } = [];
@@ -102,6 +115,15 @@ public abstract class UiLayoutElement : UiElement
         }
     }
     #endregion
+
+    public override void InvalidateMeasure()
+    {
+        base.InvalidateMeasure();
+        foreach (var child in Children)
+        {
+            child.InvalidateMeasure();
+        }
+    }
 
     public override void ApplyStyles()
     {

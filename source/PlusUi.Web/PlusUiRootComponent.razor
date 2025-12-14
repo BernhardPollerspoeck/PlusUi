@@ -78,7 +78,7 @@
         {
             _width = e.Info.Width;
             _height = e.Info.Height;
-            NavigationContainer.Page.InvalidateMeasure();
+            NavigationContainer.CurrentPage.InvalidateMeasure();
             Logger.LogDebug("Canvas resized to {Width}x{Height}", _width, _height);
         }
 

@@ -47,9 +47,8 @@ public static class HostApplicationBuilderExtensions
 
         builder.Services.AddSingleton(sp =>
         {
-            var appConfiguration = sp.GetRequiredService<IAppConfiguration>();
-            var mainPage = appConfiguration.GetRootPage(sp);
-            return new NavigationContainer(mainPage);
+            var configuration = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value;
+            return new NavigationContainer(configuration);
         });
         return builder;
 

@@ -29,6 +29,9 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         configuration.Size = new SizeI(1200, 800);
 
         configuration.LoadImagesSynchronously = loadImagesSynchronously;
+
+        configuration.EnableNavigationStack = true;
+        configuration.PreservePageState = true;
         //configuration.IsWindowTransparent = true;
         //configuration.WindowBorder = Silk.NET.Windowing.WindowBorder.Hidden;
         //configuration.WindowState = Silk.NET.Windowing.WindowState.Maximized;

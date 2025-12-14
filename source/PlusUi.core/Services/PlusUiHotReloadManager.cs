@@ -27,8 +27,8 @@ internal class PlusUiHotReloadManager
 
         var navigationContainer = ServiceProviderService.ServiceProvider?.GetRequiredService<NavigationContainer>();
         if (updatedTypes?
-            .Any(t => t == navigationContainer?.Page.GetType()
-                || t == navigationContainer?.Page.ViewModel.GetType()
+            .Any(t => t == navigationContainer?.CurrentPage.GetType()
+                || t == navigationContainer?.CurrentPage.ViewModel.GetType()
                 || t.IsAssignableTo(typeof(UserControl))) is true)
         {
             var internalNavigationService = ServiceProviderService.ServiceProvider?.GetRequiredService<PlusUiNavigationService>();

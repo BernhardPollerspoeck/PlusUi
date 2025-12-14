@@ -10,6 +10,9 @@ internal partial class ControlsGridPageViewModel(INavigationService navigationSe
     [ObservableProperty]
     private int _rowHeight = 20;
 
+    [ObservableProperty]
+    private string? _title;
+
     [RelayCommand]
     private void Increment()
     {
@@ -19,6 +22,6 @@ internal partial class ControlsGridPageViewModel(INavigationService navigationSe
     [RelayCommand]
     private void Nav()
     {
-        navigationService.NavigateTo<MainPage>();
+        navigationService.GoBack();
     }
 }

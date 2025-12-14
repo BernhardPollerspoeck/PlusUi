@@ -5,6 +5,12 @@ namespace Sandbox.Pages.ControlsGrid;
 
 internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm)
 {
+    public override void OnNavigatedTo(object? parameter)
+    {
+        base.OnNavigatedTo(parameter);
+        vm.Title = parameter as string;
+    }
+
     protected override UiElement Build()
     {
         return new Grid()
@@ -13,7 +19,7 @@ internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm
             .AddColumn(50)
             .AddRow(Row.Star)
             .AddRow(Row.Star, 2)
-            .AddBoundRow(() => vm.RowHeight)
+            .AddBoundRow(nameof(vm.RowHeight), () => vm.RowHeight)
 
             .AddChild(new Solid().SetBackground(new SolidColorBackground(SKColors.Green)).IgnoreStyling())
             .AddChild(column: 1, child: new Solid().SetBackground(new SolidColorBackground(SKColors.Yellow)).IgnoreStyling())
@@ -24,7 +30,7 @@ internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm
             .AddChild(row: 1, column: 1, child: new VStack(
                 new Border()
                     .AddChild(new Button()
-                        .SetText("Increment")
+                        .BindText(nameof(vm.Title), () => $"Increment {vm.Title}")
                         .SetTextSize(20)
                         .SetCommand(vm.IncrementCommand)
                         .SetTextColor(SKColors.Black)
