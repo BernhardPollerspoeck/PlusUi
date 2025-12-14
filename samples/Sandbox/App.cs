@@ -15,6 +15,7 @@ using Sandbox.Pages.ShadowDemo;
 using Sandbox.Pages.TextRendering;
 using Sandbox.Pages.TextWrapDemo;
 using Sandbox.Pages.NewControlsDemo;
+using Sandbox.Pages.ToolbarDemo;
 using Sandbox.Popups;
 using Sandbox.Services;
 
@@ -52,6 +53,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<FontDemoPage>().WithViewModel<FontDemoPageViewModel>();
         builder.AddPage<ShadowDemoPage>().WithViewModel<ShadowDemoPageViewModel>();
         builder.AddPage<NewControlsDemoPage>().WithViewModel<NewControlsDemoPageViewModel>();
+        builder.AddPage<ToolbarDemoPage>().WithViewModel<ToolbarDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 

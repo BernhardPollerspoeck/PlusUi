@@ -15,6 +15,16 @@ internal class DefaultStyle : IApplicationStyle
                 //.SetDebug()
                 )
 
+            .AddStyle<UiPageElement>(element => element
+                .SetMargin(new(0)))
+            .AddStyle<Border>(element => element
+                .SetMargin(new(0)))
+            .AddStyle<Toolbar>(element => element
+                .SetMargin(new(0))
+                .SetCornerRadius(0))
+
+            .AddStyle<ScrollView>(element => element
+                .SetMargin(new(0)))
             .AddStyle<HStack>(element => element
                 .SetMargin(new(0)))
             .AddStyle<VStack>(element => element

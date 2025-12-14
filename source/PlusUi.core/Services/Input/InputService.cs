@@ -8,18 +8,22 @@ public class InputService
     private ITextInputControl? _textInputControl;
     private readonly NavigationContainer _navigationContainer;
     private readonly PlusUiPopupService _popupService;
+    private readonly OverlayService _overlayService;
     private readonly IKeyboardHandler _keyboardHandler;
     private Vector2 _lastMousePosition;
     private IScrollableControl? _activeScrollControl;
     private IDraggableControl? _activeDragControl;
+    private UiElement? _hoveredElement;
 
     public InputService(
         NavigationContainer navigationContainer,
         PlusUiPopupService popupService,
+        OverlayService overlayService,
         IKeyboardHandler keyboardHandler)
     {
         _navigationContainer = navigationContainer;
         _popupService = popupService;
+        _overlayService = overlayService;
         _keyboardHandler = keyboardHandler;
         _keyboardHandler.KeyInput += HandleKeyInput;
         _keyboardHandler.CharInput += HandleCharInput;
@@ -147,7 +151,56 @@ public class InputService
             _activeScrollControl.HandleScroll(deltaX, deltaY);
         }
 
+        // Update hover state
+        UpdateHoverState(location);
+
         _lastMousePosition = location;
+    }
+
+    private void UpdateHoverState(Vector2 location)
+    {
+        var point = new Point(location.X, location.Y);
+
+        // Check overlays first (they render on top)
+        UiElement? hitElement = null;
+        foreach (var overlay in _overlayService.Overlays)
+        {
+            hitElement = overlay.HitTest(point);
+            if (hitElement != null)
+                break;
+        }
+
+        // Then check popup
+        if (hitElement == null)
+        {
+            var currentPopup = _popupService.CurrentPopup;
+            if (currentPopup != null)
+            {
+                hitElement = currentPopup.HitTest(point);
+            }
+        }
+
+        // Then check page
+        if (hitElement == null)
+        {
+            hitElement = _navigationContainer.Page.HitTest(point);
+        }
+
+        // Update hover states
+        if (hitElement != _hoveredElement)
+        {
+            if (_hoveredElement is IHoverableControl oldHoverable)
+            {
+                oldHoverable.IsHovered = false;
+            }
+
+            _hoveredElement = hitElement;
+
+            if (_hoveredElement is IHoverableControl newHoverable)
+            {
+                newHoverable.IsHovered = true;
+            }
+        }
     }
     
     public void MouseWheel(Vector2 location, float deltaX, float deltaY)
