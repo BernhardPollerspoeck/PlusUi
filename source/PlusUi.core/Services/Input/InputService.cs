@@ -79,13 +79,46 @@ public class InputService
         _activeScrollControl = null;
 
         //we have an up action
-        var currentPopup = _popupService.CurrentPopup;
+        var point = new Point(location.X, location.Y);
 
-        var hitControl = (currentPopup) switch
+        // Check overlays first (they render on top)
+        UiElement? hitControl = null;
+        bool hitOverlay = false;
+        foreach (var overlay in _overlayService.Overlays)
         {
-            not null => currentPopup.HitTest(new(location.X, location.Y)),
-            _ => _navigationContainer.CurrentPage.HitTest(new(location.X, location.Y))
-        };
+            hitControl = overlay.HitTest(point);
+            if (hitControl != null)
+            {
+                hitOverlay = true;
+                break;
+            }
+        }
+
+        // If no overlay was hit, dismiss all dismissable overlays
+        if (!hitOverlay && _overlayService.Overlays.Count > 0)
+        {
+            // Create a copy since Dismiss may modify the collection
+            var overlaysToCheck = _overlayService.Overlays.ToList();
+            foreach (var overlay in overlaysToCheck)
+            {
+                if (overlay is IDismissableOverlay dismissable)
+                {
+                    dismissable.Dismiss();
+                }
+            }
+        }
+
+        // Then check popup if no overlay was hit
+        if (hitControl == null)
+        {
+            var currentPopup = _popupService.CurrentPopup;
+            hitControl = (currentPopup) switch
+            {
+                not null => currentPopup.HitTest(point),
+                _ => _navigationContainer.CurrentPage.HitTest(point)
+            };
+        }
+
         if (hitControl is IInputControl inputControl)
         {
             inputControl.InvokeCommand();
@@ -183,7 +216,7 @@ public class InputService
         // Then check page
         if (hitElement == null)
         {
-            hitElement = _navigationContainer.Page.HitTest(point);
+            hitElement = _navigationContainer.CurrentPage.HitTest(point);
         }
 
         // Update hover states

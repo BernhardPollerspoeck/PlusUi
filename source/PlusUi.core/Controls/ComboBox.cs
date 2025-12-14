@@ -1,4 +1,5 @@
-using PlusUi.core.Attributes;
+using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core.Services;
 using SkiaSharp;
 using System.Collections;
 using System.Collections.Specialized;
@@ -24,14 +25,16 @@ namespace PlusUi.core;
 ///     .BindSelectedItem(nameof(vm.SelectedPerson), () => vm.SelectedPerson, p => vm.SelectedPerson = p);
 /// </code>
 /// </example>
-[GenerateShadowMethods]
 public partial class ComboBox<T> : UiElement, IInputControl
 {
     private IEnumerable<T>? _itemsSource;
-    private readonly List<T> _cachedItems = new();
-    private const float DropdownMaxHeight = 200f;
-    private const float ItemHeight = 32f;
+    internal readonly List<T> _cachedItems = new();
+    internal const float DropdownMaxHeight = 200f;
+    internal const float ItemHeight = 32f;
     private const float ArrowSize = 8f;
+    private IOverlayService? _overlayService;
+    private ComboBoxDropdownOverlay<T>? _dropdownOverlay;
+    private IPlatformService? _platformService;
 
     #region ItemsSource
     internal IEnumerable<T>? ItemsSource
@@ -164,7 +167,20 @@ public partial class ComboBox<T> : UiElement, IInputControl
         get => field;
         set
         {
+            if (field == value)
+                return;
+
             field = value;
+
+            if (value)
+            {
+                RegisterDropdownOverlay();
+            }
+            else
+            {
+                UnregisterDropdownOverlay();
+            }
+
             InvalidateMeasure();
         }
     }
@@ -179,6 +195,25 @@ public partial class ComboBox<T> : UiElement, IInputControl
     {
         RegisterBinding(propertyName, () => IsOpen = propertyGetter());
         return this;
+    }
+
+    private void RegisterDropdownOverlay()
+    {
+        _overlayService ??= ServiceProviderService.ServiceProvider?.GetService<IOverlayService>();
+        if (_overlayService == null)
+            return;
+
+        _dropdownOverlay = new ComboBoxDropdownOverlay<T>(this);
+        _overlayService.RegisterOverlay(_dropdownOverlay);
+    }
+
+    private void UnregisterDropdownOverlay()
+    {
+        if (_overlayService != null && _dropdownOverlay != null)
+        {
+            _overlayService.UnregisterOverlay(_dropdownOverlay);
+            _dropdownOverlay = null;
+        }
     }
     #endregion
 
@@ -374,7 +409,7 @@ public partial class ComboBox<T> : UiElement, IInputControl
         }
     }
 
-    private int _hoveredIndex = -1;
+    internal int _hoveredIndex = -1;
 
     public ComboBox()
     {
@@ -421,11 +456,7 @@ public partial class ComboBox<T> : UiElement, IInputControl
         // Render the main combo box button
         RenderComboBoxButton(canvas);
 
-        // Render dropdown if open
-        if (IsOpen)
-        {
-            RenderDropdown(canvas);
-        }
+        // Dropdown is rendered via OverlayService (above all page content)
     }
 
     private void RenderComboBoxButton(SKCanvas canvas)
@@ -505,19 +536,53 @@ public partial class ComboBox<T> : UiElement, IInputControl
         canvas.DrawPath(arrowPath, arrowPaint);
     }
 
-    private void RenderDropdown(SKCanvas canvas)
+    /// <summary>
+    /// Calculates the dropdown rectangle with intelligent positioning.
+    /// Opens upward if there's not enough space below.
+    /// </summary>
+    internal SKRect GetDropdownRect()
+    {
+        var dropdownHeight = Math.Min(_cachedItems.Count * ItemHeight, DropdownMaxHeight);
+        var comboBoxBottom = Position.Y + VisualOffset.Y + ElementSize.Height;
+        var comboBoxTop = Position.Y + VisualOffset.Y;
+
+        // Get window size to check available space
+        _platformService ??= ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
+        var windowHeight = _platformService?.WindowSize.Height ?? 800f;
+
+        // Check if dropdown fits below
+        var spaceBelow = windowHeight - comboBoxBottom;
+        var opensUpward = spaceBelow < dropdownHeight && comboBoxTop > spaceBelow;
+
+        if (opensUpward)
+        {
+            // Open upward
+            return new SKRect(
+                Position.X + VisualOffset.X,
+                comboBoxTop - dropdownHeight,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                comboBoxTop);
+        }
+        else
+        {
+            // Open downward (default)
+            return new SKRect(
+                Position.X + VisualOffset.X,
+                comboBoxBottom,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                comboBoxBottom + dropdownHeight);
+        }
+    }
+
+    internal void RenderDropdown(SKCanvas canvas)
     {
         if (_cachedItems.Count == 0)
         {
             return;
         }
 
-        var dropdownHeight = Math.Min(_cachedItems.Count * ItemHeight, DropdownMaxHeight);
-        var dropdownRect = new SKRect(
-            Position.X + VisualOffset.X,
-            Position.Y + VisualOffset.Y + ElementSize.Height,
-            Position.X + VisualOffset.X + ElementSize.Width,
-            Position.Y + VisualOffset.Y + ElementSize.Height + dropdownHeight);
+        var dropdownRect = GetDropdownRect();
+        var dropdownHeight = dropdownRect.Height;
 
         // Draw dropdown background
         using var bgPaint = new SKPaint
@@ -528,15 +593,9 @@ public partial class ComboBox<T> : UiElement, IInputControl
         };
         canvas.DrawRoundRect(dropdownRect, CornerRadius, CornerRadius, bgPaint);
 
-        // Draw dropdown border
-        using var borderPaint = new SKPaint
-        {
-            Color = TextColor,
-            IsAntialias = true,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = 1
-        };
-        canvas.DrawRoundRect(dropdownRect, CornerRadius, CornerRadius, borderPaint);
+        // Clip to rounded rect for item rendering (so hover effects respect corner radius)
+        canvas.Save();
+        canvas.ClipRoundRect(new SKRoundRect(dropdownRect, CornerRadius, CornerRadius));
 
         // Draw items
         Font.GetFontMetrics(out var fontMetrics);
@@ -575,6 +634,19 @@ public partial class ComboBox<T> : UiElement, IInputControl
                 Font,
                 Paint);
         }
+
+        // Restore canvas (remove clipping)
+        canvas.Restore();
+
+        // Draw dropdown border (after restore so it's not clipped)
+        using var borderPaint = new SKPaint
+        {
+            Color = TextColor,
+            IsAntialias = true,
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = 1
+        };
+        canvas.DrawRoundRect(dropdownRect, CornerRadius, CornerRadius, borderPaint);
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
@@ -591,51 +663,32 @@ public partial class ComboBox<T> : UiElement, IInputControl
             Math.Min(height, availableSize.Height));
     }
 
-    public override UiElement? HitTest(Point point)
+    /// <summary>
+    /// Invokes the setters for two-way binding after selection changes.
+    /// </summary>
+    internal void InvokeSetters()
     {
-        // Check if clicking in dropdown area
-        if (IsOpen)
+        if (_setter.TryGetValue(nameof(SelectedItem), out var itemSetters))
         {
-            var dropdownHeight = Math.Min(_cachedItems.Count * ItemHeight, DropdownMaxHeight);
-            var dropdownRect = new SKRect(
-                Position.X + VisualOffset.X,
-                Position.Y + VisualOffset.Y + ElementSize.Height,
-                Position.X + VisualOffset.X + ElementSize.Width,
-                Position.Y + VisualOffset.Y + ElementSize.Height + dropdownHeight);
-
-            if (point.X >= dropdownRect.Left && point.X <= dropdownRect.Right &&
-                point.Y >= dropdownRect.Top && point.Y <= dropdownRect.Bottom)
+            foreach (var setter in itemSetters)
             {
-                // Calculate which item was clicked
-                var relativeY = point.Y - dropdownRect.Top;
-                var clickedIndex = (int)(relativeY / ItemHeight);
-
-                if (clickedIndex >= 0 && clickedIndex < _cachedItems.Count)
-                {
-                    SelectedIndex = clickedIndex;
-
-                    // Invoke setters for two-way binding
-                    if (_setter.TryGetValue(nameof(SelectedItem), out var itemSetters))
-                    {
-                        foreach (var setter in itemSetters)
-                        {
-                            setter(SelectedItem);
-                        }
-                    }
-
-                    if (_setter.TryGetValue(nameof(SelectedIndex), out var indexSetters))
-                    {
-                        foreach (var setter in indexSetters)
-                        {
-                            setter(SelectedIndex);
-                        }
-                    }
-                }
-
-                IsOpen = false;
-                return this;
+                setter(SelectedItem);
             }
         }
+
+        if (_setter.TryGetValue(nameof(SelectedIndex), out var indexSetters))
+        {
+            foreach (var setter in indexSetters)
+            {
+                setter(SelectedIndex);
+            }
+        }
+    }
+
+    public override UiElement? HitTest(Point point)
+    {
+        // Dropdown clicks are handled by the overlay
+        // Click outside is handled by InputService dismissing overlays
 
         // Check if clicking on combo box button
         if (point.X >= Position.X && point.X <= Position.X + ElementSize.Width &&
@@ -644,25 +697,23 @@ public partial class ComboBox<T> : UiElement, IInputControl
             return this;
         }
 
-        // Click outside - close dropdown
-        if (IsOpen)
-        {
-            IsOpen = false;
-        }
-
         return null;
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        // Unsubscribe from collection changes
-        if (_itemsSource is INotifyCollectionChanged collection)
+        if (disposing)
         {
-            collection.CollectionChanged -= OnCollectionChanged;
-        }
+            // Unsubscribe from collection changes
+            if (_itemsSource is INotifyCollectionChanged collection)
+            {
+                collection.CollectionChanged -= OnCollectionChanged;
+            }
 
-        _font?.Dispose();
-        _paint?.Dispose();
-        base.Dispose();
+            UnregisterDropdownOverlay();
+            _font?.Dispose();
+            _paint?.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }

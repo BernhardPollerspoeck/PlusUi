@@ -14,6 +14,7 @@ using Sandbox.Pages.TextRendering;
 using Sandbox.Pages.TextWrapDemo;
 using Sandbox.Pages.NewControlsDemo;
 using Sandbox.Pages.ToolbarDemo;
+using Sandbox.Pages.ComboBoxDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -232,7 +233,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetText("Toolbar Demo")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(ToolbarDemoPage))
+                .SetCommandParameter(typeof(ToolbarDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("ComboBox Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ComboBoxDemoPage))
 
         );
     }

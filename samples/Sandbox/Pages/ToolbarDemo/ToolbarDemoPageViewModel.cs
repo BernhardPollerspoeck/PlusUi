@@ -1,10 +1,15 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PlusUi.core;
+using Sandbox.Pages.Main;
 
 namespace Sandbox.Pages.ToolbarDemo;
 
-public partial class ToolbarDemoPageViewModel : ObservableObject
+public partial class ToolbarDemoPageViewModel(INavigationService navigationService) : ObservableObject
 {
+    [RelayCommand]
+    private void GoBack() => navigationService.NavigateTo<MainPage>();
+
     [ObservableProperty]
     private int _clickCount;
 

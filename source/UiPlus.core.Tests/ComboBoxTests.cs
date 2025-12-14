@@ -156,7 +156,7 @@ public class ComboBoxTests
         comboBox.SetSelectedItem(2);
 
         // Act
-        var result = comboBox.DisplayFunc(comboBox.SelectedItem.Value);
+        var result = comboBox.DisplayFunc(comboBox.SelectedItem!);
 
         // Assert
         Assert.AreEqual("2", result);
@@ -173,7 +173,7 @@ public class ComboBoxTests
         comboBox.SetSelectedItem(2);
 
         // Act
-        var result = comboBox.DisplayFunc(comboBox.SelectedItem.Value);
+        var result = comboBox.DisplayFunc(comboBox.SelectedItem!);
 
         // Assert
         Assert.AreEqual("Number 2", result);
@@ -421,6 +421,169 @@ public class ComboBoxTests
         // Assert
         Assert.AreEqual(-1, comboBox.SelectedIndex);
         Assert.IsNull(comboBox.SelectedItem);
+    }
+
+    [TestMethod]
+    public void ComboBox_HitTest_OnComboBoxArea_ShouldReturnComboBox()
+    {
+        // Arrange
+        var comboBox = new ComboBox<string>();
+        var items = new[] { "Item 1", "Item 2", "Item 3" };
+        comboBox.SetItemsSource(items);
+        comboBox.Measure(new Size(300, 300));
+        comboBox.Arrange(new Rect(10, 10, 200, 40));
+
+        // Act - click inside the combo box button area
+        var result = comboBox.HitTest(new Point(50, 25));
+
+        // Assert
+        Assert.AreEqual(comboBox, result);
+    }
+
+    [TestMethod]
+    public void ComboBox_HitTest_OutsideComboBox_ShouldReturnNull()
+    {
+        // Arrange
+        var comboBox = new ComboBox<string>();
+        var items = new[] { "Item 1", "Item 2", "Item 3" };
+        comboBox.SetItemsSource(items);
+        comboBox.Measure(new Size(300, 300));
+        comboBox.Arrange(new Rect(10, 10, 200, 40));
+
+        // Act - click outside the combo box
+        var result = comboBox.HitTest(new Point(300, 300));
+
+        // Assert
+        Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public void ComboBox_HitTest_OutsideWhenOpen_ShouldNotCloseDropdown()
+    {
+        // Arrange
+        // Note: Closing dropdown on outside click is handled by InputService,
+        // not by HitTest (HitTest should have no side effects)
+        var comboBox = new ComboBox<string>();
+        var items = new[] { "Item 1", "Item 2", "Item 3" };
+        comboBox.SetItemsSource(items);
+        comboBox.SetIsOpen(true);
+        comboBox.Measure(new Size(300, 300));
+        comboBox.Arrange(new Rect(10, 10, 200, 40));
+
+        // Act - click outside the combo box when open
+        comboBox.HitTest(new Point(300, 300));
+
+        // Assert - HitTest should NOT close dropdown (no side effects)
+        Assert.IsTrue(comboBox.IsOpen);
+    }
+
+    [TestMethod]
+    public void ComboBox_InvokeSetters_ShouldCallSelectedItemSetter()
+    {
+        // Arrange
+        var comboBox = new ComboBox<string>();
+        var items = new[] { "Item 1", "Item 2", "Item 3" };
+        comboBox.SetItemsSource(items);
+        string? capturedValue = null;
+        comboBox.BindSelectedItem("test", () => null, v => capturedValue = v);
+        comboBox.SetSelectedItem("Item 2");
+
+        // Act
+        comboBox.InvokeSetters();
+
+        // Assert
+        Assert.AreEqual("Item 2", capturedValue);
+    }
+
+    [TestMethod]
+    public void ComboBox_InvokeSetters_ShouldCallSelectedIndexSetter()
+    {
+        // Arrange
+        var comboBox = new ComboBox<string>();
+        var items = new[] { "Item 1", "Item 2", "Item 3" };
+        comboBox.SetItemsSource(items);
+        int capturedIndex = -999;
+        comboBox.BindSelectedIndex("test", () => -1, v => capturedIndex = v);
+        comboBox.SetSelectedIndex(2);
+
+        // Act
+        comboBox.InvokeSetters();
+
+        // Assert
+        Assert.AreEqual(2, capturedIndex);
+    }
+
+    [TestMethod]
+    public void ComboBox_SetDropdownBackground_ShouldSetProperty()
+    {
+        // Arrange
+        var comboBox = new ComboBox<string>();
+
+        // Act
+        comboBox.SetDropdownBackground(SkiaSharp.SKColors.Navy);
+
+        // Assert
+        Assert.AreEqual(SkiaSharp.SKColors.Navy, comboBox.DropdownBackground);
+    }
+
+    [TestMethod]
+    public void ComboBox_SetHoverBackground_ShouldSetProperty()
+    {
+        // Arrange
+        var comboBox = new ComboBox<string>();
+
+        // Act
+        comboBox.SetHoverBackground(SkiaSharp.SKColors.Green);
+
+        // Assert
+        Assert.AreEqual(SkiaSharp.SKColors.Green, comboBox.HoverBackground);
+    }
+
+    [TestMethod]
+    public void ComboBox_SetPlaceholderColor_ShouldSetProperty()
+    {
+        // Arrange
+        var comboBox = new ComboBox<string>();
+
+        // Act
+        comboBox.SetPlaceholderColor(SkiaSharp.SKColors.Gray);
+
+        // Assert
+        Assert.AreEqual(SkiaSharp.SKColors.Gray, comboBox.PlaceholderColor);
+    }
+
+    [TestMethod]
+    public void ComboBox_SetFontFamily_ShouldSetProperty()
+    {
+        // Arrange
+        var comboBox = new ComboBox<string>();
+
+        // Act
+        comboBox.SetFontFamily("Arial");
+
+        // Assert
+        Assert.AreEqual("Arial", comboBox.FontFamily);
+    }
+
+    [TestMethod]
+    public void ComboBox_Dispose_ShouldNotThrow()
+    {
+        // Arrange
+        var comboBox = new ComboBox<string>();
+        var items = new ObservableCollection<string> { "Item 1", "Item 2" };
+        comboBox.SetItemsSource(items);
+        comboBox.SetIsOpen(true);
+
+        // Act & Assert - should not throw
+        // Note: Dispose cleans up resources but doesn't change IsOpen state
+        try
+        {
+            comboBox.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Assert.Fail($"Dispose should not throw: {ex.Message}");
+        }
     }
 }
 
