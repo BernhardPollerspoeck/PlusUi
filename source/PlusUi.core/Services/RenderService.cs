@@ -7,7 +7,7 @@ using PlusUi.core.Services;
 
 namespace PlusUi.core;
 
-public class RenderService(NavigationContainer navigationContainer, PlusUiPopupService popupService, ILogger<RenderService>? logger = null, IAppMonitor? appMonitor = null)
+public class RenderService(NavigationContainer navigationContainer, PlusUiPopupService popupService, OverlayService overlayService, ILogger<RenderService>? logger = null, IAppMonitor? appMonitor = null)
 {
     private readonly ILogger<RenderService>? _logger = logger;
     private readonly IAppMonitor? _appMonitor = appMonitor;
@@ -44,6 +44,9 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
 
             var renderTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
             navigationContainer.CurrentPage.Render(canvas);
+
+            // Render overlays (above page, below popups)
+            overlayService.RenderOverlays(canvas);
 
             var popup = popupService.CurrentPopup;
             if (popup is not null)

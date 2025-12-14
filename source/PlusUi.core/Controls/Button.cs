@@ -24,9 +24,34 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
-public partial class Button : UiTextElement, IInputControl
+public partial class Button : UiTextElement, IInputControl, IHoverableControl
 {
     private IImageLoaderService? _imageLoaderService;
+    private bool _isHovered;
+
+    #region IHoverableControl
+    public bool IsHovered
+    {
+        get => _isHovered;
+        set
+        {
+            if (_isHovered != value)
+            {
+                _isHovered = value;
+                InvalidateMeasure();
+            }
+        }
+    }
+    #endregion
+
+    #region HoverBackground
+    internal IBackground? HoverBackground { get; set; }
+    public Button SetHoverBackground(IBackground background)
+    {
+        HoverBackground = background;
+        return this;
+    }
+    #endregion
 
     #region Padding
     internal Margin Padding
@@ -155,6 +180,17 @@ public partial class Button : UiTextElement, IInputControl
         if (!IsVisible)
         {
             return;
+        }
+
+        // Render hover background if hovered
+        if (_isHovered && HoverBackground is not null)
+        {
+            var hoverRect = new SKRect(
+                Position.X + VisualOffset.X,
+                Position.Y + VisualOffset.Y,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                Position.Y + VisualOffset.Y + ElementSize.Height);
+            HoverBackground.Render(canvas, hoverRect, CornerRadius);
         }
 
         var textRect = new SKRect(
