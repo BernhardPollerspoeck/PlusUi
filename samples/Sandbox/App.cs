@@ -17,6 +17,7 @@ using Sandbox.Pages.TextWrapDemo;
 using Sandbox.Pages.NewControlsDemo;
 using Sandbox.Pages.ToolbarDemo;
 using Sandbox.Pages.ComboBoxDemo;
+using Sandbox.Pages.DateTimePickerDemo;
 using Sandbox.Popups;
 using Sandbox.Services;
 
@@ -56,6 +57,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<NewControlsDemoPage>().WithViewModel<NewControlsDemoPageViewModel>();
         builder.AddPage<ToolbarDemoPage>().WithViewModel<ToolbarDemoPageViewModel>();
         builder.AddPage<ComboBoxDemoPage>().WithViewModel<ComboBoxDemoPageViewModel>();
+        builder.AddPage<DateTimePickerDemoPage>().WithViewModel<DateTimePickerDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 

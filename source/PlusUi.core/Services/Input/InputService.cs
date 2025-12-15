@@ -249,14 +249,33 @@ public class InputService
     
     public void MouseWheel(Vector2 location, float deltaX, float deltaY)
     {
-        // Find the scrollable control under the mouse cursor
-        var currentPopup = _popupService.CurrentPopup;
-        var hitControl = (currentPopup) switch
+        var point = new Point(location.X, location.Y);
+
+        // Check overlays first (they render on top)
+        UiElement? hitControl = null;
+        foreach (var overlay in _overlayService.Overlays)
         {
-            not null => currentPopup.HitTest(new(location.X, location.Y)),
-            _ => _navigationContainer.CurrentPage.HitTest(new(location.X, location.Y))
-        };
-        
+            hitControl = overlay.HitTest(point);
+            if (hitControl != null)
+                break;
+        }
+
+        // Then check popup
+        if (hitControl == null)
+        {
+            var currentPopup = _popupService.CurrentPopup;
+            if (currentPopup != null)
+            {
+                hitControl = currentPopup.HitTest(point);
+            }
+        }
+
+        // Then check page
+        if (hitControl == null)
+        {
+            hitControl = _navigationContainer.CurrentPage.HitTest(point);
+        }
+
         // Scroll the control if it's scrollable
         if (hitControl is IScrollableControl scrollControl)
         {

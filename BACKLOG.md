@@ -9,11 +9,11 @@
 
 | Kategorie | Anzahl | Geschätzte Gesamtzeit |
 |-----------|--------|----------------------|
-| Controls (Kritisch) | 5 | 13-19 Tage |
+| Controls (Kritisch) | 3 | 8-11.5 Tage |
 | Controls (Hoch) | 2 | 6-9 Tage |
 | Features | 3 | 8-14 Tage |
 | Plattformen | 3 | 6-10 Tage |
-| **Gesamt** | **13** | **33-52 Tage** |
+| **Gesamt** | **11** | **28-44.5 Tage** |
 
 ---
 
@@ -124,96 +124,7 @@ new DataGrid<Person>()
 
 ---
 
-### CTRL-003: DatePicker
-
-| | |
-|---|---|
-| **Typ** | Neues Control |
-| **Priorität** | 🔴 Kritisch |
-| **Zeitschätzung** | 3-4 Tage |
-
-**Beschreibung:**
-Control zur Auswahl eines Datums. Zeigt aktuelles Datum und öffnet bei Klick einen Kalender-Popup zur Auswahl. Standard in jeder Formular-Anwendung.
-
-**Anforderungen:**
-
-- [ ] `DatePicker` Klasse
-- [ ] Property `SelectedDate` (DateTime? oder DateOnly?)
-- [ ] Property `MinDate` / `MaxDate` für Bereichseinschränkung
-- [ ] Property `DisplayFormat` (z.B. "dd.MM.yyyy")
-- [ ] Property `Placeholder`
-- [ ] Kalender-Popup mit Monats-/Jahresnavigation
-- [ ] Fluent API: `SetSelectedDate()`, `SetMinDate()`, `SetMaxDate()`, `SetDisplayFormat()`
-- [ ] Binding: `BindSelectedDate()` (Two-Way)
-- [ ] Wochenstart konfigurierbar (Montag/Sonntag)
-- [ ] Heute-Button im Kalender
-- [ ] Keyboard-Support (Datum direkt tippen)
-
-**API-Beispiel:**
-```csharp
-new DatePicker()
-    .SetPlaceholder("Geburtsdatum wählen")
-    .SetDisplayFormat("dd.MM.yyyy")
-    .SetMinDate(new DateOnly(1900, 1, 1))
-    .SetMaxDate(DateOnly.FromDateTime(DateTime.Today))
-    .BindSelectedDate(nameof(vm.BirthDate), () => vm.BirthDate, v => vm.BirthDate = v)
-```
-
-**Abhängigkeiten:** Popup-System (vorhanden)
-
-**Aufwandsverteilung:**
-- DatePicker-Control Grundstruktur: 0.5 Tage
-- Kalender-Grid Layout: 1 Tag
-- Monats-/Jahresnavigation: 0.5 Tage
-- Min/Max-Validierung & Styling: 0.5 Tage
-- Keyboard-Input: 0.25 Tage
-- Tests & Feinschliff: 0.25-1 Tag
-
----
-
-### CTRL-004: TimePicker
-
-| | |
-|---|---|
-| **Typ** | Neues Control |
-| **Priorität** | 🔴 Kritisch |
-| **Zeitschätzung** | 1.5-2 Tage |
-
-**Beschreibung:**
-Control zur Auswahl einer Uhrzeit. Zeigt aktuelle Zeit und öffnet bei Klick einen Time-Selector. Wichtig für Termin- und Planungsanwendungen.
-
-**Anforderungen:**
-
-- [ ] `TimePicker` Klasse
-- [ ] Property `SelectedTime` (TimeSpan? oder TimeOnly?)
-- [ ] Property `MinTime` / `MaxTime`
-- [ ] Property `DisplayFormat` (z.B. "HH:mm" oder "hh:mm tt")
-- [ ] Property `MinuteIncrement` (1, 5, 15, 30)
-- [ ] Property `Is24HourFormat`
-- [ ] Popup mit Stunden/Minuten-Auswahl (Spinner oder Dropdown)
-- [ ] Fluent API: `SetSelectedTime()`, `SetMinuteIncrement()`, `Set24HourFormat()`
-- [ ] Binding: `BindSelectedTime()` (Two-Way)
-
-**API-Beispiel:**
-```csharp
-new TimePicker()
-    .SetSelectedTime(new TimeOnly(9, 0))
-    .SetMinuteIncrement(15)
-    .Set24HourFormat(true)
-    .BindSelectedTime(nameof(vm.StartTime), () => vm.StartTime, v => vm.StartTime = v)
-```
-
-**Abhängigkeiten:** Popup-System (vorhanden)
-
-**Aufwandsverteilung:**
-- TimePicker-Control Grundstruktur: 0.5 Tage
-- Stunden/Minuten-Auswahl UI: 0.5 Tage
-- Format & Increment Logic: 0.25 Tage
-- Tests & Feinschliff: 0.25-0.75 Tage
-
----
-
-### CTRL-005: RadioButton / RadioGroup
+### CTRL-003: RadioButton / RadioGroup
 
 | | |
 |---|---|
@@ -259,7 +170,7 @@ new RadioGroup()
 
 ---
 
-### CTRL-006: Menu / ContextMenu
+### CTRL-004: Menu / ContextMenu
 
 | | |
 |---|---|
@@ -315,7 +226,7 @@ myControl.SetContextMenu(new ContextMenu()
 
 ---
 
-### CTRL-007: TreeView
+### CTRL-005: TreeView
 
 | | |
 |---|---|
@@ -681,14 +592,12 @@ Die Web/Blazor-Implementierung ist neu und benötigt einige Verbesserungen für 
 |----|-------|-----------|------|
 | **CTRL-001** | TabControl | 🔴 Kritisch | 2-3 Tage |
 | **CTRL-002** | DataGrid | 🔴 Kritisch | 5-7 Tage |
-| **CTRL-003** | DatePicker | 🔴 Kritisch | 3-4 Tage |
-| **CTRL-004** | TimePicker | 🔴 Kritisch | 1.5-2 Tage |
-| **CTRL-005** | RadioButton | 🔴 Kritisch | 1-1.5 Tage |
+| **CTRL-003** | RadioButton | 🔴 Kritisch | 1-1.5 Tage |
 | **FEAT-002** | Focus/Tab-Navigation | 🔴 Kritisch | 2-3 Tage |
 | **FEAT-001** | Accessibility | 🔴 Kritisch | 5-8 Tage |
-| | **Kritisch Gesamt** | | **19.5-28.5 Tage** |
-| **CTRL-006** | Menu/ContextMenu | 🟡 Hoch | 3-4 Tage |
-| **CTRL-007** | TreeView | 🟡 Hoch | 3-5 Tage |
+| | **Kritisch Gesamt** | | **15-22.5 Tage** |
+| **CTRL-004** | Menu/ContextMenu | 🟡 Hoch | 3-4 Tage |
+| **CTRL-005** | TreeView | 🟡 Hoch | 3-5 Tage |
 | **PLAT-001** | Android Verbesserungen | 🟡 Hoch | 2-3 Tage |
 | **PLAT-002** | iOS Verbesserungen | 🟡 Hoch | 2-4 Tage |
 | **PLAT-003** | Web Verbesserungen | 🟡 Mittel | 1-2 Tage |
@@ -699,21 +608,19 @@ Die Web/Blazor-Implementierung ist neu und benötigt einige Verbesserungen für 
 ### Empfohlene Reihenfolge für MVP
 
 1. **FEAT-002** Focus/Tab-Navigation (Grundlage für alles)
-2. **CTRL-005** RadioButton (schneller Win)
-3. **CTRL-004** TimePicker (schneller Win)
-4. **CTRL-001** TabControl (häufig benötigt)
-5. **CTRL-003** DatePicker (häufig benötigt)
-6. **CTRL-002** DataGrid (komplex, aber wichtig)
-7. **FEAT-001** Accessibility (parallel entwickeln)
-8. **PLAT-001/002/003** Plattform-Verbesserungen
+2. **CTRL-003** RadioButton (schneller Win)
+3. **CTRL-001** TabControl (häufig benötigt)
+4. **CTRL-002** DataGrid (komplex, aber wichtig)
+5. **FEAT-001** Accessibility (parallel entwickeln)
+6. **PLAT-001/002/003** Plattform-Verbesserungen
 
 ### Gesamtaufwand
 
 | Szenario | Aufwand |
 |----------|---------|
-| **MVP (nur Kritisch)** | 19.5-28.5 Tage |
-| **Vollständig (ohne Optional)** | 30.5-46.5 Tage |
-| **Alles inkl. Optional** | 32.5-49.5 Tage |
+| **MVP (nur Kritisch)** | 15-22.5 Tage |
+| **Vollständig (ohne Optional)** | 26-40.5 Tage |
+| **Alles inkl. Optional** | 28-43.5 Tage |
 
 ---
 
