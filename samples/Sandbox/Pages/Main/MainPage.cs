@@ -16,6 +16,7 @@ using Sandbox.Pages.NewControlsDemo;
 using Sandbox.Pages.ToolbarDemo;
 using Sandbox.Pages.ComboBoxDemo;
 using Sandbox.Pages.DateTimePickerDemo;
+using Sandbox.Pages.RadioButtonDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -300,7 +301,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetText("DatePicker & TimePicker Demo")
                 .SetPadding(new(20, 5))
                 .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(DateTimePickerDemoPage))
+                .SetCommandParameter(typeof(DateTimePickerDemoPage)),
+            new Solid().SetDesiredHeight(10).IgnoreStyling(),
+            new Button()
+                .SetText("RadioButton Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(RadioButtonDemoPage))
 
         );
     }

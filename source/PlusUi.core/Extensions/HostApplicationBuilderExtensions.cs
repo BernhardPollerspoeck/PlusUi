@@ -51,6 +51,9 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<TransitionService>();
         builder.Services.AddSingleton<ITransitionService>(sp => sp.GetRequiredService<TransitionService>());
 
+        builder.Services.AddSingleton<RadioButtonManager>();
+        builder.Services.AddSingleton<IRadioButtonManager>(sp => sp.GetRequiredService<RadioButtonManager>());
+
         builder.Services.AddSingleton(sp =>
         {
             var configuration = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value;

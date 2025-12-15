@@ -9,11 +9,11 @@
 
 | Kategorie | Anzahl | Geschätzte Gesamtzeit |
 |-----------|--------|----------------------|
-| Controls (Kritisch) | 3 | 8-11.5 Tage |
+| Controls (Kritisch) | 2 | 7-10 Tage |
 | Controls (Hoch) | 2 | 6-9 Tage |
-| Features | 3 | 8-14 Tage |
-| Plattformen | 3 | 6-10 Tage |
-| **Gesamt** | **11** | **28-44.5 Tage** |
+| Features | 2 | 7-11 Tage |
+| Plattformen | 3 | 5-9 Tage |
+| **Gesamt** | **9** | **25-39 Tage** |
 
 ---
 
@@ -121,52 +121,6 @@ new DataGrid<Person>()
 - Selection & Binding: 0.5 Tage
 - Column-Typen (Text, Checkbox, Button): 1 Tag
 - Tests & Feinschliff: 0.5-1.5 Tage
-
----
-
-### CTRL-003: RadioButton / RadioGroup
-
-| | |
-|---|---|
-| **Typ** | Neues Control |
-| **Priorität** | 🔴 Kritisch |
-| **Zeitschätzung** | 1-1.5 Tage |
-
-**Beschreibung:**
-Gruppe von Auswahloptionen bei der nur eine Option gleichzeitig ausgewählt sein kann. Standard für exklusive Auswahlen (Geschlecht, Zahlungsart, etc.).
-
-**Anforderungen:**
-
-- [ ] `RadioButton` Klasse (einzelner Button)
-- [ ] `RadioGroup` Klasse (Container für RadioButtons)
-- [ ] Property `IsSelected` (RadioButton)
-- [ ] Property `GroupName` (zur Gruppierung ohne Container)
-- [ ] Property `SelectedValue` / `SelectedIndex` (RadioGroup)
-- [ ] Property `Orientation` (Horizontal/Vertical)
-- [ ] Fluent API: `SetIsSelected()`, `SetGroupName()`, `SetOrientation()`
-- [ ] Binding: `BindSelectedValue()` (Two-Way)
-- [ ] Automatische Deselektion anderer Buttons in Gruppe
-- [ ] Keyboard-Support (Pfeiltasten)
-
-**API-Beispiel:**
-```csharp
-new RadioGroup()
-    .SetOrientation(Orientation.Vertical)
-    .Children(
-        new RadioButton().SetText("Option A").SetValue("A"),
-        new RadioButton().SetText("Option B").SetValue("B"),
-        new RadioButton().SetText("Option C").SetValue("C")
-    )
-    .BindSelectedValue(nameof(vm.Choice), () => vm.Choice, v => vm.Choice = v)
-```
-
-**Abhängigkeiten:** Keine (ähnlich wie Checkbox)
-
-**Aufwandsverteilung:**
-- RadioButton Rendering (Kreis): 0.25 Tage
-- RadioGroup Container & Selection-Logic: 0.5 Tage
-- Binding & Keyboard: 0.25 Tage
-- Tests: 0.25-0.5 Tage
 
 ---
 
@@ -400,59 +354,6 @@ style.AddStyle<Button>(Theme.Default, b => b
 
 ---
 
-### FEAT-003: Page Transitions (Optional)
-
-| | |
-|---|---|
-| **Typ** | Neues Feature |
-| **Priorität** | 🟢 Nice-to-have |
-| **Zeitschätzung** | 2-3 Tage |
-
-**Beschreibung:**
-Animierte Übergänge bei Navigation zwischen Pages. Verbessert die User Experience und gibt visuelles Feedback bei Seitenwechseln.
-
-**Anforderungen:**
-
-- [ ] `IPageTransition` Interface
-- [ ] Eingebaute Transitions: `FadeTransition`, `SlideTransition`, `NoneTransition`
-- [ ] Property `Transition` auf NavigationService oder Page-Level
-- [ ] Property `Duration` (Dauer in ms)
-- [ ] Property `Easing` (Linear, EaseIn, EaseOut, EaseInOut)
-- [ ] Forward/Backward unterschiedliche Richtungen
-
-**API-Beispiel:**
-```csharp
-// Global setzen
-navigationService.SetDefaultTransition(new SlideTransition()
-    .SetDuration(250)
-    .SetDirection(SlideDirection.Left)
-    .SetEasing(Easing.EaseOut));
-
-// Oder pro Navigation
-navigationService.NavigateTo<DetailsPage>(new SlideTransition());
-
-// Oder auf Page-Level
-public class MyPage : UiPageElement
-{
-    public override IPageTransition Transition => new FadeTransition(200);
-}
-```
-
-**Abhängigkeiten:** RenderService-Erweiterung für Animation-Loop
-
-**Aufwandsverteilung:**
-- IPageTransition Interface & Basis: 0.25 Tage
-- Animation-Loop in RenderService: 0.5 Tage
-- Easing-Functions: 0.25 Tage
-- FadeTransition: 0.25 Tage
-- SlideTransition: 0.5 Tage
-- NavigationService Integration: 0.25 Tage
-- Tests: 0.25-0.75 Tage
-
-**Hinweis:** Kann komplett weggelassen werden. User können Transitions auch selbst über Property-Animation implementieren.
-
----
-
 ## PLATTFORMEN
 
 ---
@@ -592,35 +493,30 @@ Die Web/Blazor-Implementierung ist neu und benötigt einige Verbesserungen für 
 |----|-------|-----------|------|
 | **CTRL-001** | TabControl | 🔴 Kritisch | 2-3 Tage |
 | **CTRL-002** | DataGrid | 🔴 Kritisch | 5-7 Tage |
-| **CTRL-003** | RadioButton | 🔴 Kritisch | 1-1.5 Tage |
 | **FEAT-002** | Focus/Tab-Navigation | 🔴 Kritisch | 2-3 Tage |
 | **FEAT-001** | Accessibility | 🔴 Kritisch | 5-8 Tage |
-| | **Kritisch Gesamt** | | **15-22.5 Tage** |
+| | **Kritisch Gesamt** | | **14-21 Tage** |
 | **CTRL-004** | Menu/ContextMenu | 🟡 Hoch | 3-4 Tage |
 | **CTRL-005** | TreeView | 🟡 Hoch | 3-5 Tage |
 | **PLAT-001** | Android Verbesserungen | 🟡 Hoch | 2-3 Tage |
 | **PLAT-002** | iOS Verbesserungen | 🟡 Hoch | 2-4 Tage |
 | **PLAT-003** | Web Verbesserungen | 🟡 Mittel | 1-2 Tage |
 | | **Hoch/Mittel Gesamt** | | **11-18 Tage** |
-| **FEAT-003** | Page Transitions | 🟢 Optional | 2-3 Tage |
-| | **Optional Gesamt** | | **2-3 Tage** |
 
 ### Empfohlene Reihenfolge für MVP
 
 1. **FEAT-002** Focus/Tab-Navigation (Grundlage für alles)
-2. **CTRL-003** RadioButton (schneller Win)
-3. **CTRL-001** TabControl (häufig benötigt)
-4. **CTRL-002** DataGrid (komplex, aber wichtig)
-5. **FEAT-001** Accessibility (parallel entwickeln)
-6. **PLAT-001/002/003** Plattform-Verbesserungen
+2. **CTRL-001** TabControl (häufig benötigt)
+3. **CTRL-002** DataGrid (komplex, aber wichtig)
+4. **FEAT-001** Accessibility (parallel entwickeln)
+5. **PLAT-001/002/003** Plattform-Verbesserungen
 
 ### Gesamtaufwand
 
 | Szenario | Aufwand |
 |----------|---------|
-| **MVP (nur Kritisch)** | 15-22.5 Tage |
-| **Vollständig (ohne Optional)** | 26-40.5 Tage |
-| **Alles inkl. Optional** | 28-43.5 Tage |
+| **MVP (nur Kritisch)** | 14-21 Tage |
+| **Vollständig** | 25-39 Tage |
 
 ---
 
