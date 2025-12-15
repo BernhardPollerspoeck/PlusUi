@@ -349,6 +349,13 @@ public abstract class UiElement : IDisposable
         return this;
     }
 
+    #region Tooltip
+    /// <summary>
+    /// The tooltip attachment for this element, if any.
+    /// </summary>
+    internal TooltipAttachment? Tooltip { get; set; }
+    #endregion
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public UiElement? Parent { get; set; }
 

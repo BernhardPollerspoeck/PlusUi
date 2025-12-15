@@ -10,6 +10,7 @@ public class InputService
     private readonly PlusUiPopupService _popupService;
     private readonly OverlayService _overlayService;
     private readonly IKeyboardHandler _keyboardHandler;
+    private readonly ITooltipService? _tooltipService;
     private Vector2 _lastMousePosition;
     private IScrollableControl? _activeScrollControl;
     private IDraggableControl? _activeDragControl;
@@ -19,12 +20,14 @@ public class InputService
         NavigationContainer navigationContainer,
         PlusUiPopupService popupService,
         OverlayService overlayService,
-        IKeyboardHandler keyboardHandler)
+        IKeyboardHandler keyboardHandler,
+        ITooltipService? tooltipService = null)
     {
         _navigationContainer = navigationContainer;
         _popupService = popupService;
         _overlayService = overlayService;
         _keyboardHandler = keyboardHandler;
+        _tooltipService = tooltipService;
         _keyboardHandler.KeyInput += HandleKeyInput;
         _keyboardHandler.CharInput += HandleCharInput;
     }
@@ -222,10 +225,15 @@ public class InputService
         // Update hover states
         if (hitElement != _hoveredElement)
         {
+            var oldElement = _hoveredElement;
+
             if (_hoveredElement is IHoverableControl oldHoverable)
             {
                 oldHoverable.IsHovered = false;
             }
+
+            // Notify tooltip service of hover leave
+            _tooltipService?.OnHoverLeave(oldElement);
 
             _hoveredElement = hitElement;
 
@@ -233,6 +241,9 @@ public class InputService
             {
                 newHoverable.IsHovered = true;
             }
+
+            // Notify tooltip service of hover enter
+            _tooltipService?.OnHoverEnter(_hoveredElement);
         }
     }
     

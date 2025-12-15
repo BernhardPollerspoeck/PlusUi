@@ -45,6 +45,9 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<OverlayService>();
         builder.Services.AddSingleton<IOverlayService>(sp => sp.GetRequiredService<OverlayService>());
 
+        builder.Services.AddSingleton<TooltipService>();
+        builder.Services.AddSingleton<ITooltipService>(sp => sp.GetRequiredService<TooltipService>());
+
         builder.Services.AddSingleton(sp =>
         {
             var configuration = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value;

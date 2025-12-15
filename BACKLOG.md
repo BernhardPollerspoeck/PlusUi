@@ -10,10 +10,10 @@
 | Kategorie | Anzahl | Geschätzte Gesamtzeit |
 |-----------|--------|----------------------|
 | Controls (Kritisch) | 5 | 13-19 Tage |
-| Controls (Hoch) | 3 | 7-12 Tage |
+| Controls (Hoch) | 2 | 6-9 Tage |
 | Features | 3 | 8-14 Tage |
 | Plattformen | 3 | 6-10 Tage |
-| **Gesamt** | **14** | **34-55 Tage** |
+| **Gesamt** | **13** | **33-52 Tage** |
 
 ---
 
@@ -366,54 +366,6 @@ new TreeView<FolderItem>()
 
 ---
 
-### CTRL-008: Tooltip
-
-| | |
-|---|---|
-| **Typ** | Neues Control / Feature |
-| **Priorität** | 🟡 Hoch |
-| **Zeitschätzung** | 1-1.5 Tage |
-
-**Beschreibung:**
-Informations-Popup das erscheint wenn der Benutzer über ein Element hovert. Standard UX-Pattern für zusätzliche Informationen ohne UI zu überladen.
-
-**Anforderungen:**
-
-- [ ] `Tooltip` Klasse oder Extension-Methode
-- [ ] Property `Content` (Text oder Custom UiElement)
-- [ ] Property `Placement` (Top, Bottom, Left, Right, Auto)
-- [ ] Property `ShowDelay` (Verzögerung in ms)
-- [ ] Property `HideDelay`
-- [ ] Fluent API: `SetTooltip()` als Extension auf allen Controls
-- [ ] Automatisches Positionieren (nicht außerhalb Screen)
-- [ ] Automatisches Ausblenden bei Mausbewegung weg
-
-**API-Beispiel:**
-```csharp
-new Button()
-    .SetText("Speichern")
-    .SetTooltip("Speichert alle Änderungen (Ctrl+S)")
-
-// Oder mit Custom Content
-new Button()
-    .SetText("Info")
-    .SetTooltip(new VStack().Children(
-        new Label().SetText("Detaillierte Info").SetFontWeight(FontWeight.Bold),
-        new Label().SetText("Hier steht mehr Text...")
-    ))
-```
-
-**Abhängigkeiten:** Overlay-System (vorhanden), IHoverableControl
-
-**Aufwandsverteilung:**
-- Tooltip-Control & Extension: 0.25 Tage
-- Delay-Timer & Show/Hide Logic: 0.25 Tage
-- Positioning & Screen-Bounds: 0.25 Tage
-- Custom Content Support: 0.25 Tage
-- Tests: 0.25-0.5 Tage
-
----
-
 ## FEATURES
 
 ---
@@ -737,11 +689,10 @@ Die Web/Blazor-Implementierung ist neu und benötigt einige Verbesserungen für 
 | | **Kritisch Gesamt** | | **19.5-28.5 Tage** |
 | **CTRL-006** | Menu/ContextMenu | 🟡 Hoch | 3-4 Tage |
 | **CTRL-007** | TreeView | 🟡 Hoch | 3-5 Tage |
-| **CTRL-008** | Tooltip | 🟡 Hoch | 1-1.5 Tage |
 | **PLAT-001** | Android Verbesserungen | 🟡 Hoch | 2-3 Tage |
 | **PLAT-002** | iOS Verbesserungen | 🟡 Hoch | 2-4 Tage |
 | **PLAT-003** | Web Verbesserungen | 🟡 Mittel | 1-2 Tage |
-| | **Hoch/Mittel Gesamt** | | **12-19.5 Tage** |
+| | **Hoch/Mittel Gesamt** | | **11-18 Tage** |
 | **FEAT-003** | Page Transitions | 🟢 Optional | 2-3 Tage |
 | | **Optional Gesamt** | | **2-3 Tage** |
 
@@ -752,18 +703,17 @@ Die Web/Blazor-Implementierung ist neu und benötigt einige Verbesserungen für 
 3. **CTRL-004** TimePicker (schneller Win)
 4. **CTRL-001** TabControl (häufig benötigt)
 5. **CTRL-003** DatePicker (häufig benötigt)
-6. **CTRL-008** Tooltip (schneller Win, verbessert UX)
-7. **CTRL-002** DataGrid (komplex, aber wichtig)
-8. **FEAT-001** Accessibility (parallel entwickeln)
-9. **PLAT-001/002/003** Plattform-Verbesserungen
+6. **CTRL-002** DataGrid (komplex, aber wichtig)
+7. **FEAT-001** Accessibility (parallel entwickeln)
+8. **PLAT-001/002/003** Plattform-Verbesserungen
 
 ### Gesamtaufwand
 
 | Szenario | Aufwand |
 |----------|---------|
 | **MVP (nur Kritisch)** | 19.5-28.5 Tage |
-| **Vollständig (ohne Optional)** | 31.5-48 Tage |
-| **Alles inkl. Optional** | 33.5-51 Tage |
+| **Vollständig (ohne Optional)** | 30.5-46.5 Tage |
+| **Alles inkl. Optional** | 32.5-49.5 Tage |
 
 ---
 

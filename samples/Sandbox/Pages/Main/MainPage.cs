@@ -78,8 +78,59 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 new Label()
                     .BindText(nameof(vm.Text), () => $"The entry input is: [ {vm.Text} ]"),
                 new Entry()
-                    .BindText(nameof(vm.Text), () => vm.Text, txt => vm.Text = txt),
-                new Entry(),
+                    .BindText(nameof(vm.Text), () => vm.Text, txt => vm.Text = txt)
+                    .SetTooltip("Type some text here"),
+                new Entry()
+                    .SetTooltip("Another input field"),
+
+                // Tooltip Demo Section
+                new Label()
+                    .SetText("Tooltip Demo (hover over buttons):")
+                    .SetTextColor(SKColors.Yellow)
+                    .SetTextSize(14),
+                new HStack(
+                    new Button()
+                        .SetText("Auto")
+                        .SetPadding(new(8, 4))
+                        .SetTooltip("Placement: Auto (default)"),
+                    new Button()
+                        .SetText("Top")
+                        .SetPadding(new(8, 4))
+                        .SetTooltip("Tooltip appears on top")
+                        .SetTooltipPlacement(TooltipPlacement.Top),
+                    new Button()
+                        .SetText("Bottom")
+                        .SetPadding(new(8, 4))
+                        .SetTooltip("Tooltip appears at bottom")
+                        .SetTooltipPlacement(TooltipPlacement.Bottom),
+                    new Button()
+                        .SetText("Left")
+                        .SetPadding(new(8, 4))
+                        .SetTooltip("Tooltip appears on left")
+                        .SetTooltipPlacement(TooltipPlacement.Left),
+                    new Button()
+                        .SetText("Right")
+                        .SetPadding(new(8, 4))
+                        .SetTooltip("Tooltip appears on right")
+                        .SetTooltipPlacement(TooltipPlacement.Right)),
+                new HStack(
+                    new Button()
+                        .SetText("Fast (100ms)")
+                        .SetPadding(new(8, 4))
+                        .SetTooltip("Shows quickly!")
+                        .SetTooltipShowDelay(100),
+                    new Button()
+                        .SetText("Slow (1s)")
+                        .SetPadding(new(8, 4))
+                        .SetTooltip("Takes a second to show")
+                        .SetTooltipShowDelay(1000),
+                    new Button()
+                        .SetText("Rich Content")
+                        .SetPadding(new(8, 4))
+                        .SetTooltip(new VStack(
+                            new Label().SetText("Rich Tooltip").SetTextColor(SKColors.Yellow).SetFontWeight(FontWeight.Bold),
+                            new Label().SetText("With multiple lines").SetTextColor(SKColors.White),
+                            new Label().SetText("And custom styling").SetTextColor(SKColors.LightGray)))),
 
                 new Label()
                     .SetText("Hit the button below to Change my color")
@@ -88,13 +139,16 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     new Button()
                         .SetText("Hello World!?")
                         .SetPadding(new(10, 5))
-                        .SetCommand(vm.SetColorCommand),
+                        .SetCommand(vm.SetColorCommand)
+                        .SetTooltip("Click to change the label color above"),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetColor(new SKColor(255, 0, 0)),
+                        .SetColor(new SKColor(255, 0, 0))
+                        .SetTooltip("Red checkbox - bound to same value"),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetColor(new SKColor(0, 255, 0)),
+                        .SetColor(new SKColor(0, 255, 0))
+                        .SetTooltip("Green checkbox - bound to same value"),
 
                 new Border()
                     .AddChild(new Label().SetText("Solid Border").SetTextColor(SKColors.Black))
