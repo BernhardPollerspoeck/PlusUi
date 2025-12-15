@@ -7,6 +7,12 @@ namespace PlusUi.core;
 /// </summary>
 internal class TimePickerSelectorOverlay : UiElement, IInputControl, IDismissableOverlay, IScrollableControl
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Container;
+
     private readonly TimePicker _timePicker;
 
     // Layout constants
@@ -499,6 +505,38 @@ internal class TimePickerSelectorOverlay : UiElement, IInputControl, IDismissabl
         {
             // Scroll minute column
             _minuteScrollOffset = Math.Clamp(_minuteScrollOffset + deltaY * ScrollSpeed, 0, maxMinuteScroll);
+        }
+    }
+
+    /// <summary>
+    /// Scrolls to make the selected time visible. Called when time changes via keyboard.
+    /// </summary>
+    public void ScrollToSelection()
+    {
+        if (!_timePicker.SelectedTime.HasValue) return;
+
+        var hours = _timePicker.GetAvailableHours().ToList();
+        var minutes = _timePicker.GetAvailableMinutes().ToList();
+
+        var selectedHour = _timePicker.Is24HourFormat
+            ? _timePicker.SelectedTime.Value.Hour
+            : (_timePicker.SelectedTime.Value.Hour % 12 == 0 ? 12 : _timePicker.SelectedTime.Value.Hour % 12);
+
+        var hourIndex = hours.IndexOf(selectedHour);
+        if (hourIndex >= 0)
+        {
+            var visibleHeight = ItemHeight * MaxVisibleItems;
+            var maxScroll = Math.Max(0, hours.Count * ItemHeight - visibleHeight);
+            // Center the selected item, clamped to valid range
+            _hourScrollOffset = Math.Clamp((hourIndex - 2) * ItemHeight, 0, maxScroll);
+        }
+
+        var minuteIndex = minutes.IndexOf(_timePicker.SelectedTime.Value.Minute);
+        if (minuteIndex >= 0)
+        {
+            var visibleHeight = ItemHeight * MaxVisibleItems;
+            var maxScroll = Math.Max(0, minutes.Count * ItemHeight - visibleHeight);
+            _minuteScrollOffset = Math.Clamp((minuteIndex - 2) * ItemHeight, 0, maxScroll);
         }
     }
 }

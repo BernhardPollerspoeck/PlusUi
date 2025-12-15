@@ -8,6 +8,12 @@ namespace PlusUi.core;
 /// </summary>
 internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissableOverlay
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Container;
+
     private readonly DatePicker _datePicker;
 
     // Layout constants

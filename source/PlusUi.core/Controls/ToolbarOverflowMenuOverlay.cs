@@ -9,6 +9,12 @@ namespace PlusUi.core;
 /// </summary>
 internal class ToolbarOverflowMenuOverlay : UiElement, IDismissableOverlay
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Menu;
+
     private readonly Toolbar _toolbar;
     private SKRect _menuRect;
     private bool _measured;

@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using PlusUi.core.Services.Focus;
+using SkiaSharp;
 using System.ComponentModel;
 
 namespace PlusUi.core;
@@ -22,10 +23,84 @@ public abstract class UiLayoutElement<T> : UiLayoutElement where T : UiLayoutEle
         return (T)this;
     }
 
+    /// <summary>
+    /// Sets the focus scope mode for this container.
+    /// </summary>
+    public new T SetFocusScope(FocusScopeMode mode)
+    {
+        FocusScope = mode;
+        return (T)this;
+    }
+
+    /// <summary>
+    /// Sets the accessibility landmark for this container.
+    /// </summary>
+    public new T SetAccessibilityLandmark(AccessibilityLandmark landmark)
+    {
+        AccessibilityLandmark = landmark;
+        return (T)this;
+    }
 }
 
 public abstract class UiLayoutElement : UiElement
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Container;
+
+    #region FocusScope
+    /// <summary>
+    /// Gets or sets the focus scope mode for this container.
+    /// When set to Trap or TrapWithEscape, tab navigation cycles within this container.
+    /// </summary>
+    internal FocusScopeMode FocusScope { get; set; } = FocusScopeMode.None;
+
+    /// <summary>
+    /// Sets the focus scope mode for this container.
+    /// </summary>
+    public UiLayoutElement SetFocusScope(FocusScopeMode mode)
+    {
+        FocusScope = mode;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the focus scope mode.
+    /// </summary>
+    public UiLayoutElement BindFocusScope(string propertyName, Func<FocusScopeMode> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => FocusScope = propertyGetter());
+        return this;
+    }
+    #endregion
+
+    #region AccessibilityLandmark
+    /// <summary>
+    /// Gets or sets the accessibility landmark for this container.
+    /// Landmarks help screen reader users quickly navigate between main content areas.
+    /// </summary>
+    internal AccessibilityLandmark AccessibilityLandmark { get; set; } = AccessibilityLandmark.None;
+
+    /// <summary>
+    /// Sets the accessibility landmark for this container.
+    /// </summary>
+    public UiLayoutElement SetAccessibilityLandmark(AccessibilityLandmark landmark)
+    {
+        AccessibilityLandmark = landmark;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the accessibility landmark.
+    /// </summary>
+    public UiLayoutElement BindAccessibilityLandmark(string propertyName, Func<AccessibilityLandmark> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => AccessibilityLandmark = propertyGetter());
+        return this;
+    }
+    #endregion
 
     public override INotifyPropertyChanged? Context
     {

@@ -11,6 +11,11 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
     private UiElement _tree = new NullElement();
 
     /// <summary>
+    /// Gets the root element of the page's content tree for traversal purposes.
+    /// </summary>
+    internal UiElement ContentTree => _tree;
+
+    /// <summary>
     /// Optional page-specific transition that overrides the global default transition.
     /// </summary>
     public virtual IPageTransition? Transition { get; set; }

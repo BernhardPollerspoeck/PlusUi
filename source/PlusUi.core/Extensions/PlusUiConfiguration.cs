@@ -51,4 +51,45 @@ public class PlusUiConfiguration
     /// Set to NoneTransition to disable transitions globally.
     /// </summary>
     public IPageTransition DefaultTransition { get; set; } = new SlideTransition();
+
+    // Accessibility Configuration
+
+    /// <summary>
+    /// Gets or sets a value indicating whether minimum touch target sizes (44x44 pts) are enforced on interactive controls.
+    /// When true, buttons, checkboxes, radio buttons, and other interactive elements will have a minimum size
+    /// to ensure they are easily tappable on touch devices, following WCAG 2.1 accessibility guidelines.
+    /// Individual controls can override this via SetEnforceMinimumTouchTarget().
+    /// Default is false (opt-in for accessibility).
+    /// </summary>
+    public bool EnforceMinimumTouchTargets { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether high contrast mode support is enabled.
+    /// When true, controls will use HighContrastBackground and HighContrastForeground colors
+    /// when the system reports high contrast mode is active.
+    /// Default is false (opt-in).
+    /// </summary>
+    public bool EnableHighContrastSupport { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to force high contrast mode regardless of system settings.
+    /// Useful for testing high contrast appearance without enabling system-wide high contrast.
+    /// Default is false.
+    /// </summary>
+    public bool ForceHighContrast { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether system font scaling is respected.
+    /// When true, text elements will scale according to system accessibility font size settings.
+    /// Default is false (opt-in).
+    /// </summary>
+    public bool EnableFontScaling { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether reduced motion preferences are respected.
+    /// When true, page transitions and animations will be skipped when the system reports
+    /// reduced motion preference is active.
+    /// Default is false (opt-in).
+    /// </summary>
+    public bool RespectReducedMotion { get; set; } = false;
 }

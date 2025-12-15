@@ -104,4 +104,34 @@ public class KeyboardTextField : UITextField, IKeyboardHandler, IUITextFieldDele
     {
         return true;
     }
+
+    public override void PressesBegan(NSSet<UIPress> presses, UIPressesEvent evt)
+    {
+        // Handle hardware keyboard keys for Tab navigation
+        foreach (var press in presses)
+        {
+            if (press?.Key?.KeyCode != null)
+            {
+                var plusKey = press.Key.KeyCode switch
+                {
+                    UIKeyboardHidUsage.KeyboardTab when press.Key.ModifierFlags.HasFlag(UIKeyModifierFlags.Shift) => PlusKey.ShiftTab,
+                    UIKeyboardHidUsage.KeyboardTab => PlusKey.Tab,
+                    UIKeyboardHidUsage.KeyboardEscape => PlusKey.Escape,
+                    UIKeyboardHidUsage.KeyboardUpArrow => PlusKey.ArrowUp,
+                    UIKeyboardHidUsage.KeyboardDownArrow => PlusKey.ArrowDown,
+                    UIKeyboardHidUsage.KeyboardLeftArrow => PlusKey.ArrowLeft,
+                    UIKeyboardHidUsage.KeyboardRightArrow => PlusKey.ArrowRight,
+                    _ => PlusKey.Unknown
+                };
+
+                if (plusKey != PlusKey.Unknown)
+                {
+                    KeyInput?.Invoke(this, plusKey);
+                    return;
+                }
+            }
+        }
+
+        base.PressesBegan(presses, evt);
+    }
 }

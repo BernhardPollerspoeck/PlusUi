@@ -39,6 +39,9 @@ namespace PlusUi.core;
 /// </example>
 public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
 {
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.List;
+
     private IEnumerable<T>? _itemsSource;
     private Func<T, int, UiElement>? _itemTemplate;
     private readonly Dictionary<int, UiElement> _realizedItems = new();

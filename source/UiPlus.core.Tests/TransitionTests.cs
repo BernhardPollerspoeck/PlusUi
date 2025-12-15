@@ -1,11 +1,17 @@
 using PlusUi.core;
 using PlusUi.core.Animations;
+using PlusUi.core.Services.Accessibility;
 
 namespace UiPlus.core.Tests;
 
 [TestClass]
 public class TransitionTests
 {
+    private static TransitionService CreateTransitionService()
+    {
+        return new TransitionService(new PlusUiConfiguration(), new AccessibilitySettingsService());
+    }
+
     #region Easing Tests
 
     [TestMethod]
@@ -222,21 +228,21 @@ public class TransitionTests
     [TestMethod]
     public void TransitionService_IsTransitioning_FalseByDefault()
     {
-        var service = new TransitionService();
+        var service = CreateTransitionService();
         Assert.IsFalse(service.IsTransitioning);
     }
 
     [TestMethod]
     public void TransitionService_OutgoingPage_NullByDefault()
     {
-        var service = new TransitionService();
+        var service = CreateTransitionService();
         Assert.IsNull(service.OutgoingPage);
     }
 
     [TestMethod]
     public void TransitionService_Update_DoesNothingWhenNotTransitioning()
     {
-        var service = new TransitionService();
+        var service = CreateTransitionService();
 
         // Should not throw
         service.Update();

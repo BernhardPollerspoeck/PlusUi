@@ -17,6 +17,7 @@ using Sandbox.Pages.ToolbarDemo;
 using Sandbox.Pages.ComboBoxDemo;
 using Sandbox.Pages.DateTimePickerDemo;
 using Sandbox.Pages.RadioButtonDemo;
+using Sandbox.Pages.AccessibilityDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -198,117 +199,112 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
             => element.SetBackground(new SolidColorBackground(SKColors.White)));
     }
 
-    private VStack CreateTestButtons()
+    private HStack CreateTestButtons()
     {
-        return new VStack(
-            new Button()
-                .SetText("New Controls Demo")
-                .SetPadding(new(20, 5))
-                .SetBackground(new SolidColorBackground(new SKColor(52, 199, 89)))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(NewControlsDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("Go to Grid")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(ControlsGridPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("Go to TextRendering")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(TextRenderPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("Text Wrap & Truncation Demo")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(TextWrapDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("Custom Font Demo")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(FontDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("Go to Form")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(FormDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("Go to Button Demo")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(ButtonDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("Go to Link Demo")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(LinkDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("Popup")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.PopupCommand),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("ScrollView Example")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(ScrollViewExamplePage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("ItemsList Example")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(ItemsListDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("Shadow Demo")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(ShadowDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("RawUserControl Example")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(RawUserControlPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("BgTest Example")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(BgTestPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("Toolbar Demo")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(ToolbarDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("ComboBox Demo")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(ComboBoxDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("DatePicker & TimePicker Demo")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(DateTimePickerDemoPage)),
-            new Solid().SetDesiredHeight(10).IgnoreStyling(),
-            new Button()
-                .SetText("RadioButton Demo")
-                .SetPadding(new(20, 5))
-                .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(RadioButtonDemoPage))
+        return new HStack(
+            // Spalte 1
+            new VStack(
+                new Button()
+                    .SetText("New Controls Demo")
+                    .SetPadding(new(20, 5))
+                    .SetBackground(new SolidColorBackground(new SKColor(52, 199, 89)))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(NewControlsDemoPage)),
+                new Button()
+                    .SetText("Go to Grid")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(ControlsGridPage)),
+                new Button()
+                    .SetText("Go to TextRendering")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(TextRenderPage)),
+                new Button()
+                    .SetText("Text Wrap & Truncation")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(TextWrapDemoPage)),
+                new Button()
+                    .SetText("Custom Font Demo")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(FontDemoPage)),
+                new Button()
+                    .SetText("Go to Form")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(FormDemoPage)),
+                new Button()
+                    .SetText("Go to Button Demo")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(ButtonDemoPage)),
+                new Button()
+                    .SetText("Go to Link Demo")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(LinkDemoPage)),
+                new Button()
+                    .SetText("Popup")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.PopupCommand),
+                new Button()
+                    .SetText("ScrollView Example")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(ScrollViewExamplePage))
+            ),
 
+            // Spalte 2
+            new VStack(
+                new Button()
+                    .SetText("ItemsList Example")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(ItemsListDemoPage)),
+                new Button()
+                    .SetText("Shadow Demo")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(ShadowDemoPage)),
+                new Button()
+                    .SetText("RawUserControl")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(RawUserControlPage)),
+                new Button()
+                    .SetText("BgTest Example")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(BgTestPage)),
+                new Button()
+                    .SetText("Toolbar Demo")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(ToolbarDemoPage)),
+                new Button()
+                    .SetText("ComboBox Demo")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(ComboBoxDemoPage)),
+                new Button()
+                    .SetText("DatePicker & TimePicker")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(DateTimePickerDemoPage)),
+                new Button()
+                    .SetText("RadioButton Demo")
+                    .SetPadding(new(20, 5))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(RadioButtonDemoPage)),
+                new Button()
+                    .SetText("Accessibility Demo")
+                    .SetPadding(new(20, 5))
+                    .SetBackground(new SolidColorBackground(new SKColor(0, 122, 255)))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(AccessibilityDemoPage))
+            ).SetMargin(new Margin(20, 0, 0, 0))
         );
     }
 

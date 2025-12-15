@@ -9,6 +9,12 @@ namespace PlusUi.core;
 /// </summary>
 internal class TooltipOverlay : UiElement
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Tooltip;
+
     private const float Padding = 8f;
     private const float Spacing = 4f;
     private const float DefaultFontSize = 14f;

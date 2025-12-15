@@ -21,7 +21,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
-public partial class DatePicker : UiElement, IInputControl, ITextInputControl, IHoverableControl
+public partial class DatePicker : UiElement, IInputControl, ITextInputControl, IHoverableControl, IFocusable, IKeyboardInputHandler
 {
     private const float ArrowSize = 8f;
     private IOverlayService? _overlayService;
@@ -409,10 +409,192 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         }
     }
 
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => true;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.DatePicker;
+
     public DatePicker()
     {
         SetDesiredSize(new Size(200, 40));
     }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? Placeholder ?? "Date picker";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (!string.IsNullOrEmpty(AccessibilityValue))
+        {
+            return AccessibilityValue;
+        }
+        return SelectedDate?.ToString(DisplayFormat, System.Globalization.CultureInfo.CurrentCulture);
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (IsOpen)
+        {
+            traits |= AccessibilityTrait.Expanded;
+        }
+        traits |= AccessibilityTrait.HasPopup;
+        return traits;
+    }
+
+    #region IFocusable
+    bool IFocusable.IsFocusable => IsFocusable;
+    int? IFocusable.TabIndex => TabIndex;
+    bool IFocusable.TabStop => TabStop;
+    bool IFocusable.IsFocused
+    {
+        get => IsFocused;
+        set => IsFocused = value;
+    }
+    void IFocusable.OnFocus() => OnFocus();
+    void IFocusable.OnBlur()
+    {
+        OnBlur();
+        // Close picker when losing focus
+        IsOpen = false;
+    }
+    #endregion
+
+    #region IKeyboardInputHandler
+    /// <inheritdoc />
+    public bool HandleKeyboardInput(PlusKey key)
+    {
+        if (!IsOpen)
+        {
+            // When closed, Enter/Space opens the picker
+            if (key == PlusKey.Enter || key == PlusKey.Space)
+            {
+                IsOpen = true;
+                return true;
+            }
+            return false;
+        }
+
+        // When open, forward to calendar overlay
+        if (_calendarOverlay == null) return false;
+
+        switch (key)
+        {
+            case PlusKey.Escape:
+                IsOpen = false;
+                return true;
+            case PlusKey.ArrowLeft:
+                NavigateDay(-1);
+                return true;
+            case PlusKey.ArrowRight:
+                NavigateDay(1);
+                return true;
+            case PlusKey.ArrowUp:
+                NavigateDay(-7);
+                return true;
+            case PlusKey.ArrowDown:
+                NavigateDay(7);
+                return true;
+            case PlusKey.Enter:
+            case PlusKey.Space:
+                SelectHoveredDay();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void NavigateDay(int offset)
+    {
+        if (_calendarOverlay == null) return;
+
+        // Initialize hover to selected date or first of month
+        if (_calendarOverlay._hoveredDayIndex < 0)
+        {
+            var firstDay = new DateOnly(_calendarOverlay.DisplayedMonth.Year, _calendarOverlay.DisplayedMonth.Month, 1);
+            var startDayOfWeek = WeekStart == DayOfWeekStart.Monday
+                ? ((int)firstDay.DayOfWeek + 6) % 7
+                : (int)firstDay.DayOfWeek;
+
+            if (SelectedDate.HasValue && SelectedDate.Value.Year == _calendarOverlay.DisplayedMonth.Year
+                && SelectedDate.Value.Month == _calendarOverlay.DisplayedMonth.Month)
+            {
+                _calendarOverlay._hoveredDayIndex = startDayOfWeek + SelectedDate.Value.Day - 1;
+            }
+            else
+            {
+                _calendarOverlay._hoveredDayIndex = startDayOfWeek;
+            }
+            return;
+        }
+
+        var newIndex = _calendarOverlay._hoveredDayIndex + offset;
+        var daysInMonth = DateTime.DaysInMonth(_calendarOverlay.DisplayedMonth.Year, _calendarOverlay.DisplayedMonth.Month);
+        var firstDayOfMonth = new DateOnly(_calendarOverlay.DisplayedMonth.Year, _calendarOverlay.DisplayedMonth.Month, 1);
+        var startOffset = WeekStart == DayOfWeekStart.Monday
+            ? ((int)firstDayOfMonth.DayOfWeek + 6) % 7
+            : (int)firstDayOfMonth.DayOfWeek;
+
+        var minIndex = startOffset;
+        var maxIndex = startOffset + daysInMonth - 1;
+
+        if (newIndex < minIndex)
+        {
+            // Go to previous month
+            _calendarOverlay.DisplayedMonth = _calendarOverlay.DisplayedMonth.AddMonths(-1);
+            var newDaysInMonth = DateTime.DaysInMonth(_calendarOverlay.DisplayedMonth.Year, _calendarOverlay.DisplayedMonth.Month);
+            var newFirstDay = new DateOnly(_calendarOverlay.DisplayedMonth.Year, _calendarOverlay.DisplayedMonth.Month, 1);
+            var newStartOffset = WeekStart == DayOfWeekStart.Monday
+                ? ((int)newFirstDay.DayOfWeek + 6) % 7
+                : (int)newFirstDay.DayOfWeek;
+            _calendarOverlay._hoveredDayIndex = newStartOffset + newDaysInMonth - 1;
+        }
+        else if (newIndex > maxIndex)
+        {
+            // Go to next month
+            _calendarOverlay.DisplayedMonth = _calendarOverlay.DisplayedMonth.AddMonths(1);
+            var newFirstDay = new DateOnly(_calendarOverlay.DisplayedMonth.Year, _calendarOverlay.DisplayedMonth.Month, 1);
+            var newStartOffset = WeekStart == DayOfWeekStart.Monday
+                ? ((int)newFirstDay.DayOfWeek + 6) % 7
+                : (int)newFirstDay.DayOfWeek;
+            _calendarOverlay._hoveredDayIndex = newStartOffset;
+        }
+        else
+        {
+            _calendarOverlay._hoveredDayIndex = newIndex;
+        }
+    }
+
+    private void SelectHoveredDay()
+    {
+        if (_calendarOverlay == null || _calendarOverlay._hoveredDayIndex < 0) return;
+
+        var firstDayOfMonth = new DateOnly(_calendarOverlay.DisplayedMonth.Year, _calendarOverlay.DisplayedMonth.Month, 1);
+        var startDayOfWeek = WeekStart == DayOfWeekStart.Monday
+            ? ((int)firstDayOfMonth.DayOfWeek + 6) % 7
+            : (int)firstDayOfMonth.DayOfWeek;
+
+        var day = _calendarOverlay._hoveredDayIndex - startDayOfWeek + 1;
+        var daysInMonth = DateTime.DaysInMonth(_calendarOverlay.DisplayedMonth.Year, _calendarOverlay.DisplayedMonth.Month);
+
+        if (day >= 1 && day <= daysInMonth)
+        {
+            var selectedDate = new DateOnly(_calendarOverlay.DisplayedMonth.Year, _calendarOverlay.DisplayedMonth.Month, day);
+            if (IsDateInRange(selectedDate))
+            {
+                SetSelectedDate(selectedDate);
+                InvokeSetters();
+                IsOpen = false;
+            }
+        }
+    }
+    #endregion
 
     #region IInputControl
     public void InvokeCommand()

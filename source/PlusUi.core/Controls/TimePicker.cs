@@ -20,7 +20,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
-public partial class TimePicker : UiElement, IInputControl, ITextInputControl, IHoverableControl
+public partial class TimePicker : UiElement, IInputControl, ITextInputControl, IHoverableControl, IFocusable, IKeyboardInputHandler
 {
     private const float ArrowSize = 8f;
     private IOverlayService? _overlayService;
@@ -420,10 +420,130 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         }
     }
 
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => true;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.TimePicker;
+
     public TimePicker()
     {
         SetDesiredSize(new Size(150, 40));
     }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? Placeholder ?? "Time picker";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (!string.IsNullOrEmpty(AccessibilityValue))
+        {
+            return AccessibilityValue;
+        }
+        return SelectedTime?.ToString(DisplayFormat, System.Globalization.CultureInfo.CurrentCulture);
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (IsOpen)
+        {
+            traits |= AccessibilityTrait.Expanded;
+        }
+        traits |= AccessibilityTrait.HasPopup;
+        return traits;
+    }
+
+    #region IFocusable
+    bool IFocusable.IsFocusable => IsFocusable;
+    int? IFocusable.TabIndex => TabIndex;
+    bool IFocusable.TabStop => TabStop;
+    bool IFocusable.IsFocused
+    {
+        get => IsFocused;
+        set => IsFocused = value;
+    }
+    void IFocusable.OnFocus() => OnFocus();
+    void IFocusable.OnBlur()
+    {
+        OnBlur();
+        // Close picker when losing focus
+        IsOpen = false;
+    }
+    #endregion
+
+    #region IKeyboardInputHandler
+    /// <inheritdoc />
+    public bool HandleKeyboardInput(PlusKey key)
+    {
+        if (!IsOpen)
+        {
+            // When closed, Enter/Space opens the picker
+            if (key == PlusKey.Enter || key == PlusKey.Space)
+            {
+                IsOpen = true;
+                return true;
+            }
+            return false;
+        }
+
+        // When open, navigate time
+        var currentTime = SelectedTime ?? new TimeOnly(12, 0);
+
+        switch (key)
+        {
+            case PlusKey.Escape:
+                IsOpen = false;
+                return true;
+            case PlusKey.ArrowUp:
+                // Increment hour
+                SetSelectedTime(currentTime.AddHours(1));
+                InvokeTimeSetters();
+                _selectorOverlay?.ScrollToSelection();
+                return true;
+            case PlusKey.ArrowDown:
+                // Decrement hour
+                SetSelectedTime(currentTime.AddHours(-1));
+                InvokeTimeSetters();
+                _selectorOverlay?.ScrollToSelection();
+                return true;
+            case PlusKey.ArrowRight:
+                // Increment minutes
+                SetSelectedTime(currentTime.AddMinutes(MinuteIncrement));
+                InvokeTimeSetters();
+                _selectorOverlay?.ScrollToSelection();
+                return true;
+            case PlusKey.ArrowLeft:
+                // Decrement minutes
+                SetSelectedTime(currentTime.AddMinutes(-MinuteIncrement));
+                InvokeTimeSetters();
+                _selectorOverlay?.ScrollToSelection();
+                return true;
+            case PlusKey.Enter:
+            case PlusKey.Space:
+                IsOpen = false;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void InvokeTimeSetters()
+    {
+        if (_setter.TryGetValue(nameof(SelectedTime), out var setters))
+        {
+            foreach (var setter in setters)
+            {
+                setter(SelectedTime);
+            }
+        }
+    }
+    #endregion
 
     #region IInputControl
     public void InvokeCommand()

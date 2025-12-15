@@ -26,7 +26,7 @@ public abstract class UiElement : IDisposable
     #endregion
 
     #region IsVisible
-    internal bool IsVisible { get; set; } = true;
+    public bool IsVisible { get; internal set; } = true;
 
     public UiElement SetIsVisible(bool isVisible)
     {
@@ -370,6 +370,517 @@ public abstract class UiElement : IDisposable
     internal TooltipAttachment? Tooltip { get; set; }
     #endregion
 
+    #region Focus
+    /// <summary>
+    /// Gets whether this element can receive keyboard focus.
+    /// Override in derived classes to define whether the control should be focusable.
+    /// </summary>
+    protected internal abstract bool IsFocusable { get; }
+
+    /// <summary>
+    /// Gets or sets the tab index for focus order.
+    /// Null means automatic order (declaration order).
+    /// Negative values exclude the element from tab navigation.
+    /// </summary>
+    internal int? TabIndex { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether this element should be included in tab navigation.
+    /// When false, the element is skipped during Tab/Shift+Tab navigation.
+    /// Default is true for focusable elements.
+    /// </summary>
+    internal bool TabStop { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether this element currently has keyboard focus.
+    /// </summary>
+    public bool IsFocused { get; internal set; }
+
+    /// <summary>
+    /// Gets or sets the color of the focus ring.
+    /// </summary>
+    internal SKColor FocusRingColor { get; set; } = new SKColor(0, 122, 255); // iOS blue
+
+    /// <summary>
+    /// Gets or sets the width of the focus ring stroke.
+    /// </summary>
+    internal float FocusRingWidth { get; set; } = 2f;
+
+    /// <summary>
+    /// Gets or sets the offset of the focus ring from the element bounds.
+    /// </summary>
+    internal float FocusRingOffset { get; set; } = 2f;
+
+    /// <summary>
+    /// Gets or sets the background color when the element has focus.
+    /// When null, no focused background is applied.
+    /// </summary>
+    internal IBackground? FocusedBackground { get; set; }
+
+    /// <summary>
+    /// Gets or sets the border color when the element has focus.
+    /// When null, no focused border color is applied.
+    /// </summary>
+    internal SKColor? FocusedBorderColor { get; set; }
+
+    /// <summary>
+    /// Programmatically sets focus to this element.
+    /// </summary>
+    /// <returns>True if focus was successfully set, false otherwise.</returns>
+    public bool Focus()
+    {
+        if (!IsFocusable || !IsVisible)
+        {
+            return false;
+        }
+
+        var focusManager = ServiceProviderService.ServiceProvider?.GetService<Services.Focus.IFocusManager>();
+        if (focusManager == null)
+        {
+            return false;
+        }
+
+        if (this is IFocusable focusable)
+        {
+            focusManager.SetFocus(focusable);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Sets the tab index for focus order.
+    /// </summary>
+    public UiElement SetTabIndex(int? tabIndex)
+    {
+        TabIndex = tabIndex;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the TabIndex property.
+    /// </summary>
+    public UiElement BindTabIndex(string propertyName, Func<int?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => TabIndex = propertyGetter());
+        return this;
+    }
+
+    /// <summary>
+    /// Sets whether this element should be included in tab navigation.
+    /// </summary>
+    public UiElement SetTabStop(bool tabStop)
+    {
+        TabStop = tabStop;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the TabStop property.
+    /// </summary>
+    public UiElement BindTabStop(string propertyName, Func<bool> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => TabStop = propertyGetter());
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the focus ring color.
+    /// </summary>
+    public UiElement SetFocusRingColor(SKColor color)
+    {
+        FocusRingColor = color;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the focus ring width.
+    /// </summary>
+    public UiElement SetFocusRingWidth(float width)
+    {
+        FocusRingWidth = width;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the focus ring offset from element bounds.
+    /// </summary>
+    public UiElement SetFocusRingOffset(float offset)
+    {
+        FocusRingOffset = offset;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the background to use when the element has focus.
+    /// </summary>
+    public UiElement SetFocusedBackground(IBackground? background)
+    {
+        FocusedBackground = background;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a solid color background to use when the element has focus.
+    /// </summary>
+    public UiElement SetFocusedBackground(SKColor color)
+    {
+        FocusedBackground = new SolidColorBackground(color);
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the border color to use when the element has focus.
+    /// </summary>
+    public UiElement SetFocusedBorderColor(SKColor? color)
+    {
+        FocusedBorderColor = color;
+        return this;
+    }
+
+    /// <summary>
+    /// Called when this element receives focus.
+    /// Override in subclasses to handle focus events.
+    /// </summary>
+    protected internal virtual void OnFocus() { }
+
+    /// <summary>
+    /// Called when this element loses focus.
+    /// Override in subclasses to handle blur events.
+    /// </summary>
+    protected internal virtual void OnBlur() { }
+
+    /// <summary>
+    /// Renders the focus ring around this element if it has focus.
+    /// </summary>
+    protected virtual void RenderFocusRing(SKCanvas canvas)
+    {
+        if (!IsFocused || !IsFocusable)
+        {
+            return;
+        }
+
+        using var paint = new SKPaint
+        {
+            Color = FocusRingColor,
+            IsStroke = true,
+            StrokeWidth = FocusRingWidth,
+            IsAntialias = true
+        };
+
+        var rect = new SKRect(
+            Position.X + VisualOffset.X - FocusRingOffset,
+            Position.Y + VisualOffset.Y - FocusRingOffset,
+            Position.X + VisualOffset.X + ElementSize.Width + FocusRingOffset,
+            Position.Y + VisualOffset.Y + ElementSize.Height + FocusRingOffset);
+
+        if (CornerRadius > 0)
+        {
+            canvas.DrawRoundRect(rect, CornerRadius + FocusRingOffset, CornerRadius + FocusRingOffset, paint);
+        }
+        else
+        {
+            canvas.DrawRect(rect, paint);
+        }
+    }
+    #endregion
+
+    #region Accessibility
+    /// <summary>
+    /// Gets or sets the accessibility label that describes this element to assistive technologies.
+    /// This is the primary text read by screen readers.
+    /// </summary>
+    public string? AccessibilityLabel { get; protected internal set; }
+
+    /// <summary>
+    /// Gets or sets additional accessibility hint text that provides more context about the element.
+    /// This is typically read after the label and value.
+    /// </summary>
+    public string? AccessibilityHint { get; protected internal set; }
+
+    /// <summary>
+    /// Gets or sets the current accessibility value of the element (e.g., slider position, text content).
+    /// </summary>
+    public string? AccessibilityValue { get; protected internal set; }
+
+    /// <summary>
+    /// Gets the semantic accessibility role of this element.
+    /// Override in derived classes to define the semantic role of the control.
+    /// </summary>
+    public abstract AccessibilityRole AccessibilityRole { get; }
+
+    /// <summary>
+    /// Gets or sets the accessibility traits that describe the state of this element.
+    /// </summary>
+    public AccessibilityTrait AccessibilityTraits { get; protected internal set; } = AccessibilityTrait.None;
+
+    /// <summary>
+    /// Gets or sets whether this element should be exposed to assistive technologies.
+    /// When false, the element is hidden from accessibility.
+    /// </summary>
+    public bool IsAccessibilityElement { get; protected internal set; } = true;
+
+    /// <summary>
+    /// Sets the accessibility label.
+    /// </summary>
+    public UiElement SetAccessibilityLabel(string? label)
+    {
+        AccessibilityLabel = label;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the accessibility hint.
+    /// </summary>
+    public UiElement SetAccessibilityHint(string? hint)
+    {
+        AccessibilityHint = hint;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the accessibility value.
+    /// </summary>
+    public UiElement SetAccessibilityValue(string? value)
+    {
+        AccessibilityValue = value;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the accessibility traits.
+    /// </summary>
+    public UiElement SetAccessibilityTraits(AccessibilityTrait traits)
+    {
+        AccessibilityTraits = traits;
+        return this;
+    }
+
+    /// <summary>
+    /// Adds accessibility traits to the existing traits.
+    /// </summary>
+    public UiElement AddAccessibilityTraits(AccessibilityTrait traits)
+    {
+        AccessibilityTraits |= traits;
+        return this;
+    }
+
+    /// <summary>
+    /// Removes accessibility traits from the existing traits.
+    /// </summary>
+    public UiElement RemoveAccessibilityTraits(AccessibilityTrait traits)
+    {
+        AccessibilityTraits &= ~traits;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets whether this element should be exposed to assistive technologies.
+    /// </summary>
+    public UiElement SetIsAccessibilityElement(bool isAccessible)
+    {
+        IsAccessibilityElement = isAccessible;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the accessibility label.
+    /// </summary>
+    public UiElement BindAccessibilityLabel(string propertyName, Func<string?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => AccessibilityLabel = propertyGetter());
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the accessibility hint.
+    /// </summary>
+    public UiElement BindAccessibilityHint(string propertyName, Func<string?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => AccessibilityHint = propertyGetter());
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the accessibility value.
+    /// </summary>
+    public UiElement BindAccessibilityValue(string propertyName, Func<string?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => AccessibilityValue = propertyGetter());
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the accessibility traits.
+    /// </summary>
+    public UiElement BindAccessibilityTraits(string propertyName, Func<AccessibilityTrait> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => AccessibilityTraits = propertyGetter());
+        return this;
+    }
+
+    /// <summary>
+    /// Gets the computed accessibility label for this element.
+    /// If no explicit label is set, derived classes can override to generate one automatically.
+    /// </summary>
+    public virtual string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel;
+    }
+
+    /// <summary>
+    /// Gets the computed accessibility value for this element.
+    /// If no explicit value is set, derived classes can override to generate one automatically.
+    /// </summary>
+    public virtual string? GetComputedAccessibilityValue()
+    {
+        return AccessibilityValue;
+    }
+
+    /// <summary>
+    /// Gets the computed accessibility traits for this element.
+    /// Derived classes can override to add dynamic traits based on element state.
+    /// </summary>
+    public virtual AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = AccessibilityTraits;
+
+        // Add dynamic traits based on element state
+        if (!IsVisible)
+        {
+            traits |= AccessibilityTrait.Hidden;
+        }
+        if (IsFocusable)
+        {
+            traits |= AccessibilityTrait.Focusable;
+        }
+        if (IsFocused)
+        {
+            traits |= AccessibilityTrait.Focused;
+        }
+
+        return traits;
+    }
+
+    /// <summary>
+    /// Gets or sets the background to use when high contrast mode is enabled.
+    /// When set and high contrast is active, this replaces the normal Background.
+    /// </summary>
+    internal IBackground? HighContrastBackground { get; set; }
+
+    /// <summary>
+    /// Gets or sets the foreground/text color to use when high contrast mode is enabled.
+    /// </summary>
+    internal SKColor? HighContrastForeground { get; set; }
+
+    /// <summary>
+    /// Sets the high contrast background.
+    /// </summary>
+    public UiElement SetHighContrastBackground(IBackground? background)
+    {
+        HighContrastBackground = background;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the high contrast background as a solid color.
+    /// </summary>
+    public UiElement SetHighContrastBackground(SKColor color)
+    {
+        HighContrastBackground = new SolidColorBackground(color);
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the high contrast foreground color.
+    /// </summary>
+    public UiElement SetHighContrastForeground(SKColor color)
+    {
+        HighContrastForeground = color;
+        return this;
+    }
+
+    /// <summary>
+    /// Gets the effective background considering focus state and high contrast mode.
+    /// Priority: High contrast > Focused > Normal
+    /// </summary>
+    protected IBackground? GetEffectiveBackground()
+    {
+        var config = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
+
+        // High contrast takes priority (only if enabled in config)
+        if (config?.EnableHighContrastSupport == true && HighContrastBackground != null)
+        {
+            // ForceHighContrast bypasses system detection
+            if (config.ForceHighContrast)
+            {
+                return HighContrastBackground;
+            }
+
+            var settings = ServiceProviderService.ServiceProvider?.GetService<Services.Accessibility.IAccessibilitySettingsService>();
+            if (settings?.IsHighContrastEnabled == true)
+            {
+                return HighContrastBackground;
+            }
+        }
+
+        // Then focused state
+        if (IsFocused && FocusedBackground != null)
+        {
+            return FocusedBackground;
+        }
+
+        return Background;
+    }
+    #endregion
+
+    #region MinimumTouchTarget
+    private bool? _enforceMinimumTouchTarget;
+
+    /// <summary>
+    /// Gets or sets whether this element should enforce minimum touch target size.
+    /// When true, the element ensures it meets accessibility guidelines (44x44 pts).
+    /// If not explicitly set, uses the global EnforceMinimumTouchTargets configuration.
+    /// </summary>
+    internal bool EnforceMinimumTouchTarget
+    {
+        get
+        {
+            // If explicitly set on this control, use that value
+            if (_enforceMinimumTouchTarget.HasValue)
+            {
+                return _enforceMinimumTouchTarget.Value;
+            }
+
+            // Otherwise, use global configuration
+            var config = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
+            return config?.EnforceMinimumTouchTargets ?? false;
+        }
+        set => _enforceMinimumTouchTarget = value;
+    }
+
+    /// <summary>
+    /// Sets whether to enforce minimum touch target size for accessibility.
+    /// This overrides the global EnforceMinimumTouchTargets configuration for this control.
+    /// </summary>
+    public UiElement SetEnforceMinimumTouchTarget(bool enforce)
+    {
+        _enforceMinimumTouchTarget = enforce;
+        return this;
+    }
+
+    /// <summary>
+    /// Gets the minimum touch target size from accessibility settings.
+    /// Returns 44 by default (Apple/Google recommendation).
+    /// </summary>
+    protected float GetMinimumTouchTargetSize()
+    {
+        var settings = ServiceProviderService.ServiceProvider?.GetService<Services.Accessibility.IAccessibilitySettingsService>();
+        return settings?.MinimumTouchTargetSize ?? 44f;
+    }
+    #endregion
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public UiElement? Parent { get; set; }
 
@@ -402,6 +913,14 @@ public abstract class UiElement : IDisposable
                 : !dontStretch && VerticalAlignment == VerticalAlignment.Stretch
                     ? availableSize.Height - Margin.Vertical
                     : Math.Min(measuredSize.Height, availableSize.Height);
+
+            // Enforce minimum touch target size for accessibility
+            if (EnforceMinimumTouchTarget)
+            {
+                var minSize = GetMinimumTouchTargetSize();
+                desiredWidth = Math.Max(desiredWidth, minSize);
+                desiredHeight = Math.Max(desiredHeight, minSize);
+            }
 
             // Constrain to available size
             ElementSize = new Size(desiredWidth, desiredHeight);
@@ -628,7 +1147,8 @@ public abstract class UiElement : IDisposable
 
             RenderShadow(canvas);
 
-            if (!SkipBackgroundRendering && Background is not null)
+            var effectiveBackground = GetEffectiveBackground();
+            if (!SkipBackgroundRendering && effectiveBackground is not null)
             {
                 var rect = new SKRect(
                     Position.X + VisualOffset.X,
@@ -636,8 +1156,11 @@ public abstract class UiElement : IDisposable
                     Position.X + VisualOffset.X + ElementSize.Width,
                     Position.Y + VisualOffset.Y + ElementSize.Height);
 
-                Background.Render(canvas, rect, CornerRadius);
+                effectiveBackground.Render(canvas, rect, CornerRadius);
             }
+
+            // Render focus ring if this element has focus
+            RenderFocusRing(canvas);
 
             if (useOpacityLayer)
             {

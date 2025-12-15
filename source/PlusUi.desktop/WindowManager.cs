@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlusUi.core;
+using PlusUi.core.Services.Accessibility;
 using Silk.NET.GLFW;
 using Silk.NET.Input;
 using Silk.NET.Maths;
@@ -20,6 +21,7 @@ internal class WindowManager(
     DesktopPlatformService platformService,
     PlusUiNavigationService plusUiNavigationService,
     NavigationContainer navigationContainer,
+    IAccessibilityService accessibilityService,
     IHostApplicationLifetime appLifetime,
     ILogger<WindowManager> logger)
     : IHostedService
@@ -108,6 +110,9 @@ internal class WindowManager(
         CreateSurface(_window.Size);
 
         plusUiNavigationService.Initialize();
+
+        // Initialize accessibility with root provider that returns current page
+        accessibilityService.Initialize(() => navigationContainer.CurrentPage);
 
         SetupInputHandling();
     }

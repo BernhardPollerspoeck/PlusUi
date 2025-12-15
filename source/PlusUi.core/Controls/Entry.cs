@@ -26,10 +26,41 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
-public partial class Entry : UiTextElement, ITextInputControl
+public partial class Entry : UiTextElement, ITextInputControl, IFocusable
 {
     private bool _isSelected;
     private DateTime _selectionTime;
+
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => true;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.TextInput;
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? Placeholder ?? "Text input";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        return AccessibilityValue ?? (IsPassword ? new string('*', Text?.Length ?? 0) : Text);
+    }
+
+    #region IFocusable
+    bool IFocusable.IsFocusable => IsFocusable;
+    int? IFocusable.TabIndex => TabIndex;
+    bool IFocusable.TabStop => TabStop;
+    bool IFocusable.IsFocused
+    {
+        get => IsFocused;
+        set => IsFocused = value;
+    }
+    void IFocusable.OnFocus() => OnFocus();
+    void IFocusable.OnBlur() => OnBlur();
+    #endregion
 
     #region Padding
     internal Margin Padding

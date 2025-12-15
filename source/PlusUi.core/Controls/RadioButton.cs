@@ -20,7 +20,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
-public partial class RadioButton : UiElement, IInputControl
+public partial class RadioButton : UiElement, IInputControl, IFocusable
 {
     private const float CircleSize = 20f;
     private const float CircleTextSpacing = 8f;
@@ -29,11 +29,53 @@ public partial class RadioButton : UiElement, IInputControl
     private SKFont? _font;
     private SKPaint? _textPaint;
 
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => true;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.RadioButton;
+
     public RadioButton()
     {
         _font = new SKFont(SKTypeface.Default) { Size = TextSize };
         _textPaint = new SKPaint { Color = TextColor, IsAntialias = true };
     }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? Text ?? "Radio button";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        return AccessibilityValue ?? (IsSelected ? "Selected" : "Not selected");
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (IsSelected)
+        {
+            traits |= AccessibilityTrait.Selected;
+        }
+        return traits;
+    }
+
+    #region IFocusable
+    bool IFocusable.IsFocusable => IsFocusable;
+    int? IFocusable.TabIndex => TabIndex;
+    bool IFocusable.TabStop => TabStop;
+    bool IFocusable.IsFocused
+    {
+        get => IsFocused;
+        set => IsFocused = value;
+    }
+    void IFocusable.OnFocus() => OnFocus();
+    void IFocusable.OnBlur() => OnBlur();
+    #endregion
 
     #region IsSelected
     private bool _isSelected;

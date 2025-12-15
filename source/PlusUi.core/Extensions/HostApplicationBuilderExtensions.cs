@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using PlusUi.core.CoreElements;
 using PlusUi.core.Services;
+using PlusUi.core.Services.Accessibility;
+using PlusUi.core.Services.Focus;
 using System.ComponentModel;
 
 namespace PlusUi.core;
@@ -53,6 +55,15 @@ public static class HostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<RadioButtonManager>();
         builder.Services.AddSingleton<IRadioButtonManager>(sp => sp.GetRequiredService<RadioButtonManager>());
+
+        builder.Services.AddSingleton<FocusManager>();
+        builder.Services.AddSingleton<IFocusManager>(sp => sp.GetRequiredService<FocusManager>());
+
+        // Accessibility services - defaults can be overridden by platform implementations
+        builder.Services.AddSingleton<IAccessibilityBridge, NoOpAccessibilityBridge>();
+        builder.Services.AddSingleton<AccessibilityService>();
+        builder.Services.AddSingleton<IAccessibilityService>(sp => sp.GetRequiredService<AccessibilityService>());
+        builder.Services.AddSingleton<IAccessibilitySettingsService, AccessibilitySettingsService>();
 
         builder.Services.AddSingleton(sp =>
         {
