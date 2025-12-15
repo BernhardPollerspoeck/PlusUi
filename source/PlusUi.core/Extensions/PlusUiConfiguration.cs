@@ -1,4 +1,5 @@
-﻿using Silk.NET.Windowing;
+﻿using PlusUi.core.Animations;
+using Silk.NET.Windowing;
 
 namespace PlusUi.core;
 
@@ -40,4 +41,14 @@ public class PlusUiConfiguration
     /// Default is 50.
     /// </summary>
     public int MaxStackDepth { get; set; } = 50;
+
+    // Transition Configuration
+
+    /// <summary>
+    /// Gets or sets the default page transition used when navigating between pages.
+    /// Individual pages can override this by setting their Transition property.
+    /// Default is SlideTransition with Direction = Left.
+    /// Set to NoneTransition to disable transitions globally.
+    /// </summary>
+    public IPageTransition DefaultTransition { get; set; } = new SlideTransition();
 }

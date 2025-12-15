@@ -48,11 +48,19 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<TooltipService>();
         builder.Services.AddSingleton<ITooltipService>(sp => sp.GetRequiredService<TooltipService>());
 
+        builder.Services.AddSingleton<TransitionService>();
+        builder.Services.AddSingleton<ITransitionService>(sp => sp.GetRequiredService<TransitionService>());
+
         builder.Services.AddSingleton(sp =>
         {
             var configuration = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value;
             return new NavigationContainer(configuration);
         });
+
+        // Expose PlusUiConfiguration for navigation service
+        builder.Services.AddSingleton(sp =>
+            sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value);
+
         return builder;
 
     }

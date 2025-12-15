@@ -55,6 +55,20 @@ public abstract class UiElement : IDisposable
     }
     #endregion
 
+    #region Opacity
+    internal float Opacity { get; set; } = 1f;
+    public UiElement SetOpacity(float opacity)
+    {
+        Opacity = Math.Clamp(opacity, 0f, 1f);
+        return this;
+    }
+    public UiElement BindOpacity(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => Opacity = Math.Clamp(propertyGetter(), 0f, 1f));
+        return this;
+    }
+    #endregion
+
     #region Background
     /// <summary>
     /// The background of the element (gradient, solid color, or custom).
@@ -606,6 +620,12 @@ public abstract class UiElement : IDisposable
 
         if (IsVisible)
         {
+            var useOpacityLayer = Opacity < 1f;
+            if (useOpacityLayer)
+            {
+                canvas.SaveLayer(new SKPaint { Color = SKColors.White.WithAlpha((byte)(Opacity * 255)) });
+            }
+
             RenderShadow(canvas);
 
             if (!SkipBackgroundRendering && Background is not null)
@@ -617,6 +637,11 @@ public abstract class UiElement : IDisposable
                     Position.Y + VisualOffset.Y + ElementSize.Height);
 
                 Background.Render(canvas, rect, CornerRadius);
+            }
+
+            if (useOpacityLayer)
+            {
+                canvas.Restore();
             }
         }
     }

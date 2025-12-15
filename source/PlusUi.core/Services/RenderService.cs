@@ -7,10 +7,11 @@ using PlusUi.core.Services;
 
 namespace PlusUi.core;
 
-public class RenderService(NavigationContainer navigationContainer, PlusUiPopupService popupService, OverlayService overlayService, ILogger<RenderService>? logger = null, IAppMonitor? appMonitor = null)
+public class RenderService(NavigationContainer navigationContainer, PlusUiPopupService popupService, OverlayService overlayService, ITransitionService transitionService, ILogger<RenderService>? logger = null, IAppMonitor? appMonitor = null)
 {
     private readonly ILogger<RenderService>? _logger = logger;
     private readonly IAppMonitor? _appMonitor = appMonitor;
+    private readonly ITransitionService _transitionService = transitionService;
 
     public float DisplayDensity { get; set; } = 1.0f;
 
@@ -26,8 +27,18 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
             gl?.Clear((uint)ClearBufferMask.ColorBufferBit);
             canvas.Clear(SKColors.Transparent);
 
+            var availableSize = new Size(canvasSize.X, canvasSize.Y);
+            var bounds = new Rect(0, 0, canvasSize.X, canvasSize.Y);
+
             var measureTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
-            navigationContainer.CurrentPage.Measure(new Size(canvasSize.X, canvasSize.Y));
+            navigationContainer.CurrentPage.Measure(availableSize);
+
+            // If transitioning, also measure outgoing page
+            if (_transitionService.IsTransitioning && _transitionService.OutgoingPage != null)
+            {
+                _transitionService.OutgoingPage.Measure(availableSize);
+            }
+
             if (measureTimer != null)
             {
                 measureTimer.Stop();
@@ -35,14 +46,32 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
             }
 
             var arrangeTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
-            navigationContainer.CurrentPage.Arrange(new Rect(0, 0, canvasSize.X, canvasSize.Y));
+            navigationContainer.CurrentPage.Arrange(bounds);
+
+            // If transitioning, also arrange outgoing page
+            if (_transitionService.IsTransitioning && _transitionService.OutgoingPage != null)
+            {
+                _transitionService.OutgoingPage.Arrange(bounds);
+            }
+
             if (arrangeTimer != null)
             {
                 arrangeTimer.Stop();
                 _appMonitor?.ReportArrangeTime(arrangeTimer.Elapsed.TotalMilliseconds);
             }
 
+            // Update transition state AFTER measure/arrange so ElementSize is available
+            _transitionService.Update();
+
             var renderTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
+
+            // If transitioning, render outgoing page first (below)
+            if (_transitionService.IsTransitioning && _transitionService.OutgoingPage != null)
+            {
+                _transitionService.OutgoingPage.Render(canvas);
+            }
+
+            // Render current page (on top during transition)
             navigationContainer.CurrentPage.Render(canvas);
 
             // Render overlays (above page, below popups)

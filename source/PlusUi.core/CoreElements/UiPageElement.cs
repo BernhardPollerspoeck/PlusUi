@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core.Animations;
 using SkiaSharp;
 using System.ComponentModel;
 
@@ -8,6 +9,17 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
 {
     public INotifyPropertyChanged ViewModel { get; } = vm;
     private UiElement _tree = new NullElement();
+
+    /// <summary>
+    /// Optional page-specific transition that overrides the global default transition.
+    /// </summary>
+    public virtual IPageTransition? Transition { get; set; }
+
+    public UiPageElement SetTransition(IPageTransition? transition)
+    {
+        Transition = transition;
+        return this;
+    }
 
     protected override bool NeedsMeasure => true;
 
@@ -92,8 +104,45 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
 
     public override void Render(SKCanvas canvas)
     {
+        // Check if we need visual transformations for transitions
+        var hasOffset = VisualOffset.X != 0 || VisualOffset.Y != 0;
+        var hasOpacity = Opacity < 1f;
+
+        // Apply opacity layer if needed (wraps entire page including children)
+        if (hasOpacity)
+        {
+            canvas.SaveLayer(new SKPaint { Color = SKColors.White.WithAlpha((byte)(Opacity * 255)) });
+        }
+
+        // Apply visual offset translation (moves entire page including children)
+        if (hasOffset)
+        {
+            canvas.Save();
+            canvas.Translate(VisualOffset.X, VisualOffset.Y);
+        }
+
+        // Temporarily clear offset so base.Render doesn't double-apply it
+        var savedOffset = VisualOffset;
+        VisualOffset = new Point(0, 0);
+
+        // Render background
         base.Render(canvas);
+
+        // Render children
         _tree.Render(canvas);
+
+        // Restore offset
+        VisualOffset = savedOffset;
+
+        if (hasOffset)
+        {
+            canvas.Restore();
+        }
+
+        if (hasOpacity)
+        {
+            canvas.Restore();
+        }
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
