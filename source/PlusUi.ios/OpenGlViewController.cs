@@ -3,6 +3,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using PlusUi.core.Services;
+using PlusUi.core.Services.Accessibility;
+using PlusUi.ios.Accessibility;
 using Silk.NET.Maths;
 using SkiaSharp.Views.iOS;
 using System.Numerics;
@@ -44,6 +46,12 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
         builder.Services.AddSingleton<KeyboardTextField>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<KeyboardTextField>());
 
+        // Register iOS accessibility bridge (VoiceOver support)
+        builder.Services.AddSingleton<IAccessibilityBridge, IosAccessibilityBridge>();
+
+        // Register iOS accessibility settings service (Dynamic Type, high contrast, etc.)
+        builder.Services.AddSingleton<IAccessibilitySettingsService, IosAccessibilitySettingsService>();
+
         builder.ConfigurePlusUiApp(app);
 
         var host = builder.Build();
@@ -58,6 +66,8 @@ public class OpenGlViewController(
     InputService inputService,
     KeyboardTextField keyboardTextField,
     IosPlatformService platformService,
+    NavigationContainer navigationContainer,
+    IAccessibilityService accessibilityService,
     ILogger<OpenGlViewController> logger)
     : UIViewController
 {
@@ -96,6 +106,9 @@ public class OpenGlViewController(
 
         // Initialize navigation service
         plusUiNavigationService.Initialize();
+
+        // Initialize accessibility with root provider that returns current page
+        accessibilityService.Initialize(() => navigationContainer.CurrentPage);
     }
 
     private void OnCanvasPaintSurface(object? sender, SKPaintSurfaceEventArgs e)

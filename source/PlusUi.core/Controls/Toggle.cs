@@ -8,12 +8,54 @@ namespace PlusUi.core;
 /// Provides a modern iOS/Android style switch UI.
 /// </summary>
 [GenerateShadowMethods]
-public partial class Toggle : UiElement, IToggleButtonControl
+public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => true;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Toggle;
+
     public Toggle()
     {
         SetDesiredSize(new(50, 28));
     }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? "Toggle switch";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        return AccessibilityValue ?? (IsOn ? "On" : "Off");
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (IsOn)
+        {
+            traits |= AccessibilityTrait.Checked;
+        }
+        return traits;
+    }
+
+    #region IFocusable
+    bool IFocusable.IsFocusable => IsFocusable;
+    int? IFocusable.TabIndex => TabIndex;
+    bool IFocusable.TabStop => TabStop;
+    bool IFocusable.IsFocused
+    {
+        get => IsFocused;
+        set => IsFocused = value;
+    }
+    void IFocusable.OnFocus() => OnFocus();
+    void IFocusable.OnBlur() => OnBlur();
+    #endregion
 
     #region IsOn
     internal bool IsOn

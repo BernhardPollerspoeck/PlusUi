@@ -1,12 +1,90 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Services;
+using PlusUi.core.Services.Accessibility;
 using SkiaSharp;
 
 namespace PlusUi.core;
 
 public abstract class UiTextElement : UiElement
 {
+    #region Accessibility Settings Subscription
+    private IAccessibilitySettingsService? _accessibilitySettings;
+    private bool _subscribedToAccessibilityChanges;
+
+    private void EnsureAccessibilitySubscription()
+    {
+        if (_subscribedToAccessibilityChanges)
+        {
+            return;
+        }
+
+        _accessibilitySettings = ServiceProviderService.ServiceProvider?.GetService<IAccessibilitySettingsService>();
+        if (_accessibilitySettings != null)
+        {
+            _accessibilitySettings.SettingsChanged += OnAccessibilitySettingsChanged;
+            _subscribedToAccessibilityChanges = true;
+        }
+    }
+
+    private void OnAccessibilitySettingsChanged(object? sender, AccessibilitySettingsChangedEventArgs e)
+    {
+        if (e.SettingName == nameof(IAccessibilitySettingsService.FontScaleFactor) && SupportsSystemFontScaling)
+        {
+            // Recreate font with new scale factor
+            Font?.Dispose();
+            Font = CreateFont();
+            InvalidateTextLayoutCache();
+            InvalidateMeasure();
+        }
+        else if (e.SettingName == nameof(IAccessibilitySettingsService.IsHighContrastEnabled))
+        {
+            // Recreate paint with appropriate color
+            Paint?.Dispose();
+            Paint = CreatePaint();
+        }
+    }
+    #endregion
+
+    #region SupportsSystemFontScaling
+    private bool? _supportsSystemFontScaling;
+
+    /// <summary>
+    /// Gets or sets whether this element respects system font scaling preferences.
+    /// When true, the text size is multiplied by the system font scale factor.
+    /// If not explicitly set, uses the global EnableFontScaling configuration.
+    /// </summary>
+    internal bool SupportsSystemFontScaling
+    {
+        get
+        {
+            // If explicitly set on this control, use that value
+            if (_supportsSystemFontScaling.HasValue)
+            {
+                return _supportsSystemFontScaling.Value;
+            }
+
+            // Otherwise, use global configuration
+            var config = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
+            return config?.EnableFontScaling ?? false;
+        }
+        set => _supportsSystemFontScaling = value;
+    }
+
+    /// <summary>
+    /// Sets whether this element respects system font scaling.
+    /// This overrides the global EnableFontScaling configuration for this control.
+    /// </summary>
+    public UiTextElement SetSupportsSystemFontScaling(bool supports)
+    {
+        _supportsSystemFontScaling = supports;
+        Font = CreateFont();
+        InvalidateTextLayoutCache();
+        InvalidateMeasure();
+        return this;
+    }
+    #endregion
+
     #region Text
     internal string? Text
     {
@@ -255,6 +333,14 @@ public abstract class UiTextElement : UiElement
         Font = CreateFont();
     }
 
+    /// <inheritdoc />
+    public override void Render(SKCanvas canvas)
+    {
+        // Update paint color for high contrast mode (ServiceProvider may not be available at construction time)
+        Paint.Color = GetEffectiveTextColor();
+        base.Render(canvas);
+    }
+
     #region Text Layout Cache
     private string? _cachedWrapText;
     private float _cachedWrapMaxWidth;
@@ -323,13 +409,39 @@ public abstract class UiTextElement : UiElement
     {
         return new SKPaint
         {
-            Color = TextColor,
+            Color = GetEffectiveTextColor(),
             IsAntialias = true,
         };
+    }
+
+    /// <summary>
+    /// Gets the effective text color considering high contrast mode.
+    /// </summary>
+    protected SKColor GetEffectiveTextColor()
+    {
+        var config = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
+        if (config?.EnableHighContrastSupport == true && HighContrastForeground.HasValue)
+        {
+            // ForceHighContrast bypasses system detection
+            if (config.ForceHighContrast)
+            {
+                return HighContrastForeground.Value;
+            }
+
+            var settings = ServiceProviderService.ServiceProvider?.GetService<IAccessibilitySettingsService>();
+            if (settings?.IsHighContrastEnabled == true)
+            {
+                return HighContrastForeground.Value;
+            }
+        }
+        return TextColor;
     }
     protected SKFont Font { get; set; } = null!;
     private SKFont CreateFont()
     {
+        // Ensure we're subscribed to accessibility changes
+        EnsureAccessibilitySubscription();
+
         SKTypeface? typeface = null;
 
         // Try to get custom font from registry
@@ -361,9 +473,18 @@ public abstract class UiTextElement : UiElement
             typeface = SKTypeface.FromFamilyName(FontFamily, skFontStyle);
         }
 
+        // Apply system font scaling if enabled
+        var effectiveTextSize = TextSize;
+        if (SupportsSystemFontScaling)
+        {
+            var accessibilitySettings = ServiceProviderService.ServiceProvider?.GetService<IAccessibilitySettingsService>();
+            var scaleFactor = accessibilitySettings?.FontScaleFactor ?? 1.0f;
+            effectiveTextSize *= scaleFactor;
+        }
+
         return new SKFont(typeface ?? SKTypeface.Default)
         {
-            Size = TextSize,
+            Size = effectiveTextSize,
         };
     }
     #endregion
@@ -581,10 +702,18 @@ public abstract class UiTextElement : UiElement
     {
         if (disposing)
         {
-     // Dispose SKPaint and SKFont resources
-      Paint?.Dispose();
+            // Unsubscribe from accessibility changes
+            if (_subscribedToAccessibilityChanges && _accessibilitySettings != null)
+            {
+                _accessibilitySettings.SettingsChanged -= OnAccessibilitySettingsChanged;
+                _subscribedToAccessibilityChanges = false;
+                _accessibilitySettings = null;
+            }
+
+            // Dispose SKPaint and SKFont resources
+            Paint?.Dispose();
             Font?.Dispose();
         }
         base.Dispose(disposing);
-}
+    }
 }

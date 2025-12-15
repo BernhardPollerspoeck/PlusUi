@@ -17,6 +17,9 @@ using Sandbox.Pages.TextWrapDemo;
 using Sandbox.Pages.NewControlsDemo;
 using Sandbox.Pages.ToolbarDemo;
 using Sandbox.Pages.ComboBoxDemo;
+using Sandbox.Pages.DateTimePickerDemo;
+using Sandbox.Pages.RadioButtonDemo;
+using Sandbox.Pages.AccessibilityDemo;
 using Sandbox.Popups;
 using Sandbox.Services;
 
@@ -33,6 +36,11 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
 
         configuration.EnableNavigationStack = true;
         configuration.PreservePageState = true;
+
+        // Accessibility features
+        configuration.EnableHighContrastSupport = true;
+        configuration.RespectReducedMotion = true;
+
         //configuration.IsWindowTransparent = true;
         //configuration.WindowBorder = Silk.NET.Windowing.WindowBorder.Hidden;
         //configuration.WindowState = Silk.NET.Windowing.WindowState.Maximized;
@@ -56,6 +64,9 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<NewControlsDemoPage>().WithViewModel<NewControlsDemoPageViewModel>();
         builder.AddPage<ToolbarDemoPage>().WithViewModel<ToolbarDemoPageViewModel>();
         builder.AddPage<ComboBoxDemoPage>().WithViewModel<ComboBoxDemoPageViewModel>();
+        builder.AddPage<DateTimePickerDemoPage>().WithViewModel<DateTimePickerDemoPageViewModel>();
+        builder.AddPage<RadioButtonDemoPage>().WithViewModel<RadioButtonDemoPageViewModel>();
+        builder.AddPage<AccessibilityDemoPage>().WithViewModel<AccessibilityDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 

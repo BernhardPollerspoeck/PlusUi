@@ -11,10 +11,33 @@ public partial class ActivityIndicator : UiElement
 {
     private DateTime _startTime;
 
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Spinner;
+
     public ActivityIndicator()
     {
         SetDesiredSize(new(40, 40));
         _startTime = DateTime.Now;
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? "Loading";
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (IsRunning)
+        {
+            traits |= AccessibilityTrait.Busy;
+        }
+        return traits;
     }
 
     #region IsRunning

@@ -7,6 +7,12 @@ namespace PlusUi.core;
 /// </summary>
 internal class ComboBoxDropdownOverlay<T> : UiElement, IInputControl, IDismissableOverlay
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.List;
+
     private readonly ComboBox<T> _comboBox;
     private int _hitItemIndex = -1;
     private bool _hitOnComboBox;
@@ -37,7 +43,8 @@ internal class ComboBoxDropdownOverlay<T> : UiElement, IInputControl, IDismissab
         {
             // Store which item was hit for later use in InvokeCommand
             var relativeY = point.Y - dropdownRect.Top;
-            _hitItemIndex = (int)(relativeY / ComboBox<T>.ItemHeight);
+            var displayIndex = (int)(relativeY / ComboBox<T>.ItemHeight);
+            _hitItemIndex = _comboBox._scrollStartIndex + displayIndex;
 
             // Update hover index for visual feedback
             _comboBox._hoveredIndex = _hitItemIndex;

@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using PlusUi.core.CoreElements;
 using PlusUi.core.Services;
+using PlusUi.core.Services.Accessibility;
+using PlusUi.core.Services.Focus;
 using System.ComponentModel;
 
 namespace PlusUi.core;
@@ -45,11 +47,34 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddSingleton<OverlayService>();
         builder.Services.AddSingleton<IOverlayService>(sp => sp.GetRequiredService<OverlayService>());
 
+        builder.Services.AddSingleton<TooltipService>();
+        builder.Services.AddSingleton<ITooltipService>(sp => sp.GetRequiredService<TooltipService>());
+
+        builder.Services.AddSingleton<TransitionService>();
+        builder.Services.AddSingleton<ITransitionService>(sp => sp.GetRequiredService<TransitionService>());
+
+        builder.Services.AddSingleton<RadioButtonManager>();
+        builder.Services.AddSingleton<IRadioButtonManager>(sp => sp.GetRequiredService<RadioButtonManager>());
+
+        builder.Services.AddSingleton<FocusManager>();
+        builder.Services.AddSingleton<IFocusManager>(sp => sp.GetRequiredService<FocusManager>());
+
+        // Accessibility services - defaults can be overridden by platform implementations
+        builder.Services.AddSingleton<IAccessibilityBridge, NoOpAccessibilityBridge>();
+        builder.Services.AddSingleton<AccessibilityService>();
+        builder.Services.AddSingleton<IAccessibilityService>(sp => sp.GetRequiredService<AccessibilityService>());
+        builder.Services.AddSingleton<IAccessibilitySettingsService, AccessibilitySettingsService>();
+
         builder.Services.AddSingleton(sp =>
         {
             var configuration = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value;
             return new NavigationContainer(configuration);
         });
+
+        // Expose PlusUiConfiguration for navigation service
+        builder.Services.AddSingleton(sp =>
+            sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value);
+
         return builder;
 
     }

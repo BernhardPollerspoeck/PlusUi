@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlusUi.core;
-using Sandbox.Pages.Main;
 using System.Collections.ObjectModel;
 
 namespace Sandbox.Pages.ComboBoxDemo;
@@ -9,7 +8,7 @@ namespace Sandbox.Pages.ComboBoxDemo;
 public partial class ComboBoxDemoPageViewModel(INavigationService navigationService) : ObservableObject
 {
     [RelayCommand]
-    private void GoBack() => navigationService.NavigateTo<MainPage>();
+    private void GoBack() => navigationService.GoBack();
 
     [ObservableProperty]
     private string? _selectedFruit;

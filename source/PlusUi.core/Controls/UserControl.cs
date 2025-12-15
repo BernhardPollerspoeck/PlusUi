@@ -34,6 +34,12 @@ namespace PlusUi.core;
 [GenerateGenericWrapper]
 public abstract class UserControl : UiElement<UserControl>
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Container;
+
     private UiElement _content = new NullElement();
     protected abstract UiElement Build();
 

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using PlusUi.core.Services.Focus;
 
 namespace PlusUi.core;
 
@@ -10,6 +11,8 @@ public class InputService
     private readonly PlusUiPopupService _popupService;
     private readonly OverlayService _overlayService;
     private readonly IKeyboardHandler _keyboardHandler;
+    private readonly ITooltipService _tooltipService;
+    private readonly IFocusManager _focusManager;
     private Vector2 _lastMousePosition;
     private IScrollableControl? _activeScrollControl;
     private IDraggableControl? _activeDragControl;
@@ -19,12 +22,16 @@ public class InputService
         NavigationContainer navigationContainer,
         PlusUiPopupService popupService,
         OverlayService overlayService,
-        IKeyboardHandler keyboardHandler)
+        IKeyboardHandler keyboardHandler,
+        IFocusManager focusManager,
+        ITooltipService tooltipService)
     {
         _navigationContainer = navigationContainer;
         _popupService = popupService;
         _overlayService = overlayService;
         _keyboardHandler = keyboardHandler;
+        _tooltipService = tooltipService;
+        _focusManager = focusManager;
         _keyboardHandler.KeyInput += HandleKeyInput;
         _keyboardHandler.CharInput += HandleCharInput;
     }
@@ -119,6 +126,17 @@ public class InputService
             };
         }
 
+        // Set focus to clicked control if it's focusable
+        if (hitControl is IFocusable focusable && focusable.IsFocusable)
+        {
+            _focusManager.SetFocus(focusable);
+        }
+        else if (hitControl != null)
+        {
+            // Clicked on non-focusable control - clear focus
+            _focusManager.ClearFocus();
+        }
+
         if (hitControl is IInputControl inputControl)
         {
             inputControl.InvokeCommand();
@@ -157,7 +175,123 @@ public class InputService
 
     public void HandleKeyInput(object? sender, PlusKey key)
     {
+        var focused = _focusManager.FocusedElement;
+
+        // Tab always navigates focus
+        if (key == PlusKey.Tab)
+        {
+            _focusManager.MoveFocus(FocusNavigationDirection.Next);
+            SyncTextInputWithFocus();
+            return;
+        }
+        if (key == PlusKey.ShiftTab)
+        {
+            _focusManager.MoveFocus(FocusNavigationDirection.Previous);
+            SyncTextInputWithFocus();
+            return;
+        }
+
+        // If focused element handles keyboard input specially, let it handle arrow keys
+        if (focused is IKeyboardInputHandler keyboardHandler)
+        {
+            if (keyboardHandler.HandleKeyboardInput(key))
+            {
+                return; // Control handled the key
+            }
+        }
+
+        // Arrow keys for focus navigation (only if not handled by control and not in text input)
+        if (_textInputControl == null)
+        {
+            switch (key)
+            {
+                case PlusKey.ArrowUp:
+                    _focusManager.MoveFocus(FocusNavigationDirection.Up);
+                    SyncTextInputWithFocus();
+                    return;
+                case PlusKey.ArrowDown:
+                    _focusManager.MoveFocus(FocusNavigationDirection.Down);
+                    SyncTextInputWithFocus();
+                    return;
+                case PlusKey.ArrowLeft:
+                    _focusManager.MoveFocus(FocusNavigationDirection.Left);
+                    SyncTextInputWithFocus();
+                    return;
+                case PlusKey.ArrowRight:
+                    _focusManager.MoveFocus(FocusNavigationDirection.Right);
+                    SyncTextInputWithFocus();
+                    return;
+            }
+        }
+
+        // Enter/Space to activate (unless in text input for Space)
+        if (key == PlusKey.Enter || (key == PlusKey.Space && _textInputControl == null))
+        {
+            ActivateFocusedElement();
+            return;
+        }
+
+        // Forward to text input control
         _textInputControl?.HandleInput(key);
+    }
+
+    /// <summary>
+    /// Syncs the text input control state with the currently focused element.
+    /// </summary>
+    private void SyncTextInputWithFocus()
+    {
+        var focused = _focusManager.FocusedElement;
+
+        // If focused element is a text input, activate it
+        if (focused is ITextInputControl textInput)
+        {
+            if (_textInputControl != textInput)
+            {
+                _textInputControl?.SetSelectionStatus(false);
+                _textInputControl = textInput;
+                _textInputControl.SetSelectionStatus(true);
+
+                if (textInput is Entry entry)
+                {
+                    _keyboardHandler.Show(entry.Keyboard, entry.ReturnKey, entry.IsPassword);
+                }
+                else
+                {
+                    _keyboardHandler.Show();
+                }
+            }
+        }
+        else if (_textInputControl != null)
+        {
+            // Focused element is not a text input, deactivate current text input
+            _textInputControl.SetSelectionStatus(false);
+            _textInputControl = null;
+            _keyboardHandler.Hide();
+        }
+    }
+
+    /// <summary>
+    /// Activates the currently focused element (simulates a click).
+    /// </summary>
+    private void ActivateFocusedElement()
+    {
+        var focused = _focusManager.FocusedElement;
+        if (focused == null)
+        {
+            return;
+        }
+
+        // Handle IInputControl (buttons, links)
+        if (focused is IInputControl inputControl)
+        {
+            inputControl.InvokeCommand();
+        }
+
+        // Handle IToggleButtonControl (checkbox, toggle, radio)
+        if (focused is IToggleButtonControl toggleControl)
+        {
+            toggleControl.Toggle();
+        }
     }
     
     public void HandleCharInput(object? sender, char chr)
@@ -222,10 +356,15 @@ public class InputService
         // Update hover states
         if (hitElement != _hoveredElement)
         {
+            var oldElement = _hoveredElement;
+
             if (_hoveredElement is IHoverableControl oldHoverable)
             {
                 oldHoverable.IsHovered = false;
             }
+
+            // Notify tooltip service of hover leave
+            _tooltipService.OnHoverLeave(oldElement);
 
             _hoveredElement = hitElement;
 
@@ -233,19 +372,41 @@ public class InputService
             {
                 newHoverable.IsHovered = true;
             }
+
+            // Notify tooltip service of hover enter
+            _tooltipService.OnHoverEnter(_hoveredElement);
         }
     }
     
     public void MouseWheel(Vector2 location, float deltaX, float deltaY)
     {
-        // Find the scrollable control under the mouse cursor
-        var currentPopup = _popupService.CurrentPopup;
-        var hitControl = (currentPopup) switch
+        var point = new Point(location.X, location.Y);
+
+        // Check overlays first (they render on top)
+        UiElement? hitControl = null;
+        foreach (var overlay in _overlayService.Overlays)
         {
-            not null => currentPopup.HitTest(new(location.X, location.Y)),
-            _ => _navigationContainer.CurrentPage.HitTest(new(location.X, location.Y))
-        };
-        
+            hitControl = overlay.HitTest(point);
+            if (hitControl != null)
+                break;
+        }
+
+        // Then check popup
+        if (hitControl == null)
+        {
+            var currentPopup = _popupService.CurrentPopup;
+            if (currentPopup != null)
+            {
+                hitControl = currentPopup.HitTest(point);
+            }
+        }
+
+        // Then check page
+        if (hitControl == null)
+        {
+            hitControl = _navigationContainer.CurrentPage.HitTest(point);
+        }
+
         // Scroll the control if it's scrollable
         if (hitControl is IScrollableControl scrollControl)
         {

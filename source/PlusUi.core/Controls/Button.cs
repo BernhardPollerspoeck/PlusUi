@@ -24,7 +24,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
-public partial class Button : UiTextElement, IInputControl, IHoverableControl
+public partial class Button : UiTextElement, IInputControl, IHoverableControl, IFocusable
 {
     private IImageLoaderService? _imageLoaderService;
     private bool _isHovered;
@@ -165,10 +165,35 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl
     }
     #endregion
 
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => true;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Button;
+
     public Button()
     {
         HorizontalTextAlignment = HorizontalTextAlignment.Center;
     }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? Text;
+    }
+
+    #region IFocusable
+    bool IFocusable.IsFocusable => IsFocusable;
+    int? IFocusable.TabIndex => TabIndex;
+    bool IFocusable.TabStop => TabStop;
+    bool IFocusable.IsFocused
+    {
+        get => IsFocused;
+        set => IsFocused = value;
+    }
+    void IFocusable.OnFocus() => OnFocus();
+    void IFocusable.OnBlur() => OnBlur();
+    #endregion
 
     #region IInputControl
     public void InvokeCommand()

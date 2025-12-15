@@ -10,6 +10,12 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Separator : UiElement
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.None;
+
     #region Color
     internal SKColor Color
     {

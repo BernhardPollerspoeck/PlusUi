@@ -25,6 +25,18 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Label : UiTextElement
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Label;
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? Text;
+    }
+
     #region UiElement
     public override void Render(SKCanvas canvas)
     {

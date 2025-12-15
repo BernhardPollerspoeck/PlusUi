@@ -8,13 +8,78 @@ namespace PlusUi.core;
 /// Supports horizontal orientation with customizable min/max values.
 /// </summary>
 [GenerateShadowMethods]
-public partial class Slider : UiElement, IDraggableControl
+public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboardInputHandler
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => true;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Slider;
+
     public Slider()
     {
         SetDesiredHeight(30);
         HorizontalAlignment = HorizontalAlignment.Stretch;
     }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? "Slider";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        return AccessibilityValue ?? $"{Value:F0} ({Minimum:F0} to {Maximum:F0})";
+    }
+
+    #region IFocusable
+    bool IFocusable.IsFocusable => IsFocusable;
+    int? IFocusable.TabIndex => TabIndex;
+    bool IFocusable.TabStop => TabStop;
+    bool IFocusable.IsFocused
+    {
+        get => IsFocused;
+        set => IsFocused = value;
+    }
+    void IFocusable.OnFocus() => OnFocus();
+    void IFocusable.OnBlur() => OnBlur();
+    #endregion
+
+    #region IKeyboardInputHandler
+    /// <inheritdoc />
+    public bool HandleKeyboardInput(PlusKey key)
+    {
+        var step = (Maximum - Minimum) / 20f; // 5% increments
+        switch (key)
+        {
+            case PlusKey.ArrowLeft:
+            case PlusKey.ArrowDown:
+                Value -= step;
+                NotifyValueSetters();
+                return true;
+            case PlusKey.ArrowRight:
+            case PlusKey.ArrowUp:
+                Value += step;
+                NotifyValueSetters();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void NotifyValueSetters()
+    {
+        if (_setter.TryGetValue(nameof(Value), out var setters))
+        {
+            foreach (var setter in setters)
+            {
+                setter(Value);
+            }
+        }
+    }
+    #endregion
 
     #region Value
     internal float Value

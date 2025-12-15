@@ -25,7 +25,7 @@ namespace PlusUi.core;
 ///     .BindSelectedItem(nameof(vm.SelectedPerson), () => vm.SelectedPerson, p => vm.SelectedPerson = p);
 /// </code>
 /// </example>
-public partial class ComboBox<T> : UiElement, IInputControl
+public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboardInputHandler
 {
     private IEnumerable<T>? _itemsSource;
     internal readonly List<T> _cachedItems = new();
@@ -410,11 +410,196 @@ public partial class ComboBox<T> : UiElement, IInputControl
     }
 
     internal int _hoveredIndex = -1;
+    internal int _scrollStartIndex = 0; // First visible item index for scrolling
+
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => true;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.ComboBox;
 
     public ComboBox()
     {
         SetDesiredSize(new Size(200, 40));
     }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? Placeholder ?? "Dropdown";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (!string.IsNullOrEmpty(AccessibilityValue))
+        {
+            return AccessibilityValue;
+        }
+        return SelectedItem != null ? DisplayFunc(SelectedItem) : null;
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (IsOpen)
+        {
+            traits |= AccessibilityTrait.Expanded;
+        }
+        traits |= AccessibilityTrait.HasPopup;
+        return traits;
+    }
+
+    #region IFocusable
+    bool IFocusable.IsFocusable => IsFocusable;
+    int? IFocusable.TabIndex => TabIndex;
+    bool IFocusable.TabStop => TabStop;
+    bool IFocusable.IsFocused
+    {
+        get => IsFocused;
+        set => IsFocused = value;
+    }
+    void IFocusable.OnFocus() => OnFocus();
+    void IFocusable.OnBlur()
+    {
+        OnBlur();
+        // Close dropdown when losing focus
+        IsOpen = false;
+    }
+    #endregion
+
+    #region IKeyboardInputHandler
+    /// <inheritdoc />
+    public bool HandleKeyboardInput(PlusKey key)
+    {
+        if (!IsOpen)
+        {
+            // When closed, Enter/Space opens the dropdown
+            if (key == PlusKey.Enter || key == PlusKey.Space)
+            {
+                IsOpen = true;
+                // Initialize hover to current selection
+                _hoveredIndex = _selectedIndex;
+                ScrollToSelection();
+                return true;
+            }
+            // Arrow up/down can also open and navigate
+            if (key == PlusKey.ArrowUp || key == PlusKey.ArrowDown)
+            {
+                IsOpen = true;
+                _hoveredIndex = _selectedIndex;
+                ScrollToSelection();
+                return true;
+            }
+            return false;
+        }
+
+        // When open, navigate items
+        switch (key)
+        {
+            case PlusKey.Escape:
+                IsOpen = false;
+                return true;
+            case PlusKey.ArrowUp:
+                if (_hoveredIndex > 0)
+                {
+                    _hoveredIndex--;
+                    EnsureHoveredItemVisible();
+                }
+                else if (_hoveredIndex < 0 && _cachedItems.Count > 0)
+                {
+                    _hoveredIndex = _cachedItems.Count - 1;
+                    EnsureHoveredItemVisible();
+                }
+                return true;
+            case PlusKey.ArrowDown:
+                if (_hoveredIndex < _cachedItems.Count - 1)
+                {
+                    _hoveredIndex++;
+                    EnsureHoveredItemVisible();
+                }
+                else if (_hoveredIndex < 0 && _cachedItems.Count > 0)
+                {
+                    _hoveredIndex = 0;
+                    EnsureHoveredItemVisible();
+                }
+                return true;
+            case PlusKey.Enter:
+            case PlusKey.Space:
+                if (_hoveredIndex >= 0 && _hoveredIndex < _cachedItems.Count)
+                {
+                    SelectItem(_hoveredIndex);
+                }
+                IsOpen = false;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void SelectItem(int index)
+    {
+        if (index < 0 || index >= _cachedItems.Count) return;
+
+        _selectedIndex = index;
+        SelectedItem = _cachedItems[index];
+
+        // Notify setters
+        if (_setter.TryGetValue(nameof(SelectedItem), out var itemSetters))
+        {
+            foreach (var setter in itemSetters)
+            {
+                setter(SelectedItem);
+            }
+        }
+        if (_setter.TryGetValue(nameof(SelectedIndex), out var indexSetters))
+        {
+            foreach (var setter in indexSetters)
+            {
+                setter(SelectedIndex);
+            }
+        }
+    }
+
+    private void EnsureHoveredItemVisible()
+    {
+        if (_hoveredIndex < 0) return;
+
+        var dropdownRect = GetDropdownRect();
+        var visibleItemCount = (int)(dropdownRect.Height / ItemHeight);
+
+        // Scroll up if hovered is above visible area
+        if (_hoveredIndex < _scrollStartIndex)
+        {
+            _scrollStartIndex = _hoveredIndex;
+        }
+        // Scroll down if hovered is below visible area
+        else if (_hoveredIndex >= _scrollStartIndex + visibleItemCount)
+        {
+            _scrollStartIndex = _hoveredIndex - visibleItemCount + 1;
+        }
+
+        // Clamp scroll start
+        _scrollStartIndex = Math.Max(0, Math.Min(_scrollStartIndex, _cachedItems.Count - visibleItemCount));
+    }
+
+    private void ScrollToSelection()
+    {
+        if (_selectedIndex < 0)
+        {
+            _scrollStartIndex = 0;
+            return;
+        }
+
+        var dropdownRect = GetDropdownRect();
+        var visibleItemCount = (int)(dropdownRect.Height / ItemHeight);
+
+        // Center the selection in the visible area
+        _scrollStartIndex = Math.Max(0, _selectedIndex - visibleItemCount / 2);
+        _scrollStartIndex = Math.Min(_scrollStartIndex, Math.Max(0, _cachedItems.Count - visibleItemCount));
+    }
+    #endregion
 
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
@@ -602,10 +787,13 @@ public partial class ComboBox<T> : UiElement, IInputControl
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         var visibleItemCount = (int)(dropdownHeight / ItemHeight);
-        for (int i = 0; i < Math.Min(visibleItemCount, _cachedItems.Count); i++)
+        var endIndex = Math.Min(_scrollStartIndex + visibleItemCount, _cachedItems.Count);
+
+        for (int i = _scrollStartIndex; i < endIndex; i++)
         {
             var item = _cachedItems[i];
-            var itemY = dropdownRect.Top + (i * ItemHeight);
+            var displayIndex = i - _scrollStartIndex;
+            var itemY = dropdownRect.Top + (displayIndex * ItemHeight);
             var itemRect = new SKRect(
                 dropdownRect.Left,
                 itemY,

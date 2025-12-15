@@ -31,6 +31,9 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Toolbar : UiLayoutElement<Toolbar>
 {
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Toolbar;
+
     private Label? _titleLabel;
     internal Button? _overflowButton;
     private List<UiElement> _overflowItems = new();

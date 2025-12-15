@@ -9,10 +9,28 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class ProgressBar : UiElement
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.ProgressBar;
+
     public ProgressBar()
     {
         SetDesiredHeight(8);
         HorizontalAlignment = HorizontalAlignment.Stretch;
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? "Progress";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        return AccessibilityValue ?? $"{(int)(Progress * 100)}%";
     }
 
     #region Progress

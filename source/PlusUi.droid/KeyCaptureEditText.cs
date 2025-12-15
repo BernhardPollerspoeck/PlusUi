@@ -111,6 +111,33 @@ public class KeyCaptureEditText : EditText, IKeyboardHandler
 
     }
 
+    public override bool OnKeyDown(Keycode keyCode, KeyEvent? e)
+    {
+        // Handle Tab navigation for hardware keyboards
+        if (e != null)
+        {
+            var plusKey = keyCode switch
+            {
+                Keycode.Tab when e.IsShiftPressed => PlusKey.ShiftTab,
+                Keycode.Tab => PlusKey.Tab,
+                Keycode.Escape => PlusKey.Escape,
+                Keycode.DpadUp => PlusKey.ArrowUp,
+                Keycode.DpadDown => PlusKey.ArrowDown,
+                Keycode.DpadLeft => PlusKey.ArrowLeft,
+                Keycode.DpadRight => PlusKey.ArrowRight,
+                _ => PlusKey.Unknown
+            };
+
+            if (plusKey != PlusKey.Unknown)
+            {
+                KeyInput?.Invoke(this, plusKey);
+                return true;
+            }
+        }
+
+        return base.OnKeyDown(keyCode, e);
+    }
+
 }
 
 
