@@ -10,9 +10,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0_Solution Items", "0_Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		BACKLOG.md = BACKLOG.md
 		CLAUDE.md = CLAUDE.md
 		.github\copilot-instructions.md = .github\copilot-instructions.md
+		ISSUES.md = ISSUES.md
 		.github\workflows\main.yml = .github\workflows\main.yml
 		obj.log = obj.log
 		README.md = README.md
@@ -51,12 +51,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Web", "source\PlusUi.Web\PlusUi.Web.csproj", "{2927AFDB-B5DD-695F-EFC1-D144737AF6D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Headless", "source\PlusUi.Headless\PlusUi.Headless.csproj", "{C1A2B3D4-5E6F-7890-ABCD-EF1234567890}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "8_Regression_Tests", "8_Regression_Tests", "{D23B5BAB-FB4E-48E6-927C-9B62259BA3A5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Regression.Core", "tests\PlusUi.Regression.Core\PlusUi.Regression.Core.csproj", "{123EC599-26AF-43F7-9774-0228CA4D3A4A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Regression.Application", "tests\PlusUi.Regression.Application\PlusUi.Regression.Application.csproj", "{C4AAD137-8AD3-469F-B55F-BB83EF2E9D29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,14 +122,6 @@ Global
 		{C1A2B3D4-5E6F-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1A2B3D4-5E6F-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1A2B3D4-5E6F-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
-		{123EC599-26AF-43F7-9774-0228CA4D3A4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{123EC599-26AF-43F7-9774-0228CA4D3A4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{123EC599-26AF-43F7-9774-0228CA4D3A4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{123EC599-26AF-43F7-9774-0228CA4D3A4A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C4AAD137-8AD3-469F-B55F-BB83EF2E9D29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C4AAD137-8AD3-469F-B55F-BB83EF2E9D29}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C4AAD137-8AD3-469F-B55F-BB83EF2E9D29}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C4AAD137-8AD3-469F-B55F-BB83EF2E9D29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -156,8 +142,6 @@ Global
 		{776501BE-E5FE-1E06-690C-5957CD89BAED} = {A6F2765B-2FE3-4448-BD84-D656E66466C2}
 		{2927AFDB-B5DD-695F-EFC1-D144737AF6D1} = {E0DFC523-7D7B-4C94-968B-98C31B06AEF6}
 		{C1A2B3D4-5E6F-7890-ABCD-EF1234567890} = {E0DFC523-7D7B-4C94-968B-98C31B06AEF6}
-		{123EC599-26AF-43F7-9774-0228CA4D3A4A} = {D23B5BAB-FB4E-48E6-927C-9B62259BA3A5}
-		{C4AAD137-8AD3-469F-B55F-BB83EF2E9D29} = {D23B5BAB-FB4E-48E6-927C-9B62259BA3A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {001A04BF-110B-43E3-8C60-7D81403E4146}
