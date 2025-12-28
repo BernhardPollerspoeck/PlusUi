@@ -62,7 +62,6 @@ public partial class Grid : UiLayoutElement
     private readonly List<GridItem> _children = [];
     public override List<UiElement> Children => [.. _children.Select(c => c.Element)];
 
-    //TODO: method shadowing creates only the 1 arugment one from layout.
     public Grid AddChild(UiElement child, int row = 0, int column = 0, int rowSpan = 1, int columnSpan = 1)
     {
         child.Parent = this;
