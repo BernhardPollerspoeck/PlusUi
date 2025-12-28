@@ -11,7 +11,7 @@ namespace PlusUi.core;
 /// Uses weak reference caching to prevent memory bloat in long-running applications.
 /// Supports animated GIF loading with frame extraction.
 /// </summary>
-internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) : IImageLoaderService
+internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration, ILogger<ImageLoaderService>? logger = null) : IImageLoaderService
 {
     private static readonly ConcurrentDictionary<string, WeakReference<SKImage>> _imageCache = new();
     private static readonly ConcurrentDictionary<string, WeakReference<AnimatedImageInfo>> _animatedImageCache = new();
@@ -19,12 +19,6 @@ internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) :
     {
         Timeout = TimeSpan.FromSeconds(30) // Add timeout for web requests
     };
-
-    /// <summary>
-    /// Optional logger for diagnostic messages. Can be set from the application host.
-    /// </summary>
-    public static ILogger? Logger { get; set; }
-    //TODO: logger not static and from DI
     /// <summary>
     /// Loads an image from the specified source (resource, file, or URL).
     /// Returns a tuple with either a static image or animated image info.
@@ -166,7 +160,7 @@ internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) :
         catch (Exception ex)
         {
             // Log error and invoke callback with null
-            Logger?.LogError(ex, "Failed to load image from URL: {Url}", url);
+            logger?.LogError(ex, "Failed to load image from URL: {Url}", url);
             if (!configuration.Value.LoadImagesSynchronously)
             {
                 onImageLoaded?.Invoke(null);
@@ -175,13 +169,13 @@ internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) :
         }
     }
 
-    private static (SKImage? staticImage, AnimatedImageInfo? animatedImage) TryLoadImageFromFile(string filePath)
+    private (SKImage? staticImage, AnimatedImageInfo? animatedImage) TryLoadImageFromFile(string filePath)
     {
         try
         {
             if (!System.IO.File.Exists(filePath))
             {
-                Logger?.LogWarning("Image file not found: {FilePath}", filePath);
+                logger?.LogWarning("Image file not found: {FilePath}", filePath);
                 return (null, null);
             }
 
@@ -190,12 +184,12 @@ internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) :
         }
         catch (Exception ex)
         {
-            Logger?.LogError(ex, "Failed to load image from file: {FilePath}", filePath);
+            logger?.LogError(ex, "Failed to load image from file: {FilePath}", filePath);
             return (null, null);
         }
     }
 
-    private static (SKImage? staticImage, AnimatedImageInfo? animatedImage) TryLoadImageFromResources(string resourceName)
+    private (SKImage? staticImage, AnimatedImageInfo? animatedImage) TryLoadImageFromResources(string resourceName)
     {
         // First try the entry assembly
         var assembly = System.Reflection.Assembly.GetEntryAssembly();
@@ -228,7 +222,7 @@ internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) :
         return (null, null);
     }
 
-    private static (SKImage? staticImage, AnimatedImageInfo? animatedImage) TryLoadImageFromAssembly(System.Reflection.Assembly assembly, string resourceName)
+    private (SKImage? staticImage, AnimatedImageInfo? animatedImage) TryLoadImageFromAssembly(System.Reflection.Assembly assembly, string resourceName)
     {
         var resourceNames = assembly.GetManifestResourceNames();
         var fullResourceName = resourceNames.FirstOrDefault(name =>
@@ -250,7 +244,7 @@ internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) :
     /// Loads an image from a stream and determines if it's animated.
     /// For animated images (e.g., GIF), extracts all frames and their delays.
     /// </summary>
-    private static (SKImage? staticImage, AnimatedImageInfo? animatedImage) LoadImageFromStream(Stream stream)
+    private (SKImage? staticImage, AnimatedImageInfo? animatedImage) LoadImageFromStream(Stream stream)
     {
         try
         {
@@ -285,7 +279,7 @@ internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) :
         }
         catch (Exception ex)
         {
-            Logger?.LogError(ex, "Failed to load image from stream");
+            logger?.LogError(ex, "Failed to load image from stream");
             return (null, null);
         }
     }
@@ -294,7 +288,7 @@ internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) :
     /// Loads all frames from an animated image (e.g., GIF) along with their timing information.
     /// Properly handles frame composition and disposal methods.
     /// </summary>
-    private static AnimatedImageInfo LoadAnimatedImage(SKCodec codec, int frameCount)
+    private AnimatedImageInfo LoadAnimatedImage(SKCodec codec, int frameCount)
     {
         try
         {
@@ -385,7 +379,7 @@ internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration) :
         }
         catch (Exception ex)
         {
-            Logger?.LogError(ex, "Failed to load animated image");
+            logger?.LogError(ex, "Failed to load animated image");
             return new AnimatedImageInfo([], [], 0, 0);
         }
     }

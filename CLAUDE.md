@@ -12,10 +12,10 @@ dotnet build PlusUi.sln -v q
 dotnet test PlusUi.sln
 
 # Run a specific test
-dotnet test PlusUi.sln --filter "FullyQualifiedName=UiPlus.core.Tests.LabelTests.TestLabelMeasureAndArrange_NoMargin_LeftTopAligned"
+dotnet test PlusUi.sln --filter "FullyQualifiedName=PlusUi.core.Tests.LabelTests.TestLabelMeasureAndArrange_NoMargin_LeftTopAligned"
 
 # Run tests in a specific class
-dotnet test PlusUi.sln --filter "FullyQualifiedName~UiPlus.core.Tests.LabelTests"
+dotnet test PlusUi.sln --filter "FullyQualifiedName~PlusUi.core.Tests.LabelTests"
 ```
 
 ## Code Style Guidelines
@@ -23,6 +23,7 @@ dotnet test PlusUi.sln --filter "FullyQualifiedName~UiPlus.core.Tests.LabelTests
 - **Nullable**: Enable nullable reference types (`<Nullable>enable</Nullable>`)
 - **Language**: Use latest C# features (`<LangVersion>latest</LangVersion>` or `<LangVersion>preview</LangVersion>`)
 - **Framework**: Target .NET 9.0
+- **Primary Constructors**: Use primary constructors for DI and initialization. Parameters are directly accessible in the class body - no extra fields required
 - **Styles**: Fluent API style with builder pattern (method chaining)
 - **UI Components**: Follow the pattern of exposing properties with internal setters and public fluent Set* methods
 - **Set/Bind Rule**: EVERY public `Set*` method MUST have a corresponding `Bind*` method for data binding

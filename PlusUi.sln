@@ -5,7 +5,7 @@ VisualStudioVersion = 18.0.11123.170
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.core", "source\PlusUi.core\PlusUi.core.csproj", "{D45F4DF6-5438-4486-B6CE-A43BFB55B772}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UiPlus.core.Tests", "source\UiPlus.core.Tests\UiPlus.core.Tests.csproj", "{EA96D405-BFB9-4182-936A-4EFFA520F3A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.core.Tests", "source\PlusUi.core.Tests\PlusUi.core.Tests.csproj", "{EA96D405-BFB9-4182-936A-4EFFA520F3A2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0_Solution Items", "0_Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject

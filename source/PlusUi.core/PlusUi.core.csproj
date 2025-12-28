@@ -20,7 +20,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <InternalsVisibleTo Include="UiPlus.core.Tests" />
+    <InternalsVisibleTo Include="PlusUi.core.Tests" />
   </ItemGroup>
 
   <ItemGroup>
