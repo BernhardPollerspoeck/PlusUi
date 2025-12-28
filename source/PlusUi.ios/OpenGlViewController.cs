@@ -3,6 +3,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using PlusUi.core.Services;
+using PlusUi.core.Services.Accessibility;
+using PlusUi.ios.Accessibility;
 using Silk.NET.Maths;
 using SkiaSharp.Views.iOS;
 using System.Numerics;
@@ -40,9 +42,17 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
         builder.UsePlusUiInternal(app, []);
         builder.Services.AddSingleton<IosPlatformService>();
         builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<IosPlatformService>());
+        builder.Services.AddSingleton<IosHapticService>();
+        builder.Services.AddSingleton<IHapticService>(sp => sp.GetRequiredService<IosHapticService>());
         builder.Services.AddSingleton<OpenGlViewController>();
         builder.Services.AddSingleton<KeyboardTextField>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<KeyboardTextField>());
+
+        // Register iOS accessibility bridge (VoiceOver support)
+        builder.Services.AddSingleton<IAccessibilityBridge, IosAccessibilityBridge>();
+
+        // Register iOS accessibility settings service (Dynamic Type, high contrast, etc.)
+        builder.Services.AddSingleton<IAccessibilitySettingsService, IosAccessibilitySettingsService>();
 
         builder.ConfigurePlusUiApp(app);
 
@@ -58,11 +68,15 @@ public class OpenGlViewController(
     InputService inputService,
     KeyboardTextField keyboardTextField,
     IosPlatformService platformService,
+    NavigationContainer navigationContainer,
+    IAccessibilityService accessibilityService,
     ILogger<OpenGlViewController> logger)
     : UIViewController
 {
     private SKCanvasView? _canvasView;
     private TouchGestureRecognizer? _gestureRecognizer;
+    private LongPressGestureRecognizer? _longPressRecognizer;
+    private PinchGestureRecognizer? _pinchRecognizer;
 
     public override void ViewDidLoad()
     {
@@ -90,12 +104,23 @@ public class OpenGlViewController(
         _gestureRecognizer = new TouchGestureRecognizer(inputService, renderService);
         View.AddGestureRecognizer(_gestureRecognizer);
 
+        // Add long press gesture recognizer
+        _longPressRecognizer = new LongPressGestureRecognizer(inputService, renderService);
+        View.AddGestureRecognizer(_longPressRecognizer);
+
+        // Add pinch gesture recognizer
+        _pinchRecognizer = new PinchGestureRecognizer(inputService, renderService);
+        View.AddGestureRecognizer(_pinchRecognizer);
+
         // Add invisible keyboard text field
         keyboardTextField.Frame = new CGRect(0, 0, 1, 1);
         View.AddSubview(keyboardTextField);
 
         // Initialize navigation service
         plusUiNavigationService.Initialize();
+
+        // Initialize accessibility with root provider that returns current page
+        accessibilityService.Initialize(() => navigationContainer.CurrentPage);
     }
 
     private void OnCanvasPaintSurface(object? sender, SKPaintSurfaceEventArgs e)

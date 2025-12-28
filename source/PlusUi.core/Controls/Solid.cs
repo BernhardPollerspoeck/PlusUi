@@ -23,6 +23,12 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Solid : UiElement
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.None;
+
     public Solid(float? width = null, float? height = null, SKColor? color = null)
     {
         HorizontalAlignment = HorizontalAlignment.Stretch;

@@ -29,6 +29,9 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class ScrollView : UiLayoutElement, IScrollableControl
 {
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.ScrollView;
+
     private readonly UiElement _content;
 
     #region CanScrollHorizontally
@@ -146,6 +149,12 @@ public partial class ScrollView : UiLayoutElement, IScrollableControl
         _content = content;
         _content.Parent = this;
         Children.Add(_content);
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? "Scrollable area";
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)

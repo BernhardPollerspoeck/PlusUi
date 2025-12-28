@@ -25,7 +25,32 @@ dotnet test PlusUi.sln --filter "FullyQualifiedName~UiPlus.core.Tests.LabelTests
 - **Framework**: Target .NET 9.0
 - **Styles**: Fluent API style with builder pattern (method chaining)
 - **UI Components**: Follow the pattern of exposing properties with internal setters and public fluent Set* methods
+- **Set/Bind Rule**: EVERY public `Set*` method MUST have a corresponding `Bind*` method for data binding
 - **Tests**: Use MSTest with AAA pattern (Arrange-Act-Assert)
 - **Architecture**: Controls inherit from base elements (UiElement, UiTextElement)
 - **Error Handling**: Avoid exceptions for control flow; use nullable types appropriately
 - **Component Structure**: Components should have predictable initialization through constructor and fluent methods
+
+## UiElement Control Rules
+- **Partial Class**: ALL controls inheriting from UiElement MUST be declared as `partial class`
+- **Source Generator**: ALL controls MUST use the `[GenerateShadowMethods]` attribute from `PlusUi.core.Attributes`
+- **No Property Duplication**: NEVER redefine properties that exist in base class (e.g., `Background`, `CornerRadius`). Use inherited properties and initialize in constructor if needed
+- **Abstract Members**: Controls must implement `IsFocusable` and `AccessibilityRole`
+
+Example:
+```csharp
+using PlusUi.core.Attributes;
+
+[GenerateShadowMethods]
+public partial class MyControl : UiElement
+{
+    protected internal override bool IsFocusable => false;
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.None;
+
+    public MyControl()
+    {
+        // Use inherited SetBackground instead of own BackgroundColor property
+        SetBackground(new SKColor(45, 45, 45));
+    }
+}
+```

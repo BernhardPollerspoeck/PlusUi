@@ -31,6 +31,9 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Toolbar : UiLayoutElement<Toolbar>
 {
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Toolbar;
+
     private Label? _titleLabel;
     internal Button? _overflowButton;
     private List<UiElement> _overflowItems = new();
@@ -268,6 +271,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         OverflowMenuBackground = color;
         return this;
     }
+    public Toolbar BindOverflowMenuBackground(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => OverflowMenuBackground = propertyGetter());
+        return this;
+    }
     #endregion
 
     #region OverflowMenuItemBackground
@@ -275,6 +283,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     public Toolbar SetOverflowMenuItemBackground(SKColor color)
     {
         OverflowMenuItemBackground = color;
+        return this;
+    }
+    public Toolbar BindOverflowMenuItemBackground(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => OverflowMenuItemBackground = propertyGetter());
         return this;
     }
     #endregion
@@ -286,6 +299,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         OverflowMenuItemHoverBackground = color;
         return this;
     }
+    public Toolbar BindOverflowMenuItemHoverBackground(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => OverflowMenuItemHoverBackground = propertyGetter());
+        return this;
+    }
     #endregion
 
     #region OverflowMenuItemTextColor
@@ -293,6 +311,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     public Toolbar SetOverflowMenuItemTextColor(SKColor color)
     {
         OverflowMenuItemTextColor = color;
+        return this;
+    }
+    public Toolbar BindOverflowMenuItemTextColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => OverflowMenuItemTextColor = propertyGetter());
         return this;
     }
     #endregion
@@ -340,6 +363,17 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         content.Parent = this;
         CenterContent = content;
         InvalidateMeasure();
+        return this;
+    }
+
+    public Toolbar BindCenterContent(string propertyName, Func<UiElement?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () =>
+        {
+            var content = propertyGetter();
+            if (content != null) SetCenterContent(content);
+            else CenterContent = null;
+        });
         return this;
     }
     #endregion
@@ -924,7 +958,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         // Measure the menu content with reasonable constraints
         var menuWidth = Math.Max(150, _overflowButton.ElementSize.Width * 4);
         var availableMenuSize = new Size(menuWidth, 400);
-        _overflowMenuContent.Measure(availableMenuSize);
+        _overflowMenuContent.Measure(availableMenuSize, dontStretch: true);
     }
 
     /// <summary>

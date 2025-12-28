@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PlusUi.core.Animations;
 using System.ComponentModel;
 
 namespace PlusUi.core;
@@ -9,6 +10,9 @@ public class PlusUiNavigationService(
     ILogger<PlusUiNavigationService>? logger = null) : INavigationService
 {
     private NavigationContainer? _navigationContainer;
+    private ITransitionService? _transitionService;
+    private IOverlayService? _overlayService;
+    private PlusUiConfiguration? _configuration;
     private readonly ILogger<PlusUiNavigationService>? _logger = logger;
 
     /// <inheritdoc/>
@@ -48,18 +52,23 @@ public class PlusUiNavigationService(
             throw exception;
         }
 
+        // Dismiss all overlays before navigating
+        _overlayService?.DismissAll();
+
+        // Store reference to outgoing page for transition
+        var outgoingPage = _navigationContainer.CurrentPage;
+
         // Call lifecycle methods
-        var currentPage = _navigationContainer.CurrentPage;
-        currentPage.Disappearing();
-        currentPage.OnNavigatedFrom();
+        outgoingPage.Disappearing();
+        outgoingPage.OnNavigatedFrom();
 
         // Unsubscribe from property changes
-        if (currentPage.ViewModel is not null)
+        if (outgoingPage.ViewModel is not null)
         {
-            currentPage.ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+            outgoingPage.ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
         }
 
-        _logger?.LogDebug("Navigating back from page: {PageType}", currentPage.GetType().Name);
+        _logger?.LogDebug("Navigating back from page: {PageType}", outgoingPage.GetType().Name);
 
         // Pop the current page
         var previousItem = _navigationContainer.Pop();
@@ -77,6 +86,17 @@ public class PlusUiNavigationService(
             // Page was disposed, need to rebuild it (this shouldn't happen with Pop)
             // But we handle it for safety
             previousPage.BuildPage();
+        }
+
+        // Start reversed transition
+        if (_transitionService != null)
+        {
+            var transition = GetTransitionForPage(outgoingPage);
+            if (transition != null && transition is not NoneTransition)
+            {
+                var reversedTransition = transition.GetReversed();
+                _transitionService.StartTransition(outgoingPage, previousPage, reversedTransition);
+            }
         }
 
         // Subscribe to property changes
@@ -115,6 +135,9 @@ public class PlusUiNavigationService(
             _logger?.LogDebug("PopToRoot called but already at root page");
             return; // Already at root
         }
+
+        // Dismiss all overlays before navigating
+        _overlayService?.DismissAll();
 
         // Call lifecycle methods for current page
         var currentPage = _navigationContainer.CurrentPage;
@@ -176,10 +199,17 @@ public class PlusUiNavigationService(
             return;
         }
 
+        // Dismiss all overlays before navigating
+        _overlayService?.DismissAll();
+
+        // Store reference to outgoing page for transition
+        UiPageElement? outgoingPage = null;
+
         // Call lifecycle methods on current page if not init call
         if (!isInitCall)
         {
             var currentPage = _navigationContainer.CurrentPage;
+            outgoingPage = currentPage;
             currentPage.Disappearing();
             currentPage.OnNavigatedFrom();
 
@@ -213,6 +243,16 @@ public class PlusUiNavigationService(
             // Build and show the page
             page.BuildPage();
 
+            // Start transition if configured and not init call
+            if (!isInitCall && outgoingPage != null && _transitionService != null)
+            {
+                var transition = GetTransitionForPage(page);
+                if (transition != null && transition is not NoneTransition)
+                {
+                    _transitionService.StartTransition(outgoingPage, page, transition);
+                }
+            }
+
             // Call navigation lifecycle method
             page.OnNavigatedTo(parameter);
 
@@ -233,6 +273,18 @@ public class PlusUiNavigationService(
         }
     }
 
+    private IPageTransition? GetTransitionForPage(UiPageElement page)
+    {
+        // Page-specific transition takes priority
+        if (page.Transition != null)
+        {
+            return page.Transition;
+        }
+
+        // Fall back to global default transition
+        return _configuration?.DefaultTransition;
+    }
+
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is not null && _navigationContainer is not null)
@@ -244,6 +296,10 @@ public class PlusUiNavigationService(
     public void Initialize()
     {
         _navigationContainer ??= serviceProvider.GetRequiredService<NavigationContainer>();
+        _transitionService ??= serviceProvider.GetService<ITransitionService>();
+        _overlayService ??= serviceProvider.GetService<IOverlayService>();
+        _configuration ??= serviceProvider.GetService<PlusUiConfiguration>();
+
         var appConfiguration = serviceProvider.GetRequiredService<IAppConfiguration>();
         var mainPage = appConfiguration.GetRootPage(serviceProvider);
         NavigateToInternal(mainPage.GetType(), null, true);

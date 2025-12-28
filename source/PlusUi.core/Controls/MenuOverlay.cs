@@ -1,0 +1,579 @@
+using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core.Services;
+using SkiaSharp;
+
+namespace PlusUi.core;
+
+/// <summary>
+/// Overlay element that renders a menu dropdown with items.
+/// Supports nested submenus, keyboard navigation, and hover tracking.
+/// </summary>
+internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKeyboardInputHandler
+{
+    private static readonly SKColor DefaultBackgroundColor = new SKColor(45, 45, 45);
+
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Menu;
+
+    #region Constants
+    private const float ItemHeight = 32f;
+    private const float SeparatorHeight = 9f;
+    private const float IconSize = 16f;
+    private const float CheckmarkWidth = 20f;
+    private const float IconAreaWidth = 24f;
+    private const float ShortcutMinWidth = 60f;
+    private const float SubmenuArrowWidth = 16f;
+    private const float HorizontalPadding = 8f;
+    private const float MinMenuWidth = 150f;
+    private const float MenuCornerRadius = 4f;
+    private const float MenuShadowOffset = 2f;
+    private const float MenuShadowBlur = 4f;
+    #endregion
+
+    #region Colors
+    internal SKColor HoverBackgroundColor { get; set; } = new SKColor(65, 65, 65);
+    internal SKColor TextColor { get; set; } = SKColors.White;
+    internal SKColor DisabledTextColor { get; set; } = new SKColor(128, 128, 128);
+    internal SKColor ShortcutColor { get; set; } = new SKColor(160, 160, 160);
+    internal SKColor SeparatorColor { get; set; } = new SKColor(80, 80, 80);
+    internal SKColor CheckmarkColor { get; set; } = new SKColor(100, 180, 255);
+    #endregion
+
+    private readonly List<object> _items;
+    private readonly Point _anchorPosition;
+    private readonly bool _openToRight;
+    private readonly MenuOverlay? _parentOverlay;
+    private readonly Action? _onDismiss;
+
+    private SKRect _menuRect;
+    private int _hoveredIndex = -1;
+    private int _hitIndex = -1;
+    private MenuOverlay? _activeSubmenu;
+    private IOverlayService? _overlayService;
+    private float _calculatedWidth;
+    private float _calculatedHeight;
+    private bool _measured;
+
+    private SKFont? _font;
+    private SKFont Font => _font ??= new SKFont(SKTypeface.FromFamilyName(null), 14);
+
+    private SKPaint? _textPaint;
+    private SKPaint TextPaint => _textPaint ??= new SKPaint { IsAntialias = true };
+
+    /// <summary>
+    /// Creates a new MenuOverlay.
+    /// </summary>
+    /// <param name="items">The menu items to display.</param>
+    /// <param name="anchorPosition">The position to anchor the menu (top-left corner).</param>
+    /// <param name="openToRight">Whether to prefer opening submenus to the right.</param>
+    /// <param name="parentOverlay">Parent overlay for submenu chain management.</param>
+    /// <param name="onDismiss">Callback when menu is dismissed.</param>
+    public MenuOverlay(
+        List<object> items,
+        Point anchorPosition,
+        bool openToRight = true,
+        MenuOverlay? parentOverlay = null,
+        Action? onDismiss = null)
+    {
+        _items = items;
+        _anchorPosition = anchorPosition;
+        _openToRight = openToRight;
+        _parentOverlay = parentOverlay;
+        _onDismiss = onDismiss;
+        SetBackground(DefaultBackgroundColor);
+    }
+
+    private void EnsureMeasured()
+    {
+        if (_measured) return;
+
+        // Calculate menu dimensions
+        float maxTextWidth = 0;
+        float maxShortcutWidth = 0;
+        bool hasIcons = false;
+        bool hasSubmenus = false;
+        bool hasCheckmarks = false;
+
+        foreach (var item in _items)
+        {
+            if (item is MenuItem menuItem)
+            {
+                var textWidth = Font.MeasureText(menuItem.Text);
+                maxTextWidth = Math.Max(maxTextWidth, textWidth);
+
+                if (!string.IsNullOrEmpty(menuItem.Shortcut))
+                {
+                    var shortcutWidth = Font.MeasureText(menuItem.Shortcut);
+                    maxShortcutWidth = Math.Max(maxShortcutWidth, shortcutWidth);
+                }
+
+                if (!string.IsNullOrEmpty(menuItem.Icon)) hasIcons = true;
+                if (menuItem.HasSubItems) hasSubmenus = true;
+                if (menuItem.IsChecked) hasCheckmarks = true;
+            }
+        }
+
+        // Calculate total width
+        _calculatedWidth = HorizontalPadding; // Left padding
+        if (hasCheckmarks) _calculatedWidth += CheckmarkWidth;
+        if (hasIcons) _calculatedWidth += IconAreaWidth;
+        _calculatedWidth += maxTextWidth;
+        _calculatedWidth += HorizontalPadding * 2; // Spacing
+        if (maxShortcutWidth > 0) _calculatedWidth += Math.Max(maxShortcutWidth, ShortcutMinWidth);
+        if (hasSubmenus) _calculatedWidth += SubmenuArrowWidth;
+        _calculatedWidth += HorizontalPadding; // Right padding
+        _calculatedWidth = Math.Max(_calculatedWidth, MinMenuWidth);
+
+        // Calculate total height
+        _calculatedHeight = 0;
+        foreach (var item in _items)
+        {
+            _calculatedHeight += item is MenuSeparator ? SeparatorHeight : ItemHeight;
+        }
+
+        _measured = true;
+    }
+
+    public override void Render(SKCanvas canvas)
+    {
+        EnsureMeasured();
+
+        // Get window bounds for positioning
+        var platformService = ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
+        var windowWidth = platformService?.WindowSize.Width ?? 800f;
+        var windowHeight = platformService?.WindowSize.Height ?? 600f;
+
+        // Calculate position with boundary checking
+        var menuX = _anchorPosition.X;
+        var menuY = _anchorPosition.Y;
+
+        // Check horizontal bounds
+        if (menuX + _calculatedWidth > windowWidth - 4)
+        {
+            menuX = windowWidth - _calculatedWidth - 4;
+        }
+        if (menuX < 4) menuX = 4;
+
+        // Check vertical bounds - open upward if not enough space below
+        if (menuY + _calculatedHeight > windowHeight - 4)
+        {
+            menuY = windowHeight - _calculatedHeight - 4;
+        }
+        if (menuY < 4) menuY = 4;
+
+        _menuRect = new SKRect(menuX, menuY, menuX + _calculatedWidth, menuY + _calculatedHeight);
+
+        // Draw shadow
+        using var shadowPaint = new SKPaint
+        {
+            Color = new SKColor(0, 0, 0, 80),
+            ImageFilter = SKImageFilter.CreateDropShadow(MenuShadowOffset, MenuShadowOffset, MenuShadowBlur, MenuShadowBlur, new SKColor(0, 0, 0, 80))
+        };
+        canvas.DrawRoundRect(_menuRect, MenuCornerRadius, MenuCornerRadius, shadowPaint);
+
+        // Draw background
+        using var bgPaint = new SKPaint
+        {
+            Color = (Background as SolidColorBackground)?.Color ?? DefaultBackgroundColor,
+            IsAntialias = true
+        };
+        canvas.DrawRoundRect(_menuRect, MenuCornerRadius, MenuCornerRadius, bgPaint);
+
+        // Draw border
+        using var borderPaint = new SKPaint
+        {
+            Color = SeparatorColor,
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = 1,
+            IsAntialias = true
+        };
+        canvas.DrawRoundRect(_menuRect, MenuCornerRadius, MenuCornerRadius, borderPaint);
+
+        // Draw items
+        float currentY = menuY;
+        int index = 0;
+
+        foreach (var item in _items)
+        {
+            if (item is MenuSeparator)
+            {
+                RenderSeparator(canvas, menuX, currentY);
+                currentY += SeparatorHeight;
+            }
+            else if (item is MenuItem menuItem)
+            {
+                var isHovered = index == _hoveredIndex;
+                RenderMenuItem(canvas, menuItem, menuX, currentY, isHovered);
+                currentY += ItemHeight;
+            }
+            index++;
+        }
+    }
+
+    private void RenderSeparator(SKCanvas canvas, float x, float y)
+    {
+        using var paint = new SKPaint
+        {
+            Color = SeparatorColor,
+            StrokeWidth = 1,
+            IsAntialias = true
+        };
+
+        var lineY = y + SeparatorHeight / 2;
+        canvas.DrawLine(x + HorizontalPadding, lineY, x + _calculatedWidth - HorizontalPadding, lineY, paint);
+    }
+
+    private void RenderMenuItem(SKCanvas canvas, MenuItem item, float x, float y, bool isHovered)
+    {
+        var itemRect = new SKRect(x, y, x + _calculatedWidth, y + ItemHeight);
+
+        // Draw hover background
+        if (isHovered && item.IsEnabled)
+        {
+            using var hoverPaint = new SKPaint
+            {
+                Color = HoverBackgroundColor,
+                IsAntialias = true
+            };
+            canvas.DrawRect(itemRect, hoverPaint);
+        }
+
+        var textColor = item.IsEnabled ? TextColor : DisabledTextColor;
+        TextPaint.Color = textColor;
+
+        float currentX = x + HorizontalPadding;
+        Font.GetFontMetrics(out var metrics);
+        var textY = y + ItemHeight / 2 - (metrics.Ascent + metrics.Descent) / 2;
+
+        // Draw checkmark if checked
+        if (item.IsChecked)
+        {
+            TextPaint.Color = item.IsEnabled ? CheckmarkColor : DisabledTextColor;
+            canvas.DrawText("\u2713", currentX, textY, SKTextAlign.Left, Font, TextPaint);
+            TextPaint.Color = textColor;
+        }
+        currentX += CheckmarkWidth;
+
+        // Draw icon area (skip for now, would need image loading)
+        currentX += IconAreaWidth;
+
+        // Draw text
+        canvas.DrawText(item.Text, currentX, textY, SKTextAlign.Left, Font, TextPaint);
+
+        // Draw shortcut (right-aligned)
+        if (!string.IsNullOrEmpty(item.Shortcut))
+        {
+            TextPaint.Color = item.IsEnabled ? ShortcutColor : DisabledTextColor;
+            var shortcutX = x + _calculatedWidth - HorizontalPadding - (item.HasSubItems ? SubmenuArrowWidth : 0);
+            canvas.DrawText(item.Shortcut, shortcutX, textY, SKTextAlign.Right, Font, TextPaint);
+        }
+
+        // Draw submenu arrow
+        if (item.HasSubItems)
+        {
+            TextPaint.Color = textColor;
+            var arrowX = x + _calculatedWidth - HorizontalPadding - 8;
+            canvas.DrawText("\u25B6", arrowX, textY, SKTextAlign.Center, Font, TextPaint);
+        }
+    }
+
+    public override UiElement? HitTest(Point point)
+    {
+        // First check if we hit an active submenu
+        if (_activeSubmenu != null)
+        {
+            var submenuHit = _activeSubmenu.HitTest(point);
+            if (submenuHit != null) return submenuHit;
+        }
+
+        // Check if point is within our menu bounds
+        if (point.X >= _menuRect.Left && point.X <= _menuRect.Right &&
+            point.Y >= _menuRect.Top && point.Y <= _menuRect.Bottom)
+        {
+            // Calculate which item was hit
+            var relativeY = point.Y - _menuRect.Top;
+            float currentY = 0;
+            int index = 0;
+
+            foreach (var item in _items)
+            {
+                float itemHeight = item is MenuSeparator ? SeparatorHeight : ItemHeight;
+
+                if (relativeY >= currentY && relativeY < currentY + itemHeight)
+                {
+                    if (item is MenuItem menuItem && menuItem.IsEnabled)
+                    {
+                        _hitIndex = index;
+                        UpdateHoverAndSubmenu(index);
+                        return this;
+                    }
+                    else
+                    {
+                        _hitIndex = -1;
+                        _hoveredIndex = -1;
+                        return this;
+                    }
+                }
+
+                currentY += itemHeight;
+                if (item is not MenuSeparator) index++;
+                else index++;
+            }
+
+            _hitIndex = -1;
+            return this;
+        }
+
+        // Clear hover when mouse leaves
+        _hoveredIndex = -1;
+        _hitIndex = -1;
+        return null;
+    }
+
+    private void UpdateHoverAndSubmenu(int index)
+    {
+        if (_hoveredIndex == index) return;
+
+        _hoveredIndex = index;
+
+        // Close any existing submenu if hovering a different item
+        CloseSubmenu();
+
+        // Open submenu if the hovered item has sub-items
+        if (index >= 0 && index < _items.Count)
+        {
+            int actualIndex = 0;
+            foreach (var item in _items)
+            {
+                if (actualIndex == index && item is MenuItem menuItem && menuItem.HasSubItems)
+                {
+                    OpenSubmenu(menuItem, index);
+                    break;
+                }
+                actualIndex++;
+            }
+        }
+    }
+
+    private void OpenSubmenu(MenuItem menuItem, int itemIndex)
+    {
+        _overlayService ??= ServiceProviderService.ServiceProvider?.GetService<IOverlayService>();
+        if (_overlayService == null) return;
+
+        // Calculate submenu position (to the right of this item)
+        float itemY = _menuRect.Top;
+        int idx = 0;
+        foreach (var item in _items)
+        {
+            if (idx == itemIndex) break;
+            itemY += item is MenuSeparator ? SeparatorHeight : ItemHeight;
+            idx++;
+        }
+
+        var submenuX = _menuRect.Right - 4; // Slight overlap
+        var submenuAnchor = new Point(submenuX, itemY);
+
+        _activeSubmenu = new MenuOverlay(
+            menuItem.Items,
+            submenuAnchor,
+            _openToRight,
+            this,
+            null);
+
+        _overlayService.RegisterOverlay(_activeSubmenu);
+    }
+
+    private void CloseSubmenu()
+    {
+        if (_activeSubmenu != null)
+        {
+            _activeSubmenu.CloseSubmenu(); // Close nested submenus first
+            _overlayService?.UnregisterOverlay(_activeSubmenu);
+            _activeSubmenu = null;
+        }
+    }
+
+    public void InvokeCommand()
+    {
+        if (_hitIndex < 0) return;
+
+        int actualIndex = 0;
+        foreach (var item in _items)
+        {
+            if (actualIndex == _hitIndex)
+            {
+                if (item is MenuItem menuItem)
+                {
+                    if (menuItem.HasSubItems)
+                    {
+                        // Don't dismiss, just open submenu
+                        OpenSubmenu(menuItem, _hitIndex);
+                    }
+                    else
+                    {
+                        // Execute command and dismiss entire menu chain
+                        menuItem.Execute();
+                        DismissAll();
+                    }
+                }
+                break;
+            }
+            actualIndex++;
+        }
+    }
+
+    public bool HandleKeyboardInput(PlusKey key)
+    {
+        switch (key)
+        {
+            case PlusKey.ArrowUp:
+                NavigateUp();
+                return true;
+
+            case PlusKey.ArrowDown:
+                NavigateDown();
+                return true;
+
+            case PlusKey.ArrowRight:
+                if (_hoveredIndex >= 0)
+                {
+                    int idx = 0;
+                    foreach (var item in _items)
+                    {
+                        if (idx == _hoveredIndex && item is MenuItem menuItem && menuItem.HasSubItems)
+                        {
+                            OpenSubmenu(menuItem, _hoveredIndex);
+                            _activeSubmenu?._hoveredIndex = 0; // Select first item in submenu
+                            return true;
+                        }
+                        idx++;
+                    }
+                }
+                return false;
+
+            case PlusKey.ArrowLeft:
+                if (_parentOverlay != null)
+                {
+                    // Close this submenu and return to parent
+                    _parentOverlay.CloseSubmenu();
+                    return true;
+                }
+                return false;
+
+            case PlusKey.Enter:
+            case PlusKey.Space:
+                if (_hoveredIndex >= 0)
+                {
+                    _hitIndex = _hoveredIndex;
+                    InvokeCommand();
+                    return true;
+                }
+                return false;
+
+            case PlusKey.Escape:
+                DismissAll();
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private void NavigateUp()
+    {
+        if (_items.Count == 0) return;
+
+        int newIndex = _hoveredIndex - 1;
+        while (newIndex >= 0)
+        {
+            if (_items[newIndex] is MenuItem menuItem && menuItem.IsEnabled)
+            {
+                _hoveredIndex = newIndex;
+                CloseSubmenu();
+                return;
+            }
+            newIndex--;
+        }
+
+        // Wrap to bottom
+        newIndex = _items.Count - 1;
+        while (newIndex > _hoveredIndex)
+        {
+            if (_items[newIndex] is MenuItem menuItem && menuItem.IsEnabled)
+            {
+                _hoveredIndex = newIndex;
+                CloseSubmenu();
+                return;
+            }
+            newIndex--;
+        }
+    }
+
+    private void NavigateDown()
+    {
+        if (_items.Count == 0) return;
+
+        int newIndex = _hoveredIndex + 1;
+        while (newIndex < _items.Count)
+        {
+            if (_items[newIndex] is MenuItem menuItem && menuItem.IsEnabled)
+            {
+                _hoveredIndex = newIndex;
+                CloseSubmenu();
+                return;
+            }
+            newIndex++;
+        }
+
+        // Wrap to top
+        newIndex = 0;
+        while (newIndex < _hoveredIndex)
+        {
+            if (_items[newIndex] is MenuItem menuItem && menuItem.IsEnabled)
+            {
+                _hoveredIndex = newIndex;
+                CloseSubmenu();
+                return;
+            }
+            newIndex++;
+        }
+    }
+
+    public void Dismiss()
+    {
+        CloseSubmenu();
+        // Unregister self from overlay service
+        _overlayService ??= ServiceProviderService.ServiceProvider?.GetService<IOverlayService>();
+        _overlayService?.UnregisterOverlay(this);
+        _onDismiss?.Invoke();
+    }
+
+    private void DismissAll()
+    {
+        // Walk up the parent chain to dismiss from root
+        if (_parentOverlay != null)
+        {
+            _parentOverlay.DismissAll();
+        }
+        else
+        {
+            // This is the root - dismiss through overlay service
+            _overlayService ??= ServiceProviderService.ServiceProvider?.GetService<IOverlayService>();
+            _overlayService?.UnregisterOverlay(this);
+            Dismiss();
+        }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _font?.Dispose();
+            _textPaint?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+}

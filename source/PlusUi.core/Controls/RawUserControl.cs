@@ -33,6 +33,12 @@ namespace PlusUi.core;
 [GenerateGenericWrapper]
 public abstract class RawUserControl : UiElement
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.None;
+
     public abstract Size Size { get; }
     public abstract void RenderControl(SKBitmap bitmap);
 

@@ -37,6 +37,18 @@ public partial class Image : UiElement
 {
     private IImageLoaderService? _imageLoaderService;
 
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Image;
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? "Image";
+    }
+
     #region ImageSource
     internal string? ImageSource
     {

@@ -26,6 +26,12 @@ public abstract class UiPopupElement<TArgument>(INotifyPropertyChanged vm) : UiP
 }
 public abstract class UiPopupElement : UiElement
 {
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => false;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Dialog;
+
     public INotifyPropertyChanged ViewModel { get; }
     private UiElement _tree = new NullElement();
 

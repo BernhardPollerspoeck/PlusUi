@@ -3,6 +3,7 @@ using Android.Opengl;
 using Javax.Microedition.Khronos.Opengles;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
+using PlusUi.core.Services.Accessibility;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using SkiaSharp;
@@ -14,6 +15,8 @@ internal class SilkRenderer(
     PlusUiNavigationService plusUiNavigationService,
     RenderService renderService,
     AndroidPlatformService platformService,
+    NavigationContainer navigationContainer,
+    IAccessibilityService accessibilityService,
     ILogger<SilkRenderer> logger,
     Context context)
     : Java.Lang.Object, GLSurfaceView.IRenderer
@@ -75,6 +78,9 @@ internal class SilkRenderer(
         CreateSurface(new Vector2D<int>(width, height));
 
         plusUiNavigationService.Initialize();
+
+        // Initialize accessibility with root provider that returns current page
+        accessibilityService.Initialize(() => navigationContainer.CurrentPage);
     }
 
     private void CreateSurface(Vector2D<int> size)

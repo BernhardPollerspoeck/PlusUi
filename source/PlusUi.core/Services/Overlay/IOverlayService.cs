@@ -14,4 +14,9 @@ public interface IOverlayService
     /// Unregisters an overlay element.
     /// </summary>
     void UnregisterOverlay(UiElement element);
+
+    /// <summary>
+    /// Dismisses all overlays (e.g., when navigating to a new page).
+    /// </summary>
+    void DismissAll();
 }

@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PlusUi.core;
 using PlusUi.core.Services;
+using PlusUi.core.Services.Accessibility;
+using PlusUi.droid.Accessibility;
 
 namespace PlusUi.droid;
 
@@ -97,9 +99,22 @@ public abstract class PlusUiActivity : Activity
         builder.Services.AddSingleton<AndroidPlatformService>();
         builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<AndroidPlatformService>());
         builder.Services.AddSingleton<SilkRenderer>();
-        builder.Services.AddSingleton<TapGestureListener>();
+        builder.Services.AddSingleton<AndroidHapticService>();
+        builder.Services.AddSingleton<IHapticService>(sp => sp.GetRequiredService<AndroidHapticService>());
+        builder.Services.AddSingleton<TapGestureListener>(sp =>
+            new TapGestureListener(
+                sp.GetRequiredService<InputService>(),
+                sp.GetRequiredService<RenderService>(),
+                sp.GetRequiredService<Android.Content.Context>()));
         builder.Services.AddSingleton<KeyCaptureEditText>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<KeyCaptureEditText>());
+
+        // Register Android accessibility bridge (TalkBack support)
+        builder.Services.AddSingleton<IAccessibilityBridge, AndroidAccessibilityBridge>();
+
+        // Register Android accessibility settings service (font scaling, high contrast, etc.)
+        builder.Services.AddSingleton<IAccessibilitySettingsService>(sp =>
+            new AndroidAccessibilitySettingsService(sp.GetRequiredService<Android.Content.Context>()));
 
         builder.ConfigurePlusUiApp(app);
 

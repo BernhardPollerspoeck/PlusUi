@@ -24,7 +24,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
-public partial class Button : UiTextElement, IInputControl, IHoverableControl
+public partial class Button : UiTextElement, IInputControl, IHoverableControl, IFocusable
 {
     private IImageLoaderService? _imageLoaderService;
     private bool _isHovered;
@@ -49,6 +49,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl
     public Button SetHoverBackground(IBackground background)
     {
         HoverBackground = background;
+        return this;
+    }
+    public Button BindHoverBackground(string propertyName, Func<IBackground> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => HoverBackground = propertyGetter());
         return this;
     }
     #endregion
@@ -82,6 +87,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl
         Command = command;
         return this;
     }
+    public Button BindCommand(string propertyName, Func<ICommand?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => Command = propertyGetter());
+        return this;
+    }
 
     internal object? CommandParameter { get; set; }
     public Button SetCommandParameter(object parameter)
@@ -99,6 +109,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl
     public Button SetOnClick(Action onClick)
     {
         OnClick = onClick;
+        return this;
+    }
+    public Button BindOnClick(string propertyName, Func<Action?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => OnClick = propertyGetter());
         return this;
     }
     #endregion
@@ -165,10 +180,35 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl
     }
     #endregion
 
+    /// <inheritdoc />
+    protected internal override bool IsFocusable => true;
+
+    /// <inheritdoc />
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.Button;
+
     public Button()
     {
         HorizontalTextAlignment = HorizontalTextAlignment.Center;
     }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        return AccessibilityLabel ?? Text;
+    }
+
+    #region IFocusable
+    bool IFocusable.IsFocusable => IsFocusable;
+    int? IFocusable.TabIndex => TabIndex;
+    bool IFocusable.TabStop => TabStop;
+    bool IFocusable.IsFocused
+    {
+        get => IsFocused;
+        set => IsFocused = value;
+    }
+    void IFocusable.OnFocus() => OnFocus();
+    void IFocusable.OnBlur() => OnBlur();
+    #endregion
 
     #region IInputControl
     public void InvokeCommand()

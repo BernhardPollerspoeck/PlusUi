@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using PlusUi.core.Services.Focus;
 
 namespace PlusUi.core;
 
@@ -10,21 +11,35 @@ public class InputService
     private readonly PlusUiPopupService _popupService;
     private readonly OverlayService _overlayService;
     private readonly IKeyboardHandler _keyboardHandler;
+    private readonly ITooltipService _tooltipService;
+    private readonly IFocusManager _focusManager;
     private Vector2 _lastMousePosition;
     private IScrollableControl? _activeScrollControl;
     private IDraggableControl? _activeDragControl;
     private UiElement? _hoveredElement;
 
+    // Gesture detection
+    private Vector2 _mouseDownPosition;
+    private DateTime _lastTapTime;
+    private UiElement? _lastTapElement;
+    private const double DoubleTapThresholdMs = 300;
+    private const float SwipeThreshold = 50f;
+    private bool _isCtrlPressed;
+
     public InputService(
         NavigationContainer navigationContainer,
         PlusUiPopupService popupService,
         OverlayService overlayService,
-        IKeyboardHandler keyboardHandler)
+        IKeyboardHandler keyboardHandler,
+        IFocusManager focusManager,
+        ITooltipService tooltipService)
     {
         _navigationContainer = navigationContainer;
         _popupService = popupService;
         _overlayService = overlayService;
         _keyboardHandler = keyboardHandler;
+        _tooltipService = tooltipService;
+        _focusManager = focusManager;
         _keyboardHandler.KeyInput += HandleKeyInput;
         _keyboardHandler.CharInput += HandleCharInput;
     }
@@ -38,6 +53,7 @@ public class InputService
         }
         _isMousePressed = true;
         _lastMousePosition = location;
+        _mouseDownPosition = location;
 
         // Check if we're starting a scroll or drag operation
         var currentPopup = _popupService.CurrentPopup;
@@ -58,10 +74,10 @@ public class InputService
             _activeScrollControl = scrollControl;
             _activeScrollControl.IsScrolling = true;
         }
-
-        //we have a down action
     }
     
+    private bool _didDragOrScroll;
+
     public void MouseUp(Vector2 location)
     {
         if (!_isMousePressed)
@@ -70,13 +86,29 @@ public class InputService
         }
         _isMousePressed = false;
 
+        // Track if actual dragging/scrolling movement happened
+        var skipClick = _didDragOrScroll;
+        _didDragOrScroll = false;
+
         // End any active drag operation
-        _activeDragControl?.IsDragging = false;
-        _activeDragControl = null;
+        if (_activeDragControl != null)
+        {
+            _activeDragControl.IsDragging = false;
+            _activeDragControl = null;
+        }
 
         // End any active scrolling operation
-        _activeScrollControl?.IsScrolling = false;
-        _activeScrollControl = null;
+        if (_activeScrollControl != null)
+        {
+            _activeScrollControl.IsScrolling = false;
+            _activeScrollControl = null;
+        }
+
+        // Skip click handling if actual dragging or scrolling happened
+        if (skipClick)
+        {
+            return;
+        }
 
         //we have an up action
         var point = new Point(location.X, location.Y);
@@ -119,6 +151,17 @@ public class InputService
             };
         }
 
+        // Set focus to clicked control if it's focusable
+        if (hitControl is IFocusable focusable && focusable.IsFocusable)
+        {
+            _focusManager.SetFocus(focusable);
+        }
+        else if (hitControl != null)
+        {
+            // Clicked on non-focusable control - clear focus
+            _focusManager.ClearFocus();
+        }
+
         if (hitControl is IInputControl inputControl)
         {
             inputControl.InvokeCommand();
@@ -153,11 +196,234 @@ public class InputService
             toggleButtonControl.Toggle();
         }
 
+        // Gesture detection: Swipe
+        var deltaX = location.X - _mouseDownPosition.X;
+        var deltaY = location.Y - _mouseDownPosition.Y;
+        var swipeDirection = DetectSwipeDirection(deltaX, deltaY);
+        if (swipeDirection != SwipeDirection.None)
+        {
+            var swipeControl = FindGestureControl<ISwipeGestureControl>(hitControl);
+            if (swipeControl != null && (swipeControl.AllowedDirections & swipeDirection) != 0)
+            {
+                swipeControl.OnSwipe(swipeDirection);
+                _lastTapTime = DateTime.MinValue;
+                return;
+            }
+        }
+
+        // Gesture detection: DoubleTap
+        var now = DateTime.UtcNow;
+        if (hitControl != null && hitControl == _lastTapElement &&
+            (now - _lastTapTime).TotalMilliseconds < DoubleTapThresholdMs)
+        {
+            var doubleTapControl = FindGestureControl<IDoubleTapGestureControl>(hitControl);
+            if (doubleTapControl != null)
+            {
+                doubleTapControl.OnDoubleTap();
+                _lastTapTime = DateTime.MinValue;
+                _lastTapElement = null;
+                return;
+            }
+        }
+
+        _lastTapTime = now;
+        _lastTapElement = hitControl;
+    }
+
+    public void RightClick(Vector2 location)
+    {
+        var point = new Point(location.X, location.Y);
+        var hitControl = HitTestAll(point);
+
+        // Check for context menu first
+        var contextMenu = FindContextMenu(hitControl);
+        if (contextMenu != null)
+        {
+            contextMenu.Open(point);
+            return;
+        }
+
+        // Fall back to long press gesture
+        var longPressControl = FindGestureControl<ILongPressGestureControl>(hitControl);
+        longPressControl?.OnLongPress();
+    }
+
+    /// <summary>
+    /// Finds the context menu attached to the element or any of its parents.
+    /// </summary>
+    private ContextMenu? FindContextMenu(UiElement? element)
+    {
+        while (element != null)
+        {
+            if (element.ContextMenu != null)
+                return element.ContextMenu;
+            element = element.Parent;
+        }
+        return null;
+    }
+
+    private SwipeDirection DetectSwipeDirection(float deltaX, float deltaY)
+    {
+        var absX = Math.Abs(deltaX);
+        var absY = Math.Abs(deltaY);
+
+        if (absX < SwipeThreshold && absY < SwipeThreshold)
+            return SwipeDirection.None;
+
+        if (absX > absY)
+            return deltaX > 0 ? SwipeDirection.Right : SwipeDirection.Left;
+        else
+            return deltaY > 0 ? SwipeDirection.Down : SwipeDirection.Up;
+    }
+
+    private T? FindGestureControl<T>(UiElement? element) where T : class, IGestureControl
+    {
+        while (element != null)
+        {
+            if (element is T gestureControl)
+                return gestureControl;
+            element = element.Parent;
+        }
+        return null;
+    }
+
+    private UiElement? HitTestAll(Point point)
+    {
+        foreach (var overlay in _overlayService.Overlays)
+        {
+            var hit = overlay.HitTest(point);
+            if (hit != null) return hit;
+        }
+
+        var popup = _popupService.CurrentPopup;
+        if (popup != null)
+        {
+            var hit = popup.HitTest(point);
+            if (hit != null) return hit;
+        }
+
+        return _navigationContainer.CurrentPage.HitTest(point);
     }
 
     public void HandleKeyInput(object? sender, PlusKey key)
     {
+        var focused = _focusManager.FocusedElement;
+
+        // Tab always navigates focus
+        if (key == PlusKey.Tab)
+        {
+            _focusManager.MoveFocus(FocusNavigationDirection.Next);
+            SyncTextInputWithFocus();
+            return;
+        }
+        if (key == PlusKey.ShiftTab)
+        {
+            _focusManager.MoveFocus(FocusNavigationDirection.Previous);
+            SyncTextInputWithFocus();
+            return;
+        }
+
+        // If focused element handles keyboard input specially, let it handle arrow keys
+        if (focused is IKeyboardInputHandler keyboardHandler)
+        {
+            if (keyboardHandler.HandleKeyboardInput(key))
+            {
+                return; // Control handled the key
+            }
+        }
+
+        // Arrow keys for focus navigation (only if not handled by control and not in text input)
+        if (_textInputControl == null)
+        {
+            switch (key)
+            {
+                case PlusKey.ArrowUp:
+                    _focusManager.MoveFocus(FocusNavigationDirection.Up);
+                    SyncTextInputWithFocus();
+                    return;
+                case PlusKey.ArrowDown:
+                    _focusManager.MoveFocus(FocusNavigationDirection.Down);
+                    SyncTextInputWithFocus();
+                    return;
+                case PlusKey.ArrowLeft:
+                    _focusManager.MoveFocus(FocusNavigationDirection.Left);
+                    SyncTextInputWithFocus();
+                    return;
+                case PlusKey.ArrowRight:
+                    _focusManager.MoveFocus(FocusNavigationDirection.Right);
+                    SyncTextInputWithFocus();
+                    return;
+            }
+        }
+
+        // Enter/Space to activate (unless in text input for Space)
+        if (key == PlusKey.Enter || (key == PlusKey.Space && _textInputControl == null))
+        {
+            ActivateFocusedElement();
+            return;
+        }
+
+        // Forward to text input control
         _textInputControl?.HandleInput(key);
+    }
+
+    /// <summary>
+    /// Syncs the text input control state with the currently focused element.
+    /// </summary>
+    private void SyncTextInputWithFocus()
+    {
+        var focused = _focusManager.FocusedElement;
+
+        // If focused element is a text input, activate it
+        if (focused is ITextInputControl textInput)
+        {
+            if (_textInputControl != textInput)
+            {
+                _textInputControl?.SetSelectionStatus(false);
+                _textInputControl = textInput;
+                _textInputControl.SetSelectionStatus(true);
+
+                if (textInput is Entry entry)
+                {
+                    _keyboardHandler.Show(entry.Keyboard, entry.ReturnKey, entry.IsPassword);
+                }
+                else
+                {
+                    _keyboardHandler.Show();
+                }
+            }
+        }
+        else if (_textInputControl != null)
+        {
+            // Focused element is not a text input, deactivate current text input
+            _textInputControl.SetSelectionStatus(false);
+            _textInputControl = null;
+            _keyboardHandler.Hide();
+        }
+    }
+
+    /// <summary>
+    /// Activates the currently focused element (simulates a click).
+    /// </summary>
+    private void ActivateFocusedElement()
+    {
+        var focused = _focusManager.FocusedElement;
+        if (focused == null)
+        {
+            return;
+        }
+
+        // Handle IInputControl (buttons, links)
+        if (focused is IInputControl inputControl)
+        {
+            inputControl.InvokeCommand();
+        }
+
+        // Handle IToggleButtonControl (checkbox, toggle, radio)
+        if (focused is IToggleButtonControl toggleControl)
+        {
+            toggleControl.Toggle();
+        }
     }
     
     public void HandleCharInput(object? sender, char chr)
@@ -173,7 +439,11 @@ public class InputService
             float deltaX = location.X - _lastMousePosition.X;
             float deltaY = location.Y - _lastMousePosition.Y;
 
-            _activeDragControl.HandleDrag(deltaX, deltaY);
+            if (Math.Abs(deltaX) > 1 || Math.Abs(deltaY) > 1)
+            {
+                _didDragOrScroll = true;
+                _activeDragControl.HandleDrag(deltaX, deltaY);
+            }
         }
         // Handle scrolling if active
         else if (_isMousePressed && _activeScrollControl != null)
@@ -181,7 +451,11 @@ public class InputService
             float deltaX = _lastMousePosition.X - location.X;
             float deltaY = _lastMousePosition.Y - location.Y;
 
-            _activeScrollControl.HandleScroll(deltaX, deltaY);
+            if (Math.Abs(deltaX) > 1 || Math.Abs(deltaY) > 1)
+            {
+                _didDragOrScroll = true;
+                _activeScrollControl.HandleScroll(deltaX, deltaY);
+            }
         }
 
         // Update hover state
@@ -222,10 +496,15 @@ public class InputService
         // Update hover states
         if (hitElement != _hoveredElement)
         {
+            var oldElement = _hoveredElement;
+
             if (_hoveredElement is IHoverableControl oldHoverable)
             {
                 oldHoverable.IsHovered = false;
             }
+
+            // Notify tooltip service of hover leave
+            _tooltipService.OnHoverLeave(oldElement);
 
             _hoveredElement = hitElement;
 
@@ -233,23 +512,52 @@ public class InputService
             {
                 newHoverable.IsHovered = true;
             }
+
+            // Notify tooltip service of hover enter
+            _tooltipService.OnHoverEnter(_hoveredElement);
         }
     }
     
     public void MouseWheel(Vector2 location, float deltaX, float deltaY)
     {
-        // Find the scrollable control under the mouse cursor
-        var currentPopup = _popupService.CurrentPopup;
-        var hitControl = (currentPopup) switch
+        var point = new Point(location.X, location.Y);
+        var hitControl = HitTestAll(point);
+
+        // Pinch gesture (Ctrl + MouseWheel on desktop)
+        if (_isCtrlPressed)
         {
-            not null => currentPopup.HitTest(new(location.X, location.Y)),
-            _ => _navigationContainer.CurrentPage.HitTest(new(location.X, location.Y))
-        };
-        
+            var pinchControl = FindGestureControl<IPinchGestureControl>(hitControl);
+            if (pinchControl != null)
+            {
+                var scale = 1.0f + (deltaY * 0.01f);
+                pinchControl.OnPinch(scale);
+                return;
+            }
+        }
+
         // Scroll the control if it's scrollable
         if (hitControl is IScrollableControl scrollControl)
         {
             scrollControl.HandleScroll(deltaX, deltaY);
         }
+    }
+
+    public void SetCtrlPressed(bool isPressed)
+    {
+        _isCtrlPressed = isPressed;
+    }
+
+    public void LongPress(Vector2 location)
+    {
+        RightClick(location);
+    }
+
+    public void HandlePinch(Vector2 location, float scale)
+    {
+        var point = new Point(location.X, location.Y);
+        var hitControl = HitTestAll(point);
+
+        var pinchControl = FindGestureControl<IPinchGestureControl>(hitControl);
+        pinchControl?.OnPinch(scale);
     }
 }

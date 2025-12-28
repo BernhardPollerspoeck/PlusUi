@@ -29,4 +29,34 @@ public enum PlusKey
     /// Space bar key.
     /// </summary>
     Space = 5,
+
+    /// <summary>
+    /// Shift+Tab key combination for reverse focus navigation.
+    /// </summary>
+    ShiftTab = 6,
+
+    /// <summary>
+    /// Escape key for canceling or closing.
+    /// </summary>
+    Escape = 7,
+
+    /// <summary>
+    /// Arrow Up key for directional navigation.
+    /// </summary>
+    ArrowUp = 8,
+
+    /// <summary>
+    /// Arrow Down key for directional navigation.
+    /// </summary>
+    ArrowDown = 9,
+
+    /// <summary>
+    /// Arrow Left key for directional navigation.
+    /// </summary>
+    ArrowLeft = 10,
+
+    /// <summary>
+    /// Arrow Right key for directional navigation.
+    /// </summary>
+    ArrowRight = 11,
 }
