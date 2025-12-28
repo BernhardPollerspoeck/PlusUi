@@ -45,8 +45,8 @@ internal class WindowManager(
             Size = new(uiOptions.Value.Size.Width, uiOptions.Value.Size.Height),
             Title = uiOptions.Value.Title,
             Position = new(uiOptions.Value.Position.Width, uiOptions.Value.Position.Height),
-            WindowState = uiOptions.Value.WindowState,
-            WindowBorder = uiOptions.Value.WindowBorder,
+            WindowState = (Silk.NET.Windowing.WindowState)uiOptions.Value.WindowState,
+            WindowBorder = (Silk.NET.Windowing.WindowBorder)uiOptions.Value.WindowBorder,
             TopMost = uiOptions.Value.IsWindowTopMost,
             TransparentFramebuffer = uiOptions.Value.IsWindowTransparent,
         };
@@ -79,7 +79,7 @@ internal class WindowManager(
             return;
         }
         renderService.Render(
-            _glContext,
+            () => _glContext.Clear((uint)ClearBufferMask.ColorBufferBit),
             _canvas,
             _grContext,
             new(_window.Size.X, _window.Size.Y));

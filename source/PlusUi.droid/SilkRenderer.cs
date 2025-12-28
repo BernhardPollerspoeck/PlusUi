@@ -53,7 +53,7 @@ internal class SilkRenderer(
         }
 
         renderService.Render(
-            _glContext,
+            () => _glContext.Clear((uint)ClearBufferMask.ColorBufferBit),
             _canvas,
             _grContext,
             new(_size.Value.X, _size.Value.Y));

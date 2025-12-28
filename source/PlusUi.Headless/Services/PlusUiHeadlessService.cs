@@ -62,9 +62,9 @@ internal class PlusUiHeadlessService
 
         // 2. Render current frame (Measure + Arrange + Render)
         _renderService.Render(
-            gl: null,  // No OpenGL
+            clearAction: null,
             canvas: canvas,
-            grContext: null,  // No GPU context
+            grContext: null,
             canvasSize: new Vector2(_frameSize.Width, _frameSize.Height)
         );
 

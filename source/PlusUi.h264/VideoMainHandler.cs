@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlusUi.core;
-using Silk.NET.Maths;
 using SkiaSharp;
 using System.Numerics;
 using System.Threading.Channels;
@@ -43,7 +42,7 @@ internal class VideoMainHandler(
 
             // Update UI bindings and render frame
             navigationContainer.CurrentPage.UpdateBindings();
-            renderService.Render(null, canvas, null, canvasSize);
+            renderService.Render(clearAction: null, canvas, grContext: null, canvasSize);
 
             // Create and write video frame
             var videoFrame = new SkiaSharpVideoFrame(bitmap.Copy());

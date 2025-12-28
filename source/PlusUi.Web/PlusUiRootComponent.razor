@@ -87,7 +87,7 @@
             // Call the platform-agnostic render service
             // Note: We pass null for GL and GRContext since Blazor SkiaSharp handles this internally
             RenderService.Render(
-                gl: null,
+                clearAction: null,
                 canvas: canvas,
                 grContext: null,
                 canvasSize: new Vector2(_width, _height));

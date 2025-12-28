@@ -4,7 +4,6 @@ using PlusUi.core;
 using PlusUi.core.Services;
 using PlusUi.Headless.Enumerations;
 using PlusUi.Headless.Services;
-using Silk.NET.Maths;
 
 namespace PlusUi.Headless;
 

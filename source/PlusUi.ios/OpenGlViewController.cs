@@ -5,7 +5,6 @@ using PlusUi.core;
 using PlusUi.core.Services;
 using PlusUi.core.Services.Accessibility;
 using PlusUi.ios.Accessibility;
-using Silk.NET.Maths;
 using SkiaSharp.Views.iOS;
 using System.Numerics;
 
@@ -127,7 +126,7 @@ public class OpenGlViewController(
     {
         var canvas = e.Surface.Canvas;
         var canvasSize = new Vector2(e.Info.Width, e.Info.Height);
-        renderService.Render(null, canvas, null, canvasSize);
+        renderService.Render(clearAction: null, canvas, grContext: null, canvasSize);
     }
 
     public override void ViewDidLayoutSubviews()

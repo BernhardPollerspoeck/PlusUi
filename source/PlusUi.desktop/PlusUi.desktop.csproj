@@ -25,8 +25,14 @@
    <None Include="..\..\README.md" Link="readme.md" Pack="true" PackagePath="readme.md" />
  </ItemGroup>  
 
- <ItemGroup>  
-   <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />  
- </ItemGroup>  
+ <ItemGroup>
+   <PackageReference Include="Silk.NET.Input" Version="2.22.0" />
+   <PackageReference Include="Silk.NET.OpenGL" Version="2.22.0" />
+   <PackageReference Include="Silk.NET.Windowing" Version="2.22.0" />
+ </ItemGroup>
+
+ <ItemGroup>
+   <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />
+ </ItemGroup>
 
 </Project>

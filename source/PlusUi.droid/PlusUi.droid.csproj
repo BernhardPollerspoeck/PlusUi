@@ -12,6 +12,10 @@
     <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Silk.NET.OpenGL" Version="2.22.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />
   </ItemGroup>
 </Project>

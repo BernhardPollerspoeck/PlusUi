@@ -1,5 +1,4 @@
-﻿using PlusUi.core.Animations;
-using Silk.NET.Windowing;
+using PlusUi.core.Animations;
 
 namespace PlusUi.core;
 

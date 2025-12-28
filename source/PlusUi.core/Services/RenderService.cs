@@ -1,4 +1,3 @@
-﻿using Silk.NET.OpenGL;
 using SkiaSharp;
 using System.Numerics;
 using System.Diagnostics;
@@ -9,66 +8,62 @@ namespace PlusUi.core;
 
 public class RenderService(NavigationContainer navigationContainer, PlusUiPopupService popupService, OverlayService overlayService, ITransitionService transitionService, ILogger<RenderService>? logger = null, IAppMonitor? appMonitor = null)
 {
-    private readonly ILogger<RenderService>? _logger = logger;
-    private readonly IAppMonitor? _appMonitor = appMonitor;
-    private readonly ITransitionService _transitionService = transitionService;
-
     public float DisplayDensity { get; set; } = 1.0f;
 
-    public void Render(GL? gl, SKCanvas canvas, GRContext? grContext, Vector2 canvasSize)
+    public void Render(Action? clearAction, SKCanvas canvas, GRContext? grContext, Vector2 canvasSize)
     {
-        var frameTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
+        var frameTimer = appMonitor != null ? Stopwatch.StartNew() : null;
 
         try
         {
             canvas.Save();
             canvas.Scale(DisplayDensity);
 
-            gl?.Clear((uint)ClearBufferMask.ColorBufferBit);
+            clearAction?.Invoke();
             canvas.Clear(SKColors.Transparent);
 
             var availableSize = new Size(canvasSize.X, canvasSize.Y);
             var bounds = new Rect(0, 0, canvasSize.X, canvasSize.Y);
 
-            var measureTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
+            var measureTimer = appMonitor != null ? Stopwatch.StartNew() : null;
             navigationContainer.CurrentPage.Measure(availableSize);
 
             // If transitioning, also measure outgoing page
-            if (_transitionService.IsTransitioning && _transitionService.OutgoingPage != null)
+            if (transitionService.IsTransitioning && transitionService.OutgoingPage != null)
             {
-                _transitionService.OutgoingPage.Measure(availableSize);
+                transitionService.OutgoingPage.Measure(availableSize);
             }
 
             if (measureTimer != null)
             {
                 measureTimer.Stop();
-                _appMonitor?.ReportMeasureTime(measureTimer.Elapsed.TotalMilliseconds);
+                appMonitor?.ReportMeasureTime(measureTimer.Elapsed.TotalMilliseconds);
             }
 
-            var arrangeTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
+            var arrangeTimer = appMonitor != null ? Stopwatch.StartNew() : null;
             navigationContainer.CurrentPage.Arrange(bounds);
 
             // If transitioning, also arrange outgoing page
-            if (_transitionService.IsTransitioning && _transitionService.OutgoingPage != null)
+            if (transitionService.IsTransitioning && transitionService.OutgoingPage != null)
             {
-                _transitionService.OutgoingPage.Arrange(bounds);
+                transitionService.OutgoingPage.Arrange(bounds);
             }
 
             if (arrangeTimer != null)
             {
                 arrangeTimer.Stop();
-                _appMonitor?.ReportArrangeTime(arrangeTimer.Elapsed.TotalMilliseconds);
+                appMonitor?.ReportArrangeTime(arrangeTimer.Elapsed.TotalMilliseconds);
             }
 
             // Update transition state AFTER measure/arrange so ElementSize is available
-            _transitionService.Update();
+            transitionService.Update();
 
-            var renderTimer = _appMonitor != null ? Stopwatch.StartNew() : null;
+            var renderTimer = appMonitor != null ? Stopwatch.StartNew() : null;
 
             // If transitioning, render outgoing page first (below)
-            if (_transitionService.IsTransitioning && _transitionService.OutgoingPage != null)
+            if (transitionService.IsTransitioning && transitionService.OutgoingPage != null)
             {
-                _transitionService.OutgoingPage.Render(canvas);
+                transitionService.OutgoingPage.Render(canvas);
             }
 
             // Render current page (on top during transition)
@@ -91,7 +86,7 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
             if (renderTimer != null)
             {
                 renderTimer.Stop();
-                _appMonitor?.ReportRenderTime(renderTimer.Elapsed.TotalMilliseconds);
+                appMonitor?.ReportRenderTime(renderTimer.Elapsed.TotalMilliseconds);
             }
 
             canvas.Restore();
@@ -99,12 +94,12 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
             if (frameTimer != null)
             {
                 frameTimer.Stop();
-                _appMonitor?.ReportFrameTime(frameTimer.Elapsed.TotalMilliseconds);
+                appMonitor?.ReportFrameTime(frameTimer.Elapsed.TotalMilliseconds);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Render error at canvas size {CanvasSize}", canvasSize);
+            logger?.LogError(ex, "Render error at canvas size {CanvasSize}", canvasSize);
             // Re-throw to let the caller handle critical rendering errors
             throw;
         }
