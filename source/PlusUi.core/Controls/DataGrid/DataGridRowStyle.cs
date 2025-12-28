@@ -1,5 +1,3 @@
-using SkiaSharp;
-
 namespace PlusUi.core;
 
 /// <summary>
@@ -9,5 +7,5 @@ namespace PlusUi.core;
 /// <param name="Foreground">The foreground (text) color of the row, or null to use the default.</param>
 public readonly record struct DataGridRowStyle(
     IBackground? Background = null,
-    SKColor? Foreground = null
+    Color? Foreground = null
 );

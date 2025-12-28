@@ -17,7 +17,7 @@ public partial class Separator : UiElement
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.None;
 
     #region Color
-    internal SKColor Color
+    internal Color Color
     {
         get => field;
         set
@@ -25,15 +25,15 @@ public partial class Separator : UiElement
             field = value;
             LinePaint = CreateLinePaint();
         }
-    } = new SKColor(200, 200, 200);
+    } = new Color(200, 200, 200);
 
-    public Separator SetColor(SKColor color)
+    public Separator SetColor(Color color)
     {
         Color = color;
         return this;
     }
 
-    public Separator BindColor(string propertyName, Func<SKColor> propertyGetter)
+    public Separator BindColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => Color = propertyGetter());
         return this;

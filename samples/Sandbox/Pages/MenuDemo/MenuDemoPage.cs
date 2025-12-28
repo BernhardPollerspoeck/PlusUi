@@ -13,7 +13,7 @@ public class MenuDemoPage(MenuDemoPageViewModel vm) : UiPageElement(vm)
                 .SetText("<- Back")
                 .SetTextSize(16)
                 .SetCommand(vm.GoBackCommand)
-                .SetTextColor(SKColors.White)
+                .SetTextColor(Colors.White)
                 .SetPadding(new Margin(10, 5)),
 
             // Menu bar
@@ -60,44 +60,44 @@ public class MenuDemoPage(MenuDemoPageViewModel vm) : UiPageElement(vm)
                 new Label()
                     .SetText("Menu Demo")
                     .SetTextSize(24)
-                    .SetTextColor(SKColors.White)
+                    .SetTextColor(Colors.White)
                     .SetMargin(new Margin(0, 20)),
 
                 new Label()
                     .SetText("Click on menu items above to test the menu functionality.")
                     .SetTextSize(14)
-                    .SetTextColor(SKColors.LightGray)
+                    .SetTextColor(Colors.LightGray)
                     .SetMargin(new Margin(0, 10)),
 
                 new HStack(
                     new Label()
                         .SetText("Last action: ")
                         .SetTextSize(14)
-                        .SetTextColor(SKColors.White),
+                        .SetTextColor(Colors.White),
                     new Label()
                         .BindText(nameof(vm.LastAction), () => vm.LastAction)
                         .SetTextSize(14)
-                        .SetTextColor(SKColors.LightGreen)
+                        .SetTextColor(Colors.LightGreen)
                 ).SetMargin(new Margin(0, 20)),
 
                 // ContextMenu demo
                 new Label()
                     .SetText("Context Menu Demo")
                     .SetTextSize(20)
-                    .SetTextColor(SKColors.White)
+                    .SetTextColor(Colors.White)
                     .SetMargin(new Margin(0, 30, 0, 10)),
 
                 new Label()
                     .SetText("Right-click on the button below to see a context menu:")
                     .SetTextSize(14)
-                    .SetTextColor(SKColors.LightGray)
+                    .SetTextColor(Colors.LightGray)
                     .SetMargin(new Margin(0, 10)),
 
                 new Button()
                     .SetText("Right-click me!")
                     .SetTextSize(16)
-                    .SetTextColor(SKColors.White)
-                    .SetBackground(new SKColor(60, 60, 120))
+                    .SetTextColor(Colors.White)
+                    .SetBackground(new Color(60, 60, 120))
                     .SetPadding(new Margin(20, 10))
                     .SetContextMenu(new ContextMenu()
                         .AddItem(new MenuItem().SetText("Cut").SetShortcut("Ctrl+X").SetCommand(vm.CutCommand))

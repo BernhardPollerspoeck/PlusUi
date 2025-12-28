@@ -176,7 +176,7 @@ public sealed class FontTests
             .SetFontWeight(FontWeight.Bold)
             .SetFontStyle(FontStyle.Italic)
             .SetTextSize(18)
-            .SetTextColor(SkiaSharp.SKColors.Black);
+            .SetTextColor(Colors.Black);
 
         // Assert
         Assert.IsNotNull(label);

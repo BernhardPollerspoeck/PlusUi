@@ -502,13 +502,13 @@ public sealed class ToolbarTests
         var toolbar = new Toolbar()
             .SetTitle("Test Title")
             .SetTitleFontSize(24)
-            .SetTitleColor(SKColors.Blue)
+            .SetTitleColor(Colors.Blue)
             .SetTitleAlignment(TitleAlignment.Left);
 
         // Assert
         Assert.AreEqual("Test Title", toolbar.Title);
         Assert.AreEqual(24, toolbar.TitleFontSize);
-        Assert.AreEqual(SKColors.Blue, toolbar.TitleColor);
+        Assert.AreEqual(Colors.Blue, toolbar.TitleColor);
         Assert.AreEqual(TitleAlignment.Left, toolbar.TitleAlignment);
     }
 
@@ -521,7 +521,7 @@ public sealed class ToolbarTests
         // Assert - Check default values
         Assert.AreEqual(TitleAlignment.Center, toolbar.TitleAlignment);
         Assert.AreEqual(20, toolbar.TitleFontSize);
-        Assert.AreEqual(SKColors.Black, toolbar.TitleColor);
+        Assert.AreEqual(Colors.Black, toolbar.TitleColor);
         Assert.AreEqual(8, toolbar.ItemSpacing);
         Assert.AreEqual(OverflowBehavior.None, toolbar.OverflowBehavior);
         Assert.AreEqual(600, toolbar.OverflowThreshold);

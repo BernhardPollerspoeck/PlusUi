@@ -82,22 +82,22 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
     #endregion
 
     #region OnColor
-    internal SKColor OnColor
+    internal Color OnColor
     {
         get => field;
         set
         {
             field = value;
         }
-    } = new SKColor(52, 199, 89); // iOS green
+    } = new Color(52, 199, 89); // iOS green
 
-    public Toggle SetOnColor(SKColor color)
+    public Toggle SetOnColor(Color color)
     {
         OnColor = color;
         return this;
     }
 
-    public Toggle BindOnColor(string propertyName, Func<SKColor> propertyGetter)
+    public Toggle BindOnColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => OnColor = propertyGetter());
         return this;
@@ -105,22 +105,22 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
     #endregion
 
     #region OffColor
-    internal SKColor OffColor
+    internal Color OffColor
     {
         get => field;
         set
         {
             field = value;
         }
-    } = new SKColor(120, 120, 128); // iOS gray
+    } = new Color(120, 120, 128); // iOS gray
 
-    public Toggle SetOffColor(SKColor color)
+    public Toggle SetOffColor(Color color)
     {
         OffColor = color;
         return this;
     }
 
-    public Toggle BindOffColor(string propertyName, Func<SKColor> propertyGetter)
+    public Toggle BindOffColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => OffColor = propertyGetter());
         return this;
@@ -128,22 +128,22 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
     #endregion
 
     #region ThumbColor
-    internal SKColor ThumbColor
+    internal Color ThumbColor
     {
         get => field;
         set
         {
             field = value;
         }
-    } = SKColors.White;
+    } = Colors.White;
 
-    public Toggle SetThumbColor(SKColor color)
+    public Toggle SetThumbColor(Color color)
     {
         ThumbColor = color;
         return this;
     }
 
-    public Toggle BindThumbColor(string propertyName, Func<SKColor> propertyGetter)
+    public Toggle BindThumbColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => ThumbColor = propertyGetter());
         return this;

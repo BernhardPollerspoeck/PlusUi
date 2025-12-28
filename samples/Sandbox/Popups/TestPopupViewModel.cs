@@ -23,7 +23,7 @@ public class TestPopup(TestPopupViewModel vm) : UiPopupElement<string>(vm)
         return new VStack(
             new Label()
                 .SetText("Hello Popup")
-                .SetTextColor(SKColors.Black)
+                .SetTextColor(Colors.Black)
                 .SetHorizontalAlignment(HorizontalAlignment.Stretch),
             new Button()
                 .SetText("Close")
@@ -35,7 +35,7 @@ public class TestPopup(TestPopupViewModel vm) : UiPopupElement<string>(vm)
 
                 )
 
-            .SetBackground(new SolidColorBackground(SKColors.White));
+            .SetBackground(new SolidColorBackground(Colors.White));
 
     }
 }

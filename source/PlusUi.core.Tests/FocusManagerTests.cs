@@ -181,7 +181,7 @@ public class FocusManagerTests
     {
         // Arrange
         var button = new Button();
-        var color = new SkiaSharp.SKColor(255, 0, 0);
+        var color = new Color(255, 0, 0);
 
         // Act
         button.SetFocusRingColor(color);

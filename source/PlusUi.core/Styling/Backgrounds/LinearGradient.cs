@@ -11,12 +11,12 @@ public sealed class LinearGradient : IBackground
     /// <summary>
     /// The starting color of the gradient.
     /// </summary>
-    public SKColor StartColor { get; init; }
+    public Color StartColor { get; init; }
 
     /// <summary>
     /// The ending color of the gradient.
     /// </summary>
-    public SKColor EndColor { get; init; }
+    public Color EndColor { get; init; }
 
     /// <summary>
     /// The angle of the gradient in degrees (0-360).
@@ -30,7 +30,7 @@ public sealed class LinearGradient : IBackground
     /// <param name="startColor">Starting color</param>
     /// <param name="endColor">Ending color</param>
     /// <param name="angle">Gradient angle in degrees (default: 0)</param>
-    public LinearGradient(SKColor startColor, SKColor endColor, float angle = 0)
+    public LinearGradient(Color startColor, Color endColor, float angle = 0)
     {
         StartColor = startColor;
         EndColor = endColor;
@@ -68,8 +68,8 @@ public sealed class LinearGradient : IBackground
         using var shader = SKShader.CreateLinearGradient(
             startPoint,
             endPoint,
-            new[] { StartColor, EndColor },
-            new[] { 0f, 1f },
+            [(SKColor)StartColor, (SKColor)EndColor],
+            [0f, 1f],
             SKShaderTileMode.Clamp);
 
         using var paint = new SKPaint

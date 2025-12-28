@@ -12,7 +12,7 @@ public class TreeViewDemoPage(TreeViewDemoPageViewModel vm) : UiPageElement(vm)
                 .SetText("<- Back")
                 .SetTextSize(16)
                 .SetCommand(vm.GoBackCommand)
-                .SetTextColor(SKColors.White)
+                .SetTextColor(Colors.White)
                 .SetPadding(new Margin(10, 5)),
 
             new TreeView()
@@ -23,26 +23,26 @@ public class TreeViewDemoPage(TreeViewDemoPageViewModel vm) : UiPageElement(vm)
                 {
                     Drive d => new Label()
                         .SetText(":: " + d.Name)
-                        .SetTextColor(SKColors.Yellow)
+                        .SetTextColor(Colors.Yellow)
                         .SetVerticalAlignment(VerticalAlignment.Center),
                     Folder f => new Label()
                         .SetText("[+] " + f.Name)
-                        .SetTextColor(SKColors.LightBlue)
+                        .SetTextColor(Colors.LightBlue)
                         .SetVerticalAlignment(VerticalAlignment.Center),
                     FileItem file => new Label()
                         .SetText(file.Name)
-                        .SetTextColor(SKColors.White)
+                        .SetTextColor(Colors.White)
                         .SetVerticalAlignment(VerticalAlignment.Center),
                     _ => new Label()
                         .SetText(item?.ToString() ?? "")
-                        .SetTextColor(SKColors.Gray)
+                        .SetTextColor(Colors.Gray)
                         .SetVerticalAlignment(VerticalAlignment.Center)
                 })
                 .SetItemHeight(28)
                 .SetIndentation(24)
                 .SetExpanderSize(16)
                 .SetShowLines(true)
-                .SetLineColor(new SKColor(60, 60, 60))
+                .SetLineColor(new Color(60, 60, 60))
         );
     }
 }

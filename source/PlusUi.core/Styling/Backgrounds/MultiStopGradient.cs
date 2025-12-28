@@ -77,7 +77,7 @@ public sealed class MultiStopGradient : IBackground
         var endPoint = new SKPoint(endX, endY);
 
         // Extract colors and positions from stops
-        var colors = Stops.Select(s => s.Color).ToArray();
+        var colors = Stops.Select(s => (SKColor)s.Color).ToArray();
         var positions = Stops.Select(s => s.Position).ToArray();
 
         using var shader = SKShader.CreateLinearGradient(

@@ -16,7 +16,7 @@ internal partial class ItemsListDemoPageViewModel : ObservableObject
     {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public SKColor Color { get; set; }
+        public Color Color { get; set; }
     }
 
     [ObservableProperty]
@@ -96,9 +96,9 @@ internal partial class ItemsListDemoPageViewModel : ObservableObject
         _navigationService.NavigateTo<MainPage>();
     }
 
-    private SKColor GetRandomColor()
+    private Color GetRandomColor()
     {
-        return new SKColor(
+        return new Color(
             (byte)_random.Next(100, 256),
             (byte)_random.Next(100, 256),
             (byte)_random.Next(100, 256)

@@ -10,7 +10,7 @@ namespace PlusUi.core;
 /// </summary>
 internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKeyboardInputHandler
 {
-    private static readonly SKColor DefaultBackgroundColor = new SKColor(45, 45, 45);
+    private static readonly Color DefaultBackgroundColor = new Color(45, 45, 45);
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -34,12 +34,12 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
     #endregion
 
     #region Colors
-    internal SKColor HoverBackgroundColor { get; set; } = new SKColor(65, 65, 65);
-    internal SKColor TextColor { get; set; } = SKColors.White;
-    internal SKColor DisabledTextColor { get; set; } = new SKColor(128, 128, 128);
-    internal SKColor ShortcutColor { get; set; } = new SKColor(160, 160, 160);
-    internal SKColor SeparatorColor { get; set; } = new SKColor(80, 80, 80);
-    internal SKColor CheckmarkColor { get; set; } = new SKColor(100, 180, 255);
+    internal Color HoverBackgroundColor { get; set; } = new Color(65, 65, 65);
+    internal Color TextColor { get; set; } = Colors.White;
+    internal Color DisabledTextColor { get; set; } = new Color(128, 128, 128);
+    internal Color ShortcutColor { get; set; } = new Color(160, 160, 160);
+    internal Color SeparatorColor { get; set; } = new Color(80, 80, 80);
+    internal Color CheckmarkColor { get; set; } = new Color(100, 180, 255);
     #endregion
 
     private readonly List<object> _items;

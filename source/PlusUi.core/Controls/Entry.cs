@@ -127,13 +127,13 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
     #endregion
 
     #region PlaceholderColor
-    internal SKColor PlaceholderColor { get; set; } = new SKColor(180, 180, 180);
-    public Entry SetPlaceholderColor(SKColor color)
+    internal Color PlaceholderColor { get; set; } = new Color(180, 180, 180);
+    public Entry SetPlaceholderColor(Color color)
     {
         PlaceholderColor = color;
         return this;
     }
-    public Entry BindPlaceholderColor(string propertyName, Func<SKColor> propertyGetter)
+    public Entry BindPlaceholderColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => PlaceholderColor = propertyGetter());
         return this;

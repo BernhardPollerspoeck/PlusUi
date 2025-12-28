@@ -98,7 +98,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     #endregion
 
     #region TitleColor
-    internal SKColor TitleColor
+    internal Color TitleColor
     {
         get => field;
         set
@@ -107,13 +107,13 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
             _titleLabel?.SetTextColor(value);
             InvalidateMeasure();
         }
-    } = SKColors.Black;
-    public Toolbar SetTitleColor(SKColor color)
+    } = Colors.Black;
+    public Toolbar SetTitleColor(Color color)
     {
         TitleColor = color;
         return this;
     }
-    public Toolbar BindTitleColor(string propertyName, Func<SKColor> propertyGetter)
+    public Toolbar BindTitleColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => TitleColor = propertyGetter());
         return this;
@@ -265,13 +265,13 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     #endregion
 
     #region OverflowMenuBackground
-    internal SKColor OverflowMenuBackground { get; set; } = new SKColor(40, 40, 40);
-    public Toolbar SetOverflowMenuBackground(SKColor color)
+    internal Color OverflowMenuBackground { get; set; } = new Color(40, 40, 40);
+    public Toolbar SetOverflowMenuBackground(Color color)
     {
         OverflowMenuBackground = color;
         return this;
     }
-    public Toolbar BindOverflowMenuBackground(string propertyName, Func<SKColor> propertyGetter)
+    public Toolbar BindOverflowMenuBackground(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => OverflowMenuBackground = propertyGetter());
         return this;
@@ -279,13 +279,13 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     #endregion
 
     #region OverflowMenuItemBackground
-    internal SKColor OverflowMenuItemBackground { get; set; } = new SKColor(50, 50, 50);
-    public Toolbar SetOverflowMenuItemBackground(SKColor color)
+    internal Color OverflowMenuItemBackground { get; set; } = new Color(50, 50, 50);
+    public Toolbar SetOverflowMenuItemBackground(Color color)
     {
         OverflowMenuItemBackground = color;
         return this;
     }
-    public Toolbar BindOverflowMenuItemBackground(string propertyName, Func<SKColor> propertyGetter)
+    public Toolbar BindOverflowMenuItemBackground(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => OverflowMenuItemBackground = propertyGetter());
         return this;
@@ -293,13 +293,13 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     #endregion
 
     #region OverflowMenuItemHoverBackground
-    internal SKColor OverflowMenuItemHoverBackground { get; set; } = new SKColor(70, 70, 70);
-    public Toolbar SetOverflowMenuItemHoverBackground(SKColor color)
+    internal Color OverflowMenuItemHoverBackground { get; set; } = new Color(70, 70, 70);
+    public Toolbar SetOverflowMenuItemHoverBackground(Color color)
     {
         OverflowMenuItemHoverBackground = color;
         return this;
     }
-    public Toolbar BindOverflowMenuItemHoverBackground(string propertyName, Func<SKColor> propertyGetter)
+    public Toolbar BindOverflowMenuItemHoverBackground(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => OverflowMenuItemHoverBackground = propertyGetter());
         return this;
@@ -307,13 +307,13 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     #endregion
 
     #region OverflowMenuItemTextColor
-    internal SKColor OverflowMenuItemTextColor { get; set; } = SKColors.White;
-    public Toolbar SetOverflowMenuItemTextColor(SKColor color)
+    internal Color OverflowMenuItemTextColor { get; set; } = Colors.White;
+    public Toolbar SetOverflowMenuItemTextColor(Color color)
     {
         OverflowMenuItemTextColor = color;
         return this;
     }
-    public Toolbar BindOverflowMenuItemTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public Toolbar BindOverflowMenuItemTextColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => OverflowMenuItemTextColor = propertyGetter());
         return this;
@@ -472,7 +472,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
             _overflowButton = new Button()
                 .SetText("...")
                 .SetPadding(new Margin(8, 4))
-                .SetBackground(new SolidColorBackground(SKColors.Transparent))
+                .SetBackground(new SolidColorBackground(Colors.Transparent))
                 .SetTextColor(TitleColor)
                 .SetOnClick(ShowOverflowMenu);
             _overflowButton.Parent = this;
@@ -865,7 +865,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         _overflowMenuContent = new VStack();
         _overflowMenuContent.Parent = this;
         // Ensure VStack has no background (overlay draws the background) and ignore styling
-        _overflowMenuContent.SetBackground(new SolidColorBackground(SKColors.Transparent));
+        _overflowMenuContent.SetBackground(new SolidColorBackground(Colors.Transparent));
         _overflowMenuContent.IgnoreStyling();
 
         foreach (var item in _overflowItems)

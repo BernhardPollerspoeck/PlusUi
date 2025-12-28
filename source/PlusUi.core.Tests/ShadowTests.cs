@@ -13,7 +13,7 @@ public class ShadowTests
         var element = new Border();
 
         // Assert
-        Assert.AreEqual(SKColors.Transparent, element.ShadowColor);
+        Assert.AreEqual(Colors.Transparent, element.ShadowColor);
         Assert.AreEqual(0f, element.ShadowOffset.X);
         Assert.AreEqual(0f, element.ShadowOffset.Y);
         Assert.AreEqual(0f, element.ShadowBlur);
@@ -25,7 +25,7 @@ public class ShadowTests
     {
         // Arrange
         var element = new Border();
-        var shadowColor = SKColors.Black.WithAlpha(50);
+        var shadowColor = Colors.Black.WithAlpha(50);
 
         // Act
         element.SetShadowColor(shadowColor);
@@ -80,7 +80,7 @@ public class ShadowTests
     {
         // Arrange
         var element = new Border();
-        var shadowColor = SKColors.Black.WithAlpha(100);
+        var shadowColor = Colors.Black.WithAlpha(100);
         var offset = new Point(0, 4);
 
         // Act
@@ -108,17 +108,17 @@ public class ShadowTests
 
         // Act
         element.BindShadowColor("IsElevated", () => 
-            isElevated ? SKColors.Black.WithAlpha(100) : SKColors.Transparent);
+            isElevated ? Colors.Black.WithAlpha(100) : Colors.Transparent);
 
         // Initial state
-        Assert.AreEqual(SKColors.Transparent, element.ShadowColor);
+        Assert.AreEqual(Colors.Transparent, element.ShadowColor);
 
         // Update state
         isElevated = true;
         element.UpdateBindings("IsElevated");
 
         // Assert
-        Assert.AreEqual(SKColors.Black.WithAlpha(100), element.ShadowColor);
+        Assert.AreEqual(Colors.Black.WithAlpha(100), element.ShadowColor);
     }
 
     [TestMethod]
@@ -192,7 +192,7 @@ public class ShadowTests
     {
         // Arrange
         var label = new Label();
-        var shadowColor = SKColors.Black.WithAlpha(50);
+        var shadowColor = Colors.Black.WithAlpha(50);
 
         // Act
         label.SetShadowColor(shadowColor)
@@ -211,7 +211,7 @@ public class ShadowTests
     {
         // Arrange
         var button = new Button();
-        var shadowColor = SKColors.Black.WithAlpha(75);
+        var shadowColor = Colors.Black.WithAlpha(75);
 
         // Act
         button.SetShadowColor(shadowColor)
@@ -234,15 +234,15 @@ public class ShadowTests
         var border = new Border();
 
         // Act
-        border.SetBackground(SKColors.White)
+        border.SetBackground(Colors.White)
               .SetCornerRadius(8f)
-              .SetShadowColor(SKColors.Black.WithAlpha(50))
+              .SetShadowColor(Colors.Black.WithAlpha(50))
               .SetShadowOffset(new Point(0, 2))
               .SetShadowBlur(8f);
 
         // Assert
         Assert.AreEqual(8f, border.CornerRadius);
-        Assert.AreEqual(SKColors.Black.WithAlpha(50), border.ShadowColor);
+        Assert.AreEqual(Colors.Black.WithAlpha(50), border.ShadowColor);
         Assert.AreEqual(0f, border.ShadowOffset.X);
         Assert.AreEqual(2f, border.ShadowOffset.Y);
         Assert.AreEqual(8f, border.ShadowBlur);
@@ -257,13 +257,13 @@ public class ShadowTests
 
         // Act - Bind multiple shadow properties to elevation level
         element.BindShadowColor("Elevation", () => 
-                elevation > 0 ? SKColors.Black.WithAlpha((byte)(elevation * 10)) : SKColors.Transparent)
+                elevation > 0 ? Colors.Black.WithAlpha((byte)(elevation * 10)) : Colors.Transparent)
                .BindShadowOffset("Elevation", () => new Point(0, elevation))
                .BindShadowBlur("Elevation", () => elevation * 2f)
                .BindShadowSpread("Elevation", () => elevation * 0.5f);
 
         // Initial state
-        Assert.AreEqual(SKColors.Black.WithAlpha(20), element.ShadowColor);
+        Assert.AreEqual(Colors.Black.WithAlpha(20), element.ShadowColor);
         Assert.AreEqual(2f, element.ShadowOffset.Y);
         Assert.AreEqual(4f, element.ShadowBlur);
         Assert.AreEqual(1f, element.ShadowSpread);
@@ -273,7 +273,7 @@ public class ShadowTests
         element.UpdateBindings("Elevation");
 
         // Assert - All shadow properties should update
-        Assert.AreEqual(SKColors.Black.WithAlpha(60), element.ShadowColor);
+        Assert.AreEqual(Colors.Black.WithAlpha(60), element.ShadowColor);
         Assert.AreEqual(6f, element.ShadowOffset.Y);
         Assert.AreEqual(12f, element.ShadowBlur);
         Assert.AreEqual(3f, element.ShadowSpread);

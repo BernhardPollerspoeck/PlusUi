@@ -27,7 +27,7 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
 {
-    private static readonly SKColor DefaultBackgroundColor = new SKColor(35, 35, 35);
+    private static readonly Color DefaultBackgroundColor = new Color(35, 35, 35);
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => true;
@@ -47,55 +47,55 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     #endregion
 
     #region Colors
-    internal SKColor HoverBackgroundColor
+    internal Color HoverBackgroundColor
     {
         get => field;
         set { field = value; InvalidateMeasure(); }
-    } = new SKColor(55, 55, 55);
+    } = new Color(55, 55, 55);
 
-    public Menu SetHoverBackgroundColor(SKColor color)
+    public Menu SetHoverBackgroundColor(Color color)
     {
         HoverBackgroundColor = color;
         return this;
     }
 
-    public Menu BindHoverBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    public Menu BindHoverBackgroundColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => HoverBackgroundColor = propertyGetter());
         return this;
     }
 
-    internal SKColor ActiveBackgroundColor
+    internal Color ActiveBackgroundColor
     {
         get => field;
         set { field = value; InvalidateMeasure(); }
-    } = new SKColor(65, 65, 65);
+    } = new Color(65, 65, 65);
 
-    public Menu SetActiveBackgroundColor(SKColor color)
+    public Menu SetActiveBackgroundColor(Color color)
     {
         ActiveBackgroundColor = color;
         return this;
     }
 
-    public Menu BindActiveBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    public Menu BindActiveBackgroundColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => ActiveBackgroundColor = propertyGetter());
         return this;
     }
 
-    internal SKColor TextColor
+    internal Color TextColor
     {
         get => field;
         set { field = value; InvalidateMeasure(); }
-    } = SKColors.White;
+    } = Colors.White;
 
-    public Menu SetTextColor(SKColor color)
+    public Menu SetTextColor(Color color)
     {
         TextColor = color;
         return this;
     }
 
-    public Menu BindTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public Menu BindTextColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => TextColor = propertyGetter());
         return this;

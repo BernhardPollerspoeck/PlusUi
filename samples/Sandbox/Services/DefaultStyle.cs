@@ -6,12 +6,12 @@ namespace Sandbox.Services;
 internal class DefaultStyle : IApplicationStyle
 {
     // High Contrast colors - deutlich sichtbar
-    private static readonly SKColor HcBackground = SKColors.White;
-    private static readonly SKColor HcForeground = SKColors.Black;
-    private static readonly SKColor HcButtonBg = SKColors.Yellow;
-    private static readonly SKColor HcButtonText = SKColors.Black;
-    private static readonly SKColor HcLinkColor = SKColors.Blue;
-    private static readonly SKColor HcInputBg = SKColors.White;
+    private static readonly Color HcBackground = Colors.White;
+    private static readonly Color HcForeground = Colors.Black;
+    private static readonly Color HcButtonBg = Colors.Yellow;
+    private static readonly Color HcButtonText = Colors.Black;
+    private static readonly Color HcLinkColor = Colors.Blue;
+    private static readonly Color HcInputBg = Colors.White;
 
     public void ConfigureStyle(Style style)
     {
@@ -54,14 +54,14 @@ internal class DefaultStyle : IApplicationStyle
 
             .AddStyle<Entry>(element => element
                 .SetPadding(new(10, 5))
-                .SetTextColor(SKColors.White)
-                .SetBackground(new SolidColorBackground(SKColors.SlateGray))
+                .SetTextColor(Colors.White)
+                .SetBackground(new SolidColorBackground(Colors.SlateGray))
                 .SetDesiredWidth(200)
                 .SetHighContrastBackground(HcInputBg)
                 .SetHighContrastForeground(HcForeground))
 
             .AddStyle<Button>(element => element
-                .SetBackground(new SolidColorBackground(SKColors.Green))
+                .SetBackground(new SolidColorBackground(Colors.Green))
                 .SetHighContrastBackground(HcButtonBg)
                 .SetHighContrastForeground(HcButtonText))
 

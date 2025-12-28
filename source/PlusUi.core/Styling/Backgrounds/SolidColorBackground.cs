@@ -11,13 +11,13 @@ public sealed class SolidColorBackground : IBackground
     /// <summary>
     /// The color to fill the background with.
     /// </summary>
-    public SKColor Color { get; init; }
+    public Color Color { get; init; }
 
     /// <summary>
     /// Creates a solid color background with the specified color.
     /// </summary>
     /// <param name="color">The color to use</param>
-    public SolidColorBackground(SKColor color)
+    public SolidColorBackground(Color color)
     {
         Color = color;
     }
@@ -31,10 +31,10 @@ public sealed class SolidColorBackground : IBackground
     }
 
     /// <summary>
-    /// Implicit conversion from SKColor for convenience.
+    /// Implicit conversion from Color for convenience.
     /// </summary>
     /// <param name="color">The color to convert</param>
-    public static implicit operator SolidColorBackground(SKColor color)
+    public static implicit operator SolidColorBackground(Color color)
     {
         return new SolidColorBackground(color);
     }

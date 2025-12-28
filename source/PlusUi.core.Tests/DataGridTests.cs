@@ -91,8 +91,8 @@ public class DataGridTests
     {
         // Arrange
         var dataGrid = new DataGrid<Person>();
-        var background = new SolidColorBackground(SkiaSharp.SKColors.White);
-        var foreground = SkiaSharp.SKColors.Black;
+        var background = new SolidColorBackground(Colors.White);
+        var foreground = Colors.Black;
 
         // Act
         var result = dataGrid.SetEvenRowStyle(background, foreground);
@@ -109,8 +109,8 @@ public class DataGridTests
     {
         // Arrange
         var dataGrid = new DataGrid<Person>();
-        var background = new SolidColorBackground(new SkiaSharp.SKColor(245, 245, 245));
-        var foreground = SkiaSharp.SKColors.Black;
+        var background = new SolidColorBackground(new Color(245, 245, 245));
+        var foreground = Colors.Black;
 
         // Act
         var result = dataGrid.SetOddRowStyle(background, foreground);
@@ -128,8 +128,8 @@ public class DataGridTests
         // Arrange
         var dataGrid = new DataGrid<Person>();
         Func<Person, int, DataGridRowStyle> callback = (person, index) => new DataGridRowStyle(
-            Background: new SolidColorBackground(SkiaSharp.SKColors.Red),
-            Foreground: SkiaSharp.SKColors.White
+            Background: new SolidColorBackground(Colors.Red),
+            Foreground: Colors.White
         );
 
         // Act
@@ -962,15 +962,15 @@ public class DataGridTests
             new() { Name = "Charlie" }
         };
 
-        var evenBg = new SolidColorBackground(SkiaSharp.SKColors.White);
-        var oddBg = new SolidColorBackground(SkiaSharp.SKColors.LightGray);
+        var evenBg = new SolidColorBackground(Colors.White);
+        var oddBg = new SolidColorBackground(Colors.LightGray);
 
         var dataGrid = new DataGrid<Person>()
             .SetItemsSource(items)
             .AddColumn(new DataGridTextColumn<Person>().SetHeader("Name").SetBinding(p => p.Name))
             .SetAlternatingRowStyles(true)
-            .SetEvenRowStyle(evenBg, SkiaSharp.SKColors.Black)
-            .SetOddRowStyle(oddBg, SkiaSharp.SKColors.Black);
+            .SetEvenRowStyle(evenBg, Colors.Black)
+            .SetOddRowStyle(oddBg, Colors.Black);
 
         // Act
         dataGrid.Measure(new Size(400, 300));
@@ -995,9 +995,9 @@ public class DataGridTests
             .AddColumn(new DataGridTextColumn<Person>().SetHeader("Name").SetBinding(p => p.Name))
             .SetRowStyleCallback((person, index) => new DataGridRowStyle(
                 Background: person.IsActive
-                    ? new SolidColorBackground(SkiaSharp.SKColors.LightGreen)
-                    : new SolidColorBackground(SkiaSharp.SKColors.LightCoral),
-                Foreground: SkiaSharp.SKColors.Black
+                    ? new SolidColorBackground(Colors.LightGreen)
+                    : new SolidColorBackground(Colors.LightCoral),
+                Foreground: Colors.Black
             ));
 
         // Act
@@ -1018,10 +1018,10 @@ public class DataGridTests
             .SetItemsSource(items)
             .AddColumn(new DataGridTextColumn<Person>().SetHeader("Name").SetBinding(p => p.Name))
             .SetAlternatingRowStyles(true)
-            .SetEvenRowStyle(new SolidColorBackground(SkiaSharp.SKColors.White), SkiaSharp.SKColors.Black)
+            .SetEvenRowStyle(new SolidColorBackground(Colors.White), Colors.Black)
             .SetRowStyleCallback((person, index) => new DataGridRowStyle(
-                Background: new SolidColorBackground(SkiaSharp.SKColors.Yellow),
-                Foreground: SkiaSharp.SKColors.Black
+                Background: new SolidColorBackground(Colors.Yellow),
+                Foreground: Colors.Black
             ));
 
         // Act

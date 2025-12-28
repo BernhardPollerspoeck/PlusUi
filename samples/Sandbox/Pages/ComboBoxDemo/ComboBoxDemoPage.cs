@@ -15,12 +15,12 @@ public class ComboBoxDemoPage(ComboBoxDemoPageViewModel vm) : UiPageElement(vm)
                         .SetText("← Back")
                         .SetTextSize(16)
                         .SetCommand(vm.GoBackCommand)
-                        .SetTextColor(SKColors.White)
+                        .SetTextColor(Colors.White)
                         .SetPadding(new Margin(10, 5)),
                     new Label()
                         .SetText("ComboBox Demo")
                         .SetTextSize(24)
-                        .SetTextColor(SKColors.White)
+                        .SetTextColor(Colors.White)
                         .SetMargin(new Margin(20, 0, 0, 0))
                 ).SetMargin(new Margin(10, 10, 0, 10)),
 
@@ -31,50 +31,50 @@ public class ComboBoxDemoPage(ComboBoxDemoPageViewModel vm) : UiPageElement(vm)
                             new Label()
                                 .SetText("Current Selections:")
                                 .SetTextSize(14)
-                                .SetTextColor(SKColors.Gray),
+                                .SetTextColor(Colors.Gray),
                             new HStack(
                                 new Label()
                                     .SetText("Fruit: ")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.Gray),
+                                    .SetTextColor(Colors.Gray),
                                 new Label()
                                     .BindText(nameof(vm.SelectedFruit), () => vm.SelectedFruit ?? "(none)")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.LimeGreen)
+                                    .SetTextColor(Colors.LimeGreen)
                             ),
                             new HStack(
                                 new Label()
                                     .SetText("Color: ")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.Gray),
+                                    .SetTextColor(Colors.Gray),
                                 new Label()
                                     .BindText(nameof(vm.SelectedColor), () => vm.SelectedColor ?? "(none)")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.Cyan)
+                                    .SetTextColor(Colors.Cyan)
                             ),
                             new HStack(
                                 new Label()
                                     .SetText("Person: ")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.Gray),
+                                    .SetTextColor(Colors.Gray),
                                 new Label()
                                     .BindText(nameof(vm.SelectedPerson), () => vm.SelectedPerson?.Name ?? "(none)")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.Orange)
+                                    .SetTextColor(Colors.Orange)
                             ),
                             new HStack(
                                 new Label()
                                     .SetText("Country Index: ")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.Gray),
+                                    .SetTextColor(Colors.Gray),
                                 new Label()
                                     .BindText(nameof(vm.SelectedCountryIndex), () => vm.SelectedCountryIndex.ToString())
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.Pink)
+                                    .SetTextColor(Colors.Pink)
                             )
                         ).SetMargin(new Margin(16, 8))
                     )
-                    .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
+                    .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                     .SetCornerRadius(8)
                     .SetMargin(new Margin(20, 0, 20, 20)),
 
@@ -85,7 +85,7 @@ public class ComboBoxDemoPage(ComboBoxDemoPageViewModel vm) : UiPageElement(vm)
                         .SetPlaceholder("Select a fruit...")
                         .BindSelectedItem(nameof(vm.SelectedFruit), () => vm.SelectedFruit, f => vm.SelectedFruit = f)
                         .SetDesiredSize(new Size(250, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                        .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                         .SetCornerRadius(8)
                 ),
 
@@ -95,13 +95,13 @@ public class ComboBoxDemoPage(ComboBoxDemoPageViewModel vm) : UiPageElement(vm)
                         .BindItemsSource(nameof(vm.Colors), () => vm.Colors)
                         .SetPlaceholder("Pick a color...")
                         .BindSelectedItem(nameof(vm.SelectedColor), () => vm.SelectedColor, c => vm.SelectedColor = c)
-                        .SetTextColor(SKColors.Cyan)
-                        .SetPlaceholderColor(new SKColor(100, 150, 150))
-                        .SetDropdownBackground(new SKColor(20, 40, 40))
-                        .SetHoverBackground(new SKColor(40, 80, 80))
+                        .SetTextColor(Colors.Cyan)
+                        .SetPlaceholderColor(new Color(100, 150, 150))
+                        .SetDropdownBackground(new Color(20, 40, 40))
+                        .SetHoverBackground(new Color(40, 80, 80))
                         .SetTextSize(16)
                         .SetDesiredSize(new Size(250, 44))
-                        .SetBackground(new SolidColorBackground(new SKColor(30, 60, 60)))
+                        .SetBackground(new SolidColorBackground(new Color(30, 60, 60)))
                         .SetCornerRadius(12)
                 ),
 
@@ -112,9 +112,9 @@ public class ComboBoxDemoPage(ComboBoxDemoPageViewModel vm) : UiPageElement(vm)
                         .SetDisplayFunc(p => $"{p.Name} ({p.Age} years)")
                         .SetPlaceholder("Select a person...")
                         .BindSelectedItem(nameof(vm.SelectedPerson), () => vm.SelectedPerson, p => vm.SelectedPerson = p)
-                        .SetTextColor(SKColors.Orange)
+                        .SetTextColor(Colors.Orange)
                         .SetDesiredSize(new Size(280, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(60, 40, 20)))
+                        .SetBackground(new SolidColorBackground(new Color(60, 40, 20)))
                         .SetCornerRadius(8)
                 ),
 
@@ -124,9 +124,9 @@ public class ComboBoxDemoPage(ComboBoxDemoPageViewModel vm) : UiPageElement(vm)
                         .BindItemsSource(nameof(vm.Countries), () => vm.Countries)
                         .SetPlaceholder("Select a country...")
                         .BindSelectedIndex(nameof(vm.SelectedCountryIndex), () => vm.SelectedCountryIndex, i => vm.SelectedCountryIndex = i)
-                        .SetTextColor(SKColors.Pink)
+                        .SetTextColor(Colors.Pink)
                         .SetDesiredSize(new Size(250, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(60, 30, 50)))
+                        .SetBackground(new SolidColorBackground(new Color(60, 30, 50)))
                         .SetCornerRadius(8)
                 ),
 
@@ -137,7 +137,7 @@ public class ComboBoxDemoPage(ComboBoxDemoPageViewModel vm) : UiPageElement(vm)
                         .SetSelectedIndex(1)
                         .SetTextSize(18)
                         .SetDesiredSize(new Size(200, 48))
-                        .SetBackground(new SolidColorBackground(new SKColor(40, 50, 60)))
+                        .SetBackground(new SolidColorBackground(new Color(40, 50, 60)))
                         .SetCornerRadius(6)
                 ),
 
@@ -148,36 +148,36 @@ public class ComboBoxDemoPage(ComboBoxDemoPageViewModel vm) : UiPageElement(vm)
                             new Label()
                                 .SetText("Size")
                                 .SetTextSize(12)
-                                .SetTextColor(SKColors.Gray),
+                                .SetTextColor(Colors.Gray),
                             new ComboBox<string>()
                                 .SetItemsSource(new[] { "S", "M", "L", "XL" })
                                 .SetPlaceholder("Size")
                                 .SetDesiredSize(new Size(80, 36))
-                                .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                                .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                                 .SetCornerRadius(4)
                         ).SetMargin(new Margin(0, 0, 16, 0)),
                         new VStack(
                             new Label()
                                 .SetText("Color")
                                 .SetTextSize(12)
-                                .SetTextColor(SKColors.Gray),
+                                .SetTextColor(Colors.Gray),
                             new ComboBox<string>()
                                 .SetItemsSource(new[] { "Red", "Blue", "Green", "Black", "White" })
                                 .SetPlaceholder("Color")
                                 .SetDesiredSize(new Size(100, 36))
-                                .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                                .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                                 .SetCornerRadius(4)
                         ).SetMargin(new Margin(0, 0, 16, 0)),
                         new VStack(
                             new Label()
                                 .SetText("Quantity")
                                 .SetTextSize(12)
-                                .SetTextColor(SKColors.Gray),
+                                .SetTextColor(Colors.Gray),
                             new ComboBox<int>()
                                 .SetItemsSource(new[] { 1, 2, 3, 4, 5, 10, 20 })
                                 .SetPlaceholder("Qty")
                                 .SetDesiredSize(new Size(80, 36))
-                                .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                                .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                                 .SetCornerRadius(4)
                         )
                     )
@@ -196,14 +196,14 @@ public class ComboBoxDemoPage(ComboBoxDemoPageViewModel vm) : UiPageElement(vm)
             new Label()
                 .SetText(title)
                 .SetTextSize(20)
-                .SetTextColor(SKColors.LightGray)
+                .SetTextColor(Colors.LightGray)
                 .SetMargin(new Margin(0, 15, 0, 10)),
             new Border()
                 .AddChild(
                     new VStack(content)
                         .SetMargin(new Margin(16))
                 )
-                .SetBackground(new SolidColorBackground(new SKColor(40, 40, 40)))
+                .SetBackground(new SolidColorBackground(new Color(40, 40, 40)))
                 .SetCornerRadius(12)
                 .SetMargin(new Margin(0, 0, 0, 10))
         ).SetMargin(new Margin(20, 0));

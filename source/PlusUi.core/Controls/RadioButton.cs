@@ -205,7 +205,7 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
     #endregion
 
     #region TextColor
-    internal SKColor TextColor
+    internal Color TextColor
     {
         get => field;
         set
@@ -215,15 +215,15 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
             _textPaint?.Dispose();
             _textPaint = new SKPaint { Color = value, IsAntialias = true };
         }
-    } = SKColors.White;
+    } = Colors.White;
 
-    public RadioButton SetTextColor(SKColor color)
+    public RadioButton SetTextColor(Color color)
     {
         TextColor = color;
         return this;
     }
 
-    public RadioButton BindTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public RadioButton BindTextColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => TextColor = propertyGetter());
         return this;
@@ -231,19 +231,19 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
     #endregion
 
     #region CircleColor
-    internal SKColor CircleColor
+    internal Color CircleColor
     {
         get => field;
         set => field = value;
-    } = SKColors.White;
+    } = Colors.White;
 
-    public RadioButton SetCircleColor(SKColor color)
+    public RadioButton SetCircleColor(Color color)
     {
         CircleColor = color;
         return this;
     }
 
-    public RadioButton BindCircleColor(string propertyName, Func<SKColor> propertyGetter)
+    public RadioButton BindCircleColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => CircleColor = propertyGetter());
         return this;
@@ -251,19 +251,19 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
     #endregion
 
     #region SelectedColor
-    internal SKColor SelectedColor
+    internal Color SelectedColor
     {
         get => field;
         set => field = value;
-    } = new SKColor(52, 199, 89); // iOS green
+    } = new Color(52, 199, 89); // iOS green
 
-    public RadioButton SetSelectedColor(SKColor color)
+    public RadioButton SetSelectedColor(Color color)
     {
         SelectedColor = color;
         return this;
     }
 
-    public RadioButton BindSelectedColor(string propertyName, Func<SKColor> propertyGetter)
+    public RadioButton BindSelectedColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => SelectedColor = propertyGetter());
         return this;

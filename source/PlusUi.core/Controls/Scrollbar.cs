@@ -62,57 +62,57 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
 
     #region Colors
 
-    public SKColor ThumbColor { get; private set; } = new SKColor(100, 100, 100);
+    public Color ThumbColor { get; private set; } = new Color(100, 100, 100);
 
-    public Scrollbar SetThumbColor(SKColor color)
+    public Scrollbar SetThumbColor(Color color)
     {
         ThumbColor = color;
         return this;
     }
 
-    public Scrollbar BindThumbColor(string propertyName, Func<SKColor> getter)
+    public Scrollbar BindThumbColor(string propertyName, Func<Color> getter)
     {
         RegisterBinding(propertyName, () => SetThumbColor(getter()));
         return this;
     }
 
-    public SKColor ThumbHoverColor { get; private set; } = new SKColor(140, 140, 140);
+    public Color ThumbHoverColor { get; private set; } = new Color(140, 140, 140);
 
-    public Scrollbar SetThumbHoverColor(SKColor color)
+    public Scrollbar SetThumbHoverColor(Color color)
     {
         ThumbHoverColor = color;
         return this;
     }
 
-    public Scrollbar BindThumbHoverColor(string propertyName, Func<SKColor> getter)
+    public Scrollbar BindThumbHoverColor(string propertyName, Func<Color> getter)
     {
         RegisterBinding(propertyName, () => SetThumbHoverColor(getter()));
         return this;
     }
 
-    public SKColor ThumbDragColor { get; private set; } = new SKColor(160, 160, 160);
+    public Color ThumbDragColor { get; private set; } = new Color(160, 160, 160);
 
-    public Scrollbar SetThumbDragColor(SKColor color)
+    public Scrollbar SetThumbDragColor(Color color)
     {
         ThumbDragColor = color;
         return this;
     }
 
-    public Scrollbar BindThumbDragColor(string propertyName, Func<SKColor> getter)
+    public Scrollbar BindThumbDragColor(string propertyName, Func<Color> getter)
     {
         RegisterBinding(propertyName, () => SetThumbDragColor(getter()));
         return this;
     }
 
-    public SKColor TrackColor { get; private set; } = new SKColor(40, 40, 40, 100);
+    public Color TrackColor { get; private set; } = new Color(40, 40, 40, 100);
 
-    public Scrollbar SetTrackColor(SKColor color)
+    public Scrollbar SetTrackColor(Color color)
     {
         TrackColor = color;
         return this;
     }
 
-    public Scrollbar BindTrackColor(string propertyName, Func<SKColor> getter)
+    public Scrollbar BindTrackColor(string propertyName, Func<Color> getter)
     {
         RegisterBinding(propertyName, () => SetTrackColor(getter()));
         return this;

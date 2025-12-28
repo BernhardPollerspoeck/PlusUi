@@ -9,12 +9,12 @@ public class ApplicationStyle : IApplicationStyle
     {
         style.AddStyle<UiPageElement>(page =>
         {
-            page.SetBackground(new SolidColorBackground(SKColors.Black));
+            page.SetBackground(new SolidColorBackground(Colors.Black));
         });
 
         style.AddStyle<Label>(label =>
         {
-            label.SetTextColor(SKColors.White);
+            label.SetTextColor(Colors.White);
         });
     }
 }

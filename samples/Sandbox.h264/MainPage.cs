@@ -26,7 +26,7 @@ public class MainPage(
                 .AddColumn(Column.Absolute, 100)
                 .AddColumn(Column.Auto, 1)
                 .AddChild(new Solid()
-                    .SetBackground(new SolidColorBackground(SKColors.Red))
+                    .SetBackground(new SolidColorBackground(Colors.Red))
                     .BindDesiredHeight(nameof(vm.Size), () => vm.Size)
                     .BindDesiredWidth(nameof(vm.Size), () => vm.Size)
                     .BindCornerRadius(nameof(vm.Size), () => vm.Size / 2)

@@ -15,12 +15,12 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                         .SetText("<- Back")
                         .SetTextSize(16)
                         .SetCommand(vm.GoBackCommand)
-                        .SetTextColor(SKColors.White)
+                        .SetTextColor(Colors.White)
                         .SetPadding(new Margin(10, 5)),
                     new Label()
                         .SetText("TabControl Demo")
                         .SetTextSize(24)
-                        .SetTextColor(SKColors.White)
+                        .SetTextColor(Colors.White)
                         .SetMargin(new Margin(20, 0, 0, 0))
                 ).SetMargin(new Margin(10, 10, 0, 10)),
 
@@ -37,7 +37,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                             .SetHeader("About")
                             .SetContent(CreateTabContent("About", "TabControl Demo v1.0")))
                         .SetDesiredSize(new Size(500, 200))
-                        .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
+                        .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                         .SetCornerRadius(8)
                 ),
 
@@ -48,11 +48,11 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                             new Label()
                                 .SetText("Selected Tab Index: ")
                                 .SetTextSize(14)
-                                .SetTextColor(SKColors.Gray),
+                                .SetTextColor(Colors.Gray),
                             new Label()
                                 .BindText(nameof(vm.SelectedTabIndex), () => vm.SelectedTabIndex.ToString())
                                 .SetTextSize(14)
-                                .SetTextColor(SKColors.LimeGreen)
+                                .SetTextColor(Colors.LimeGreen)
                         ).SetMargin(new Margin(0, 0, 0, 10)),
                         new TabControl()
                             .AddTab(new TabItem()
@@ -66,7 +66,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                                 .SetContent(CreateTabContent("Third Tab", "Content for the third tab.")))
                             .BindSelectedIndex(nameof(vm.SelectedTabIndex), () => vm.SelectedTabIndex, i => vm.SelectedTabIndex = i)
                             .SetDesiredSize(new Size(500, 180))
-                            .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
+                            .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                             .SetCornerRadius(8)
                     )
                 ),
@@ -85,7 +85,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                             .SetContent(CreateTabContent("Profile", "Your profile information.")))
                         .SetTabPosition(TabPosition.Bottom)
                         .SetDesiredSize(new Size(500, 180))
-                        .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
+                        .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                         .SetCornerRadius(8)
                 ),
 
@@ -104,7 +104,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                         .SetTabPosition(TabPosition.Left)
                         .BindSelectedIndex(nameof(vm.VerticalTabIndex), () => vm.VerticalTabIndex, i => vm.VerticalTabIndex = i)
                         .SetDesiredSize(new Size(500, 200))
-                        .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
+                        .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                         .SetCornerRadius(8)
                 ),
 
@@ -122,7 +122,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                             .SetContent(CreateTabContent("Trash", "Deleted files.")))
                         .SetTabPosition(TabPosition.Right)
                         .SetDesiredSize(new Size(500, 200))
-                        .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
+                        .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                         .SetCornerRadius(8)
                 ),
 
@@ -138,17 +138,17 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                         .AddTab(new TabItem()
                             .SetHeader("Tertiary")
                             .SetContent(CreateTabContent("Tertiary", "More content here.")))
-                        .SetHeaderTextColor(SKColors.LightGray)
-                        .SetActiveHeaderTextColor(SKColors.Cyan)
-                        .SetHeaderBackgroundColor(new SKColor(20, 40, 60))
-                        .SetActiveTabBackgroundColor(new SKColor(30, 60, 90))
-                        .SetHoverTabBackgroundColor(new SKColor(25, 50, 75))
-                        .SetTabIndicatorColor(SKColors.Cyan)
+                        .SetHeaderTextColor(Colors.LightGray)
+                        .SetActiveHeaderTextColor(Colors.Cyan)
+                        .SetHeaderBackgroundColor(new Color(20, 40, 60))
+                        .SetActiveTabBackgroundColor(new Color(30, 60, 90))
+                        .SetHoverTabBackgroundColor(new Color(25, 50, 75))
+                        .SetTabIndicatorColor(Colors.Cyan)
                         .SetTabIndicatorHeight(4)
                         .SetHeaderTextSize(16)
                         .SetTabPadding(new Margin(20, 12))
                         .SetDesiredSize(new Size(500, 200))
-                        .SetBackground(new SolidColorBackground(new SKColor(15, 30, 45)))
+                        .SetBackground(new SolidColorBackground(new Color(15, 30, 45)))
                         .SetCornerRadius(12)
                 ),
 
@@ -166,7 +166,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                             .SetHeader("Also Enabled")
                             .SetContent(CreateTabContent("Also Enabled", "This tab is also enabled.")))
                         .SetDesiredSize(new Size(500, 180))
-                        .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
+                        .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                         .SetCornerRadius(8)
                 ),
 
@@ -177,17 +177,17 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                             new Label()
                                 .SetText("Current Position: ")
                                 .SetTextSize(14)
-                                .SetTextColor(SKColors.Gray),
+                                .SetTextColor(Colors.Gray),
                             new Label()
                                 .BindText(nameof(vm.DynamicTabPosition), () => vm.DynamicTabPosition.ToString())
                                 .SetTextSize(14)
-                                .SetTextColor(SKColors.Orange),
+                                .SetTextColor(Colors.Orange),
                             new Button()
                                 .SetText("Cycle Position")
                                 .SetCommand(vm.CycleTabPositionCommand)
-                                .SetTextColor(SKColors.White)
+                                .SetTextColor(Colors.White)
                                 .SetPadding(new Margin(12, 6))
-                                .SetBackground(new SolidColorBackground(new SKColor(80, 80, 80)))
+                                .SetBackground(new SolidColorBackground(new Color(80, 80, 80)))
                                 .SetCornerRadius(4)
                                 .SetMargin(new Margin(20, 0, 0, 0))
                         ).SetMargin(new Margin(0, 0, 0, 10)),
@@ -203,7 +203,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                                 .SetContent(CreateTabContent("Gamma", "Third dynamic tab.")))
                             .BindTabPosition(nameof(vm.DynamicTabPosition), () => vm.DynamicTabPosition)
                             .SetDesiredSize(new Size(500, 200))
-                            .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
+                            .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                             .SetCornerRadius(8)
                     )
                 ),
@@ -221,14 +221,14 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
             new Label()
                 .SetText(title)
                 .SetTextSize(20)
-                .SetTextColor(SKColors.LightGray)
+                .SetTextColor(Colors.LightGray)
                 .SetMargin(new Margin(0, 15, 0, 10)),
             new Border()
                 .AddChild(
                     new VStack(content)
                         .SetMargin(new Margin(16))
                 )
-                .SetBackground(new SolidColorBackground(new SKColor(40, 40, 40)))
+                .SetBackground(new SolidColorBackground(new Color(40, 40, 40)))
                 .SetCornerRadius(12)
                 .SetMargin(new Margin(0, 0, 0, 10))
         ).SetMargin(new Margin(20, 0));
@@ -240,12 +240,12 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
             new Label()
                 .SetText(title)
                 .SetTextSize(18)
-                .SetTextColor(SKColors.White)
+                .SetTextColor(Colors.White)
                 .SetMargin(new Margin(0, 0, 0, 8)),
             new Label()
                 .SetText(description)
                 .SetTextSize(14)
-                .SetTextColor(SKColors.Gray)
+                .SetTextColor(Colors.Gray)
         ).SetMargin(new Margin(16));
     }
 }

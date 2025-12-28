@@ -12,7 +12,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                 .SetText("Modern Form Demo")
                 .SetTextSize(28)
                 .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
-                .SetTextColor(SKColors.White)
+                .SetTextColor(Colors.White)
                 .SetHorizontalAlignment(HorizontalAlignment.Center)
                 .SetMargin(new Margin(0, 20, 0, 30)),
 
@@ -44,7 +44,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                                 new HStack(
                                     new Label()
                                         .SetText("Receive notifications")
-                                        .SetTextColor(SKColors.White)
+                                        .SetTextColor(Colors.White)
                                         .SetVerticalAlignment(VerticalAlignment.Center),
                                     new Checkbox()
                                         .BindIsChecked(nameof(vm.ReceiveNotifications),
@@ -55,7 +55,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                                 new HStack(
                                     new Label()
                                         .SetText("Dark mode")
-                                        .SetTextColor(SKColors.White)
+                                        .SetTextColor(Colors.White)
                                         .SetVerticalAlignment(VerticalAlignment.Center),
                                     new Checkbox()
                                         .BindIsChecked(nameof(vm.DarkMode),
@@ -86,20 +86,20 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                             .SetMargin(new Margin(0, 20, 0, 0))
                             .SetDesiredHeight(1)
                             .SetVerticalAlignment(VerticalAlignment.Bottom)
-                            .SetBackground(new SolidColorBackground(new SKColor(255, 255, 255, 60))),
+                            .SetBackground(new SolidColorBackground(new Color(255, 255, 255, 60))),
                         new Button()
                             .SetText("Submit Form")
                             .SetCommand(vm.SubmitFormCommand)
                             .SetPadding(new Margin(30, 12))
                             .SetMargin(new Margin(0, 20))
                             .SetHorizontalAlignment(HorizontalAlignment.Center)
-                            .SetBackground(new SolidColorBackground(new SKColor(48, 209, 185)))
+                            .SetBackground(new SolidColorBackground(new Color(48, 209, 185)))
                             .SetCornerRadius(20)
                     ).SetHorizontalAlignment(HorizontalAlignment.Stretch)
                 )
                 //IDEA: .IgnoreGlobalStyling()
                 //IDEA: .IgnorePageStyling()
-                .SetBackground(new SolidColorBackground(new SKColor(85, 70, 185)))
+                .SetBackground(new SolidColorBackground(new Color(85, 70, 185)))
         );
     }
 
@@ -108,12 +108,12 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
         return new VStack(
             new Label()
                 .SetText(title)
-                .SetTextColor(new SKColor(255, 255, 255))
+                .SetTextColor(new Color(255, 255, 255))
                 .SetTextSize(18)
                 .SetMargin(new Margin(0, 0, 0, 10)),
             content
                 .SetMargin(new Margin(15))
-                .SetBackground(new SolidColorBackground(new SKColor(255, 255, 255, 40)))
+                .SetBackground(new SolidColorBackground(new Color(255, 255, 255, 40)))
                 .SetCornerRadius(15)
         )
         .SetMargin(new Margin(0, 0, 0, 20));
@@ -124,9 +124,9 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
         var entry = new Entry()
             .BindText(label, () => bindingValue, setter)
             .SetPadding(new Margin(10, 8))
-            .SetTextColor(SKColors.White)
+            .SetTextColor(Colors.White)
             .SetCornerRadius(10)
-            .SetBackground(new SolidColorBackground(new SKColor(255, 255, 255, 30)));
+            .SetBackground(new SolidColorBackground(new Color(255, 255, 255, 30)));
 
         if (isPassword)
         {
@@ -141,7 +141,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
         return new VStack(
             new Label()
                 .SetText(label)
-                .SetTextColor(new SKColor(255, 255, 255))
+                .SetTextColor(new Color(255, 255, 255))
                 .SetMargin(new Margin(0, 0, 0, 5)),
             entry
         ).SetMargin(new Margin(0, 0, 0, 10));
@@ -151,14 +151,14 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
     {
         pageStyle.AddStyle<UiPageElement>(element =>
             element
-                .SetBackground(new SolidColorBackground(new SKColor(105, 90, 205)))
+                .SetBackground(new SolidColorBackground(new Color(105, 90, 205)))
                 .SetCornerRadius(0)
         );
 
         pageStyle.AddStyle<Button>(button =>
             button
-                .SetTextColor(SKColors.White)
-                .SetBackground(new SolidColorBackground(new SKColor(0, 0, 0)))
+                .SetTextColor(Colors.White)
+                .SetBackground(new SolidColorBackground(new Color(0, 0, 0)))
         );
 
         pageStyle.AddStyle<Entry>(entry =>
@@ -166,7 +166,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
         );
 
         pageStyle.AddStyle<Checkbox>(checkbox =>
-            checkbox.SetBackground(new SolidColorBackground(new SKColor(0, 0, 0)))
+            checkbox.SetBackground(new SolidColorBackground(new Color(0, 0, 0)))
         );
     }
 }

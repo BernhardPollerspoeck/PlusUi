@@ -57,22 +57,22 @@ public partial class ProgressBar : UiElement
     #endregion
 
     #region ProgressColor
-    internal SKColor ProgressColor
+    internal Color ProgressColor
     {
         get => field;
         set
         {
             field = value;
         }
-    } = new SKColor(0, 122, 255); // iOS blue
+    } = new Color(0, 122, 255); // iOS blue
 
-    public ProgressBar SetProgressColor(SKColor color)
+    public ProgressBar SetProgressColor(Color color)
     {
         ProgressColor = color;
         return this;
     }
 
-    public ProgressBar BindProgressColor(string propertyName, Func<SKColor> propertyGetter)
+    public ProgressBar BindProgressColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => ProgressColor = propertyGetter());
         return this;
@@ -80,22 +80,22 @@ public partial class ProgressBar : UiElement
     #endregion
 
     #region TrackColor
-    internal SKColor TrackColor
+    internal Color TrackColor
     {
         get => field;
         set
         {
             field = value;
         }
-    } = new SKColor(230, 230, 230);
+    } = new Color(230, 230, 230);
 
-    public ProgressBar SetTrackColor(SKColor color)
+    public ProgressBar SetTrackColor(Color color)
     {
         TrackColor = color;
         return this;
     }
 
-    public ProgressBar BindTrackColor(string propertyName, Func<SKColor> propertyGetter)
+    public ProgressBar BindTrackColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => TrackColor = propertyGetter());
         return this;

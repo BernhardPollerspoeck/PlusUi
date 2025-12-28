@@ -34,9 +34,9 @@ internal class TooltipOverlay : UiElement
         _attachment = attachment;
         _platformService = ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
 
-        Background = new SolidColorBackground(new SKColor(30, 30, 30, 230));
+        Background = new SolidColorBackground(new Color(30, 30, 30, 230));
         CornerRadius = 4f;
-        ShadowColor = new SKColor(0, 0, 0, 60);
+        ShadowColor = new Color(0, 0, 0, 60);
         ShadowBlur = 8f;
         ShadowOffset = new Point(0, 2);
 

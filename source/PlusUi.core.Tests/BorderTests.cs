@@ -13,7 +13,7 @@ public class BorderTests
         var border = new Border();
 
         // Assert
-        Assert.AreEqual(SKColors.Black, border.StrokeColor);
+        Assert.AreEqual(Colors.Black, border.StrokeColor);
         Assert.AreEqual(1f, border.StrokeThickness);
         Assert.AreEqual(StrokeType.Solid, border.StrokeType);
         Assert.IsNull(border.Background);
@@ -26,18 +26,18 @@ public class BorderTests
         var border = new Border();
 
         // Act
-        border.SetStrokeColor(SKColors.Red)
+        border.SetStrokeColor(Colors.Red)
               .SetStrokeThickness(3f)
               .SetStrokeType(StrokeType.Dashed)
-              .SetBackground(new SolidColorBackground(SKColors.Blue));
+              .SetBackground(new SolidColorBackground(Colors.Blue));
 
         // Assert
-        Assert.AreEqual(SKColors.Red, border.StrokeColor);
+        Assert.AreEqual(Colors.Red, border.StrokeColor);
         Assert.AreEqual(3f, border.StrokeThickness);
         Assert.AreEqual(StrokeType.Dashed, border.StrokeType);
         Assert.IsNotNull(border.Background);
         Assert.IsInstanceOfType(border.Background, typeof(SolidColorBackground));
-        Assert.AreEqual(SKColors.Blue, ((SolidColorBackground)border.Background).Color);
+        Assert.AreEqual(Colors.Blue, ((SolidColorBackground)border.Background).Color);
     }
 
     [TestMethod]

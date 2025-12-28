@@ -79,7 +79,7 @@ public static class ContextMenuExtensions
     /// <param name="element">The target element.</param>
     /// <param name="color">The background color.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T SetContextMenuBackground<T>(this T element, SkiaSharp.SKColor color) where T : UiElement
+    public static T SetContextMenuBackground<T>(this T element, Color color) where T : UiElement
     {
         EnsureContextMenu(element).SetBackground(color);
         return element;
@@ -92,7 +92,7 @@ public static class ContextMenuExtensions
     /// <param name="element">The target element.</param>
     /// <param name="color">The hover background color.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T SetContextMenuHoverBackgroundColor<T>(this T element, SkiaSharp.SKColor color) where T : UiElement
+    public static T SetContextMenuHoverBackgroundColor<T>(this T element, Color color) where T : UiElement
     {
         EnsureContextMenu(element).SetHoverBackgroundColor(color);
         return element;
@@ -105,7 +105,7 @@ public static class ContextMenuExtensions
     /// <param name="element">The target element.</param>
     /// <param name="color">The text color.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T SetContextMenuTextColor<T>(this T element, SkiaSharp.SKColor color) where T : UiElement
+    public static T SetContextMenuTextColor<T>(this T element, Color color) where T : UiElement
     {
         EnsureContextMenu(element).SetTextColor(color);
         return element;
@@ -133,7 +133,7 @@ public static class ContextMenuExtensions
     /// <param name="propertyName">The name of the property to bind to.</param>
     /// <param name="propertyGetter">Function to get the property value.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindContextMenuBackground<T>(this T element, string propertyName, Func<SkiaSharp.SKColor> propertyGetter) where T : UiElement
+    public static T BindContextMenuBackground<T>(this T element, string propertyName, Func<Color> propertyGetter) where T : UiElement
     {
         EnsureContextMenu(element).BindBackground(propertyName, propertyGetter);
         return element;
@@ -147,7 +147,7 @@ public static class ContextMenuExtensions
     /// <param name="propertyName">The name of the property to bind to.</param>
     /// <param name="propertyGetter">Function to get the property value.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindContextMenuHoverBackgroundColor<T>(this T element, string propertyName, Func<SkiaSharp.SKColor> propertyGetter) where T : UiElement
+    public static T BindContextMenuHoverBackgroundColor<T>(this T element, string propertyName, Func<Color> propertyGetter) where T : UiElement
     {
         EnsureContextMenu(element).BindHoverBackgroundColor(propertyName, propertyGetter);
         return element;
@@ -161,7 +161,7 @@ public static class ContextMenuExtensions
     /// <param name="propertyName">The name of the property to bind to.</param>
     /// <param name="propertyGetter">Function to get the property value.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindContextMenuTextColor<T>(this T element, string propertyName, Func<SkiaSharp.SKColor> propertyGetter) where T : UiElement
+    public static T BindContextMenuTextColor<T>(this T element, string propertyName, Func<Color> propertyGetter) where T : UiElement
     {
         EnsureContextMenu(element).BindTextColor(propertyName, propertyGetter);
         return element;

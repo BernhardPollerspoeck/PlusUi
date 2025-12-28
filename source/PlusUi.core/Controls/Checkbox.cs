@@ -31,7 +31,7 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
     public Checkbox()
     {
         SetDesiredSize(new(22, 22));
-        SetColor(SKColors.White);
+        SetColor(Colors.White);
     }
 
     /// <inheritdoc />
@@ -93,7 +93,7 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
     #endregion
 
     #region Color
-    internal SKColor Color
+    internal Color Color
     {
         get => field;
         set
@@ -101,12 +101,12 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
             field = value;
         }
     }
-    public Checkbox SetColor(SKColor color)
+    public Checkbox SetColor(Color color)
     {
         Color = color;
         return this;
     }
-    public Checkbox BindColor(string propertyName, Func<SKColor> propertyGetter)
+    public Checkbox BindColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => Color = propertyGetter());
         return this;

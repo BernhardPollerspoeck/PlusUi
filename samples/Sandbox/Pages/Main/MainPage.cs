@@ -31,45 +31,45 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {
-        //SetBackgroundColor(SKColors.SlateBlue);
+        //SetBackgroundColor(Colors.SlateBlue);
         return new HStack(
             new VStack(
                 new HStack(
                     new VStack(
                         new HStack(
-                            new Solid().SetBackground(new SKColor(0, 255, 255)).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 255))).SetIsVisible(false).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 0))).SetVisualOffset(new(0, 10)).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new LinearGradient(SKColors.White, SKColors.Black, 90)).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 0, 0))).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 255, 0))).SetDesiredSize(new(75, 75))
+                            new Solid().SetBackground(new Color(0, 255, 255)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new Color(255, 0, 255))).SetIsVisible(false).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new Color(255, 255, 0))).SetVisualOffset(new(0, 10)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new LinearGradient(Colors.White, Colors.Black, 90)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new Color(255, 0, 0))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new Color(0, 255, 0))).SetDesiredSize(new(75, 75))
                             ),
                         new HStack(
-                            new Solid().SetBackground(new SolidColorBackground(new SKColor(0, 0, 255))).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new LinearGradient(SKColors.Red, SKColors.Cyan, 45)).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new SolidColorBackground(new SKColor(255, 255, 255))).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new SolidColorBackground(new SKColor(128, 128, 128))).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new SolidColorBackground(new SKColor(50, 50, 50))).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new RadialGradient(SKColors.Yellow, SKColors.Purple)).SetDesiredSize(new(75, 75))
+                            new Solid().SetBackground(new SolidColorBackground(new Color(0, 0, 255))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new LinearGradient(Colors.Red, Colors.Cyan, 45)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new Color(255, 255, 255))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new Color(128, 128, 128))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new SolidColorBackground(new Color(50, 50, 50))).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new RadialGradient(Colors.Yellow, Colors.Purple)).SetDesiredSize(new(75, 75))
                             ),
                         new HStack(
-                            new Solid().SetBackground(new LinearGradient(SKColors.Lime, SKColors.Navy, 180)).SetDesiredSize(new(75, 75)),
-                            new Solid().SetBackground(new RadialGradient(SKColors.White, SKColors.Black)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new LinearGradient(Colors.Lime, Colors.Navy, 180)).SetDesiredSize(new(75, 75)),
+                            new Solid().SetBackground(new RadialGradient(Colors.White, Colors.Black)).SetDesiredSize(new(75, 75)),
                             new Solid().SetBackground(new MultiStopGradient(
                                 90,
-                                new GradientStop(SKColors.Red, 0),
-                                new GradientStop(SKColors.Blue, 0.5f),
-                                new GradientStop(SKColors.Yellow, 1))).SetDesiredSize(new(75, 75)),
+                                new GradientStop(Colors.Red, 0),
+                                new GradientStop(Colors.Blue, 0.5f),
+                                new GradientStop(Colors.Yellow, 1))).SetDesiredSize(new(75, 75)),
                             new Solid().SetBackground(new MultiStopGradient(
                                 0,
-                                new GradientStop(SKColors.Magenta, 0),
-                                new GradientStop(SKColors.Green, 0.5f),
-                                new GradientStop(SKColors.Orange, 1))).SetDesiredSize(new(75, 75))
+                                new GradientStop(Colors.Magenta, 0),
+                                new GradientStop(Colors.Green, 0.5f),
+                                new GradientStop(Colors.Orange, 1))).SetDesiredSize(new(75, 75))
                                 )),
                     new VStack(
                         new Label()
                             .SetText("Animated GIFs:")
-                            .SetTextColor(SKColors.White),
+                            .SetTextColor(Colors.White),
                         new Image()
                             .SetAspect(Aspect.AspectFit)
                             .SetImageSource("https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif")
@@ -94,7 +94,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 // Tooltip Demo Section
                 new Label()
                     .SetText("Tooltip Demo (hover over buttons):")
-                    .SetTextColor(SKColors.Yellow)
+                    .SetTextColor(Colors.Yellow)
                     .SetTextSize(14),
                 new HStack(
                     new Button()
@@ -136,9 +136,9 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetText("Rich Content")
                         .SetPadding(new(8, 4))
                         .SetTooltip(new VStack(
-                            new Label().SetText("Rich Tooltip").SetTextColor(SKColors.Yellow).SetFontWeight(FontWeight.Bold),
-                            new Label().SetText("With multiple lines").SetTextColor(SKColors.White),
-                            new Label().SetText("And custom styling").SetTextColor(SKColors.LightGray)))),
+                            new Label().SetText("Rich Tooltip").SetTextColor(Colors.Yellow).SetFontWeight(FontWeight.Bold),
+                            new Label().SetText("With multiple lines").SetTextColor(Colors.White),
+                            new Label().SetText("And custom styling").SetTextColor(Colors.LightGray)))),
 
                 new Label()
                     .SetText("Hit the button below to Change my color")
@@ -151,32 +151,32 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetTooltip("Click to change the label color above"),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetColor(new SKColor(255, 0, 0))
+                        .SetColor(new Color(255, 0, 0))
                         .SetTooltip("Red checkbox - bound to same value"),
                     new Checkbox()
                         .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
-                        .SetColor(new SKColor(0, 255, 0))
+                        .SetColor(new Color(0, 255, 0))
                         .SetTooltip("Green checkbox - bound to same value"),
 
                 new Border()
-                    .AddChild(new Label().SetText("Solid Border").SetTextColor(SKColors.Black))
-                    .SetStrokeColor(SKColors.Red)
+                    .AddChild(new Label().SetText("Solid Border").SetTextColor(Colors.Black))
+                    .SetStrokeColor(Colors.Red)
                     .SetStrokeThickness(3f)
                     .SetStrokeType(StrokeType.Solid)
-                    .SetBackground(new SolidColorBackground(new SKColor(255, 255, 0, 100))),
+                    .SetBackground(new SolidColorBackground(new Color(255, 255, 0, 100))),
 
                 new Border()
-                    .AddChild(new Label().SetText("Dashed").SetTextColor(SKColors.Black))
-                    .SetStrokeColor(SKColors.Blue)
+                    .AddChild(new Label().SetText("Dashed").SetTextColor(Colors.Black))
+                    .SetStrokeColor(Colors.Blue)
                     .SetStrokeThickness(2f)
                     .SetStrokeType(StrokeType.Dashed)
-                    .SetBackground(new SolidColorBackground(new SKColor(0, 255, 255, 100))),
+                    .SetBackground(new SolidColorBackground(new Color(0, 255, 255, 100))),
 
                 new Border()
                     .AddChild(new VStack(
-                        new Label().SetText("Dotted").SetTextColor(SKColors.White),
-                        new Label().SetText("Multi-line").SetTextColor(SKColors.White)))
-                    .SetStrokeColor(SKColors.Green)
+                        new Label().SetText("Dotted").SetTextColor(Colors.White),
+                        new Label().SetText("Multi-line").SetTextColor(Colors.White)))
+                    .SetStrokeColor(Colors.Green)
                     .SetStrokeThickness(4f)
                     .SetStrokeType(StrokeType.Dotted)
                     .SetCornerRadius(10),
@@ -201,7 +201,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     protected override void ConfigurePageStyles(Style pageStyle)
     {
         pageStyle.AddStyle<UiPageElement>(element
-            => element.SetBackground(new SolidColorBackground(SKColors.White)));
+            => element.SetBackground(new SolidColorBackground(Colors.White)));
     }
 
     private HStack CreateTestButtons()
@@ -212,7 +212,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 new Button()
                     .SetText("New Controls Demo")
                     .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new SKColor(52, 199, 89)))
+                    .SetBackground(new SolidColorBackground(new Color(52, 199, 89)))
                     .SetCommand(vm.NavigateCommand)
                     .SetCommandParameter(typeof(NewControlsDemoPage)),
                 new Button()
@@ -306,37 +306,37 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 new Button()
                     .SetText("Accessibility Demo")
                     .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new SKColor(0, 122, 255)))
+                    .SetBackground(new SolidColorBackground(new Color(0, 122, 255)))
                     .SetCommand(vm.NavigateCommand)
                     .SetCommandParameter(typeof(AccessibilityDemoPage)),
                 new Button()
                     .SetText("TabControl Demo")
                     .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new SKColor(255, 149, 0)))
+                    .SetBackground(new SolidColorBackground(new Color(255, 149, 0)))
                     .SetCommand(vm.NavigateCommand)
                     .SetCommandParameter(typeof(TabControlDemoPage)),
                 new Button()
                     .SetText("Gesture & Haptic Demo")
                     .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new SKColor(175, 82, 222)))
+                    .SetBackground(new SolidColorBackground(new Color(175, 82, 222)))
                     .SetCommand(vm.NavigateCommand)
                     .SetCommandParameter(typeof(GestureDemoPage)),
                 new Button()
                     .SetText("DataGrid Demo")
                     .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new SKColor(255, 59, 48)))
+                    .SetBackground(new SolidColorBackground(new Color(255, 59, 48)))
                     .SetCommand(vm.NavigateCommand)
                     .SetCommandParameter(typeof(DataGridDemoPage)),
                 new Button()
                     .SetText("TreeView Demo")
                     .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new SKColor(88, 86, 214)))
+                    .SetBackground(new SolidColorBackground(new Color(88, 86, 214)))
                     .SetCommand(vm.NavigateCommand)
                     .SetCommandParameter(typeof(TreeViewDemoPage)),
                 new Button()
                     .SetText("Menu Demo")
                     .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new SKColor(52, 120, 246)))
+                    .SetBackground(new SolidColorBackground(new Color(52, 120, 246)))
                     .SetCommand(vm.NavigateCommand)
                     .SetCommandParameter(typeof(MenuDemoPage))
             ).SetMargin(new Margin(20, 0, 0, 0))

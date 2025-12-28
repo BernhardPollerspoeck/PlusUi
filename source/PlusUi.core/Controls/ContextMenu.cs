@@ -22,7 +22,7 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class ContextMenu : UiElement
 {
-    private static readonly IBackground DefaultBackground = new SolidColorBackground(new SKColor(45, 45, 45));
+    private static readonly IBackground DefaultBackground = new SolidColorBackground(new Color(45, 45, 45));
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -67,37 +67,37 @@ public partial class ContextMenu : UiElement
     #endregion
 
     #region Colors
-    internal SKColor HoverBackgroundColor
+    internal Color HoverBackgroundColor
     {
         get => field;
         set { field = value; }
-    } = new SKColor(65, 65, 65);
+    } = new Color(65, 65, 65);
 
-    public ContextMenu SetHoverBackgroundColor(SKColor color)
+    public ContextMenu SetHoverBackgroundColor(Color color)
     {
         HoverBackgroundColor = color;
         return this;
     }
 
-    public ContextMenu BindHoverBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    public ContextMenu BindHoverBackgroundColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => HoverBackgroundColor = propertyGetter());
         return this;
     }
 
-    internal SKColor TextColor
+    internal Color TextColor
     {
         get => field;
         set { field = value; }
-    } = SKColors.White;
+    } = Colors.White;
 
-    public ContextMenu SetTextColor(SKColor color)
+    public ContextMenu SetTextColor(Color color)
     {
         TextColor = color;
         return this;
     }
 
-    public ContextMenu BindTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public ContextMenu BindTextColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => TextColor = propertyGetter());
         return this;

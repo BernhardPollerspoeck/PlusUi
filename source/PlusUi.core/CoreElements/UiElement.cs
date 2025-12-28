@@ -86,7 +86,7 @@ public abstract class UiElement : IDisposable
     /// This is a convenience overload that internally creates a SolidColorBackground.
     /// </summary>
     /// <param name="color">The solid color to use for the background</param>
-    public UiElement SetBackground(SKColor color)
+    public UiElement SetBackground(Color color)
     {
         Background = new SolidColorBackground(color);
         return this;
@@ -104,7 +104,7 @@ public abstract class UiElement : IDisposable
     /// </summary>
     /// <param name="propertyName">The name of the property to bind to</param>
     /// <param name="propertyGetter">Function that returns the color from the property</param>
-    public UiElement BindBackground(string propertyName, Func<SKColor> propertyGetter)
+    public UiElement BindBackground(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => Background = new SolidColorBackground(propertyGetter()));
         return this;
@@ -116,9 +116,9 @@ public abstract class UiElement : IDisposable
     /// [Obsolete] Use SetBackground() instead. Background color of the element.
     /// </summary>
     [Obsolete("Use SetBackground() instead")]
-    internal SKColor BackgroundColor
+    internal Color BackgroundColor
     {
-        get => (Background as SolidColorBackground)?.Color ?? SKColors.Transparent;
+        get => (Background as SolidColorBackground)?.Color ?? Colors.Transparent;
         set
         {
             Background = new SolidColorBackground(value);
@@ -129,7 +129,7 @@ public abstract class UiElement : IDisposable
     /// [Obsolete] Use SetBackground() instead.
     /// </summary>
     [Obsolete("Use SetBackground() instead")]
-    public UiElement SetBackgroundColor(SKColor color)
+    public UiElement SetBackgroundColor(Color color)
     {
         return SetBackground(new SolidColorBackground(color));
     }
@@ -138,7 +138,7 @@ public abstract class UiElement : IDisposable
     /// [Obsolete] Use BindBackground() instead.
     /// </summary>
     [Obsolete("Use BindBackground() instead")]
-    public UiElement BindBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    public UiElement BindBackgroundColor(string propertyName, Func<Color> propertyGetter)
     {
         return BindBackground(propertyName, () => new SolidColorBackground(propertyGetter()));
     }
@@ -235,7 +235,7 @@ public abstract class UiElement : IDisposable
     #endregion
 
     #region ShadowColor
-    internal SKColor ShadowColor
+    internal Color ShadowColor
     {
         get => field;
         set
@@ -243,13 +243,13 @@ public abstract class UiElement : IDisposable
             field = value;
             InvalidateShadowCache();
         }
-    } = SKColors.Transparent;
-    public UiElement SetShadowColor(SKColor color)
+    } = Colors.Transparent;
+    public UiElement SetShadowColor(Color color)
     {
         ShadowColor = color;
         return this;
     }
-    public UiElement BindShadowColor(string propertyName, Func<SKColor> propertyGetter)
+    public UiElement BindShadowColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => ShadowColor = propertyGetter());
         return this;
@@ -407,7 +407,7 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Gets or sets the color of the focus ring.
     /// </summary>
-    internal SKColor FocusRingColor { get; set; } = new SKColor(0, 122, 255); // iOS blue
+    internal Color FocusRingColor { get; set; } = new Color(0, 122, 255); // iOS blue
 
     /// <summary>
     /// Gets or sets the width of the focus ring stroke.
@@ -429,7 +429,7 @@ public abstract class UiElement : IDisposable
     /// Gets or sets the border color when the element has focus.
     /// When null, no focused border color is applied.
     /// </summary>
-    internal SKColor? FocusedBorderColor { get; set; }
+    internal Color? FocusedBorderColor { get; set; }
 
     /// <summary>
     /// Programmatically sets focus to this element.
@@ -496,7 +496,7 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Sets the focus ring color.
     /// </summary>
-    public UiElement SetFocusRingColor(SKColor color)
+    public UiElement SetFocusRingColor(Color color)
     {
         FocusRingColor = color;
         return this;
@@ -532,7 +532,7 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Sets a solid color background to use when the element has focus.
     /// </summary>
-    public UiElement SetFocusedBackground(SKColor color)
+    public UiElement SetFocusedBackground(Color color)
     {
         FocusedBackground = new SolidColorBackground(color);
         return this;
@@ -541,7 +541,7 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Sets the border color to use when the element has focus.
     /// </summary>
-    public UiElement SetFocusedBorderColor(SKColor? color)
+    public UiElement SetFocusedBorderColor(Color? color)
     {
         FocusedBorderColor = color;
         return this;
@@ -780,7 +780,7 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Gets or sets the foreground/text color to use when high contrast mode is enabled.
     /// </summary>
-    internal SKColor? HighContrastForeground { get; set; }
+    internal Color? HighContrastForeground { get; set; }
 
     /// <summary>
     /// Sets the high contrast background.
@@ -794,7 +794,7 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Sets the high contrast background as a solid color.
     /// </summary>
-    public UiElement SetHighContrastBackground(SKColor color)
+    public UiElement SetHighContrastBackground(Color color)
     {
         HighContrastBackground = new SolidColorBackground(color);
         return this;
@@ -803,7 +803,7 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Sets the high contrast foreground color.
     /// </summary>
-    public UiElement SetHighContrastForeground(SKColor color)
+    public UiElement SetHighContrastForeground(Color color)
     {
         HighContrastForeground = color;
         return this;

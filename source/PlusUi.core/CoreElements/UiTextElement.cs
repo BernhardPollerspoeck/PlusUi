@@ -135,7 +135,7 @@ public abstract class UiTextElement : UiElement
     #endregion
 
     #region TextColor
-    internal SKColor TextColor
+    internal Color TextColor
     {
         get => field;
         set
@@ -144,13 +144,13 @@ public abstract class UiTextElement : UiElement
             field = value;
             Paint = CreatePaint();
         }
-    } = SKColors.White;
-    public UiTextElement SetTextColor(SKColor color)
+    } = Colors.White;
+    public UiTextElement SetTextColor(Color color)
     {
         TextColor = color;
         return this;
     }
-    public UiTextElement BindTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public UiTextElement BindTextColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => TextColor = propertyGetter());
         return this;

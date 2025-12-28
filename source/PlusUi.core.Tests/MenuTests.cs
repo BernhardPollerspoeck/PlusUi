@@ -201,14 +201,14 @@ public sealed class MenuTests
         // Arrange & Act
         var menu = new Menu()
             .AddItem(new MenuItem().SetText("File"))
-            .SetHoverBackgroundColor(new SKColor(100, 100, 100))
-            .SetActiveBackgroundColor(new SKColor(150, 150, 150))
-            .SetTextColor(SKColors.Yellow);
+            .SetHoverBackgroundColor(new Color(100, 100, 100))
+            .SetActiveBackgroundColor(new Color(150, 150, 150))
+            .SetTextColor(Colors.Yellow);
 
         // Assert
-        Assert.AreEqual(new SKColor(100, 100, 100), menu.HoverBackgroundColor);
-        Assert.AreEqual(new SKColor(150, 150, 150), menu.ActiveBackgroundColor);
-        Assert.AreEqual(SKColors.Yellow, menu.TextColor);
+        Assert.AreEqual(new Color(100, 100, 100), menu.HoverBackgroundColor);
+        Assert.AreEqual(new Color(150, 150, 150), menu.ActiveBackgroundColor);
+        Assert.AreEqual(Colors.Yellow, menu.TextColor);
     }
 
     [TestMethod]
@@ -246,16 +246,16 @@ public sealed class MenuTests
     {
         // Arrange & Act
         var contextMenu = new ContextMenu();
-        contextMenu.SetBackground(new SKColor(50, 50, 50));
-        contextMenu.SetHoverBackgroundColor(new SKColor(80, 80, 80));
-        contextMenu.SetTextColor(SKColors.White);
+        contextMenu.SetBackground(new Color(50, 50, 50));
+        contextMenu.SetHoverBackgroundColor(new Color(80, 80, 80));
+        contextMenu.SetTextColor(Colors.White);
 
         // Assert
         var background = contextMenu.Background as SolidColorBackground;
         Assert.IsNotNull(background);
-        Assert.AreEqual(new SKColor(50, 50, 50), background.Color);
-        Assert.AreEqual(new SKColor(80, 80, 80), contextMenu.HoverBackgroundColor);
-        Assert.AreEqual(SKColors.White, contextMenu.TextColor);
+        Assert.AreEqual(new Color(50, 50, 50), background.Color);
+        Assert.AreEqual(new Color(80, 80, 80), contextMenu.HoverBackgroundColor);
+        Assert.AreEqual(Colors.White, contextMenu.TextColor);
     }
 
     [TestMethod]
@@ -313,17 +313,17 @@ public sealed class MenuTests
 
         // Act
         button.SetContextMenu(new ContextMenu())
-            .SetContextMenuBackground(new SKColor(40, 40, 40))
-            .SetContextMenuHoverBackgroundColor(new SKColor(70, 70, 70))
-            .SetContextMenuTextColor(SKColors.LightGray);
+            .SetContextMenuBackground(new Color(40, 40, 40))
+            .SetContextMenuHoverBackgroundColor(new Color(70, 70, 70))
+            .SetContextMenuTextColor(Colors.LightGray);
 
         // Assert
         Assert.IsNotNull(button.ContextMenu);
         var background = button.ContextMenu.Background as SolidColorBackground;
         Assert.IsNotNull(background);
-        Assert.AreEqual(new SKColor(40, 40, 40), background.Color);
-        Assert.AreEqual(new SKColor(70, 70, 70), button.ContextMenu.HoverBackgroundColor);
-        Assert.AreEqual(SKColors.LightGray, button.ContextMenu.TextColor);
+        Assert.AreEqual(new Color(40, 40, 40), background.Color);
+        Assert.AreEqual(new Color(70, 70, 70), button.ContextMenu.HoverBackgroundColor);
+        Assert.AreEqual(Colors.LightGray, button.ContextMenu.TextColor);
     }
 
     #endregion

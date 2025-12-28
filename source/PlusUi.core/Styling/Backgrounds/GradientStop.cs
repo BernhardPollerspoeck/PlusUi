@@ -1,5 +1,3 @@
-using SkiaSharp;
-
 namespace PlusUi.core;
 
 /// <summary>
@@ -8,4 +6,4 @@ namespace PlusUi.core;
 /// </summary>
 /// <param name="Color">The color at this stop</param>
 /// <param name="Position">The position of the stop (0-1)</param>
-public record GradientStop(SKColor Color, float Position);
+public record GradientStop(Color Color, float Position);

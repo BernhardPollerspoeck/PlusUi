@@ -10,14 +10,14 @@ namespace PlusUi.core;
 /// <example>
 /// <code>
 /// // Fixed size colored rectangle
-/// new Solid(width: 100, height: 50, color: SKColors.Blue);
+/// new Solid(width: 100, height: 50, color: Colors.Blue);
 ///
 /// // Spacer that stretches
 /// new Solid()
-///     .SetBackground(new SolidColorBackground(SKColors.LightGray));
+///     .SetBackground(new SolidColorBackground(Colors.LightGray));
 ///
 /// // Vertical divider
-/// new Solid(width: 1, height: null, color: SKColors.Gray);
+/// new Solid(width: 1, height: null, color: Colors.Gray);
 /// </code>
 /// </example>
 [GenerateShadowMethods]
@@ -29,7 +29,7 @@ public partial class Solid : UiElement
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.None;
 
-    public Solid(float? width = null, float? height = null, SKColor? color = null)
+    public Solid(float? width = null, float? height = null, Color? color = null)
     {
         HorizontalAlignment = HorizontalAlignment.Stretch;
         VerticalAlignment = VerticalAlignment.Stretch;

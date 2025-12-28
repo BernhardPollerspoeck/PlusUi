@@ -10,42 +10,42 @@ public class BackgroundTests
     public void TestSolidColorBackground_Constructor()
     {
         // Arrange & Act
-        var background = new SolidColorBackground(SKColors.Red);
+        var background = new SolidColorBackground(Colors.Red);
 
         // Assert
-        Assert.AreEqual(SKColors.Red, background.Color);
+        Assert.AreEqual(Colors.Red, background.Color);
     }
 
     [TestMethod]
     public void TestSolidColorBackground_ObjectInitializer()
     {
         // Arrange & Act
-        var background = new SolidColorBackground { Color = SKColors.Blue };
+        var background = new SolidColorBackground { Color = Colors.Blue };
 
         // Assert
-        Assert.AreEqual(SKColors.Blue, background.Color);
+        Assert.AreEqual(Colors.Blue, background.Color);
     }
 
     [TestMethod]
     public void TestSolidColorBackground_ImplicitConversion()
     {
         // Arrange & Act
-        SolidColorBackground background = SKColors.Green;
+        SolidColorBackground background = Colors.Green;
 
         // Assert
         Assert.IsInstanceOfType<SolidColorBackground>(background);
-        Assert.AreEqual(SKColors.Green, background.Color);
+        Assert.AreEqual(Colors.Green, background.Color);
     }
 
     [TestMethod]
     public void TestLinearGradient_Constructor()
     {
         // Arrange & Act
-        var gradient = new LinearGradient(SKColors.Red, SKColors.Blue, 45);
+        var gradient = new LinearGradient(Colors.Red, Colors.Blue, 45);
 
         // Assert
-        Assert.AreEqual(SKColors.Red, gradient.StartColor);
-        Assert.AreEqual(SKColors.Blue, gradient.EndColor);
+        Assert.AreEqual(Colors.Red, gradient.StartColor);
+        Assert.AreEqual(Colors.Blue, gradient.EndColor);
         Assert.AreEqual(45f, gradient.Angle);
     }
 
@@ -55,14 +55,14 @@ public class BackgroundTests
         // Arrange & Act
         var gradient = new LinearGradient
         {
-            StartColor = SKColors.Yellow,
-            EndColor = SKColors.Orange,
+            StartColor = Colors.Yellow,
+            EndColor = Colors.Orange,
             Angle = 90
         };
 
         // Assert
-        Assert.AreEqual(SKColors.Yellow, gradient.StartColor);
-        Assert.AreEqual(SKColors.Orange, gradient.EndColor);
+        Assert.AreEqual(Colors.Yellow, gradient.StartColor);
+        Assert.AreEqual(Colors.Orange, gradient.EndColor);
         Assert.AreEqual(90f, gradient.Angle);
     }
 
@@ -70,7 +70,7 @@ public class BackgroundTests
     public void TestLinearGradient_DefaultAngle()
     {
         // Arrange & Act
-        var gradient = new LinearGradient(SKColors.Red, SKColors.Blue);
+        var gradient = new LinearGradient(Colors.Red, Colors.Blue);
 
         // Assert
         Assert.AreEqual(0f, gradient.Angle);
@@ -80,11 +80,11 @@ public class BackgroundTests
     public void TestRadialGradient_Constructor()
     {
         // Arrange & Act
-        var gradient = new RadialGradient(SKColors.White, SKColors.Black);
+        var gradient = new RadialGradient(Colors.White, Colors.Black);
 
         // Assert
-        Assert.AreEqual(SKColors.White, gradient.CenterColor);
-        Assert.AreEqual(SKColors.Black, gradient.EdgeColor);
+        Assert.AreEqual(Colors.White, gradient.CenterColor);
+        Assert.AreEqual(Colors.Black, gradient.EdgeColor);
         Assert.AreEqual(0.5f, gradient.Center.X);
         Assert.AreEqual(0.5f, gradient.Center.Y);
     }
@@ -93,11 +93,11 @@ public class BackgroundTests
     public void TestRadialGradient_CustomCenter()
     {
         // Arrange & Act
-        var gradient = new RadialGradient(SKColors.Red, SKColors.Blue, new Point(0.3f, 0.7f));
+        var gradient = new RadialGradient(Colors.Red, Colors.Blue, new Point(0.3f, 0.7f));
 
         // Assert
-        Assert.AreEqual(SKColors.Red, gradient.CenterColor);
-        Assert.AreEqual(SKColors.Blue, gradient.EdgeColor);
+        Assert.AreEqual(Colors.Red, gradient.CenterColor);
+        Assert.AreEqual(Colors.Blue, gradient.EdgeColor);
         Assert.AreEqual(0.3f, gradient.Center.X);
         Assert.AreEqual(0.7f, gradient.Center.Y);
     }
@@ -108,14 +108,14 @@ public class BackgroundTests
         // Arrange & Act
         var gradient = new RadialGradient
         {
-            CenterColor = SKColors.Yellow,
-            EdgeColor = SKColors.Orange,
+            CenterColor = Colors.Yellow,
+            EdgeColor = Colors.Orange,
             Center = new Point(0.2f, 0.8f)
         };
 
         // Assert
-        Assert.AreEqual(SKColors.Yellow, gradient.CenterColor);
-        Assert.AreEqual(SKColors.Orange, gradient.EdgeColor);
+        Assert.AreEqual(Colors.Yellow, gradient.CenterColor);
+        Assert.AreEqual(Colors.Orange, gradient.EdgeColor);
         Assert.AreEqual(0.2f, gradient.Center.X);
         Assert.AreEqual(0.8f, gradient.Center.Y);
     }
@@ -126,18 +126,18 @@ public class BackgroundTests
         // Arrange & Act
         var gradient = new MultiStopGradient(
             90,
-            new GradientStop(SKColors.Red, 0),
-            new GradientStop(SKColors.Yellow, 0.5f),
-            new GradientStop(SKColors.Green, 1));
+            new GradientStop(Colors.Red, 0),
+            new GradientStop(Colors.Yellow, 0.5f),
+            new GradientStop(Colors.Green, 1));
 
         // Assert
         Assert.AreEqual(90f, gradient.Angle);
         Assert.HasCount(3, gradient.Stops);
-        Assert.AreEqual(SKColors.Red, gradient.Stops[0].Color);
+        Assert.AreEqual(Colors.Red, gradient.Stops[0].Color);
         Assert.AreEqual(0f, gradient.Stops[0].Position);
-        Assert.AreEqual(SKColors.Yellow, gradient.Stops[1].Color);
+        Assert.AreEqual(Colors.Yellow, gradient.Stops[1].Color);
         Assert.AreEqual(0.5f, gradient.Stops[1].Position);
-        Assert.AreEqual(SKColors.Green, gradient.Stops[2].Color);
+        Assert.AreEqual(Colors.Green, gradient.Stops[2].Color);
         Assert.AreEqual(1f, gradient.Stops[2].Position);
     }
 
@@ -147,8 +147,8 @@ public class BackgroundTests
         // Arrange & Act
         var gradient = new MultiStopGradient(
             45,
-            new GradientStop(SKColors.Red, 0),
-            new GradientStop(SKColors.Blue, 1));
+            new GradientStop(Colors.Red, 0),
+            new GradientStop(Colors.Blue, 1));
 
         // Assert - Stops should be IReadOnlyList
         Assert.IsInstanceOfType(gradient.Stops, typeof(IReadOnlyList<GradientStop>));
@@ -161,12 +161,12 @@ public class BackgroundTests
         var element = new VStack();
 
         // Act
-        element.SetBackground(new SolidColorBackground(SKColors.Red));
+        element.SetBackground(new SolidColorBackground(Colors.Red));
 
         // Assert
         Assert.IsNotNull(element.Background);
         Assert.IsInstanceOfType(element.Background, typeof(SolidColorBackground));
-        Assert.AreEqual(SKColors.Red, ((SolidColorBackground)element.Background).Color);
+        Assert.AreEqual(Colors.Red, ((SolidColorBackground)element.Background).Color);
     }
 
     [TestMethod]
@@ -176,12 +176,12 @@ public class BackgroundTests
         var element = new VStack();
 
         // Act - Use explicit SolidColorBackground to demonstrate implicit conversion in real usage
-        element.SetBackground(new SolidColorBackground(SKColors.Blue));
+        element.SetBackground(new SolidColorBackground(Colors.Blue));
 
         // Assert
         Assert.IsNotNull(element.Background);
         Assert.IsInstanceOfType(element.Background, typeof(SolidColorBackground));
-        Assert.AreEqual(SKColors.Blue, ((SolidColorBackground)element.Background).Color);
+        Assert.AreEqual(Colors.Blue, ((SolidColorBackground)element.Background).Color);
     }
 
     [TestMethod]
@@ -189,7 +189,7 @@ public class BackgroundTests
     {
         // Arrange
         var element = new VStack();
-        var gradient = new LinearGradient(SKColors.Red, SKColors.Blue, 45);
+        var gradient = new LinearGradient(Colors.Red, Colors.Blue, 45);
 
         // Act
         element.SetBackground(gradient);
@@ -198,8 +198,8 @@ public class BackgroundTests
         Assert.IsNotNull(element.Background);
         Assert.IsInstanceOfType(element.Background, typeof(LinearGradient));
         var bg = (LinearGradient)element.Background;
-        Assert.AreEqual(SKColors.Red, bg.StartColor);
-        Assert.AreEqual(SKColors.Blue, bg.EndColor);
+        Assert.AreEqual(Colors.Red, bg.StartColor);
+        Assert.AreEqual(Colors.Blue, bg.EndColor);
         Assert.AreEqual(45f, bg.Angle);
     }
 
@@ -208,7 +208,7 @@ public class BackgroundTests
     {
         // Arrange
         var element = new VStack();
-        var testColor = SKColors.Green;
+        var testColor = Colors.Green;
 
         // Act
         element.BindBackground(nameof(testColor), () => new SolidColorBackground(testColor));
@@ -216,7 +216,7 @@ public class BackgroundTests
         // Assert
         Assert.IsNotNull(element.Background);
         Assert.IsInstanceOfType(element.Background, typeof(SolidColorBackground));
-        Assert.AreEqual(SKColors.Green, ((SolidColorBackground)element.Background).Color);
+        Assert.AreEqual(Colors.Green, ((SolidColorBackground)element.Background).Color);
     }
 
     [TestMethod]
@@ -224,7 +224,7 @@ public class BackgroundTests
     {
         // Arrange
         var element = new VStack();
-        var testColor = SKColors.Purple;
+        var testColor = Colors.Purple;
 
         // Act - Use explicit SolidColorBackground to demonstrate usage
         element.BindBackground(nameof(testColor), () => new SolidColorBackground(testColor));
@@ -232,7 +232,7 @@ public class BackgroundTests
         // Assert
         Assert.IsNotNull(element.Background);
         Assert.IsInstanceOfType(element.Background, typeof(SolidColorBackground));
-        Assert.AreEqual(SKColors.Purple, ((SolidColorBackground)element.Background).Color);
+        Assert.AreEqual(Colors.Purple, ((SolidColorBackground)element.Background).Color);
     }
 
     [TestMethod]
@@ -243,13 +243,13 @@ public class BackgroundTests
 
         // Act
         #pragma warning disable CS0618 // Type or member is obsolete
-        element.SetBackgroundColor(SKColors.Red);
+        element.SetBackgroundColor(Colors.Red);
         #pragma warning restore CS0618 // Type or member is obsolete
 
         // Assert
         Assert.IsNotNull(element.Background);
         Assert.IsInstanceOfType(element.Background, typeof(SolidColorBackground));
-        Assert.AreEqual(SKColors.Red, ((SolidColorBackground)element.Background).Color);
+        Assert.AreEqual(Colors.Red, ((SolidColorBackground)element.Background).Color);
     }
 
     [TestMethod]
@@ -261,13 +261,13 @@ public class BackgroundTests
         // Act
         #pragma warning disable CS0618 // Type or member is obsolete
         var initialColor = element.BackgroundColor;
-        element.BackgroundColor = SKColors.Blue;
+        element.BackgroundColor = Colors.Blue;
         var updatedColor = element.BackgroundColor;
         #pragma warning restore CS0618 // Type or member is obsolete
 
         // Assert
-        Assert.AreEqual(SKColors.Transparent, initialColor);
-        Assert.AreEqual(SKColors.Blue, updatedColor);
+        Assert.AreEqual(Colors.Transparent, initialColor);
+        Assert.AreEqual(Colors.Blue, updatedColor);
     }
 
     [TestMethod]
@@ -282,7 +282,7 @@ public class BackgroundTests
         #pragma warning restore CS0618 // Type or member is obsolete
 
         // Assert
-        Assert.AreEqual(SKColors.Transparent, color);
+        Assert.AreEqual(Colors.Transparent, color);
     }
 
     [TestMethod]
@@ -290,7 +290,7 @@ public class BackgroundTests
     {
         // Arrange
         var element = new VStack();
-        element.SetBackground(new LinearGradient(SKColors.Red, SKColors.Blue));
+        element.SetBackground(new LinearGradient(Colors.Red, Colors.Blue));
 
         // Act
         #pragma warning disable CS0618 // Type or member is obsolete
@@ -298,19 +298,19 @@ public class BackgroundTests
         #pragma warning restore CS0618 // Type or member is obsolete
 
         // Assert
-        Assert.AreEqual(SKColors.Transparent, color);
+        Assert.AreEqual(Colors.Transparent, color);
     }
 
     [TestMethod]
     public void TestSolid_Constructor_UsesNewBackgroundSystem()
     {
         // Arrange & Act
-        var solid = new Solid(color: SKColors.Red);
+        var solid = new Solid(color: Colors.Red);
 
         // Assert
         Assert.IsNotNull(solid.Background);
         Assert.IsInstanceOfType(solid.Background, typeof(SolidColorBackground));
-        Assert.AreEqual(SKColors.Red, ((SolidColorBackground)solid.Background).Color);
+        Assert.AreEqual(Colors.Red, ((SolidColorBackground)solid.Background).Color);
     }
 
     [TestMethod]
@@ -318,7 +318,7 @@ public class BackgroundTests
     {
         // Arrange
         var border = new Border();
-        var gradient = new LinearGradient(SKColors.Red, SKColors.Blue, 90);
+        var gradient = new LinearGradient(Colors.Red, Colors.Blue, 90);
 
         // Act
         border.SetBackground(gradient);

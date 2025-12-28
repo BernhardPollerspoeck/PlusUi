@@ -431,7 +431,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     /// <param name="background">The background for even rows.</param>
     /// <param name="foreground">The text color for even rows.</param>
     /// <returns>This grid for method chaining.</returns>
-    public DataGrid<T> SetEvenRowStyle(IBackground? background, SKColor? foreground = null)
+    public DataGrid<T> SetEvenRowStyle(IBackground? background, Color? foreground = null)
     {
         EvenRowStyle = new DataGridRowStyle(background, foreground);
         return this;
@@ -448,7 +448,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     /// <param name="background">The background for odd rows.</param>
     /// <param name="foreground">The text color for odd rows.</param>
     /// <returns>This grid for method chaining.</returns>
-    public DataGrid<T> SetOddRowStyle(IBackground? background, SKColor? foreground = null)
+    public DataGrid<T> SetOddRowStyle(IBackground? background, Color? foreground = null)
     {
         OddRowStyle = new DataGridRowStyle(background, foreground);
         return this;
@@ -680,7 +680,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
             var headerCell = new Label()
                 .SetText(column.Header)
                 .SetFontWeight(FontWeight.Bold)
-                .SetTextColor(SKColors.White)
+                .SetTextColor(Colors.White)
                 .SetHorizontalAlignment(HorizontalAlignment.Center)
                 .SetVerticalAlignment(VerticalAlignment.Center)
                 .SetMargin(CellPadding);
@@ -723,8 +723,8 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         if (SelectedItems.Contains(item))
         {
             return new DataGridRowStyle(
-                Background: new SolidColorBackground(new SKColor(0, 120, 215, 80)),
-                Foreground: SKColors.Black
+                Background: new SolidColorBackground(new Color(0, 120, 215, 80)),
+                Foreground: Colors.Black
             );
         }
 

@@ -71,22 +71,22 @@ public partial class ActivityIndicator : UiElement
     #endregion
 
     #region Color
-    internal SKColor Color
+    internal Color Color
     {
         get => field;
         set
         {
             field = value;
         }
-    } = new SKColor(0, 122, 255); // iOS blue
+    } = new Color(0, 122, 255); // iOS blue
 
-    public ActivityIndicator SetColor(SKColor color)
+    public ActivityIndicator SetColor(Color color)
     {
         Color = color;
         return this;
     }
 
-    public ActivityIndicator BindColor(string propertyName, Func<SKColor> propertyGetter)
+    public ActivityIndicator BindColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => Color = propertyGetter());
         return this;

@@ -11,12 +11,12 @@ public sealed class RadialGradient : IBackground
     /// <summary>
     /// The color at the center of the gradient.
     /// </summary>
-    public SKColor CenterColor { get; init; }
+    public Color CenterColor { get; init; }
 
     /// <summary>
     /// The color at the edges of the gradient.
     /// </summary>
-    public SKColor EdgeColor { get; init; }
+    public Color EdgeColor { get; init; }
 
     /// <summary>
     /// The center point of the gradient in relative coordinates (0-1).
@@ -30,7 +30,7 @@ public sealed class RadialGradient : IBackground
     /// <param name="centerColor">Color at the center</param>
     /// <param name="edgeColor">Color at the edges</param>
     /// <param name="center">Center point in relative coordinates (optional, default: center)</param>
-    public RadialGradient(SKColor centerColor, SKColor edgeColor, Point? center = null)
+    public RadialGradient(Color centerColor, Color edgeColor, Point? center = null)
     {
         CenterColor = centerColor;
         EdgeColor = edgeColor;
@@ -66,8 +66,8 @@ public sealed class RadialGradient : IBackground
         using var shader = SKShader.CreateRadialGradient(
             centerPoint,
             radius,
-            new[] { CenterColor, EdgeColor },
-            new[] { 0f, 1f },
+            [(SKColor)CenterColor, (SKColor)EdgeColor],
+            [0f, 1f],
             SKShaderTileMode.Clamp);
 
         using var paint = new SKPaint

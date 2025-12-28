@@ -158,22 +158,22 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
     #endregion
 
     #region MinimumTrackColor
-    internal SKColor MinimumTrackColor
+    internal Color MinimumTrackColor
     {
         get => field;
         set
         {
             field = value;
         }
-    } = new SKColor(0, 122, 255); // iOS blue
+    } = new Color(0, 122, 255); // iOS blue
 
-    public Slider SetMinimumTrackColor(SKColor color)
+    public Slider SetMinimumTrackColor(Color color)
     {
         MinimumTrackColor = color;
         return this;
     }
 
-    public Slider BindMinimumTrackColor(string propertyName, Func<SKColor> propertyGetter)
+    public Slider BindMinimumTrackColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => MinimumTrackColor = propertyGetter());
         return this;
@@ -181,22 +181,22 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
     #endregion
 
     #region MaximumTrackColor
-    internal SKColor MaximumTrackColor
+    internal Color MaximumTrackColor
     {
         get => field;
         set
         {
             field = value;
         }
-    } = new SKColor(230, 230, 230);
+    } = new Color(230, 230, 230);
 
-    public Slider SetMaximumTrackColor(SKColor color)
+    public Slider SetMaximumTrackColor(Color color)
     {
         MaximumTrackColor = color;
         return this;
     }
 
-    public Slider BindMaximumTrackColor(string propertyName, Func<SKColor> propertyGetter)
+    public Slider BindMaximumTrackColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => MaximumTrackColor = propertyGetter());
         return this;
@@ -204,22 +204,22 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
     #endregion
 
     #region ThumbColor
-    internal SKColor ThumbColor
+    internal Color ThumbColor
     {
         get => field;
         set
         {
             field = value;
         }
-    } = SKColors.White;
+    } = Colors.White;
 
-    public Slider SetThumbColor(SKColor color)
+    public Slider SetThumbColor(Color color)
     {
         ThumbColor = color;
         return this;
     }
 
-    public Slider BindThumbColor(string propertyName, Func<SKColor> propertyGetter)
+    public Slider BindThumbColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => ThumbColor = propertyGetter());
         return this;

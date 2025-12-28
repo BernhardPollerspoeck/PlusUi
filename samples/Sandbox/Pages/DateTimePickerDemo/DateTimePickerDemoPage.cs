@@ -15,12 +15,12 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetText("<- Back")
                         .SetTextSize(16)
                         .SetCommand(vm.GoBackCommand)
-                        .SetTextColor(SKColors.White)
+                        .SetTextColor(Colors.White)
                         .SetPadding(new Margin(10, 5)),
                     new Label()
                         .SetText("DatePicker & TimePicker Demo")
                         .SetTextSize(24)
-                        .SetTextColor(SKColors.White)
+                        .SetTextColor(Colors.White)
                         .SetMargin(new Margin(20, 0, 0, 0))
                 ).SetMargin(new Margin(10, 10, 0, 10)),
 
@@ -31,30 +31,30 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                             new Label()
                                 .SetText("Current Selections:")
                                 .SetTextSize(14)
-                                .SetTextColor(SKColors.Gray),
+                                .SetTextColor(Colors.Gray),
                             new HStack(
                                 new Label()
                                     .SetText("Date: ")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.Gray),
+                                    .SetTextColor(Colors.Gray),
                                 new Label()
                                     .BindText(nameof(vm.FormDate), () => vm.FormDate?.ToString("dd.MM.yyyy") ?? "(none)")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.LimeGreen)
+                                    .SetTextColor(Colors.LimeGreen)
                             ),
                             new HStack(
                                 new Label()
                                     .SetText("Time: ")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.Gray),
+                                    .SetTextColor(Colors.Gray),
                                 new Label()
                                     .BindText(nameof(vm.FormTime), () => vm.FormTime?.ToString("HH:mm") ?? "(none)")
                                     .SetTextSize(14)
-                                    .SetTextColor(SKColors.Cyan)
+                                    .SetTextColor(Colors.Cyan)
                             )
                         ).SetMargin(new Margin(16, 8))
                     )
-                    .SetBackground(new SolidColorBackground(new SKColor(30, 30, 30)))
+                    .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                     .SetCornerRadius(8)
                     .SetMargin(new Margin(20, 0, 20, 20)),
 
@@ -62,7 +62,7 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                 new Label()
                     .SetText("DatePicker Examples")
                     .SetTextSize(20)
-                    .SetTextColor(SKColors.Yellow)
+                    .SetTextColor(Colors.Yellow)
                     .SetMargin(new Margin(20, 10, 0, 10)),
 
                 // Basic DatePicker
@@ -71,7 +71,7 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetPlaceholder("Select a date...")
                         .BindSelectedDate(nameof(vm.FormDate), () => vm.FormDate, d => vm.FormDate = d)
                         .SetDesiredSize(new Size(220, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                        .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                         .SetCornerRadius(8)
                 ),
 
@@ -83,7 +83,7 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetMaxDate(new DateOnly(2024, 12, 31))
                         .BindSelectedDate(nameof(vm.SelectedDate), () => vm.SelectedDate, d => vm.SelectedDate = d)
                         .SetDesiredSize(new Size(220, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                        .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                         .SetCornerRadius(8)
                 ),
 
@@ -95,9 +95,9 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetDisplayFormat("dd MMMM yyyy")
                         .SetWeekStart(DayOfWeekStart.Sunday)
                         .BindSelectedDate(nameof(vm.BirthDate), () => vm.BirthDate, d => vm.BirthDate = d)
-                        .SetTextColor(SKColors.Orange)
+                        .SetTextColor(Colors.Orange)
                         .SetDesiredSize(new Size(250, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(60, 40, 20)))
+                        .SetBackground(new SolidColorBackground(new Color(60, 40, 20)))
                         .SetCornerRadius(8)
                 ),
 
@@ -109,9 +109,9 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetMaxDate(DateOnly.FromDateTime(DateTime.Today.AddMonths(3)))
                         .SetShowTodayButton(false)
                         .BindSelectedDate(nameof(vm.AppointmentDate), () => vm.AppointmentDate, d => vm.AppointmentDate = d)
-                        .SetTextColor(SKColors.LimeGreen)
+                        .SetTextColor(Colors.LimeGreen)
                         .SetDesiredSize(new Size(250, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(30, 50, 30)))
+                        .SetBackground(new SolidColorBackground(new Color(30, 50, 30)))
                         .SetCornerRadius(8)
                 ),
 
@@ -121,7 +121,7 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetPlaceholder("Select date...")
                         .SetDisplayFormat("yyyy-MM-dd")
                         .SetDesiredSize(new Size(200, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(40, 40, 60)))
+                        .SetBackground(new SolidColorBackground(new Color(40, 40, 60)))
                         .SetCornerRadius(8)
                 ),
 
@@ -129,7 +129,7 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                 new Label()
                     .SetText("TimePicker Examples")
                     .SetTextSize(20)
-                    .SetTextColor(SKColors.Yellow)
+                    .SetTextColor(Colors.Yellow)
                     .SetMargin(new Margin(20, 20, 0, 10)),
 
                 // Basic TimePicker
@@ -138,7 +138,7 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetPlaceholder("Select time...")
                         .BindSelectedTime(nameof(vm.FormTime), () => vm.FormTime, t => vm.FormTime = t)
                         .SetDesiredSize(new Size(150, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                        .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                         .SetCornerRadius(8)
                 ),
 
@@ -148,9 +148,9 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetPlaceholder("Select time...")
                         .Set24HourFormat(false)
                         .BindSelectedTime(nameof(vm.SelectedTime), () => vm.SelectedTime, t => vm.SelectedTime = t)
-                        .SetTextColor(SKColors.Cyan)
+                        .SetTextColor(Colors.Cyan)
                         .SetDesiredSize(new Size(180, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(30, 50, 60)))
+                        .SetBackground(new SolidColorBackground(new Color(30, 50, 60)))
                         .SetCornerRadius(8)
                 ),
 
@@ -161,7 +161,7 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetMinuteIncrement(15)
                         .BindSelectedTime(nameof(vm.MeetingTime), () => vm.MeetingTime, t => vm.MeetingTime = t)
                         .SetDesiredSize(new Size(150, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                        .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                         .SetCornerRadius(8)
                 ),
 
@@ -173,9 +173,9 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetMaxTime(new TimeOnly(17, 0))
                         .SetMinuteIncrement(30)
                         .BindSelectedTime(nameof(vm.AppointmentTime), () => vm.AppointmentTime, t => vm.AppointmentTime = t)
-                        .SetTextColor(SKColors.LimeGreen)
+                        .SetTextColor(Colors.LimeGreen)
                         .SetDesiredSize(new Size(180, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(30, 50, 30)))
+                        .SetBackground(new SolidColorBackground(new Color(30, 50, 30)))
                         .SetCornerRadius(8)
                 ),
 
@@ -185,7 +185,7 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                         .SetSelectedTime(TimeOnly.FromDateTime(DateTime.Now))
                         .SetMinuteIncrement(5)
                         .SetDesiredSize(new Size(150, 40))
-                        .SetBackground(new SolidColorBackground(new SKColor(50, 40, 50)))
+                        .SetBackground(new SolidColorBackground(new Color(50, 40, 50)))
                         .SetCornerRadius(8)
                 ),
 
@@ -193,7 +193,7 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                 new Label()
                     .SetText("Combined Date & Time")
                     .SetTextSize(20)
-                    .SetTextColor(SKColors.Yellow)
+                    .SetTextColor(Colors.Yellow)
                     .SetMargin(new Margin(20, 20, 0, 10)),
 
                 CreateSection("Appointment Booking",
@@ -202,26 +202,26 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
                             new Label()
                                 .SetText("Date")
                                 .SetTextSize(12)
-                                .SetTextColor(SKColors.Gray),
+                                .SetTextColor(Colors.Gray),
                             new DatePicker()
                                 .SetPlaceholder("Date...")
                                 .SetMinDate(DateOnly.FromDateTime(DateTime.Today))
                                 .BindSelectedDate(nameof(vm.AppointmentDate), () => vm.AppointmentDate, d => vm.AppointmentDate = d)
                                 .SetDesiredSize(new Size(180, 38))
-                                .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                                .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                                 .SetCornerRadius(6)
                         ).SetMargin(new Margin(0, 0, 16, 0)),
                         new VStack(
                             new Label()
                                 .SetText("Time")
                                 .SetTextSize(12)
-                                .SetTextColor(SKColors.Gray),
+                                .SetTextColor(Colors.Gray),
                             new TimePicker()
                                 .SetPlaceholder("Time...")
                                 .SetMinuteIncrement(15)
                                 .BindSelectedTime(nameof(vm.AppointmentTime), () => vm.AppointmentTime, t => vm.AppointmentTime = t)
                                 .SetDesiredSize(new Size(140, 38))
-                                .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                                .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                                 .SetCornerRadius(6)
                         )
                     )
@@ -240,14 +240,14 @@ public class DateTimePickerDemoPage(DateTimePickerDemoPageViewModel vm) : UiPage
             new Label()
                 .SetText(title)
                 .SetTextSize(16)
-                .SetTextColor(SKColors.LightGray)
+                .SetTextColor(Colors.LightGray)
                 .SetMargin(new Margin(0, 10, 0, 8)),
             new Border()
                 .AddChild(
                     new VStack(content)
                         .SetMargin(new Margin(16))
                 )
-                .SetBackground(new SolidColorBackground(new SKColor(40, 40, 40)))
+                .SetBackground(new SolidColorBackground(new Color(40, 40, 40)))
                 .SetCornerRadius(12)
                 .SetMargin(new Margin(0, 0, 0, 5))
         ).SetMargin(new Margin(20, 0));

@@ -81,10 +81,10 @@ public class RadioButtonTests
         var radioButton = new RadioButton();
 
         // Act
-        radioButton.SetTextColor(SKColors.Red);
+        radioButton.SetTextColor(Colors.Red);
 
         // Assert
-        Assert.AreEqual(SKColors.Red, radioButton.TextColor);
+        Assert.AreEqual(Colors.Red, radioButton.TextColor);
     }
 
     [TestMethod]
@@ -94,10 +94,10 @@ public class RadioButtonTests
         var radioButton = new RadioButton();
 
         // Act
-        radioButton.SetCircleColor(SKColors.Blue);
+        radioButton.SetCircleColor(Colors.Blue);
 
         // Assert
-        Assert.AreEqual(SKColors.Blue, radioButton.CircleColor);
+        Assert.AreEqual(Colors.Blue, radioButton.CircleColor);
     }
 
     [TestMethod]
@@ -107,10 +107,10 @@ public class RadioButtonTests
         var radioButton = new RadioButton();
 
         // Act
-        radioButton.SetSelectedColor(SKColors.Green);
+        radioButton.SetSelectedColor(Colors.Green);
 
         // Assert
-        Assert.AreEqual(SKColors.Green, radioButton.SelectedColor);
+        Assert.AreEqual(Colors.Green, radioButton.SelectedColor);
     }
 
     #endregion
@@ -144,7 +144,7 @@ public class RadioButtonTests
         var radioButton = new RadioButton();
 
         // Assert
-        Assert.AreEqual(SKColors.White, radioButton.TextColor);
+        Assert.AreEqual(Colors.White, radioButton.TextColor);
     }
 
     [TestMethod]
@@ -154,7 +154,7 @@ public class RadioButtonTests
         var radioButton = new RadioButton();
 
         // Assert
-        Assert.AreEqual(SKColors.White, radioButton.CircleColor);
+        Assert.AreEqual(Colors.White, radioButton.CircleColor);
     }
 
     #endregion
@@ -174,9 +174,9 @@ public class RadioButtonTests
             .SetValue("value")
             .SetIsSelected(true)
             .SetTextSize(16f)
-            .SetTextColor(SKColors.Black)
-            .SetCircleColor(SKColors.Gray)
-            .SetSelectedColor(SKColors.Blue);
+            .SetTextColor(Colors.Black)
+            .SetCircleColor(Colors.Gray)
+            .SetSelectedColor(Colors.Blue);
 
         // Assert
         Assert.AreSame(radioButton, result);

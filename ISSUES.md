@@ -19,8 +19,8 @@
 
 ## Architektur-Probleme
 
-### Abstraktionen
-41. SKColor (SkiaSharp) leckt in Core - keine Farbabstraktion vorhanden
+### Code-Konsistenz
+46. Primary Constructor Pattern nicht überall verwendet
 
 ---
 

@@ -35,7 +35,7 @@ public enum StrokeType
 public partial class Border : UiLayoutElement
 {
     #region StrokeColor
-    internal SKColor StrokeColor
+    internal Color StrokeColor
     {
         get => field;
         set
@@ -43,14 +43,14 @@ public partial class Border : UiLayoutElement
             field = value;
             StrokePaint = CreateStrokePaint();
         }
-    } = SKColors.Black;
+    } = Colors.Black;
 
-    public Border SetStrokeColor(SKColor color)
+    public Border SetStrokeColor(Color color)
     {
         StrokeColor = color;
         return this;
     }
-    public Border BindStrokeColor(string propertyName, Func<SKColor> propertyGetter)
+    public Border BindStrokeColor(string propertyName, Func<Color> propertyGetter)
     {
         RegisterBinding(propertyName, () => StrokeColor = propertyGetter());
         return this;

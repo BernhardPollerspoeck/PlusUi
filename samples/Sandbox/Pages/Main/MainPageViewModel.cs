@@ -15,7 +15,7 @@ public partial class MainPageViewModel(INavigationService navigationService, IPo
         set => SetProperty(ref field, value);
     }
 
-    public SKColor Color
+    public Color Color
     {
         get => field;
         set => SetProperty(ref field, value);
@@ -30,7 +30,8 @@ public partial class MainPageViewModel(INavigationService navigationService, IPo
     [RelayCommand]
     private void SetColor()
     {
-        Color = new SKColor((uint)Random.Shared.Next(0xFF0000, 0xFFFFFF) | 0xFF000000);
+        var random = Random.Shared.Next(0xFF0000, 0xFFFFFF);
+        Color = new Color((byte)((random >> 16) & 0xFF), (byte)((random >> 8) & 0xFF), (byte)(random & 0xFF));
     }
 
     [RelayCommand]
@@ -51,12 +52,12 @@ public partial class MainPageViewModel(INavigationService navigationService, IPo
     {
         popupService.ShowPopup<TestPopup, string>(
             arg: "Some Argument",
-            onClosed: () => Color = SKColors.Green,
+            onClosed: () => Color = Colors.Green,
             configure: cfg =>
             {
                 cfg.CloseOnBackgroundClick = false;
                 cfg.CloseOnEscape = true;
-                cfg.BackgroundColor = new SKColor(200, 0, 0, 220);
+                cfg.BackgroundColor = new Color(200, 0, 0, 220);
             });
     }
 

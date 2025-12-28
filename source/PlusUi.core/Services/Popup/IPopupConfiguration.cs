@@ -1,5 +1,3 @@
-﻿using SkiaSharp;
-
 namespace PlusUi.core;
 
 /// <summary>
@@ -23,5 +21,5 @@ public interface IPopupConfiguration
     /// Gets or sets the background overlay color behind the popup.
     /// Default is a semi-transparent black (RGB 0,0,0 with alpha 220).
     /// </summary>
-    SKColor BackgroundColor { get; set; }
+    Color BackgroundColor { get; set; }
 }

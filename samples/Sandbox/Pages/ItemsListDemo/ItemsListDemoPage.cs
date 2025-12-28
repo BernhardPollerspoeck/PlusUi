@@ -30,21 +30,21 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                             new Label()
                                 .SetText($"#{index + 1}: {item.Title}")
                                 .SetTextSize(16)
-                                .SetTextColor(SKColors.White),
+                                .SetTextColor(Colors.White),
                             new Label()
                                 .SetText(item.Description)
                                 .SetTextSize(12)
-                                .SetTextColor(SKColors.LightGray)
+                                .SetTextColor(Colors.LightGray)
                         )
                         .SetMargin(new Margin(5))
                     )
-                    .SetBackground(new SolidColorBackground(new SKColor(40, 40, 40)))
+                    .SetBackground(new SolidColorBackground(new Color(40, 40, 40)))
                     .SetMargin(new Margin(5, 2))
                     .SetCornerRadius(5)
                 )
                 .SetOrientation(Orientation.Vertical)
                 .SetScrollFactor(1.5f) // Faster scrolling
-                .SetBackground(new SolidColorBackground(new SKColor(20, 20, 20)))
+                .SetBackground(new SolidColorBackground(new Color(20, 20, 20)))
                 .SetCornerRadius(10)
                 .SetMargin(new Margin(10))
                 .SetDesiredHeight(300),
@@ -65,14 +65,14 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                         new Label()
                             .SetText($"#{index + 1}: {item.Title}")
                             .SetTextSize(12)
-                            .SetTextColor(SKColors.White)
+                            .SetTextColor(Colors.White)
                     )
-                    .SetBackground(new SolidColorBackground(new SKColor(40, 40, 40)))
+                    .SetBackground(new SolidColorBackground(new Color(40, 40, 40)))
                     .SetMargin(new Margin(2, 5))
                     .SetCornerRadius(5)
                 )
                 .SetOrientation(Orientation.Horizontal)
-                .SetBackground(new SolidColorBackground(new SKColor(20, 20, 20)))
+                .SetBackground(new SolidColorBackground(new Color(20, 20, 20)))
                 .SetCornerRadius(10)
                 .SetMargin(new Margin(10))
                 .SetDesiredHeight(120),
@@ -83,8 +83,8 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                     .SetTextSize(14)
                     .SetCommand(vm.AddItemCommand)
                     .SetPadding(new(10, 5))
-                    .SetTextColor(SKColors.Black)
-                    .SetBackground(new SolidColorBackground(SKColors.Green))
+                    .SetTextColor(Colors.Black)
+                    .SetBackground(new SolidColorBackground(Colors.Green))
                     .SetMargin(new Margin(5)),
 
                 new Button()
@@ -92,8 +92,8 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                     .SetTextSize(14)
                     .SetCommand(vm.RemoveItemCommand)
                     .SetPadding(new(10, 5))
-                    .SetTextColor(SKColors.Black)
-                    .SetBackground(new SolidColorBackground(SKColors.Red))
+                    .SetTextColor(Colors.Black)
+                    .SetBackground(new SolidColorBackground(Colors.Red))
                     .SetMargin(new Margin(5))
             )
             .SetMargin(new Margin(10)),
@@ -103,8 +103,8 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
                 .SetTextSize(18)
                 .SetCommand(vm.NavCommand)
                 .SetPadding(new(10, 5))
-                .SetTextColor(SKColors.Black)
-                .SetBackground(new SolidColorBackground(SKColors.White))
+                .SetTextColor(Colors.Black)
+                .SetBackground(new SolidColorBackground(Colors.White))
                 .SetMargin(new Margin(10))
         );
     }

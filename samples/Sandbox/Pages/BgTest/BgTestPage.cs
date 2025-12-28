@@ -7,18 +7,18 @@ public class BgTestPage(BgTestPageViewModel vm) : UiPageElement(vm)
     protected override UiElement Build()
     {
         // Use new gradient background system instead of solid color
-        this.SetBackground(new LinearGradient(SKColors.LightBlue, SKColors.White, 180));
+        this.SetBackground(new LinearGradient(Colors.LightBlue, Colors.White, 180));
 
         return new VStack(
             // Gradient background demo boxes
             new Border()
-                .SetBackground(new LinearGradient(SKColors.Blue, SKColors.Purple, 45))
+                .SetBackground(new LinearGradient(Colors.Blue, Colors.Purple, 45))
                 .SetCornerRadius(10)
                 .SetDesiredSize(new Size(200, 100))
                 .SetMargin(new(10)),
             
             new Border()
-                .SetBackground(new RadialGradient(SKColors.White, SKColors.Gray))
+                .SetBackground(new RadialGradient(Colors.White, Colors.Gray))
                 .SetCornerRadius(10)
                 .SetDesiredSize(new Size(200, 100))
                 .SetMargin(new(10)),
@@ -26,9 +26,9 @@ public class BgTestPage(BgTestPageViewModel vm) : UiPageElement(vm)
             new Border()
                 .SetBackground(new MultiStopGradient(
                     90,
-                    new GradientStop(SKColors.Red, 0),
-                    new GradientStop(SKColors.Yellow, 0.5f),
-                    new GradientStop(SKColors.Green, 1)))
+                    new GradientStop(Colors.Red, 0),
+                    new GradientStop(Colors.Yellow, 0.5f),
+                    new GradientStop(Colors.Green, 1)))
                 .SetCornerRadius(10)
                 .SetDesiredSize(new Size(200, 100))
                 .SetMargin(new(10)),
@@ -36,7 +36,7 @@ public class BgTestPage(BgTestPageViewModel vm) : UiPageElement(vm)
             new Label()
                 .SetText("https://timelane.cloud")
                 .SetTextSize(100)
-                .SetTextColor(SKColors.Black),
+                .SetTextColor(Colors.Black),
             new Button()
                 .SetText("Click Me")
                 .SetPadding(new(10, 5))

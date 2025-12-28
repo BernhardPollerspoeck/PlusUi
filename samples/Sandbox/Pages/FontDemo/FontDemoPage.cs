@@ -14,13 +14,13 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                     .SetText("← Back")
                     .SetTextSize(18)
                     .SetCommand(vm.NavCommand)
-                    .SetTextColor(SKColors.White)
+                    .SetTextColor(Colors.White)
                     .SetPadding(new Margin(10, 5)),
                 new Label()
                     .SetText("Custom Font Demo")
                     .SetTextSize(24)
                     .SetFontWeight(FontWeight.Bold)
-                    .SetTextColor(SKColors.White)
+                    .SetTextColor(Colors.White)
                     .SetMargin(new Margin(20, 0, 0, 0))
             ).SetMargin(new Margin(0, 0, 0, 20)),
 
@@ -30,7 +30,7 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                     .SetText("Interactive Font Controls")
                     .SetTextSize(20)
                     .SetFontWeight(FontWeight.SemiBold)
-                    .SetTextColor(SKColors.LightBlue)
+                    .SetTextColor(Colors.LightBlue)
                     .SetMargin(new Margin(0, 0, 0, 10)),
 
                 new HStack(
@@ -38,28 +38,28 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                         .SetText("Regular")
                         .SetPadding(new Margin(15, 8))
                         .SetCommand(vm.SetRegularWeightCommand)
-                        .SetTextColor(SKColors.Black)
-                        .SetBackground(new SolidColorBackground(SKColors.LightGray)),
+                        .SetTextColor(Colors.Black)
+                        .SetBackground(new SolidColorBackground(Colors.LightGray)),
                     new Button()
                         .SetText("Bold")
                         .SetPadding(new Margin(15, 8))
                         .SetCommand(vm.SetBoldWeightCommand)
-                        .SetTextColor(SKColors.Black)
-                        .SetBackground(new SolidColorBackground(SKColors.LightGray))
+                        .SetTextColor(Colors.Black)
+                        .SetBackground(new SolidColorBackground(Colors.LightGray))
                         .SetMargin(new Margin(10, 0, 0, 0)),
                     new Button()
                         .SetText("Light")
                         .SetPadding(new Margin(15, 8))
                         .SetCommand(vm.SetLightWeightCommand)
-                        .SetTextColor(SKColors.Black)
-                        .SetBackground(new SolidColorBackground(SKColors.LightGray))
+                        .SetTextColor(Colors.Black)
+                        .SetBackground(new SolidColorBackground(Colors.LightGray))
                         .SetMargin(new Margin(10, 0, 0, 0)),
                     new Button()
                         .SetText("Toggle Italic")
                         .SetPadding(new Margin(15, 8))
                         .SetCommand(vm.ToggleItalicCommand)
-                        .SetTextColor(SKColors.Black)
-                        .SetBackground(new SolidColorBackground(SKColors.LightSalmon))
+                        .SetTextColor(Colors.Black)
+                        .SetBackground(new SolidColorBackground(Colors.LightSalmon))
                         .SetMargin(new Margin(10, 0, 0, 0))
                 ).SetMargin(new Margin(0, 0, 0, 20)),
 
@@ -68,8 +68,8 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                     .BindFontWeight(nameof(vm.SelectedFontWeight), () => vm.SelectedFontWeight)
                     .BindFontStyle(nameof(vm.SelectedFontStyle), () => vm.SelectedFontStyle)
                     .SetTextSize(28)
-                    .SetTextColor(SKColors.Yellow)
-                    .SetBackground(new SolidColorBackground(new SKColor(50, 50, 50)))
+                    .SetTextColor(Colors.Yellow)
+                    .SetBackground(new SolidColorBackground(new Color(50, 50, 50)))
                     .SetMargin(new Margin(10))
             ).SetMargin(new Margin(0, 0, 0, 30)),
 
@@ -79,50 +79,50 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                     .SetText("Font Weight Examples")
                     .SetTextSize(20)
                     .SetFontWeight(FontWeight.SemiBold)
-                    .SetTextColor(SKColors.LightGreen)
+                    .SetTextColor(Colors.LightGreen)
                     .SetMargin(new Margin(0, 0, 0, 10)),
 
                 new Label()
                     .SetText("Thin (100) - The quick brown fox")
                     .SetFontWeight(FontWeight.Thin)
                     .SetTextSize(18)
-                    .SetTextColor(SKColors.White),
+                    .SetTextColor(Colors.White),
 
                 new Label()
                     .SetText("Light (300) - The quick brown fox")
                     .SetFontWeight(FontWeight.Light)
                     .SetTextSize(18)
-                    .SetTextColor(SKColors.White),
+                    .SetTextColor(Colors.White),
 
                 new Label()
                     .SetText("Regular (400) - The quick brown fox")
                     .SetFontWeight(FontWeight.Regular)
                     .SetTextSize(18)
-                    .SetTextColor(SKColors.White),
+                    .SetTextColor(Colors.White),
 
                 new Label()
                     .SetText("Medium (500) - The quick brown fox")
                     .SetFontWeight(FontWeight.Medium)
                     .SetTextSize(18)
-                    .SetTextColor(SKColors.White),
+                    .SetTextColor(Colors.White),
 
                 new Label()
                     .SetText("SemiBold (600) - The quick brown fox")
                     .SetFontWeight(FontWeight.SemiBold)
                     .SetTextSize(18)
-                    .SetTextColor(SKColors.White),
+                    .SetTextColor(Colors.White),
 
                 new Label()
                     .SetText("Bold (700) - The quick brown fox")
                     .SetFontWeight(FontWeight.Bold)
                     .SetTextSize(18)
-                    .SetTextColor(SKColors.White),
+                    .SetTextColor(Colors.White),
 
                 new Label()
                     .SetText("Black (900) - The quick brown fox")
                     .SetFontWeight(FontWeight.Black)
                     .SetTextSize(18)
-                    .SetTextColor(SKColors.White)
+                    .SetTextColor(Colors.White)
             ).SetMargin(new Margin(0, 0, 0, 30)),
 
             // Font Style Examples
@@ -131,26 +131,26 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                     .SetText("Font Style Examples")
                     .SetTextSize(20)
                     .SetFontWeight(FontWeight.SemiBold)
-                    .SetTextColor(SKColors.LightCoral)
+                    .SetTextColor(Colors.LightCoral)
                     .SetMargin(new Margin(0, 0, 0, 10)),
 
                 new Label()
                     .SetText("Normal Style - The quick brown fox jumps over the lazy dog")
                     .SetFontStyle(FontStyle.Normal)
                     .SetTextSize(18)
-                    .SetTextColor(SKColors.White),
+                    .SetTextColor(Colors.White),
 
                 new Label()
                     .SetText("Italic Style - The quick brown fox jumps over the lazy dog")
                     .SetFontStyle(FontStyle.Italic)
                     .SetTextSize(18)
-                    .SetTextColor(SKColors.White),
+                    .SetTextColor(Colors.White),
 
                 new Label()
                     .SetText("Oblique Style - The quick brown fox jumps over the lazy dog")
                     .SetFontStyle(FontStyle.Oblique)
                     .SetTextSize(18)
-                    .SetTextColor(SKColors.White)
+                    .SetTextColor(Colors.White)
             ).SetMargin(new Margin(0, 0, 0, 30)),
 
             // Typography Hierarchy Example
@@ -159,38 +159,38 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                     .SetText("Typography Hierarchy")
                     .SetTextSize(20)
                     .SetFontWeight(FontWeight.SemiBold)
-                    .SetTextColor(SKColors.LightGoldenrodYellow)
+                    .SetTextColor(Colors.LightGoldenrodYellow)
                     .SetMargin(new Margin(0, 0, 0, 10)),
 
                 new Label()
                     .SetText("Heading 1")
                     .SetFontWeight(FontWeight.Bold)
                     .SetTextSize(32)
-                    .SetTextColor(SKColors.White),
+                    .SetTextColor(Colors.White),
 
                 new Label()
                     .SetText("Heading 2")
                     .SetFontWeight(FontWeight.SemiBold)
                     .SetTextSize(28)
-                    .SetTextColor(SKColors.LightGray),
+                    .SetTextColor(Colors.LightGray),
 
                 new Label()
                     .SetText("Heading 3")
                     .SetFontWeight(FontWeight.Medium)
                     .SetTextSize(24)
-                    .SetTextColor(SKColors.LightGray),
+                    .SetTextColor(Colors.LightGray),
 
                 new Label()
                     .SetText("Body Text - Regular weight for comfortable reading")
                     .SetFontWeight(FontWeight.Regular)
                     .SetTextSize(16)
-                    .SetTextColor(SKColors.White),
+                    .SetTextColor(Colors.White),
 
                 new Label()
                     .SetText("Caption - Light weight for secondary information")
                     .SetFontWeight(FontWeight.Light)
                     .SetTextSize(14)
-                    .SetTextColor(SKColors.DarkGray)
+                    .SetTextColor(Colors.DarkGray)
             ).SetMargin(new Margin(0, 0, 0, 30)),
 
             // Button Font Examples
@@ -199,7 +199,7 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                     .SetText("Buttons with Custom Fonts")
                     .SetTextSize(20)
                     .SetFontWeight(FontWeight.SemiBold)
-                    .SetTextColor(SKColors.LightSkyBlue)
+                    .SetTextColor(Colors.LightSkyBlue)
                     .SetMargin(new Margin(0, 0, 0, 10)),
 
                 new HStack(
@@ -208,16 +208,16 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                         .SetFontWeight(FontWeight.Regular)
                         .SetTextSize(16)
                         .SetPadding(new Margin(15, 8))
-                        .SetTextColor(SKColors.Black)
-                        .SetBackground(new SolidColorBackground(SKColors.White)),
+                        .SetTextColor(Colors.Black)
+                        .SetBackground(new SolidColorBackground(Colors.White)),
 
                     new Button()
                         .SetText("Bold Button")
                         .SetFontWeight(FontWeight.Bold)
                         .SetTextSize(16)
                         .SetPadding(new Margin(15, 8))
-                        .SetTextColor(SKColors.White)
-                        .SetBackground(new SolidColorBackground(SKColors.DarkBlue))
+                        .SetTextColor(Colors.White)
+                        .SetBackground(new SolidColorBackground(Colors.DarkBlue))
                         .SetMargin(new Margin(10, 0, 0, 0)),
 
                     new Button()
@@ -226,8 +226,8 @@ public class FontDemoPage(FontDemoPageViewModel vm) : UiPageElement(vm)
                         .SetFontStyle(FontStyle.Italic)
                         .SetTextSize(16)
                         .SetPadding(new Margin(15, 8))
-                        .SetTextColor(SKColors.Black)
-                        .SetBackground(new SolidColorBackground(SKColors.LightYellow))
+                        .SetTextColor(Colors.Black)
+                        .SetBackground(new SolidColorBackground(Colors.LightYellow))
                         .SetMargin(new Margin(10, 0, 0, 0))
                 )
             ).SetMargin(new Margin(0, 0, 0, 20))
