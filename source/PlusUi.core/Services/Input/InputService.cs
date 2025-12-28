@@ -235,8 +235,31 @@ public class InputService
         var point = new Point(location.X, location.Y);
         var hitControl = HitTestAll(point);
 
+        // Check for context menu first
+        var contextMenu = FindContextMenu(hitControl);
+        if (contextMenu != null)
+        {
+            contextMenu.Open(point);
+            return;
+        }
+
+        // Fall back to long press gesture
         var longPressControl = FindGestureControl<ILongPressGestureControl>(hitControl);
         longPressControl?.OnLongPress();
+    }
+
+    /// <summary>
+    /// Finds the context menu attached to the element or any of its parents.
+    /// </summary>
+    private ContextMenu? FindContextMenu(UiElement? element)
+    {
+        while (element != null)
+        {
+            if (element.ContextMenu != null)
+                return element.ContextMenu;
+            element = element.Parent;
+        }
+        return null;
     }
 
     private SwipeDirection DetectSwipeDirection(float deltaX, float deltaY)

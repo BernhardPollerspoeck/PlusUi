@@ -24,6 +24,7 @@ using Sandbox.Pages.TabControlDemo;
 using Sandbox.Pages.GestureDemo;
 using Sandbox.Pages.DataGridDemo;
 using Sandbox.Pages.TreeViewDemo;
+using Sandbox.Pages.MenuDemo;
 using Sandbox.Popups;
 using Sandbox.Services;
 
@@ -75,6 +76,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<GestureDemoPage>().WithViewModel<GestureDemoPageViewModel>();
         builder.AddPage<DataGridDemoPage>().WithViewModel<DataGridDemoPageViewModel>();
         builder.AddPage<TreeViewDemoPage>().WithViewModel<TreeViewDemoPageViewModel>();
+        builder.AddPage<MenuDemoPage>().WithViewModel<MenuDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 

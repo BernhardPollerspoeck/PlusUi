@@ -11,6 +11,7 @@ public class PlusUiNavigationService(
 {
     private NavigationContainer? _navigationContainer;
     private ITransitionService? _transitionService;
+    private IOverlayService? _overlayService;
     private PlusUiConfiguration? _configuration;
     private readonly ILogger<PlusUiNavigationService>? _logger = logger;
 
@@ -50,6 +51,9 @@ public class PlusUiNavigationService(
             _logger?.LogError(exception, "GoBack failed: At root page");
             throw exception;
         }
+
+        // Dismiss all overlays before navigating
+        _overlayService?.DismissAll();
 
         // Store reference to outgoing page for transition
         var outgoingPage = _navigationContainer.CurrentPage;
@@ -132,6 +136,9 @@ public class PlusUiNavigationService(
             return; // Already at root
         }
 
+        // Dismiss all overlays before navigating
+        _overlayService?.DismissAll();
+
         // Call lifecycle methods for current page
         var currentPage = _navigationContainer.CurrentPage;
         currentPage.Disappearing();
@@ -191,6 +198,9 @@ public class PlusUiNavigationService(
             _logger?.LogDebug("Already on page type {PageType}, ignoring navigation", pageType.Name);
             return;
         }
+
+        // Dismiss all overlays before navigating
+        _overlayService?.DismissAll();
 
         // Store reference to outgoing page for transition
         UiPageElement? outgoingPage = null;
@@ -287,6 +297,7 @@ public class PlusUiNavigationService(
     {
         _navigationContainer ??= serviceProvider.GetRequiredService<NavigationContainer>();
         _transitionService ??= serviceProvider.GetService<ITransitionService>();
+        _overlayService ??= serviceProvider.GetService<IOverlayService>();
         _configuration ??= serviceProvider.GetService<PlusUiConfiguration>();
 
         var appConfiguration = serviceProvider.GetRequiredService<IAppConfiguration>();

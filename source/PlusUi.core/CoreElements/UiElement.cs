@@ -370,6 +370,14 @@ public abstract class UiElement : IDisposable
     internal TooltipAttachment? Tooltip { get; set; }
     #endregion
 
+    #region ContextMenu
+    /// <summary>
+    /// The context menu for this element, if any.
+    /// Opens when the user right-clicks (or long-presses on touch).
+    /// </summary>
+    internal ContextMenu? ContextMenu { get; set; }
+    #endregion
+
     #region Focus
     /// <summary>
     /// Gets whether this element can receive keyboard focus.

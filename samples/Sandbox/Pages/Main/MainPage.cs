@@ -22,6 +22,7 @@ using Sandbox.Pages.TabControlDemo;
 using Sandbox.Pages.GestureDemo;
 using Sandbox.Pages.DataGridDemo;
 using Sandbox.Pages.TreeViewDemo;
+using Sandbox.Pages.MenuDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -331,7 +332,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     .SetPadding(new(20, 5))
                     .SetBackground(new SolidColorBackground(new SKColor(88, 86, 214)))
                     .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(TreeViewDemoPage))
+                    .SetCommandParameter(typeof(TreeViewDemoPage)),
+                new Button()
+                    .SetText("Menu Demo")
+                    .SetPadding(new(20, 5))
+                    .SetBackground(new SolidColorBackground(new SKColor(52, 120, 246)))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(MenuDemoPage))
             ).SetMargin(new Margin(20, 0, 0, 0))
         );
     }
