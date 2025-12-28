@@ -19,6 +19,7 @@ using Sandbox.Pages.DateTimePickerDemo;
 using Sandbox.Pages.RadioButtonDemo;
 using Sandbox.Pages.AccessibilityDemo;
 using Sandbox.Pages.TabControlDemo;
+using Sandbox.Pages.GestureDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -310,7 +311,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     .SetPadding(new(20, 5))
                     .SetBackground(new SolidColorBackground(new SKColor(255, 149, 0)))
                     .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(TabControlDemoPage))
+                    .SetCommandParameter(typeof(TabControlDemoPage)),
+                new Button()
+                    .SetText("Gesture & Haptic Demo")
+                    .SetPadding(new(20, 5))
+                    .SetBackground(new SolidColorBackground(new SKColor(175, 82, 222)))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(GestureDemoPage))
             ).SetMargin(new Margin(20, 0, 0, 0))
         );
     }

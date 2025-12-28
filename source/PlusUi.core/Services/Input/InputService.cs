@@ -18,6 +18,14 @@ public class InputService
     private IDraggableControl? _activeDragControl;
     private UiElement? _hoveredElement;
 
+    // Gesture detection
+    private Vector2 _mouseDownPosition;
+    private DateTime _lastTapTime;
+    private UiElement? _lastTapElement;
+    private const double DoubleTapThresholdMs = 300;
+    private const float SwipeThreshold = 50f;
+    private bool _isCtrlPressed;
+
     public InputService(
         NavigationContainer navigationContainer,
         PlusUiPopupService popupService,
@@ -45,6 +53,7 @@ public class InputService
         }
         _isMousePressed = true;
         _lastMousePosition = location;
+        _mouseDownPosition = location;
 
         // Check if we're starting a scroll or drag operation
         var currentPopup = _popupService.CurrentPopup;
@@ -65,8 +74,6 @@ public class InputService
             _activeScrollControl = scrollControl;
             _activeScrollControl.IsScrolling = true;
         }
-
-        //we have a down action
     }
     
     public void MouseUp(Vector2 location)
@@ -171,6 +178,90 @@ public class InputService
             toggleButtonControl.Toggle();
         }
 
+        // Gesture detection: Swipe
+        var deltaX = location.X - _mouseDownPosition.X;
+        var deltaY = location.Y - _mouseDownPosition.Y;
+        var swipeDirection = DetectSwipeDirection(deltaX, deltaY);
+        if (swipeDirection != SwipeDirection.None)
+        {
+            var swipeControl = FindGestureControl<ISwipeGestureControl>(hitControl);
+            if (swipeControl != null && (swipeControl.AllowedDirections & swipeDirection) != 0)
+            {
+                swipeControl.OnSwipe(swipeDirection);
+                _lastTapTime = DateTime.MinValue;
+                return;
+            }
+        }
+
+        // Gesture detection: DoubleTap
+        var now = DateTime.UtcNow;
+        if (hitControl != null && hitControl == _lastTapElement &&
+            (now - _lastTapTime).TotalMilliseconds < DoubleTapThresholdMs)
+        {
+            var doubleTapControl = FindGestureControl<IDoubleTapGestureControl>(hitControl);
+            if (doubleTapControl != null)
+            {
+                doubleTapControl.OnDoubleTap();
+                _lastTapTime = DateTime.MinValue;
+                _lastTapElement = null;
+                return;
+            }
+        }
+
+        _lastTapTime = now;
+        _lastTapElement = hitControl;
+    }
+
+    public void RightClick(Vector2 location)
+    {
+        var point = new Point(location.X, location.Y);
+        var hitControl = HitTestAll(point);
+
+        var longPressControl = FindGestureControl<ILongPressGestureControl>(hitControl);
+        longPressControl?.OnLongPress();
+    }
+
+    private SwipeDirection DetectSwipeDirection(float deltaX, float deltaY)
+    {
+        var absX = Math.Abs(deltaX);
+        var absY = Math.Abs(deltaY);
+
+        if (absX < SwipeThreshold && absY < SwipeThreshold)
+            return SwipeDirection.None;
+
+        if (absX > absY)
+            return deltaX > 0 ? SwipeDirection.Right : SwipeDirection.Left;
+        else
+            return deltaY > 0 ? SwipeDirection.Down : SwipeDirection.Up;
+    }
+
+    private T? FindGestureControl<T>(UiElement? element) where T : class, IGestureControl
+    {
+        while (element != null)
+        {
+            if (element is T gestureControl)
+                return gestureControl;
+            element = element.Parent;
+        }
+        return null;
+    }
+
+    private UiElement? HitTestAll(Point point)
+    {
+        foreach (var overlay in _overlayService.Overlays)
+        {
+            var hit = overlay.HitTest(point);
+            if (hit != null) return hit;
+        }
+
+        var popup = _popupService.CurrentPopup;
+        if (popup != null)
+        {
+            var hit = popup.HitTest(point);
+            if (hit != null) return hit;
+        }
+
+        return _navigationContainer.CurrentPage.HitTest(point);
     }
 
     public void HandleKeyInput(object? sender, PlusKey key)
@@ -381,30 +472,18 @@ public class InputService
     public void MouseWheel(Vector2 location, float deltaX, float deltaY)
     {
         var point = new Point(location.X, location.Y);
+        var hitControl = HitTestAll(point);
 
-        // Check overlays first (they render on top)
-        UiElement? hitControl = null;
-        foreach (var overlay in _overlayService.Overlays)
+        // Pinch gesture (Ctrl + MouseWheel on desktop)
+        if (_isCtrlPressed)
         {
-            hitControl = overlay.HitTest(point);
-            if (hitControl != null)
-                break;
-        }
-
-        // Then check popup
-        if (hitControl == null)
-        {
-            var currentPopup = _popupService.CurrentPopup;
-            if (currentPopup != null)
+            var pinchControl = FindGestureControl<IPinchGestureControl>(hitControl);
+            if (pinchControl != null)
             {
-                hitControl = currentPopup.HitTest(point);
+                var scale = 1.0f + (deltaY * 0.01f);
+                pinchControl.OnPinch(scale);
+                return;
             }
-        }
-
-        // Then check page
-        if (hitControl == null)
-        {
-            hitControl = _navigationContainer.CurrentPage.HitTest(point);
         }
 
         // Scroll the control if it's scrollable
@@ -412,5 +491,24 @@ public class InputService
         {
             scrollControl.HandleScroll(deltaX, deltaY);
         }
+    }
+
+    public void SetCtrlPressed(bool isPressed)
+    {
+        _isCtrlPressed = isPressed;
+    }
+
+    public void LongPress(Vector2 location)
+    {
+        RightClick(location);
+    }
+
+    public void HandlePinch(Vector2 location, float scale)
+    {
+        var point = new Point(location.X, location.Y);
+        var hitControl = HitTestAll(point);
+
+        var pinchControl = FindGestureControl<IPinchGestureControl>(hitControl);
+        pinchControl?.OnPinch(scale);
     }
 }

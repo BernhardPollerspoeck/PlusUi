@@ -99,7 +99,13 @@ public abstract class PlusUiActivity : Activity
         builder.Services.AddSingleton<AndroidPlatformService>();
         builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<AndroidPlatformService>());
         builder.Services.AddSingleton<SilkRenderer>();
-        builder.Services.AddSingleton<TapGestureListener>();
+        builder.Services.AddSingleton<AndroidHapticService>();
+        builder.Services.AddSingleton<IHapticService>(sp => sp.GetRequiredService<AndroidHapticService>());
+        builder.Services.AddSingleton<TapGestureListener>(sp =>
+            new TapGestureListener(
+                sp.GetRequiredService<InputService>(),
+                sp.GetRequiredService<RenderService>(),
+                sp.GetRequiredService<Android.Content.Context>()));
         builder.Services.AddSingleton<KeyCaptureEditText>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<KeyCaptureEditText>());
 

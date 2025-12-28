@@ -11,8 +11,8 @@
 |-----------|--------|----------------------|
 | Controls (Kritisch) | 1 | 5-7 Tage |
 | Controls (Hoch) | 2 | 6-9 Tage |
-| Plattformen | 3 | 5-9 Tage |
-| **Gesamt** | **6** | **16-25 Tage** |
+| Input | 1 | 3-5 Tage |
+| **Gesamt** | **4** | **14-21 Tage** |
 
 ---
 
@@ -92,7 +92,7 @@ Hierarchisches Menü-System für Anwendungsmenüs und Kontextmenüs (Rechtsklick
 - [ ] `ContextMenu` Klasse (Popup-Menü)
 - [ ] `MenuItem` Klasse mit Text, Icon, Shortcut, Command
 - [ ] `MenuSeparator` Klasse
-- [ ] Verschachtelte Untermenüs (SubItems)
+- [ ] Verschachtelte Untermenüs (MenuItem hat selbst Items-Collection)
 - [ ] Property `Items` (Collection)
 - [ ] Property `IsEnabled` pro MenuItem
 - [ ] Property `IsChecked` für Toggle-MenuItems
@@ -107,10 +107,10 @@ Hierarchisches Menü-System für Anwendungsmenüs und Kontextmenüs (Rechtsklick
 new Menu()
     .AddItem(new MenuItem()
         .SetText("Datei")
-        .AddSubItem(new MenuItem().SetText("Neu").SetShortcut("Ctrl+N").SetCommand(vm.NewCommand))
-        .AddSubItem(new MenuItem().SetText("Öffnen").SetShortcut("Ctrl+O"))
-        .AddSubItem(new MenuSeparator())
-        .AddSubItem(new MenuItem().SetText("Beenden")))
+        .AddItem(new MenuItem().SetText("Neu").SetShortcut("Ctrl+N").SetCommand(vm.NewCommand))
+        .AddItem(new MenuItem().SetText("Öffnen").SetShortcut("Ctrl+O"))
+        .AddItem(new MenuSeparator())
+        .AddItem(new MenuItem().SetText("Beenden")))
 
 // ContextMenu
 myControl.SetContextMenu(new ContextMenu()
@@ -182,134 +182,97 @@ new TreeView<FolderItem>()
 
 ---
 
-## PLATTFORMEN
+## INPUT
 
 ---
 
-### PLAT-001: Android - Keyboard & Gesten vervollständigen
+### INPUT-001: GestureDetector & HapticService
 
 | | |
 |---|---|
-| **Typ** | Plattform-Verbesserung |
+| **Typ** | Cross-Platform Feature |
 | **Priorität** | 🟡 Hoch |
-| **Zeitschätzung** | 2-3 Tage |
+| **Zeitschätzung** | 3-5 Tage |
 
 **Beschreibung:**
-Die Android-Implementierung hat grundlegendes Touch/Tap-Handling aber benötigt erweiterte Keyboard-Unterstützung und Gesten-Erkennung.
+Cross-Platform Gesten-Erkennung und haptisches Feedback. Einheitliche API die sich auf jeder Plattform nativ verhält.
 
 **Anforderungen:**
 
-**Keyboard:**
-- [ ] Vollständige Hardware-Keyboard-Unterstützung
-- [ ] Korrektes Key-Mapping für alle Tasten
-- [ ] IME-Handling für verschiedene Sprachen
-- [ ] Keyboard-Events an InputService weiterleiten
+**GestureDetector:**
+- [ ] `GestureDetector<T>` Basisklasse
+- [ ] `LongPressGestureDetector` (Mobile: Long-Press, Desktop: Rechtsklick)
+- [ ] `DoubleTapGestureDetector` (Mobile: Double-Tap, Desktop: Doppelklick)
+- [ ] `SwipeGestureDetector` mit `SwipeDirection` Flags
+- [ ] `PinchGestureDetector` (Mobile: Pinch, Desktop: Ctrl+Mausrad)
+- [ ] Stackbar/Nestbar für mehrere Gesten auf einem Element
+- [ ] Command-Binding mit CommandParameter
 
-**Gesten:**
-- [ ] Long-Press erkennen
-- [ ] Swipe-Gesten (Left, Right, Up, Down)
-- [ ] Pinch-to-Zoom (für zukünftige Controls)
-- [ ] Double-Tap
+**HapticService:**
+- [ ] `IHapticService` Interface
+- [ ] `Emit(HapticFeedback feedback)` Methode
+- [ ] `IsSupported` Property
+- [ ] `HapticFeedback` Enum (Light, Medium, Heavy, Success, Warning, Error, Selection)
+- [ ] Plattform-Implementierungen (Android: Vibration, iOS: Taptic, Desktop: ignoriert)
 
-**Sonstiges:**
-- [ ] Back-Button-Handling (Hardware/Navigation)
-- [ ] Soft-Keyboard Show/Hide Events
-- [ ] Screen-Rotation-Handling
+**API-Beispiel:**
+```csharp
+// GestureDetector (stackbar)
+new LongPressGestureDetector(
+    new DoubleTapGestureDetector(
+        new Image().SetSource("photo.jpg")
+    )
+    .SetCommand(vm.ZoomInCommand)
+)
+.SetCommand(vm.ShowContextMenuCommand)
 
-**Dateien:** `/home/user/PlusUi/source/PlusUi.droid/`
+// SwipeGestureDetector mit Richtungsfilter
+new SwipeGestureDetector(content)
+    .SetCommand(vm.HandleSwipeCommand)  // CommandParameter = SwipeDirection
+    .SetAllowedDirections(SwipeDirection.Horizontal)
+
+// HapticService
+_hapticService.Emit(HapticFeedback.Success);
+```
+
+**Enums:**
+```csharp
+[Flags]
+public enum SwipeDirection
+{
+    None = 0,
+    Left = 1,
+    Right = 2,
+    Up = 4,
+    Down = 8,
+    Horizontal = Left | Right,
+    Vertical = Up | Down,
+    All = Horizontal | Vertical
+}
+
+public enum HapticFeedback { Light, Medium, Heavy, Success, Warning, Error, Selection }
+```
+
+**Plattform-Mapping:**
+
+| Geste | Android | iOS | Desktop |
+|-------|---------|-----|---------|
+| LongPress | Long-Press | Long-Press | Rechtsklick |
+| DoubleTap | Double-Tap | Double-Tap | Doppelklick |
+| Swipe | Swipe | Swipe | Drag mit Schwung |
+| Pinch | Pinch | Pinch | Ctrl+Mausrad |
+| Haptic | Vibration | Taptic Engine | Ignoriert |
 
 **Abhängigkeiten:** Keine
 
 **Aufwandsverteilung:**
-- Hardware-Keyboard Mapping: 0.5 Tage
-- GestureDetector erweitern: 1 Tag
-- Back-Button Integration: 0.25 Tage
-- Keyboard Show/Hide Events: 0.25 Tage
-- Tests auf echtem Device: 0.5-1 Tag
-
----
-
-### PLAT-002: iOS - Touch-Gesten erweitern
-
-| | |
-|---|---|
-| **Typ** | Plattform-Verbesserung |
-| **Priorität** | 🟡 Hoch |
-| **Zeitschätzung** | 2-4 Tage |
-
-**Beschreibung:**
-Die iOS-Implementierung hat grundlegendes Touch-Handling aber benötigt erweiterte Gesten-Erkennung für native iOS UX.
-
-**Anforderungen:**
-
-**Gesten:**
-- [ ] Long-Press Gesture Recognizer
-- [ ] Swipe Gesture Recognizer (alle Richtungen)
-- [ ] Pinch Gesture Recognizer
-- [ ] Pan Gesture Recognizer (für Drag)
-- [ ] Edge-Swipe für Back-Navigation
-
-**Keyboard:**
-- [ ] Keyboard-Avoidance (ScrollView automatisch anpassen)
-- [ ] Hardware-Keyboard-Support (iPad)
-- [ ] Keyboard-Toolbar (Done-Button etc.)
-
-**Sonstiges:**
-- [ ] Safe-Area-Insets berücksichtigen (Notch, Home-Indicator)
-- [ ] Dark-Mode System-Integration
-- [ ] Haptic Feedback Integration
-
-**Dateien:** `/home/user/PlusUi/source/PlusUi.ios/`
-
-**Abhängigkeiten:** Keine
-
-**Aufwandsverteilung:**
-- Gesture Recognizers hinzufügen: 1 Tag
-- Keyboard-Avoidance: 0.5 Tage
-- Safe-Area-Insets: 0.25 Tage
-- Edge-Swipe Navigation: 0.25 Tage
-- Tests auf echtem Device: 0.5-1.5 Tage
-
----
-
-### PLAT-003: Web - DPI-Skalierung und Verbesserungen
-
-| | |
-|---|---|
-| **Typ** | Plattform-Verbesserung |
-| **Priorität** | 🟡 Mittel |
-| **Zeitschätzung** | 1-2 Tage |
-
-**Beschreibung:**
-Die Web/Blazor-Implementierung ist neu und benötigt einige Verbesserungen für Production-Readiness.
-
-**Anforderungen:**
-
-**DPI/Scaling:**
-- [ ] `window.devicePixelRatio` abfragen via JS Interop
-- [ ] Canvas-Größe dynamisch anpassen (nicht hardcoded)
-- [ ] Resize-Events behandeln
-
-**Input:**
-- [ ] Vollständiges Keyboard-Event-Handling
-- [ ] Touch-Events für Mobile Browser
-- [ ] Clipboard-Support (Copy/Paste)
-
-**Sonstiges:**
-- [ ] Browser-Back-Button Integration
-- [ ] URL-Routing (optional)
-- [ ] Loading-State während WASM-Init
-
-**Dateien:** `/home/user/PlusUi/source/PlusUi.Web/`
-
-**Abhängigkeiten:** Keine
-
-**Aufwandsverteilung:**
-- JS Interop für DPI: 0.25 Tage
-- Dynamic Canvas Sizing: 0.25 Tage
-- Keyboard-Events komplett: 0.25 Tage
-- Touch-Events für Mobile: 0.25 Tage
-- Tests in verschiedenen Browsern: 0.25-0.5 Tage
+- GestureDetector Basisklasse & API: 0.5 Tage
+- LongPress & DoubleTap Implementierung: 0.5 Tage
+- Swipe Implementierung: 0.5 Tage
+- Pinch Implementierung: 0.5 Tage
+- HapticService: 0.5 Tage
+- Plattform-Implementierungen (Android, iOS, Desktop): 1 Tag
+- Tests: 0.5-1.5 Tage
 
 ---
 
@@ -323,22 +286,20 @@ Die Web/Blazor-Implementierung ist neu und benötigt einige Verbesserungen für 
 | | **Kritisch Gesamt** | | **5-7 Tage** |
 | **CTRL-004** | Menu/ContextMenu | 🟡 Hoch | 3-4 Tage |
 | **CTRL-005** | TreeView | 🟡 Hoch | 3-5 Tage |
-| **PLAT-001** | Android Verbesserungen | 🟡 Hoch | 2-3 Tage |
-| **PLAT-002** | iOS Verbesserungen | 🟡 Hoch | 2-4 Tage |
-| **PLAT-003** | Web Verbesserungen | 🟡 Mittel | 1-2 Tage |
-| | **Hoch/Mittel Gesamt** | | **11-18 Tage** |
+| **INPUT-001** | GestureDetector & HapticService | 🟡 Hoch | 3-5 Tage |
+| | **Hoch Gesamt** | | **9-14 Tage** |
 
 ### Empfohlene Reihenfolge für MVP
 
 1. **CTRL-002** DataGrid (komplex, aber wichtig)
-2. **PLAT-001/002/003** Plattform-Verbesserungen
+2. **INPUT-001** GestureDetector & HapticService (Cross-Platform)
 
 ### Gesamtaufwand
 
 | Szenario | Aufwand |
 |----------|---------|
 | **MVP (nur Kritisch)** | 5-7 Tage |
-| **Vollständig** | 16-25 Tage |
+| **Vollständig** | 14-21 Tage |
 
 ---
 

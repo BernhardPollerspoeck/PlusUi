@@ -213,6 +213,15 @@ internal class WindowManager(
             _mouse.MouseMove += (_, position) =>
                 inputService.MouseMove(position / renderService.DisplayDensity);
 
+            // Right-click for LongPress gesture
+            _mouse.MouseDown += (_, button) =>
+            {
+                if (button == MouseButton.Right && _mouse is not null)
+                {
+                    inputService.RightClick(_mouse.Position / renderService.DisplayDensity);
+                }
+            };
+
             // Add mouse wheel event handler
             _mouse.Scroll += (_, scrollDelta) =>
             {
@@ -236,6 +245,22 @@ internal class WindowManager(
         {
             _keyboard = _inputContext.Keyboards[0];
             desktopKeyboardHandler.SetKeyboard(_keyboard);
+
+            // Track Ctrl key for Pinch gesture
+            _keyboard.KeyDown += (_, key, _) =>
+            {
+                if (key == Key.ControlLeft || key == Key.ControlRight)
+                {
+                    inputService.SetCtrlPressed(true);
+                }
+            };
+            _keyboard.KeyUp += (_, key, _) =>
+            {
+                if (key == Key.ControlLeft || key == Key.ControlRight)
+                {
+                    inputService.SetCtrlPressed(false);
+                }
+            };
         }
 
         // Only subscribe to Update if we have a mouse

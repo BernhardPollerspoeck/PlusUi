@@ -42,6 +42,8 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
         builder.UsePlusUiInternal(app, []);
         builder.Services.AddSingleton<IosPlatformService>();
         builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<IosPlatformService>());
+        builder.Services.AddSingleton<IosHapticService>();
+        builder.Services.AddSingleton<IHapticService>(sp => sp.GetRequiredService<IosHapticService>());
         builder.Services.AddSingleton<OpenGlViewController>();
         builder.Services.AddSingleton<KeyboardTextField>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<KeyboardTextField>());
@@ -73,6 +75,8 @@ public class OpenGlViewController(
 {
     private SKCanvasView? _canvasView;
     private TouchGestureRecognizer? _gestureRecognizer;
+    private LongPressGestureRecognizer? _longPressRecognizer;
+    private PinchGestureRecognizer? _pinchRecognizer;
 
     public override void ViewDidLoad()
     {
@@ -99,6 +103,14 @@ public class OpenGlViewController(
         // Add touch gesture recognizer
         _gestureRecognizer = new TouchGestureRecognizer(inputService, renderService);
         View.AddGestureRecognizer(_gestureRecognizer);
+
+        // Add long press gesture recognizer
+        _longPressRecognizer = new LongPressGestureRecognizer(inputService, renderService);
+        View.AddGestureRecognizer(_longPressRecognizer);
+
+        // Add pinch gesture recognizer
+        _pinchRecognizer = new PinchGestureRecognizer(inputService, renderService);
+        View.AddGestureRecognizer(_pinchRecognizer);
 
         // Add invisible keyboard text field
         keyboardTextField.Frame = new CGRect(0, 0, 1, 1);
