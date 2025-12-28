@@ -927,7 +927,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         // Measure the menu content with reasonable constraints
         var menuWidth = Math.Max(150, _overflowButton.ElementSize.Width * 4);
         var availableMenuSize = new Size(menuWidth, 400);
-        _overflowMenuContent.Measure(availableMenuSize);
+        _overflowMenuContent.Measure(availableMenuSize, dontStretch: true);
     }
 
     /// <summary>

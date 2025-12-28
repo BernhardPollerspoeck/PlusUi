@@ -18,6 +18,7 @@ using Sandbox.Pages.ComboBoxDemo;
 using Sandbox.Pages.DateTimePickerDemo;
 using Sandbox.Pages.RadioButtonDemo;
 using Sandbox.Pages.AccessibilityDemo;
+using Sandbox.Pages.TabControlDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -303,7 +304,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     .SetPadding(new(20, 5))
                     .SetBackground(new SolidColorBackground(new SKColor(0, 122, 255)))
                     .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(AccessibilityDemoPage))
+                    .SetCommandParameter(typeof(AccessibilityDemoPage)),
+                new Button()
+                    .SetText("TabControl Demo")
+                    .SetPadding(new(20, 5))
+                    .SetBackground(new SolidColorBackground(new SKColor(255, 149, 0)))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(TabControlDemoPage))
             ).SetMargin(new Margin(20, 0, 0, 0))
         );
     }

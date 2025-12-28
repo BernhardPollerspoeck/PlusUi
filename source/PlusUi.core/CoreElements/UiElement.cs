@@ -953,6 +953,13 @@ public abstract class UiElement : IDisposable
             Parent?.InvalidateArrange();
         }
     }
+
+    internal void ForceInvalidateMeasureToRoot()
+    {
+        NeedsMeasure = true;
+        NeedsArrange = true;
+        Parent?.ForceInvalidateMeasureToRoot();
+    }
     #endregion
 
     #region Arranging

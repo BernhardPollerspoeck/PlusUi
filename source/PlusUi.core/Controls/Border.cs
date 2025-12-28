@@ -218,7 +218,7 @@ public partial class Border : UiLayoutElement
         if (Children.Count > 0)
         {
             var child = Children[0];
-            child.Measure(availableChildSize);
+            child.Measure(availableChildSize, dontStretch);
             childSize = child.ElementSize + child.Margin;
         }
 

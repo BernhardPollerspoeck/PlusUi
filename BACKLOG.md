@@ -1,7 +1,7 @@
 # PlusUi - Backlog für Marktreife
 
 > Erstellt: 2024-12-14
-> Status: Audit abgeschlossen
+> Aktualisiert: 2024-12-28
 
 ---
 
@@ -9,63 +9,14 @@
 
 | Kategorie | Anzahl | Geschätzte Gesamtzeit |
 |-----------|--------|----------------------|
-| Controls (Kritisch) | 2 | 7-10 Tage |
+| Controls (Kritisch) | 1 | 5-7 Tage |
 | Controls (Hoch) | 2 | 6-9 Tage |
-| Features | 2 | 7-11 Tage |
 | Plattformen | 3 | 5-9 Tage |
-| **Gesamt** | **9** | **25-39 Tage** |
+| **Gesamt** | **6** | **16-25 Tage** |
 
 ---
 
 ## CONTROLS
-
----
-
-### CTRL-001: TabControl
-
-| | |
-|---|---|
-| **Typ** | Neues Control |
-| **Priorität** | 🔴 Kritisch |
-| **Zeitschätzung** | 2-3 Tage |
-
-**Beschreibung:**
-Ein Container-Control das mehrere Views in Tabs organisiert. Der Benutzer kann zwischen Tabs wechseln um verschiedene Inhalte anzuzeigen. Standard-UI-Pattern für Einstellungen, Multi-Document-Interfaces und kategorisierte Inhalte.
-
-**Anforderungen:**
-
-- [ ] `TabControl` Klasse die von `UiLayoutElement` erbt
-- [ ] `TabItem` Klasse für einzelne Tabs mit Header und Content
-- [ ] Property `Tabs` (Collection von TabItems)
-- [ ] Property `SelectedIndex` / `SelectedTab`
-- [ ] Property `TabPosition` (Top, Bottom, Left, Right)
-- [ ] Fluent API: `SetTabs()`, `AddTab()`, `SetSelectedIndex()`, `SetTabPosition()`
-- [ ] Binding: `BindSelectedIndex()`, `BindTabs()`
-- [ ] Event/Command bei Tab-Wechsel
-- [ ] Styling für Tab-Header (Active/Inactive States)
-- [ ] Keyboard-Support (Pfeiltasten zum Wechseln)
-
-**API-Beispiel:**
-```csharp
-new TabControl()
-    .AddTab(new TabItem()
-        .SetHeader("Allgemein")
-        .SetContent(new VStack().Children(...)))
-    .AddTab(new TabItem()
-        .SetHeader("Erweitert")
-        .SetContent(new VStack().Children(...)))
-    .SetSelectedIndex(0)
-    .SetTabPosition(TabPosition.Top)
-```
-
-**Abhängigkeiten:** Keine
-
-**Aufwandsverteilung:**
-- Grundstruktur & Layout: 0.5 Tage
-- Tab-Header Rendering & Styling: 0.5 Tage
-- Selection-Logic & Events: 0.5 Tage
-- Keyboard-Support: 0.25 Tage
-- Tests & Feinschliff: 0.25-1 Tag
 
 ---
 
@@ -231,129 +182,6 @@ new TreeView<FolderItem>()
 
 ---
 
-## FEATURES
-
----
-
-### FEAT-001: Accessibility (Barrierefreiheit)
-
-| | |
-|---|---|
-| **Typ** | Neues Feature |
-| **Priorität** | 🔴 Kritisch |
-| **Zeitschätzung** | 5-8 Tage |
-
-**Beschreibung:**
-Unterstützung für Barrierefreiheit um das Framework für Menschen mit Behinderungen nutzbar zu machen. Rechtlich relevant (EU Accessibility Act 2025, ADA in USA).
-
-**Anforderungen:**
-
-**Screen Reader Support:**
-- [ ] `AccessibilityLabel` Property auf allen Controls
-- [ ] `AccessibilityHint` Property für zusätzliche Beschreibung
-- [ ] `AccessibilityRole` Property (Button, Checkbox, Heading, etc.)
-- [ ] Platform-spezifische Integration (Windows: UI Automation, macOS: NSAccessibility, etc.)
-
-**Keyboard Navigation:**
-- [ ] Vollständige Tab-Navigation (siehe FEAT-002)
-- [ ] Skip-Links für Hauptbereiche
-- [ ] Focus-Indicator (sichtbarer Fokus-Ring)
-
-**Visual:**
-- [ ] High-Contrast-Mode Support
-- [ ] Minimum Touch-Target-Größe (44x44 pt)
-- [ ] Skalierbare Schriftgrößen
-
-**API-Beispiel:**
-```csharp
-new Button()
-    .SetText("X")
-    .SetAccessibilityLabel("Schließen")
-    .SetAccessibilityHint("Schließt das aktuelle Fenster")
-    .SetAccessibilityRole(AccessibilityRole.Button)
-
-new Image()
-    .SetSource("logo.png")
-    .SetAccessibilityLabel("Firmenlogo")
-```
-
-**Abhängigkeiten:** Focus/Tab-Navigation (FEAT-002)
-
-**Aufwandsverteilung:**
-- Accessibility-Properties auf UiElement: 0.5 Tage
-- AccessibilityRole Enum & Defaults: 0.25 Tage
-- Focus-Ring Rendering: 0.5 Tage
-- Windows UI Automation Integration: 1-2 Tage
-- macOS NSAccessibility Integration: 1-2 Tage
-- Android/iOS Accessibility: 1-2 Tage
-- Tests: 0.5-1 Tag
-
-**Hinweis:** Kann schrittweise implementiert werden. Minimum für Start: AccessibilityLabel + Focus-Ring + Keyboard-Navigation.
-
----
-
-### FEAT-002: Focus und Tab-Navigation
-
-| | |
-|---|---|
-| **Typ** | Neues Feature |
-| **Priorität** | 🔴 Kritisch |
-| **Zeitschätzung** | 2-3 Tage |
-
-**Beschreibung:**
-Vollständiges Focus-Management für Keyboard-Navigation. Ermöglicht Benutzern die Anwendung ohne Maus zu bedienen.
-
-**Anforderungen:**
-
-**Focus-System:**
-- [ ] `IsFocusable` Property auf allen Controls
-- [ ] `IsFocused` Property (readonly)
-- [ ] `Focus()` Methode zum programmatischen Fokussieren
-- [ ] `FocusNext()` / `FocusPrevious()` Methoden
-- [ ] Globaler Focus-Manager Service
-
-**Tab-Navigation:**
-- [ ] `TabIndex` Property (Reihenfolge)
-- [ ] `TabStop` Property (true/false - soll Tab hier stoppen?)
-- [ ] Tab-Taste navigiert zum nächsten focusbaren Element
-- [ ] Shift+Tab navigiert zurück
-- [ ] Tab-Gruppen/Scopes für komplexe Layouts
-
-**Visual Feedback:**
-- [ ] Focus-Ring/Indicator (konfigurierbar)
-- [ ] `FocusedBackground` / `FocusedBorderColor` Properties
-
-**API-Beispiel:**
-```csharp
-new Entry()
-    .SetTabIndex(1)
-    .SetIsFocusable(true)
-
-new Button()
-    .SetTabIndex(2)
-    .SetTabStop(true)
-
-// Programmatisch fokussieren
-myEntry.Focus();
-
-// Focus-Styling
-style.AddStyle<Button>(Theme.Default, b => b
-    .SetFocusRingColor(SKColors.Blue)
-    .SetFocusRingWidth(2));
-```
-
-**Abhängigkeiten:** InputService-Erweiterung
-
-**Aufwandsverteilung:**
-- Focus-Properties auf UiElement: 0.25 Tage
-- FocusManager Service: 0.5 Tage
-- Tab-Navigation Logic: 0.5 Tage
-- Focus-Ring Rendering: 0.25 Tage
-- Keyboard-Event-Handling (Tab/Shift+Tab): 0.25 Tage
-- Tests: 0.25-0.75 Tage
-
----
-
 ## PLATTFORMEN
 
 ---
@@ -491,11 +319,8 @@ Die Web/Blazor-Implementierung ist neu und benötigt einige Verbesserungen für 
 
 | ID | Titel | Priorität | Zeit |
 |----|-------|-----------|------|
-| **CTRL-001** | TabControl | 🔴 Kritisch | 2-3 Tage |
 | **CTRL-002** | DataGrid | 🔴 Kritisch | 5-7 Tage |
-| **FEAT-002** | Focus/Tab-Navigation | 🔴 Kritisch | 2-3 Tage |
-| **FEAT-001** | Accessibility | 🔴 Kritisch | 5-8 Tage |
-| | **Kritisch Gesamt** | | **14-21 Tage** |
+| | **Kritisch Gesamt** | | **5-7 Tage** |
 | **CTRL-004** | Menu/ContextMenu | 🟡 Hoch | 3-4 Tage |
 | **CTRL-005** | TreeView | 🟡 Hoch | 3-5 Tage |
 | **PLAT-001** | Android Verbesserungen | 🟡 Hoch | 2-3 Tage |
@@ -505,18 +330,15 @@ Die Web/Blazor-Implementierung ist neu und benötigt einige Verbesserungen für 
 
 ### Empfohlene Reihenfolge für MVP
 
-1. **FEAT-002** Focus/Tab-Navigation (Grundlage für alles)
-2. **CTRL-001** TabControl (häufig benötigt)
-3. **CTRL-002** DataGrid (komplex, aber wichtig)
-4. **FEAT-001** Accessibility (parallel entwickeln)
-5. **PLAT-001/002/003** Plattform-Verbesserungen
+1. **CTRL-002** DataGrid (komplex, aber wichtig)
+2. **PLAT-001/002/003** Plattform-Verbesserungen
 
 ### Gesamtaufwand
 
 | Szenario | Aufwand |
 |----------|---------|
-| **MVP (nur Kritisch)** | 14-21 Tage |
-| **Vollständig** | 25-39 Tage |
+| **MVP (nur Kritisch)** | 5-7 Tage |
+| **Vollständig** | 16-25 Tage |
 
 ---
 

@@ -20,6 +20,7 @@ using Sandbox.Pages.ComboBoxDemo;
 using Sandbox.Pages.DateTimePickerDemo;
 using Sandbox.Pages.RadioButtonDemo;
 using Sandbox.Pages.AccessibilityDemo;
+using Sandbox.Pages.TabControlDemo;
 using Sandbox.Popups;
 using Sandbox.Services;
 
@@ -67,6 +68,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<DateTimePickerDemoPage>().WithViewModel<DateTimePickerDemoPageViewModel>();
         builder.AddPage<RadioButtonDemoPage>().WithViewModel<RadioButtonDemoPageViewModel>();
         builder.AddPage<AccessibilityDemoPage>().WithViewModel<AccessibilityDemoPageViewModel>();
+        builder.AddPage<TabControlDemoPage>().WithViewModel<TabControlDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 
