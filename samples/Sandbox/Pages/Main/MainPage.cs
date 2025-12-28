@@ -57,14 +57,14 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                             new Solid().SetBackground(new RadialGradient(SKColors.White, SKColors.Black)).SetDesiredSize(new(75, 75)),
                             new Solid().SetBackground(new MultiStopGradient(
                                 90,
-                                new MultiStopGradient.GradientStop(SKColors.Red, 0),
-                                new MultiStopGradient.GradientStop(SKColors.Blue, 0.5f),
-                                new MultiStopGradient.GradientStop(SKColors.Yellow, 1))).SetDesiredSize(new(75, 75)),
+                                new GradientStop(SKColors.Red, 0),
+                                new GradientStop(SKColors.Blue, 0.5f),
+                                new GradientStop(SKColors.Yellow, 1))).SetDesiredSize(new(75, 75)),
                             new Solid().SetBackground(new MultiStopGradient(
                                 0,
-                                new MultiStopGradient.GradientStop(SKColors.Magenta, 0),
-                                new MultiStopGradient.GradientStop(SKColors.Green, 0.5f),
-                                new MultiStopGradient.GradientStop(SKColors.Orange, 1))).SetDesiredSize(new(75, 75))
+                                new GradientStop(SKColors.Magenta, 0),
+                                new GradientStop(SKColors.Green, 0.5f),
+                                new GradientStop(SKColors.Orange, 1))).SetDesiredSize(new(75, 75))
                                 )),
                     new VStack(
                         new Label()

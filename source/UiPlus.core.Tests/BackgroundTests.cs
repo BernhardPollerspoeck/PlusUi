@@ -126,9 +126,9 @@ public class BackgroundTests
         // Arrange & Act
         var gradient = new MultiStopGradient(
             90,
-            new MultiStopGradient.GradientStop(SKColors.Red, 0),
-            new MultiStopGradient.GradientStop(SKColors.Yellow, 0.5f),
-            new MultiStopGradient.GradientStop(SKColors.Green, 1));
+            new GradientStop(SKColors.Red, 0),
+            new GradientStop(SKColors.Yellow, 0.5f),
+            new GradientStop(SKColors.Green, 1));
 
         // Assert
         Assert.AreEqual(90f, gradient.Angle);
@@ -147,11 +147,11 @@ public class BackgroundTests
         // Arrange & Act
         var gradient = new MultiStopGradient(
             45,
-            new MultiStopGradient.GradientStop(SKColors.Red, 0),
-            new MultiStopGradient.GradientStop(SKColors.Blue, 1));
+            new GradientStop(SKColors.Red, 0),
+            new GradientStop(SKColors.Blue, 1));
 
         // Assert - Stops should be IReadOnlyList
-        Assert.IsInstanceOfType(gradient.Stops, typeof(IReadOnlyList<MultiStopGradient.GradientStop>));
+        Assert.IsInstanceOfType(gradient.Stops, typeof(IReadOnlyList<GradientStop>));
     }
 
     [TestMethod]

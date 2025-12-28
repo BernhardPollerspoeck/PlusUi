@@ -1,4 +1,5 @@
 using PlusUi.core.Services.Accessibility;
+using PlusUi.desktop.Interop;
 using System.Runtime.InteropServices;
 
 namespace PlusUi.desktop.Accessibility;
@@ -36,11 +37,15 @@ public class DesktopAccessibilitySettingsService : AccessibilitySettingsService
         try
         {
             // Check Windows high contrast mode
-            var highContrast = new HIGHCONTRAST();
+            var highContrast = new WindowsAccessibilityInterop.HIGHCONTRAST();
             highContrast.cbSize = (uint)Marshal.SizeOf(highContrast);
-            if (SystemParametersInfo(SPI_GETHIGHCONTRAST, highContrast.cbSize, ref highContrast, 0))
+            if (WindowsAccessibilityInterop.SystemParametersInfo(
+                WindowsAccessibilityInterop.SPI_GETHIGHCONTRAST,
+                highContrast.cbSize,
+                ref highContrast,
+                0))
             {
-                SetHighContrastEnabled((highContrast.dwFlags & HCF_HIGHCONTRASTON) != 0);
+                SetHighContrastEnabled((highContrast.dwFlags & WindowsAccessibilityInterop.HCF_HIGHCONTRASTON) != 0);
             }
 
             // Check Windows text scale factor from registry
@@ -64,7 +69,11 @@ public class DesktopAccessibilitySettingsService : AccessibilitySettingsService
 
             // Check reduce animations setting
             bool animationsEnabled = true;
-            if (SystemParametersInfo(SPI_GETCLIENTAREAANIMATION, 0, ref animationsEnabled, 0))
+            if (WindowsAccessibilityInterop.SystemParametersInfo(
+                WindowsAccessibilityInterop.SPI_GETCLIENTAREAANIMATION,
+                0,
+                ref animationsEnabled,
+                0))
             {
                 SetReducedMotionEnabled(!animationsEnabled);
             }
@@ -109,26 +118,4 @@ public class DesktopAccessibilitySettingsService : AccessibilitySettingsService
             // Use defaults
         }
     }
-
-    #region Windows P/Invoke
-    private const uint SPI_GETHIGHCONTRAST = 0x0042;
-    private const uint SPI_GETCLIENTAREAANIMATION = 0x1042;
-    private const uint HCF_HIGHCONTRASTON = 0x00000001;
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct HIGHCONTRAST
-    {
-        public uint cbSize;
-        public uint dwFlags;
-        public IntPtr lpszDefaultScheme;
-    }
-
-    [DllImport("user32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref HIGHCONTRAST pvParam, uint fWinIni);
-
-    [DllImport("user32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref bool pvParam, uint fWinIni);
-    #endregion
 }

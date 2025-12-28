@@ -26,9 +26,9 @@ public class BgTestPage(BgTestPageViewModel vm) : UiPageElement(vm)
             new Border()
                 .SetBackground(new MultiStopGradient(
                     90,
-                    new MultiStopGradient.GradientStop(SKColors.Red, 0),
-                    new MultiStopGradient.GradientStop(SKColors.Yellow, 0.5f),
-                    new MultiStopGradient.GradientStop(SKColors.Green, 1)))
+                    new GradientStop(SKColors.Red, 0),
+                    new GradientStop(SKColors.Yellow, 0.5f),
+                    new GradientStop(SKColors.Green, 1)))
                 .SetCornerRadius(10)
                 .SetDesiredSize(new Size(200, 100))
                 .SetMargin(new(10)),

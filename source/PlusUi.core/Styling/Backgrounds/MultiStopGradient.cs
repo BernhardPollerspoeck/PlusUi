@@ -9,14 +9,6 @@ namespace PlusUi.core;
 public sealed class MultiStopGradient : IBackground
 {
     /// <summary>
-    /// Represents a single color stop in the gradient.
-    /// Immutable record type.
-    /// </summary>
-    /// <param name="Color">The color at this stop</param>
-    /// <param name="Position">The position of the stop (0-1)</param>
-    public record GradientStop(SKColor Color, float Position);
-
-    /// <summary>
     /// The list of gradient stops defining the gradient.
     /// </summary>
     public IReadOnlyList<GradientStop> Stops { get; init; }
@@ -72,10 +64,10 @@ public sealed class MultiStopGradient : IBackground
         var angleRad = Angle * (float)Math.PI / 180f;
         var centerX = bounds.MidX;
         var centerY = bounds.MidY;
-        
+
         // Calculate the diagonal length to ensure gradient covers entire bounds
         var diagonal = (float)Math.Sqrt(bounds.Width * bounds.Width + bounds.Height * bounds.Height) / 2f;
-        
+
         var startX = centerX - (float)Math.Cos(angleRad) * diagonal;
         var startY = centerY - (float)Math.Sin(angleRad) * diagonal;
         var endX = centerX + (float)Math.Cos(angleRad) * diagonal;
