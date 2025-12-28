@@ -126,6 +126,12 @@ public class SwipeGestureDetector : GestureDetector<SwipeGestureDetector>, ISwip
         AllowedDirections = directions;
         return this;
     }
+
+    public SwipeGestureDetector BindAllowedDirections(string propertyName, Func<SwipeDirection> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => AllowedDirections = propertyGetter());
+        return this;
+    }
     #endregion
 }
 

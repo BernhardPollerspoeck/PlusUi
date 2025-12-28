@@ -51,6 +51,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         HoverBackground = background;
         return this;
     }
+    public Button BindHoverBackground(string propertyName, Func<IBackground> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => HoverBackground = propertyGetter());
+        return this;
+    }
     #endregion
 
     #region Padding
@@ -82,6 +87,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         Command = command;
         return this;
     }
+    public Button BindCommand(string propertyName, Func<ICommand?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => Command = propertyGetter());
+        return this;
+    }
 
     internal object? CommandParameter { get; set; }
     public Button SetCommandParameter(object parameter)
@@ -99,6 +109,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
     public Button SetOnClick(Action onClick)
     {
         OnClick = onClick;
+        return this;
+    }
+    public Button BindOnClick(string propertyName, Func<Action?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => OnClick = propertyGetter());
         return this;
     }
     #endregion

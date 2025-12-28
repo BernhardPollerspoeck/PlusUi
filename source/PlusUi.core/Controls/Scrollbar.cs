@@ -21,6 +21,12 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
+    public Scrollbar BindOrientation(string propertyName, Func<ScrollbarOrientation> getter)
+    {
+        RegisterBinding(propertyName, () => SetOrientation(getter()));
+        return this;
+    }
+
     #region Sizing
 
     public float Width { get; private set; } = 12f;
@@ -43,6 +49,12 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
     public Scrollbar SetMinThumbSize(float size)
     {
         MinThumbSize = size;
+        return this;
+    }
+
+    public Scrollbar BindMinThumbSize(string propertyName, Func<float> getter)
+    {
+        RegisterBinding(propertyName, () => SetMinThumbSize(getter()));
         return this;
     }
 
@@ -72,11 +84,23 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
+    public Scrollbar BindThumbHoverColor(string propertyName, Func<SKColor> getter)
+    {
+        RegisterBinding(propertyName, () => SetThumbHoverColor(getter()));
+        return this;
+    }
+
     public SKColor ThumbDragColor { get; private set; } = new SKColor(160, 160, 160);
 
     public Scrollbar SetThumbDragColor(SKColor color)
     {
         ThumbDragColor = color;
+        return this;
+    }
+
+    public Scrollbar BindThumbDragColor(string propertyName, Func<SKColor> getter)
+    {
+        RegisterBinding(propertyName, () => SetThumbDragColor(getter()));
         return this;
     }
 
@@ -106,11 +130,23 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
+    public Scrollbar BindThumbCornerRadius(string propertyName, Func<float> getter)
+    {
+        RegisterBinding(propertyName, () => SetThumbCornerRadius(getter()));
+        return this;
+    }
+
     public float TrackCornerRadius { get; private set; } = 4f;
 
     public Scrollbar SetTrackCornerRadius(float radius)
     {
         TrackCornerRadius = radius;
+        return this;
+    }
+
+    public Scrollbar BindTrackCornerRadius(string propertyName, Func<float> getter)
+    {
+        RegisterBinding(propertyName, () => SetTrackCornerRadius(getter()));
         return this;
     }
 
@@ -126,11 +162,23 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
+    public Scrollbar BindAutoHide(string propertyName, Func<bool> getter)
+    {
+        RegisterBinding(propertyName, () => SetAutoHide(getter()));
+        return this;
+    }
+
     public int AutoHideDelay { get; private set; } = 1000;
 
     public Scrollbar SetAutoHideDelay(int delayMs)
     {
         AutoHideDelay = delayMs;
+        return this;
+    }
+
+    public Scrollbar BindAutoHideDelay(string propertyName, Func<int> getter)
+    {
+        RegisterBinding(propertyName, () => SetAutoHideDelay(getter()));
         return this;
     }
 
@@ -149,6 +197,12 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
     public Scrollbar SetOnValueChanged(Action<float> callback)
     {
         _onValueChanged = callback;
+        return this;
+    }
+
+    public Scrollbar BindOnValueChanged(string propertyName, Func<Action<float>?> getter)
+    {
+        RegisterBinding(propertyName, () => _onValueChanged = getter());
         return this;
     }
 

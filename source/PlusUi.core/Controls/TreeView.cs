@@ -79,6 +79,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     public TreeView SetItemsSource(IEnumerable<object> items)
     {
         _itemsSource = items;
+        BuildNodes();
         InvalidateMeasure();
         return this;
     }
@@ -153,6 +154,15 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     {
         _itemTemplate = template;
         InvalidateMeasure();
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the item template to a property.
+    /// </summary>
+    public TreeView BindItemTemplate(string propertyName, Func<Func<object, int, UiElement>> getter)
+    {
+        RegisterBinding(propertyName, () => SetItemTemplate(getter()));
         return this;
     }
 
@@ -248,6 +258,86 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
     #endregion
 
+    #region Tree Lines
+
+    private bool _showLines = false;
+    private SKColor _lineColor = new SKColor(80, 80, 80);
+    private float _lineThickness = 1f;
+
+    /// <summary>
+    /// Gets whether tree connection lines are shown.
+    /// </summary>
+    public bool ShowLines => _showLines;
+
+    /// <summary>
+    /// Sets whether tree connection lines are shown.
+    /// </summary>
+    public TreeView SetShowLines(bool show)
+    {
+        _showLines = show;
+        InvalidateMeasure();
+        return this;
+    }
+
+    /// <summary>
+    /// Gets the color of tree connection lines.
+    /// </summary>
+    public SKColor LineColor => _lineColor;
+
+    /// <summary>
+    /// Sets the color of tree connection lines.
+    /// </summary>
+    public TreeView SetLineColor(SKColor color)
+    {
+        _lineColor = color;
+        InvalidateMeasure();
+        return this;
+    }
+
+    /// <summary>
+    /// Gets the thickness of tree connection lines.
+    /// </summary>
+    public float LineThickness => _lineThickness;
+
+    /// <summary>
+    /// Sets the thickness of tree connection lines.
+    /// </summary>
+    public TreeView SetLineThickness(float thickness)
+    {
+        _lineThickness = thickness;
+        InvalidateMeasure();
+        return this;
+    }
+
+    /// <summary>
+    /// Binds whether tree connection lines are shown to a property.
+    /// </summary>
+    public TreeView BindShowLines(string propertyName, Func<bool> getter)
+    {
+        RegisterBinding(propertyName, () => SetShowLines(getter()));
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the line color to a property.
+    /// </summary>
+    public TreeView BindLineColor(string propertyName, Func<SKColor> getter)
+    {
+        RegisterBinding(propertyName, () => SetLineColor(getter()));
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the line thickness to a property.
+    /// </summary>
+    public TreeView BindLineThickness(string propertyName, Func<float> getter)
+    {
+        RegisterBinding(propertyName, () => SetLineThickness(getter()));
+        return this;
+    }
+
+    #endregion
+
     #region Children Selectors
 
     /// <summary>
@@ -259,6 +349,12 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     public TreeView SetChildrenSelector<TItem>(Func<TItem, IEnumerable<object>> selector)
     {
         _childrenSelectors[typeof(TItem)] = item => selector((TItem)item);
+        // Rebuild nodes to update HasChildren flags
+        if (_itemsSource != null)
+        {
+            BuildNodes();
+            InvalidateMeasure();
+        }
         return this;
     }
 
@@ -635,10 +731,10 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
             _hoveredItem = hitNode.Item;
 
             // Check if click was on expander area
+            // Expander is at: depth * indentation, width = expanderSize
             float relativeX = (float)(point.X - Position.X);
-            float indentOffset = hitNode.Depth * _indentation;
-            float expanderStart = indentOffset;
-            float expanderEnd = indentOffset + _expanderSize;
+            float expanderStart = hitNode.Depth * _indentation;
+            float expanderEnd = expanderStart + _expanderSize;
 
             // Only nodes with children have an expander
             if (hitNode.HasChildren && relativeX >= expanderStart && relativeX < expanderEnd)
@@ -678,11 +774,33 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
     #region Layout
 
+    private readonly List<UiElement> _visibleItemElements = new();
+
     /// <inheritdoc />
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        // TODO: Implement in Phase 5
-        return availableSize;
+        // Clear old children
+        Children.Clear();
+        _visibleItemElements.Clear();
+
+        var width = DesiredSize?.Width > 0 ? DesiredSize.Value.Width : availableSize.Width;
+        var height = DesiredSize?.Height > 0 ? DesiredSize.Value.Height : availableSize.Height;
+
+        // Get visible nodes and create elements for them
+        var visibleNodes = GetVisibleNodes(_scrollOffset, (float)height);
+
+        foreach (var node in visibleNodes)
+        {
+            if (_itemTemplate != null)
+            {
+                var element = _itemTemplate(node.Item, node.Depth);
+                element.Measure(new Size(width, _itemHeight), true);
+                _visibleItemElements.Add(element);
+                Children.Add(element);
+            }
+        }
+
+        return new Size(width, height);
     }
 
     /// <inheritdoc />
@@ -701,6 +819,25 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
             _ => bounds.Top + Margin.Top,
         };
 
+        // Arrange visible item elements sequentially
+        var visibleNodes = GetVisibleNodes(_scrollOffset, (float)ElementSize.Height).ToList();
+        for (int i = 0; i < _visibleItemElements.Count && i < visibleNodes.Count; i++)
+        {
+            var element = _visibleItemElements[i];
+            var node = visibleNodes[i];
+
+            // X position: depth * indentation + expander space (if has children)
+            var indentX = node.Depth * _indentation + (node.HasChildren ? _expanderSize : 0);
+
+            var elementBounds = new Rect(
+                positionX + indentX,
+                positionY + (i * _itemHeight),
+                ElementSize.Width - indentX,
+                _itemHeight);
+
+            element.Arrange(elementBounds);
+        }
+
         return new Point(positionX, positionY);
     }
 
@@ -711,8 +848,137 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     /// <inheritdoc />
     public override void Render(SKCanvas canvas)
     {
-        // TODO: Implement in Phase 5
+        if (!IsVisible)
+            return;
+
+        var baseX = Position.X + VisualOffset.X;
+        var baseY = Position.Y + VisualOffset.Y;
+
+        // Clip to control bounds
+        canvas.Save();
+        var clipRect = new SKRect(
+            (float)baseX,
+            (float)baseY,
+            (float)(baseX + ElementSize.Width),
+            (float)(baseY + ElementSize.Height));
+
+        if (CornerRadius > 0)
+        {
+            canvas.ClipRoundRect(new SKRoundRect(clipRect, CornerRadius, CornerRadius));
+        }
+        else
+        {
+            canvas.ClipRect(clipRect);
+        }
+
+        // Render background
         base.Render(canvas);
+
+        // Render visible nodes
+        var visibleNodes = GetVisibleNodes(_scrollOffset, (float)ElementSize.Height).ToList();
+
+        // Draw tree connection lines if enabled
+        if (_showLines && visibleNodes.Count > 0)
+        {
+            using var linePaint = new SKPaint
+            {
+                Color = _lineColor,
+                IsAntialias = true,
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = _lineThickness
+            };
+
+            for (int i = 0; i < visibleNodes.Count; i++)
+            {
+                var node = visibleNodes[i];
+                if (node.Depth > 0)
+                {
+                    float nodeY = i * _itemHeight;
+                    // Vertical line is at parent's expander center
+                    float lineCenterX = (float)(baseX + (node.Depth - 1) * _indentation + _expanderSize / 2);
+                    float lineCenterY = (float)(baseY + nodeY + _itemHeight / 2);
+
+                    // Horizontal line from vertical to item content
+                    float horizontalEndX = (float)(baseX + node.Depth * _indentation + (node.HasChildren ? 0 : _expanderSize / 2));
+                    canvas.DrawLine(lineCenterX, lineCenterY, horizontalEndX, lineCenterY, linePaint);
+
+                    // Vertical line segment - find previous sibling or parent
+                    float verticalStartY = lineCenterY;
+                    for (int j = i - 1; j >= 0; j--)
+                    {
+                        var prevNode = visibleNodes[j];
+                        if (prevNode.Depth < node.Depth)
+                        {
+                            verticalStartY = (float)(baseY + j * _itemHeight + _itemHeight / 2);
+                            break;
+                        }
+                        else if (prevNode.Depth == node.Depth)
+                        {
+                            verticalStartY = (float)(baseY + j * _itemHeight + _itemHeight / 2);
+                            break;
+                        }
+                    }
+
+                    if (verticalStartY < lineCenterY)
+                    {
+                        canvas.DrawLine(lineCenterX, verticalStartY, lineCenterX, lineCenterY, linePaint);
+                    }
+                }
+            }
+        }
+
+        // Render expander icons
+        using var expanderPaint = new SKPaint
+        {
+            Color = SKColors.LightGray,
+            IsAntialias = true,
+            Style = SKPaintStyle.Fill
+        };
+
+        for (int i = 0; i < visibleNodes.Count; i++)
+        {
+            var node = visibleNodes[i];
+            if (node.HasChildren)
+            {
+                float nodeY = i * _itemHeight;
+                // Expander is at: depth * indentation, centered in expanderSize box
+                float expanderX = (float)(baseX + node.Depth * _indentation);
+                float expanderY = (float)(baseY + nodeY + (_itemHeight - _expanderSize) / 2);
+
+                // Draw triangle expander
+                using var path = new SKPath();
+                if (node.IsExpanded)
+                {
+                    // Down arrow
+                    path.MoveTo(expanderX + 2, expanderY + 4);
+                    path.LineTo(expanderX + _expanderSize - 2, expanderY + 4);
+                    path.LineTo(expanderX + _expanderSize / 2, expanderY + _expanderSize - 4);
+                    path.Close();
+                }
+                else
+                {
+                    // Right arrow
+                    path.MoveTo(expanderX + 4, expanderY + 2);
+                    path.LineTo(expanderX + _expanderSize - 4, expanderY + _expanderSize / 2);
+                    path.LineTo(expanderX + 4, expanderY + _expanderSize - 2);
+                    path.Close();
+                }
+                canvas.DrawPath(path, expanderPaint);
+            }
+        }
+
+        // Render children (the item elements)
+        foreach (var child in Children)
+        {
+            var childOriginalOffset = child.VisualOffset;
+            child.SetVisualOffset(new Point(
+                childOriginalOffset.X + VisualOffset.X,
+                childOriginalOffset.Y + VisualOffset.Y));
+            child.Render(canvas);
+            child.SetVisualOffset(childOriginalOffset);
+        }
+
+        canvas.Restore();
     }
 
     #endregion

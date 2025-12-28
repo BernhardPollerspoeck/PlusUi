@@ -9,8 +9,8 @@
 
 | Kategorie | Anzahl | Geschätzte Gesamtzeit |
 |-----------|--------|----------------------|
-| Controls (Hoch) | 2 | 6-9 Tage |
-| **Gesamt** | **2** | **6-9 Tage** |
+| Controls (Hoch) | 1 | 3-4 Tage |
+| **Gesamt** | **1** | **3-4 Tage** |
 
 ---
 
@@ -74,57 +74,6 @@ myControl.SetContextMenu(new ContextMenu()
 
 ---
 
-### CTRL-005: TreeView
-
-| | |
-|---|---|
-| **Typ** | Neues Control |
-| **Priorität** | 🟡 Hoch |
-| **Zeitschätzung** | 3-5 Tage |
-
-**Beschreibung:**
-Hierarchische Baumdarstellung von Daten. Wichtig für Dateiexplorer, Kategorien, Organisationsstrukturen und verschachtelte Daten.
-
-**Anforderungen:**
-
-- [ ] `TreeView` Klasse
-- [ ] `TreeViewItem` Klasse mit Children, IsExpanded, IsSelected
-- [ ] Property `ItemsSource` (hierarchische Collection)
-- [ ] Property `SelectedItem`
-- [ ] Property `ItemTemplate` für Custom-Rendering
-- [ ] Property `ChildrenSelector` (Func um Children zu ermitteln)
-- [ ] Expand/Collapse Icons (+/-)
-- [ ] Fluent API: `SetItemsSource()`, `SetItemTemplate()`, `SetChildrenSelector()`
-- [ ] Binding: `BindItemsSource()`, `BindSelectedItem()`
-- [ ] Lazy Loading für große Bäume
-- [ ] Keyboard-Navigation (Pfeiltasten, Enter für Expand)
-- [ ] Virtualisierung für Performance
-
-**API-Beispiel:**
-```csharp
-new TreeView<FolderItem>()
-    .SetItemsSource(() => vm.RootFolders)
-    .SetChildrenSelector(f => f.SubFolders)
-    .SetItemTemplate(f => new HStack().Children(
-        new Image().SetSource(f.Icon),
-        new Label().SetText(f.Name)
-    ))
-    .BindSelectedItem(nameof(vm.SelectedFolder), () => vm.SelectedFolder, v => vm.SelectedFolder = v)
-```
-
-**Abhängigkeiten:** Basiert auf ItemsList-Konzepten
-
-**Aufwandsverteilung:**
-- TreeViewItem Struktur: 0.5 Tage
-- Hierarchisches Layout & Indentation: 1 Tag
-- Expand/Collapse Logic & Icons: 0.5 Tage
-- Selection & Navigation: 0.5 Tage
-- ItemTemplate & Binding: 0.5 Tage
-- Virtualisierung (optional): 0.5-1 Tag
-- Tests & Feinschliff: 0.5-1 Tag
-
----
-
 ## ZUSAMMENFASSUNG
 
 ### Nach Priorität sortiert
@@ -132,14 +81,13 @@ new TreeView<FolderItem>()
 | ID | Titel | Priorität | Zeit |
 |----|-------|-----------|------|
 | **CTRL-004** | Menu/ContextMenu | 🟡 Hoch | 3-4 Tage |
-| **CTRL-005** | TreeView | 🟡 Hoch | 3-5 Tage |
-| | **Hoch Gesamt** | | **6-9 Tage** |
+| | **Hoch Gesamt** | | **3-4 Tage** |
 
 ### Gesamtaufwand
 
 | Szenario | Aufwand |
 |----------|---------|
-| **Vollständig** | 6-9 Tage |
+| **Vollständig** | 3-4 Tage |
 
 ---
 

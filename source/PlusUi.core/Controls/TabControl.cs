@@ -233,6 +233,16 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         }
         return this;
     }
+
+    public TabControl BindSelectedTab(string propertyName, Func<TabItem?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () =>
+        {
+            var tab = propertyGetter();
+            if (tab != null) SetSelectedTab(tab);
+        });
+        return this;
+    }
     #endregion
 
     #region TabPosition
@@ -269,11 +279,23 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
+    public TabControl BindOnSelectedIndexChanged(string propertyName, Func<Action<int>?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => OnSelectedIndexChanged = propertyGetter());
+        return this;
+    }
+
     internal ICommand? SelectionChangedCommand { get; set; }
 
     public TabControl SetSelectionChangedCommand(ICommand command)
     {
         SelectionChangedCommand = command;
+        return this;
+    }
+
+    public TabControl BindSelectionChangedCommand(string propertyName, Func<ICommand?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => SelectionChangedCommand = propertyGetter());
         return this;
     }
     #endregion
@@ -297,6 +319,12 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
+    public TabControl BindHeaderTextSize(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => HeaderTextSize = propertyGetter());
+        return this;
+    }
+
     internal SKColor HeaderTextColor
     {
         get => field;
@@ -311,6 +339,12 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     public TabControl SetHeaderTextColor(SKColor color)
     {
         HeaderTextColor = color;
+        return this;
+    }
+
+    public TabControl BindHeaderTextColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => HeaderTextColor = propertyGetter());
         return this;
     }
 
@@ -331,6 +365,12 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
+    public TabControl BindActiveHeaderTextColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => ActiveHeaderTextColor = propertyGetter());
+        return this;
+    }
+
     internal SKColor DisabledHeaderTextColor
     {
         get => field;
@@ -348,11 +388,23 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
+    public TabControl BindDisabledHeaderTextColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => DisabledHeaderTextColor = propertyGetter());
+        return this;
+    }
+
     internal SKColor HeaderBackgroundColor { get; set; } = new SKColor(40, 40, 40);
 
     public TabControl SetHeaderBackgroundColor(SKColor color)
     {
         HeaderBackgroundColor = color;
+        return this;
+    }
+
+    public TabControl BindHeaderBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => HeaderBackgroundColor = propertyGetter());
         return this;
     }
 
@@ -364,11 +416,23 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
+    public TabControl BindActiveTabBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => ActiveTabBackgroundColor = propertyGetter());
+        return this;
+    }
+
     internal SKColor HoverTabBackgroundColor { get; set; } = new SKColor(50, 50, 50);
 
     public TabControl SetHoverTabBackgroundColor(SKColor color)
     {
         HoverTabBackgroundColor = color;
+        return this;
+    }
+
+    public TabControl BindHoverTabBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => HoverTabBackgroundColor = propertyGetter());
         return this;
     }
 
@@ -380,11 +444,23 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
+    public TabControl BindTabIndicatorColor(string propertyName, Func<SKColor> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => TabIndicatorColor = propertyGetter());
+        return this;
+    }
+
     internal float TabIndicatorHeight { get; set; } = 3f;
 
     public TabControl SetTabIndicatorHeight(float height)
     {
         TabIndicatorHeight = height;
+        return this;
+    }
+
+    public TabControl BindTabIndicatorHeight(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => TabIndicatorHeight = propertyGetter());
         return this;
     }
 
@@ -397,12 +473,24 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
+    public TabControl BindTabPadding(string propertyName, Func<Margin> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => SetTabPadding(propertyGetter()));
+        return this;
+    }
+
     internal float TabSpacing { get; set; } = 0f;
 
     public TabControl SetTabSpacing(float spacing)
     {
         TabSpacing = spacing;
         InvalidateMeasure();
+        return this;
+    }
+
+    public TabControl BindTabSpacing(string propertyName, Func<float> propertyGetter)
+    {
+        RegisterBinding(propertyName, () => SetTabSpacing(propertyGetter()));
         return this;
     }
     #endregion
