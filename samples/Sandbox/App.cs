@@ -22,6 +22,7 @@ using Sandbox.Pages.RadioButtonDemo;
 using Sandbox.Pages.AccessibilityDemo;
 using Sandbox.Pages.TabControlDemo;
 using Sandbox.Pages.GestureDemo;
+using Sandbox.Pages.DataGridDemo;
 using Sandbox.Popups;
 using Sandbox.Services;
 
@@ -71,6 +72,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<AccessibilityDemoPage>().WithViewModel<AccessibilityDemoPageViewModel>();
         builder.AddPage<TabControlDemoPage>().WithViewModel<TabControlDemoPageViewModel>();
         builder.AddPage<GestureDemoPage>().WithViewModel<GestureDemoPageViewModel>();
+        builder.AddPage<DataGridDemoPage>().WithViewModel<DataGridDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 

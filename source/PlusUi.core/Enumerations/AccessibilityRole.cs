@@ -153,5 +153,15 @@ public enum AccessibilityRole
     /// <summary>
     /// A navigation container.
     /// </summary>
-    Navigation
+    Navigation,
+
+    /// <summary>
+    /// A data grid or table control.
+    /// </summary>
+    Grid,
+
+    /// <summary>
+    /// A scrollbar control.
+    /// </summary>
+    Scrollbar
 }

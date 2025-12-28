@@ -11,8 +11,7 @@
 |-----------|--------|----------------------|
 | Controls (Kritisch) | 1 | 5-7 Tage |
 | Controls (Hoch) | 2 | 6-9 Tage |
-| Input | 1 | 3-5 Tage |
-| **Gesamt** | **4** | **14-21 Tage** |
+| **Gesamt** | **3** | **11-16 Tage** |
 
 ---
 
@@ -182,100 +181,6 @@ new TreeView<FolderItem>()
 
 ---
 
-## INPUT
-
----
-
-### INPUT-001: GestureDetector & HapticService
-
-| | |
-|---|---|
-| **Typ** | Cross-Platform Feature |
-| **Priorität** | 🟡 Hoch |
-| **Zeitschätzung** | 3-5 Tage |
-
-**Beschreibung:**
-Cross-Platform Gesten-Erkennung und haptisches Feedback. Einheitliche API die sich auf jeder Plattform nativ verhält.
-
-**Anforderungen:**
-
-**GestureDetector:**
-- [ ] `GestureDetector<T>` Basisklasse
-- [ ] `LongPressGestureDetector` (Mobile: Long-Press, Desktop: Rechtsklick)
-- [ ] `DoubleTapGestureDetector` (Mobile: Double-Tap, Desktop: Doppelklick)
-- [ ] `SwipeGestureDetector` mit `SwipeDirection` Flags
-- [ ] `PinchGestureDetector` (Mobile: Pinch, Desktop: Ctrl+Mausrad)
-- [ ] Stackbar/Nestbar für mehrere Gesten auf einem Element
-- [ ] Command-Binding mit CommandParameter
-
-**HapticService:**
-- [ ] `IHapticService` Interface
-- [ ] `Emit(HapticFeedback feedback)` Methode
-- [ ] `IsSupported` Property
-- [ ] `HapticFeedback` Enum (Light, Medium, Heavy, Success, Warning, Error, Selection)
-- [ ] Plattform-Implementierungen (Android: Vibration, iOS: Taptic, Desktop: ignoriert)
-
-**API-Beispiel:**
-```csharp
-// GestureDetector (stackbar)
-new LongPressGestureDetector(
-    new DoubleTapGestureDetector(
-        new Image().SetSource("photo.jpg")
-    )
-    .SetCommand(vm.ZoomInCommand)
-)
-.SetCommand(vm.ShowContextMenuCommand)
-
-// SwipeGestureDetector mit Richtungsfilter
-new SwipeGestureDetector(content)
-    .SetCommand(vm.HandleSwipeCommand)  // CommandParameter = SwipeDirection
-    .SetAllowedDirections(SwipeDirection.Horizontal)
-
-// HapticService
-_hapticService.Emit(HapticFeedback.Success);
-```
-
-**Enums:**
-```csharp
-[Flags]
-public enum SwipeDirection
-{
-    None = 0,
-    Left = 1,
-    Right = 2,
-    Up = 4,
-    Down = 8,
-    Horizontal = Left | Right,
-    Vertical = Up | Down,
-    All = Horizontal | Vertical
-}
-
-public enum HapticFeedback { Light, Medium, Heavy, Success, Warning, Error, Selection }
-```
-
-**Plattform-Mapping:**
-
-| Geste | Android | iOS | Desktop |
-|-------|---------|-----|---------|
-| LongPress | Long-Press | Long-Press | Rechtsklick |
-| DoubleTap | Double-Tap | Double-Tap | Doppelklick |
-| Swipe | Swipe | Swipe | Drag mit Schwung |
-| Pinch | Pinch | Pinch | Ctrl+Mausrad |
-| Haptic | Vibration | Taptic Engine | Ignoriert |
-
-**Abhängigkeiten:** Keine
-
-**Aufwandsverteilung:**
-- GestureDetector Basisklasse & API: 0.5 Tage
-- LongPress & DoubleTap Implementierung: 0.5 Tage
-- Swipe Implementierung: 0.5 Tage
-- Pinch Implementierung: 0.5 Tage
-- HapticService: 0.5 Tage
-- Plattform-Implementierungen (Android, iOS, Desktop): 1 Tag
-- Tests: 0.5-1.5 Tage
-
----
-
 ## ZUSAMMENFASSUNG
 
 ### Nach Priorität sortiert
@@ -286,20 +191,18 @@ public enum HapticFeedback { Light, Medium, Heavy, Success, Warning, Error, Sele
 | | **Kritisch Gesamt** | | **5-7 Tage** |
 | **CTRL-004** | Menu/ContextMenu | 🟡 Hoch | 3-4 Tage |
 | **CTRL-005** | TreeView | 🟡 Hoch | 3-5 Tage |
-| **INPUT-001** | GestureDetector & HapticService | 🟡 Hoch | 3-5 Tage |
-| | **Hoch Gesamt** | | **9-14 Tage** |
+| | **Hoch Gesamt** | | **6-9 Tage** |
 
 ### Empfohlene Reihenfolge für MVP
 
 1. **CTRL-002** DataGrid (komplex, aber wichtig)
-2. **INPUT-001** GestureDetector & HapticService (Cross-Platform)
 
 ### Gesamtaufwand
 
 | Szenario | Aufwand |
 |----------|---------|
 | **MVP (nur Kritisch)** | 5-7 Tage |
-| **Vollständig** | 14-21 Tage |
+| **Vollständig** | 11-16 Tage |
 
 ---
 

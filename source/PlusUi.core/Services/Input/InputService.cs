@@ -76,6 +76,8 @@ public class InputService
         }
     }
     
+    private bool _didDragOrScroll;
+
     public void MouseUp(Vector2 location)
     {
         if (!_isMousePressed)
@@ -84,13 +86,29 @@ public class InputService
         }
         _isMousePressed = false;
 
+        // Track if actual dragging/scrolling movement happened
+        var skipClick = _didDragOrScroll;
+        _didDragOrScroll = false;
+
         // End any active drag operation
-        _activeDragControl?.IsDragging = false;
-        _activeDragControl = null;
+        if (_activeDragControl != null)
+        {
+            _activeDragControl.IsDragging = false;
+            _activeDragControl = null;
+        }
 
         // End any active scrolling operation
-        _activeScrollControl?.IsScrolling = false;
-        _activeScrollControl = null;
+        if (_activeScrollControl != null)
+        {
+            _activeScrollControl.IsScrolling = false;
+            _activeScrollControl = null;
+        }
+
+        // Skip click handling if actual dragging or scrolling happened
+        if (skipClick)
+        {
+            return;
+        }
 
         //we have an up action
         var point = new Point(location.X, location.Y);
@@ -398,7 +416,11 @@ public class InputService
             float deltaX = location.X - _lastMousePosition.X;
             float deltaY = location.Y - _lastMousePosition.Y;
 
-            _activeDragControl.HandleDrag(deltaX, deltaY);
+            if (Math.Abs(deltaX) > 1 || Math.Abs(deltaY) > 1)
+            {
+                _didDragOrScroll = true;
+                _activeDragControl.HandleDrag(deltaX, deltaY);
+            }
         }
         // Handle scrolling if active
         else if (_isMousePressed && _activeScrollControl != null)
@@ -406,7 +428,11 @@ public class InputService
             float deltaX = _lastMousePosition.X - location.X;
             float deltaY = _lastMousePosition.Y - location.Y;
 
-            _activeScrollControl.HandleScroll(deltaX, deltaY);
+            if (Math.Abs(deltaX) > 1 || Math.Abs(deltaY) > 1)
+            {
+                _didDragOrScroll = true;
+                _activeScrollControl.HandleScroll(deltaX, deltaY);
+            }
         }
 
         // Update hover state

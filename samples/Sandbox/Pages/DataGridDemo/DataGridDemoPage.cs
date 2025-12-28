@@ -1,0 +1,81 @@
+using PlusUi.core;
+using SkiaSharp;
+
+namespace Sandbox.Pages.DataGridDemo;
+
+public class DataGridDemoPage(DataGridDemoPageViewModel vm) : UiPageElement(vm)
+{
+    protected override UiElement Build()
+    {
+        return new VStack(
+            new Button()
+                .SetText("<- Back")
+                .SetTextSize(16)
+                .SetCommand(vm.GoBackCommand)
+                .SetTextColor(SKColors.White)
+                .SetPadding(new Margin(10, 5)),
+
+            new DataGrid<Person>()
+                .SetItemsSource(vm.Persons)
+                .SetAlternatingRowStyles(true)
+                .SetEvenRowStyle(new SolidColorBackground(new SKColor(30, 30, 30)), SKColors.White)
+                .SetOddRowStyle(new SolidColorBackground(new SKColor(40, 40, 40)), SKColors.White)
+                .AddColumn(new DataGridTextColumn<Person>()
+                    .SetHeader("ID")
+                    .SetBinding(p => p.Id.ToString())
+                    .SetWidth(DataGridColumnWidth.Absolute(60)))
+                .AddColumn(new DataGridTextColumn<Person>()
+                    .SetHeader("Name")
+                    .SetBinding(p => p.Name)
+                    .SetWidth(DataGridColumnWidth.Absolute(200)))
+                .AddColumn(new DataGridTextColumn<Person>()
+                    .SetHeader("Age")
+                    .SetBinding(p => p.Age.ToString())
+                    .SetWidth(DataGridColumnWidth.Absolute(60)))
+                .AddColumn(new DataGridButtonColumn<Person>()
+                    .SetHeader("+1")
+                    .SetButtonText("+")
+                    .SetItemCommand(p => p.IncrementAgeCommand)
+                    .SetWidth(DataGridColumnWidth.Absolute(50)))
+                .AddColumn(new DataGridButtonColumn<Person>()
+                    .SetHeader("Del")
+                    .SetButtonText("X")
+                    .SetCommand(vm.DeletePersonCommand)
+                    .SetWidth(DataGridColumnWidth.Absolute(50)))
+                .AddColumn(new DataGridTextColumn<Person>()
+                    .SetHeader("Department")
+                    .SetBinding(p => p.Department)
+                    .SetWidth(DataGridColumnWidth.Absolute(150)))
+                .AddColumn(new DataGridTextColumn<Person>()
+                    .SetHeader("Position")
+                    .SetBinding(p => p.Position)
+                    .SetWidth(DataGridColumnWidth.Absolute(180)))
+                .AddColumn(new DataGridTextColumn<Person>()
+                    .SetHeader("Email")
+                    .SetBinding(p => p.Email)
+                    .SetWidth(DataGridColumnWidth.Absolute(250)))
+                .AddColumn(new DataGridTextColumn<Person>()
+                    .SetHeader("Phone")
+                    .SetBinding(p => p.Phone)
+                    .SetWidth(DataGridColumnWidth.Absolute(150)))
+                .AddColumn(new DataGridTextColumn<Person>()
+                    .SetHeader("Salary")
+                    .SetBinding(p => $"${p.Salary:N0}")
+                    .SetWidth(DataGridColumnWidth.Absolute(100)))
+                .AddColumn(new DataGridTextColumn<Person>()
+                    .SetHeader("Start Date")
+                    .SetBinding(p => p.StartDate.ToShortDateString())
+                    .SetWidth(DataGridColumnWidth.Absolute(120)))
+                .AddColumn(new DataGridCheckboxColumn<Person>()
+                    .SetHeader("Active")
+                    .SetBinding(p => p.IsActive, (p, v) => p.IsActive = v)
+                    .SetWidth(DataGridColumnWidth.Absolute(80)))
+                .SetRowHeight(36)
+                .SetHeaderHeight(40)
+                .SetSelectionMode(SelectionMode.Single)
+                .BindSelectedItem(nameof(vm.SelectedPerson),
+                    () => vm.SelectedPerson,
+                    v => vm.SelectedPerson = v)
+        );
+    }
+}
