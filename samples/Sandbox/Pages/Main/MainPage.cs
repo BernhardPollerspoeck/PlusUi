@@ -21,6 +21,7 @@ using Sandbox.Pages.AccessibilityDemo;
 using Sandbox.Pages.TabControlDemo;
 using Sandbox.Pages.GestureDemo;
 using Sandbox.Pages.DataGridDemo;
+using Sandbox.Pages.TreeViewDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -324,7 +325,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     .SetPadding(new(20, 5))
                     .SetBackground(new SolidColorBackground(new SKColor(255, 59, 48)))
                     .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(DataGridDemoPage))
+                    .SetCommandParameter(typeof(DataGridDemoPage)),
+                new Button()
+                    .SetText("TreeView Demo")
+                    .SetPadding(new(20, 5))
+                    .SetBackground(new SolidColorBackground(new SKColor(88, 86, 214)))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(TreeViewDemoPage))
             ).SetMargin(new Margin(20, 0, 0, 0))
         );
     }

@@ -163,5 +163,15 @@ public enum AccessibilityRole
     /// <summary>
     /// A scrollbar control.
     /// </summary>
-    Scrollbar
+    Scrollbar,
+
+    /// <summary>
+    /// A hierarchical tree view control.
+    /// </summary>
+    Tree,
+
+    /// <summary>
+    /// An item within a tree view.
+    /// </summary>
+    TreeItem
 }

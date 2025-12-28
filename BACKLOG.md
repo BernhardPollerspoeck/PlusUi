@@ -9,68 +9,12 @@
 
 | Kategorie | Anzahl | Geschätzte Gesamtzeit |
 |-----------|--------|----------------------|
-| Controls (Kritisch) | 1 | 5-7 Tage |
 | Controls (Hoch) | 2 | 6-9 Tage |
-| **Gesamt** | **3** | **11-16 Tage** |
+| **Gesamt** | **2** | **6-9 Tage** |
 
 ---
 
 ## CONTROLS
-
----
-
-### CTRL-002: DataGrid / Table
-
-| | |
-|---|---|
-| **Typ** | Neues Control |
-| **Priorität** | 🔴 Kritisch |
-| **Zeitschätzung** | 5-7 Tage |
-
-**Beschreibung:**
-Tabellarische Darstellung von Daten mit Spalten und Zeilen. Essentiell für Business-Anwendungen, Datenverwaltung und Listen mit mehreren Attributen pro Eintrag.
-
-**Anforderungen:**
-
-- [ ] `DataGrid<T>` Klasse (generisch für Typsicherheit)
-- [ ] `DataGridColumn` Klasse mit Header, Binding, Width
-- [ ] Property `ItemsSource` (Collection)
-- [ ] Property `Columns` (Collection von DataGridColumn)
-- [ ] Property `SelectedItem` / `SelectedItems`
-- [ ] Column-Typen: Text, Checkbox, Button, Custom Template
-- [ ] Column-Sizing: Auto, Fixed, Star (*)
-- [ ] Fluent API: `SetItemsSource()`, `AddColumn()`, `SetSelectionMode()`
-- [ ] Binding für ItemsSource mit INotifyCollectionChanged
-- [ ] Virtualisierung für Performance (wie ItemsList)
-- [ ] Optional: Sortierung per Column-Header-Klick
-- [ ] Optional: Column Resizing
-
-**API-Beispiel:**
-```csharp
-new DataGrid<Person>()
-    .SetItemsSource(() => vm.Persons)
-    .AddColumn(new DataGridTextColumn<Person>()
-        .SetHeader("Name")
-        .SetBinding(p => p.Name)
-        .SetWidth(GridLength.Star(2)))
-    .AddColumn(new DataGridTextColumn<Person>()
-        .SetHeader("Alter")
-        .SetBinding(p => p.Age.ToString())
-        .SetWidth(GridLength.Auto))
-    .AddColumn(new DataGridCheckboxColumn<Person>()
-        .SetHeader("Aktiv")
-        .SetBinding(p => p.IsActive, (p, v) => p.IsActive = v))
-```
-
-**Abhängigkeiten:** Basiert auf ItemsList-Virtualisierung
-
-**Aufwandsverteilung:**
-- Grundstruktur & Column-System: 1 Tag
-- Header-Rendering & Sizing: 1 Tag
-- Row-Rendering & Virtualisierung: 1.5 Tage
-- Selection & Binding: 0.5 Tage
-- Column-Typen (Text, Checkbox, Button): 1 Tag
-- Tests & Feinschliff: 0.5-1.5 Tage
 
 ---
 
@@ -187,22 +131,15 @@ new TreeView<FolderItem>()
 
 | ID | Titel | Priorität | Zeit |
 |----|-------|-----------|------|
-| **CTRL-002** | DataGrid | 🔴 Kritisch | 5-7 Tage |
-| | **Kritisch Gesamt** | | **5-7 Tage** |
 | **CTRL-004** | Menu/ContextMenu | 🟡 Hoch | 3-4 Tage |
 | **CTRL-005** | TreeView | 🟡 Hoch | 3-5 Tage |
 | | **Hoch Gesamt** | | **6-9 Tage** |
-
-### Empfohlene Reihenfolge für MVP
-
-1. **CTRL-002** DataGrid (komplex, aber wichtig)
 
 ### Gesamtaufwand
 
 | Szenario | Aufwand |
 |----------|---------|
-| **MVP (nur Kritisch)** | 5-7 Tage |
-| **Vollständig** | 11-16 Tage |
+| **Vollständig** | 6-9 Tage |
 
 ---
 
