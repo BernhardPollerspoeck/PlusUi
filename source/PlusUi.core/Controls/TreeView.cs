@@ -6,24 +6,15 @@ namespace PlusUi.core;
 /// <summary>
 /// Node representing an item in the tree hierarchy.
 /// </summary>
-public class TreeViewNode
+public class TreeViewNode(object item, int depth, TreeViewNode? parent = null)
 {
-    public object Item { get; }
-    public int Depth { get; }
-    public bool IsExpanded { get; set; }
+    public object Item { get; } = item;
+    public int Depth { get; } = depth;
+    public bool IsExpanded { get; set; } = false;
     public float ExpandedHeight { get; private set; }
     public List<TreeViewNode>? Children { get; set; }
-    public TreeViewNode? Parent { get; }
-    public bool HasChildren { get; set; }
-
-    public TreeViewNode(object item, int depth, TreeViewNode? parent = null)
-    {
-        Item = item;
-        Depth = depth;
-        Parent = parent;
-        IsExpanded = false;
-        HasChildren = false;
-    }
+    public TreeViewNode? Parent { get; } = parent;
+    public bool HasChildren { get; set; } = false;
 
     /// <summary>
     /// Updates this node's ExpandedHeight and propagates the change to parents.

@@ -10,17 +10,9 @@ namespace PlusUi.desktop;
 /// <summary>
 /// Desktop platform service implementation
 /// </summary>
-public class DesktopPlatformService : IPlatformService
+public class DesktopPlatformService(RenderService renderService, ILogger<DesktopPlatformService>? logger = null) : IPlatformService
 {
-    private readonly RenderService _renderService;
-    private readonly ILogger<DesktopPlatformService>? _logger;
     private IWindow? _window;
-
-    public DesktopPlatformService(RenderService renderService, ILogger<DesktopPlatformService>? logger = null)
-    {
-        _renderService = renderService;
-        _logger = logger;
-    }
 
     /// <summary>
     /// Sets the window reference (called by WindowManager after window is created)
@@ -44,20 +36,20 @@ public class DesktopPlatformService : IPlatformService
         }
     }
 
-    public float DisplayDensity => _renderService.DisplayDensity;
+    public float DisplayDensity => renderService.DisplayDensity;
 
     public bool OpenUrl(string url)
     {
         if (string.IsNullOrEmpty(url))
         {
-            _logger?.LogWarning("OpenUrl called with null or empty URL");
+            logger?.LogWarning("OpenUrl called with null or empty URL");
             return false;
         }
 
         // Validate URL scheme to prevent command injection
         if (!IsValidUrlScheme(url))
         {
-            _logger?.LogWarning("OpenUrl called with invalid URL scheme: {Url}", url);
+            logger?.LogWarning("OpenUrl called with invalid URL scheme: {Url}", url);
             return false;
         }
 
@@ -66,32 +58,32 @@ public class DesktopPlatformService : IPlatformService
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-                _logger?.LogDebug("Opened URL on Windows: {Url}", url);
+                logger?.LogDebug("Opened URL on Windows: {Url}", url);
                 return true;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 Process.Start("xdg-open", url);
-                _logger?.LogDebug("Opened URL on Linux: {Url}", url);
+                logger?.LogDebug("Opened URL on Linux: {Url}", url);
                 return true;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 Process.Start("open", url);
-                _logger?.LogDebug("Opened URL on macOS: {Url}", url);
+                logger?.LogDebug("Opened URL on macOS: {Url}", url);
                 return true;
             }
             else
             {
                 // Fallback for other platforms
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-                _logger?.LogDebug("Opened URL on unknown platform: {Url}", url);
+                logger?.LogDebug("Opened URL on unknown platform: {Url}", url);
                 return true;
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Failed to open URL: {Url}", url);
+            logger?.LogError(ex, "Failed to open URL: {Url}", url);
             return false;
         }
     }

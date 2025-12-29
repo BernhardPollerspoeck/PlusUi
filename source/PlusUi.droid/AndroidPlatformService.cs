@@ -7,18 +7,9 @@ namespace PlusUi.droid;
 /// <summary>
 /// Android platform service implementation
 /// </summary>
-public class AndroidPlatformService : IPlatformService
+public class AndroidPlatformService(RenderService renderService, Context context) : IPlatformService
 {
-    private readonly RenderService _renderService;
-    private readonly Context _context;
-    private Size _windowSize;
-
-    public AndroidPlatformService(RenderService renderService, Context context)
-    {
-        _renderService = renderService;
-        _context = context;
-        _windowSize = new Size(0, 0);
-    }
+    private Size _windowSize = new Size(0, 0);
 
     /// <summary>
     /// Updates the window size (called by SilkRenderer when surface changes)
@@ -32,7 +23,7 @@ public class AndroidPlatformService : IPlatformService
 
     public Size WindowSize => _windowSize;
 
-    public float DisplayDensity => _renderService.DisplayDensity;
+    public float DisplayDensity => renderService.DisplayDensity;
 
     public bool OpenUrl(string url)
     {
@@ -49,7 +40,7 @@ public class AndroidPlatformService : IPlatformService
             // Add FLAG_ACTIVITY_NEW_TASK if we're not in an Activity context
             intent.AddFlags(ActivityFlags.NewTask);
 
-            _context.StartActivity(intent);
+            context.StartActivity(intent);
             return true;
         }
         catch

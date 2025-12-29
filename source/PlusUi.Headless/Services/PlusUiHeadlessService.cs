@@ -9,31 +9,16 @@ namespace PlusUi.Headless.Services;
 /// Internal headless service implementation.
 /// Handles on-demand frame rendering and input event propagation.
 /// </summary>
-internal class PlusUiHeadlessService
+internal class PlusUiHeadlessService(
+    RenderService renderService,
+    InputService inputService,
+    HeadlessPlatformService platformService,
+    HeadlessKeyboardHandler keyboardHandler,
+    PlusUiNavigationService navigationService)
 {
-    private readonly RenderService _renderService;
-    private readonly InputService _inputService;
-    private readonly HeadlessPlatformService _platformService;
-    private readonly HeadlessKeyboardHandler _keyboardHandler;
-    private readonly PlusUiNavigationService _navigationService;
-
     private Vector2 _currentMousePosition;
     private Size _frameSize;
     private ImageFormat _format;
-
-    public PlusUiHeadlessService(
-        RenderService renderService,
-        InputService inputService,
-        HeadlessPlatformService platformService,
-        HeadlessKeyboardHandler keyboardHandler,
-        PlusUiNavigationService navigationService)
-    {
-        _renderService = renderService;
-        _inputService = inputService;
-        _platformService = platformService;
-        _keyboardHandler = keyboardHandler;
-        _navigationService = navigationService;
-    }
 
     /// <summary>
     /// Initializes the service with frame size and image format.
@@ -45,7 +30,7 @@ internal class PlusUiHeadlessService
         _format = format;
 
         // Initialize navigation to set up the page
-        _navigationService.Initialize();
+        navigationService.Initialize();
     }
 
     public Task<byte[]> GetCurrentFrameAsync()
@@ -61,7 +46,7 @@ internal class PlusUiHeadlessService
         var canvas = new SKCanvas(bitmap);
 
         // 2. Render current frame (Measure + Arrange + Render)
-        _renderService.Render(
+        renderService.Render(
             clearAction: null,
             canvas: canvas,
             grContext: null,
@@ -75,32 +60,32 @@ internal class PlusUiHeadlessService
     public void MouseMove(float x, float y)
     {
         _currentMousePosition = new Vector2(x, y);
-        _inputService.MouseMove(_currentMousePosition);
+        inputService.MouseMove(_currentMousePosition);
     }
 
     public void MouseDown()
     {
-        _inputService.MouseDown(_currentMousePosition);
+        inputService.MouseDown(_currentMousePosition);
     }
 
     public void MouseUp()
     {
-        _inputService.MouseUp(_currentMousePosition);
+        inputService.MouseUp(_currentMousePosition);
     }
 
     public void MouseWheel(float deltaX, float deltaY)
     {
-        _inputService.MouseWheel(_currentMousePosition, deltaX, deltaY);
+        inputService.MouseWheel(_currentMousePosition, deltaX, deltaY);
     }
 
     public void KeyPress(PlusKey key)
     {
-        _keyboardHandler.RaiseKeyInput(key);
+        keyboardHandler.RaiseKeyInput(key);
     }
 
     public void CharInput(char c)
     {
-        _keyboardHandler.RaiseCharInput(c);
+        keyboardHandler.RaiseCharInput(c);
     }
 
     /// <summary>

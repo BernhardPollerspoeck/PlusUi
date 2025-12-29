@@ -7,14 +7,9 @@ namespace PlusUi.desktop.Accessibility;
 /// NSAccessibility element wrapper for a PlusUi element.
 /// </summary>
 [SupportedOSPlatform("macos")]
-internal sealed class PlusUiAccessibilityElement
+internal sealed class PlusUiAccessibilityElement(UiElement element)
 {
-    public UiElement Element { get; }
-
-    public PlusUiAccessibilityElement(UiElement element)
-    {
-        Element = element;
-    }
+    public UiElement Element { get; } = element;
 
     /// <summary>
     /// Gets the NSAccessibility role for this element.

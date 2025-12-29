@@ -17,13 +17,6 @@
 
 ---
 
-## Architektur-Probleme
-
-### Code-Konsistenz
-46. Primary Constructor Pattern nicht überall verwendet
-
----
-
 ## Dokumentation
 
 61. Keine Dokumentation für Source-Generator-Output

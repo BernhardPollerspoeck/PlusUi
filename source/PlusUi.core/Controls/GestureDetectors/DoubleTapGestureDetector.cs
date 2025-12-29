@@ -7,9 +7,8 @@ namespace PlusUi.core;
 /// Detects double tap gestures on the wrapped content.
 /// </summary>
 [GenerateShadowMethods]
-public partial class DoubleTapGestureDetector : GestureDetector<DoubleTapGestureDetector>, IDoubleTapGestureControl
+public partial class DoubleTapGestureDetector(UiElement content) : GestureDetector<DoubleTapGestureDetector>(content), IDoubleTapGestureControl
 {
-    public DoubleTapGestureDetector(UiElement content) : base(content) { }
 
     #region Command
     public ICommand? DoubleTapCommand { get; private set; }

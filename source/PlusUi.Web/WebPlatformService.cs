@@ -7,18 +7,9 @@ namespace PlusUi.Web;
 /// <summary>
 /// Web platform service implementation for Blazor WebAssembly
 /// </summary>
-public class WebPlatformService : IPlatformService
+public class WebPlatformService(RenderService renderService, IJSRuntime jsRuntime) : IPlatformService
 {
-    private readonly RenderService _renderService;
-    private readonly IJSRuntime _jsRuntime;
-    private Size _windowSize;
-
-    public WebPlatformService(RenderService renderService, IJSRuntime jsRuntime)
-    {
-        _renderService = renderService;
-        _jsRuntime = jsRuntime;
-        _windowSize = new Size(0, 0);
-    }
+    private Size _windowSize = new Size(0, 0);
 
     /// <summary>
     /// Updates the window size (called when browser window is resized)
@@ -32,7 +23,7 @@ public class WebPlatformService : IPlatformService
 
     public Size WindowSize => _windowSize;
 
-    public float DisplayDensity => _renderService.DisplayDensity;
+    public float DisplayDensity => renderService.DisplayDensity;
 
     public bool OpenUrl(string url)
     {
@@ -44,7 +35,7 @@ public class WebPlatformService : IPlatformService
         try
         {
             // Use JavaScript to open URL in new tab
-            _jsRuntime.InvokeVoidAsync("open", url, "_blank");
+            jsRuntime.InvokeVoidAsync("open", url, "_blank");
             return true;
         }
         catch

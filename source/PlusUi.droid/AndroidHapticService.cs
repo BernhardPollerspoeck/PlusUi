@@ -4,16 +4,11 @@ using PlusUi.core;
 
 namespace PlusUi.droid;
 
-public class AndroidHapticService : IHapticService
+public class AndroidHapticService(Context context) : IHapticService
 {
-    private readonly Vibrator? _vibrator;
+    private readonly Vibrator? _vibrator = context.GetSystemService(Context.VibratorService) as Vibrator;
 
     public bool IsSupported => _vibrator?.HasVibrator == true;
-
-    public AndroidHapticService(Context context)
-    {
-        _vibrator = context.GetSystemService(Context.VibratorService) as Vibrator;
-    }
 
     public void Emit(HapticFeedback feedback)
     {

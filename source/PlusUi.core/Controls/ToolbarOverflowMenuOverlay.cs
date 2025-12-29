@@ -7,7 +7,7 @@ namespace PlusUi.core;
 /// <summary>
 /// Overlay element that renders the toolbar overflow menu above all page content.
 /// </summary>
-internal class ToolbarOverflowMenuOverlay : UiElement, IDismissableOverlay
+internal class ToolbarOverflowMenuOverlay(Toolbar toolbar) : UiElement, IDismissableOverlay
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -15,22 +15,16 @@ internal class ToolbarOverflowMenuOverlay : UiElement, IDismissableOverlay
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Menu;
 
-    private readonly Toolbar _toolbar;
     private SKRect _menuRect;
     private bool _measured;
 
-    public ToolbarOverflowMenuOverlay(Toolbar toolbar)
-    {
-        _toolbar = toolbar;
-    }
-
     public override void Render(SKCanvas canvas)
     {
-        if (_toolbar._overflowMenuContent == null || !_toolbar._isOverflowMenuOpen || _toolbar._overflowButton == null)
+        if (toolbar._overflowMenuContent == null || !toolbar._isOverflowMenuOpen || toolbar._overflowButton == null)
             return;
 
-        var menuContent = _toolbar._overflowMenuContent;
-        var button = _toolbar._overflowButton;
+        var menuContent = toolbar._overflowMenuContent;
+        var button = toolbar._overflowButton;
 
         // Calculate menu width based on button width
         var menuWidth = Math.Max(150, button.ElementSize.Width * 4);
@@ -45,8 +39,8 @@ internal class ToolbarOverflowMenuOverlay : UiElement, IDismissableOverlay
         }
 
         // Calculate button's visual position (accounting for scroll via Toolbar's VisualOffset)
-        var buttonVisualX = button.Position.X + _toolbar.VisualOffset.X;
-        var buttonVisualY = button.Position.Y + _toolbar.VisualOffset.Y;
+        var buttonVisualX = button.Position.X + toolbar.VisualOffset.X;
+        var buttonVisualY = button.Position.Y + toolbar.VisualOffset.Y;
         var buttonBottom = buttonVisualY + button.ElementSize.Height;
         var buttonTop = buttonVisualY;
 
@@ -95,7 +89,7 @@ internal class ToolbarOverflowMenuOverlay : UiElement, IDismissableOverlay
         // Draw background
         using var bgPaint = new SKPaint
         {
-            Color = _toolbar.OverflowMenuBackground,
+            Color = toolbar.OverflowMenuBackground,
             IsAntialias = true
         };
         canvas.DrawRoundRect(_menuRect, 4, 4, bgPaint);
@@ -106,7 +100,7 @@ internal class ToolbarOverflowMenuOverlay : UiElement, IDismissableOverlay
 
     public override UiElement? HitTest(Point point)
     {
-        if (_toolbar._overflowMenuContent == null || !_toolbar._isOverflowMenuOpen)
+        if (toolbar._overflowMenuContent == null || !toolbar._isOverflowMenuOpen)
             return null;
 
         // Check if point is within menu bounds
@@ -114,7 +108,7 @@ internal class ToolbarOverflowMenuOverlay : UiElement, IDismissableOverlay
             point.Y >= _menuRect.Top && point.Y <= _menuRect.Bottom)
         {
             // Delegate to the menu content for button hit testing
-            return _toolbar._overflowMenuContent.HitTest(point) ?? this;
+            return toolbar._overflowMenuContent.HitTest(point) ?? this;
         }
 
         return null;
@@ -122,7 +116,7 @@ internal class ToolbarOverflowMenuOverlay : UiElement, IDismissableOverlay
 
     public void Dismiss()
     {
-        _toolbar.CloseOverflowMenu();
+        toolbar.CloseOverflowMenu();
         _measured = false;
     }
 }

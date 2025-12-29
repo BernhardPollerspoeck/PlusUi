@@ -6,19 +6,11 @@ using System.Reflection;
 
 namespace PlusUi.core.Services;
 
-public class FontRegistryService : IFontRegistryService
+public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontRegistryService>? logger = null) : IFontRegistryService
 {
     private readonly ConcurrentDictionary<string, SKTypeface> _fontCache = new();
     private bool _initialized = false;
     private readonly object _initLock = new();
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<FontRegistryService>? _logger;
-
-    public FontRegistryService(IServiceProvider serviceProvider, ILogger<FontRegistryService>? logger = null)
-    {
-        _serviceProvider = serviceProvider;
-        _logger = logger;
-    }
 
     private void EnsureInitialized()
     {
@@ -29,7 +21,7 @@ public class FontRegistryService : IFontRegistryService
             if (_initialized) return;
 
             // Load all registered fonts
-            var registrations = _serviceProvider.GetServices<IFontRegistration>();
+            var registrations = serviceProvider.GetServices<IFontRegistration>();
             foreach (var registration in registrations)
             {
                 RegisterFont(registration.ResourcePath, registration.FontFamily, registration.FontWeight, registration.FontStyle);
@@ -48,16 +40,16 @@ public class FontRegistryService : IFontRegistryService
             {
                 var key = GetFontKey(fontFamily, fontWeight, fontStyle);
                 _fontCache[key] = typeface;
-                _logger?.LogDebug("Registered font: {FontFamily} {FontWeight} {FontStyle}", fontFamily, fontWeight, fontStyle);
+                logger?.LogDebug("Registered font: {FontFamily} {FontWeight} {FontStyle}", fontFamily, fontWeight, fontStyle);
             }
             else
             {
-                _logger?.LogWarning("Failed to create typeface from stream for font: {FontFamily} {FontWeight} {FontStyle}", fontFamily, fontWeight, fontStyle);
+                logger?.LogWarning("Failed to create typeface from stream for font: {FontFamily} {FontWeight} {FontStyle}", fontFamily, fontWeight, fontStyle);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error registering font from stream: {FontFamily} {FontWeight} {FontStyle}", fontFamily, fontWeight, fontStyle);
+            logger?.LogError(ex, "Error registering font from stream: {FontFamily} {FontWeight} {FontStyle}", fontFamily, fontWeight, fontStyle);
         }
     }
 
@@ -73,12 +65,12 @@ public class FontRegistryService : IFontRegistryService
             }
             else
             {
-                _logger?.LogWarning("Font resource not found: {ResourcePath} in assembly {AssemblyName}", resourcePath, assembly.GetName().Name);
+                logger?.LogWarning("Font resource not found: {ResourcePath} in assembly {AssemblyName}", resourcePath, assembly.GetName().Name);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error registering font from resource: {ResourcePath} {FontFamily} {FontWeight} {FontStyle}", resourcePath, fontFamily, fontWeight, fontStyle);
+            logger?.LogError(ex, "Error registering font from resource: {ResourcePath} {FontFamily} {FontWeight} {FontStyle}", resourcePath, fontFamily, fontWeight, fontStyle);
         }
     }
 

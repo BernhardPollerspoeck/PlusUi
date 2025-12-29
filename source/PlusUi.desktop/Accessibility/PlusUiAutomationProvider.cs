@@ -8,16 +8,10 @@ namespace PlusUi.desktop.Accessibility;
 /// Implements the UIA provider pattern for individual elements.
 /// </summary>
 [SupportedOSPlatform("windows")]
-internal sealed class PlusUiAutomationProvider
+internal sealed class PlusUiAutomationProvider(UiElement element, IntPtr windowHandle)
 {
-    public UiElement Element { get; }
-    public IntPtr WindowHandle { get; }
-
-    public PlusUiAutomationProvider(UiElement element, IntPtr windowHandle)
-    {
-        Element = element;
-        WindowHandle = windowHandle;
-    }
+    public UiElement Element { get; } = element;
+    public IntPtr WindowHandle { get; } = windowHandle;
 
     /// <summary>
     /// Gets the UIA control type for this element's accessibility role.

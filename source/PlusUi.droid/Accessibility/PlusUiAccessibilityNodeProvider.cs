@@ -6,17 +6,9 @@ namespace PlusUi.droid.Accessibility;
 /// <summary>
 /// Provides virtual accessibility nodes for PlusUi elements.
 /// </summary>
-public sealed class PlusUiAccessibilityNodeProvider : AccessibilityNodeProvider
+public sealed class PlusUiAccessibilityNodeProvider(Android.Views.View hostView, Func<UiElement?> rootProvider) : AccessibilityNodeProvider
 {
-    private readonly Android.Views.View _hostView;
-    private readonly Func<UiElement?> _rootProvider;
     private int _focusedVirtualViewId = Android.Views.View.NoId;
-
-    public PlusUiAccessibilityNodeProvider(Android.Views.View hostView, Func<UiElement?> rootProvider)
-    {
-        _hostView = hostView;
-        _rootProvider = rootProvider;
-    }
 
     public void NotifyFocusChanged(int virtualViewId)
     {
@@ -33,14 +25,14 @@ public sealed class PlusUiAccessibilityNodeProvider : AccessibilityNodeProvider
         if (virtualViewId == Android.Views.View.NoId)
         {
             // Return info for the host view itself
-            var rootInfo = AccessibilityNodeInfo.Obtain(_hostView);
+            var rootInfo = AccessibilityNodeInfo.Obtain(hostView);
             if (rootInfo != null)
             {
-                _hostView.OnInitializeAccessibilityNodeInfo(rootInfo);
+                hostView.OnInitializeAccessibilityNodeInfo(rootInfo);
                 rootInfo.ClassName = "android.view.ViewGroup";
 
                 // Add children from root element
-                var root = _rootProvider();
+                var root = rootProvider();
                 if (root != null)
                 {
                     AddVirtualChildren(rootInfo, root);
@@ -61,7 +53,7 @@ public sealed class PlusUiAccessibilityNodeProvider : AccessibilityNodeProvider
 
     public AccessibilityNodeInfo? CreateAccessibilityNodeInfo(UiElement element)
     {
-        var info = AccessibilityNodeInfo.Obtain(_hostView, element.GetHashCode());
+        var info = AccessibilityNodeInfo.Obtain(hostView, element.GetHashCode());
         if (info == null)
         {
             return null;
@@ -149,7 +141,7 @@ public sealed class PlusUiAccessibilityNodeProvider : AccessibilityNodeProvider
         // Add this element as a virtual child if it's an accessibility element
         if (parent.IsAccessibilityElement && parent.IsVisible)
         {
-            parentInfo.AddChild(_hostView, parent.GetHashCode());
+            parentInfo.AddChild(hostView, parent.GetHashCode());
         }
 
         // Recursively add children
@@ -164,7 +156,7 @@ public sealed class PlusUiAccessibilityNodeProvider : AccessibilityNodeProvider
 
     private UiElement? FindElementByVirtualId(int virtualViewId)
     {
-        var root = _rootProvider();
+        var root = rootProvider();
         if (root == null)
         {
             return null;

@@ -8,9 +8,8 @@ namespace PlusUi.core;
 /// Provides scale factor to the command.
 /// </summary>
 [GenerateShadowMethods]
-public partial class PinchGestureDetector : GestureDetector<PinchGestureDetector>, IPinchGestureControl
+public partial class PinchGestureDetector(UiElement content) : GestureDetector<PinchGestureDetector>(content), IPinchGestureControl
 {
-    public PinchGestureDetector(UiElement content) : base(content) { }
 
     #region Command
     public ICommand? PinchCommand { get; private set; }

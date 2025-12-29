@@ -3,9 +3,8 @@ namespace PlusUi.core;
 /// <summary>
 /// Service that manages tooltip display, timing, and lifecycle.
 /// </summary>
-public class TooltipService : ITooltipService, IDisposable
+public class TooltipService(IOverlayService overlayService) : ITooltipService, IDisposable
 {
-    private readonly IOverlayService _overlayService;
     private readonly object _lock = new();
 
     private Timer? _showTimer;
@@ -13,11 +12,6 @@ public class TooltipService : ITooltipService, IDisposable
     private TooltipOverlay? _currentOverlay;
     private UiElement? _currentTargetElement;
     private bool _disposed;
-
-    public TooltipService(IOverlayService overlayService)
-    {
-        _overlayService = overlayService;
-    }
 
     public void OnHoverEnter(UiElement? element)
     {
@@ -124,7 +118,7 @@ public class TooltipService : ITooltipService, IDisposable
                 // Create and register overlay
                 newOverlay = new TooltipOverlay(element, tooltip);
                 _currentOverlay = newOverlay;
-                _overlayService.RegisterOverlay(_currentOverlay);
+                overlayService.RegisterOverlay(_currentOverlay);
             }
         }
         catch
@@ -154,7 +148,7 @@ public class TooltipService : ITooltipService, IDisposable
             {
                 try
                 {
-                    _overlayService.UnregisterOverlay(_currentOverlay);
+                    overlayService.UnregisterOverlay(_currentOverlay);
                 }
                 finally
                 {

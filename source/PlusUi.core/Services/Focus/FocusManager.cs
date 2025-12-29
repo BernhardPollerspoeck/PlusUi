@@ -3,11 +3,14 @@ namespace PlusUi.core.Services.Focus;
 /// <summary>
 /// Manages keyboard focus across UI elements.
 /// </summary>
-public class FocusManager : IFocusManager
+/// <remarks>
+/// Initializes a new instance of the <see cref="FocusManager"/> class.
+/// </remarks>
+public class FocusManager(
+    NavigationContainer navigationContainer,
+    PlusUiPopupService popupService,
+    OverlayService overlayService) : IFocusManager
 {
-    private readonly NavigationContainer _navigationContainer;
-    private readonly PlusUiPopupService _popupService;
-    private readonly OverlayService _overlayService;
     private IFocusable? _focusedElement;
 
     /// <inheritdoc />
@@ -15,19 +18,6 @@ public class FocusManager : IFocusManager
 
     /// <inheritdoc />
     public event EventHandler<FocusChangedEventArgs>? FocusChanged;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FocusManager"/> class.
-    /// </summary>
-    public FocusManager(
-        NavigationContainer navigationContainer,
-        PlusUiPopupService popupService,
-        OverlayService overlayService)
-    {
-        _navigationContainer = navigationContainer;
-        _popupService = popupService;
-        _overlayService = overlayService;
-    }
 
     /// <inheritdoc />
     public void SetFocus(IFocusable? element)
@@ -162,7 +152,7 @@ public class FocusManager : IFocusManager
         var containers = new List<UiLayoutElement>();
 
         // Check popup first
-        var currentPopup = _popupService.CurrentPopup;
+        var currentPopup = popupService.CurrentPopup;
         if (currentPopup != null)
         {
             CollectLandmarkContainers(currentPopup, containers);
@@ -173,7 +163,7 @@ public class FocusManager : IFocusManager
         }
 
         // Then check page
-        CollectLandmarkContainers(_navigationContainer.CurrentPage, containers);
+        CollectLandmarkContainers(navigationContainer.CurrentPage, containers);
 
         return containers;
     }
@@ -281,7 +271,7 @@ public class FocusManager : IFocusManager
         var elements = new List<IFocusable>();
 
         // Check overlays first (top-most)
-        foreach (var overlay in _overlayService.Overlays)
+        foreach (var overlay in overlayService.Overlays)
         {
             CollectFocusableElements(overlay, elements);
         }
@@ -293,7 +283,7 @@ public class FocusManager : IFocusManager
         }
 
         // Then check popup
-        var currentPopup = _popupService.CurrentPopup;
+        var currentPopup = popupService.CurrentPopup;
         if (currentPopup != null)
         {
             CollectFocusableElements(currentPopup, elements);
@@ -316,7 +306,7 @@ public class FocusManager : IFocusManager
         }
 
         // Finally check page
-        CollectFocusableElements(_navigationContainer.CurrentPage, elements);
+        CollectFocusableElements(navigationContainer.CurrentPage, elements);
 
         return SortByTabIndex(elements);
     }

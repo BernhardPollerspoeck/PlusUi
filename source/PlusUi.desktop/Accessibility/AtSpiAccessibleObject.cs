@@ -8,14 +8,9 @@ namespace PlusUi.desktop.Accessibility;
 /// Implements the org.a11y.atspi.Accessible interface.
 /// </summary>
 [SupportedOSPlatform("linux")]
-internal sealed class AtSpiAccessibleObject
+internal sealed class AtSpiAccessibleObject(UiElement element)
 {
-    public UiElement Element { get; }
-
-    public AtSpiAccessibleObject(UiElement element)
-    {
-        Element = element;
-    }
+    public UiElement Element { get; } = element;
 
     /// <summary>
     /// Gets the accessible name.

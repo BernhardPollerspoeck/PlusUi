@@ -8,9 +8,8 @@ namespace PlusUi.core;
 /// Supports filtering by allowed directions.
 /// </summary>
 [GenerateShadowMethods]
-public partial class SwipeGestureDetector : GestureDetector<SwipeGestureDetector>, ISwipeGestureControl
+public partial class SwipeGestureDetector(UiElement content) : GestureDetector<SwipeGestureDetector>(content), ISwipeGestureControl
 {
-    public SwipeGestureDetector(UiElement content) : base(content) { }
 
     #region Command
     public ICommand? SwipeCommand { get; private set; }

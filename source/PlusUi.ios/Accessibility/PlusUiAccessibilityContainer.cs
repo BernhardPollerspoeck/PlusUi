@@ -6,18 +6,10 @@ namespace PlusUi.ios.Accessibility;
 /// <summary>
 /// Container that provides accessibility elements for PlusUi elements.
 /// </summary>
-public sealed class PlusUiAccessibilityContainer
+public sealed class PlusUiAccessibilityContainer(UIView hostView, Func<UiElement?> rootProvider)
 {
-    private readonly UIView _hostView;
-    private readonly Func<UiElement?> _rootProvider;
     private readonly Dictionary<int, PlusUiAccessibilityElement> _elementCache = new();
     private List<UIAccessibilityElement>? _cachedElements;
-
-    public PlusUiAccessibilityContainer(UIView hostView, Func<UiElement?> rootProvider)
-    {
-        _hostView = hostView;
-        _rootProvider = rootProvider;
-    }
 
     public void InvalidateAccessibilityElements()
     {
@@ -30,7 +22,7 @@ public sealed class PlusUiAccessibilityContainer
         var hashCode = element.GetHashCode();
         if (!_elementCache.TryGetValue(hashCode, out var accessibilityElement))
         {
-            accessibilityElement = new PlusUiAccessibilityElement(_hostView, element);
+            accessibilityElement = new PlusUiAccessibilityElement(hostView, element);
             _elementCache[hashCode] = accessibilityElement;
         }
         return accessibilityElement;
@@ -44,7 +36,7 @@ public sealed class PlusUiAccessibilityContainer
         }
 
         var elements = new List<UIAccessibilityElement>();
-        var root = _rootProvider();
+        var root = rootProvider();
         if (root != null)
         {
             CollectAccessibilityElements(root, elements);

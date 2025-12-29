@@ -7,9 +7,8 @@ namespace PlusUi.core;
 /// Detects long press gestures on the wrapped content.
 /// </summary>
 [GenerateShadowMethods]
-public partial class LongPressGestureDetector : GestureDetector<LongPressGestureDetector>, ILongPressGestureControl
+public partial class LongPressGestureDetector(UiElement content) : GestureDetector<LongPressGestureDetector>(content), ILongPressGestureControl
 {
-    public LongPressGestureDetector(UiElement content) : base(content) { }
 
     #region Command
     public ICommand? LongPressCommand { get; private set; }

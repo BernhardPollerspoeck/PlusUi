@@ -6,15 +6,13 @@ namespace PlusUi.core;
 /// <summary>
 /// Calendar overlay for DatePicker with month/year navigation.
 /// </summary>
-internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissableOverlay
+internal class DatePickerCalendarOverlay(DatePicker datePicker) : UiElement, IInputControl, IDismissableOverlay
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
 
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Container;
-
-    private readonly DatePicker _datePicker;
 
     // Layout constants
     private const float HeaderHeight = 40f;
@@ -28,7 +26,10 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
     internal static readonly float CalendarWidth = DayCellSize * DaysInWeek + CalendarPadding * 2;
 
     // Current view state
-    internal DateOnly DisplayedMonth { get; set; }
+    internal DateOnly DisplayedMonth { get; set; } = new DateOnly(
+            datePicker.SelectedDate?.Year ?? DateTime.Today.Year,
+            datePicker.SelectedDate?.Month ?? DateTime.Today.Month,
+            1);
 
     // Hit testing results
     private int _hitDayIndex = -1;
@@ -40,47 +41,38 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
     // Hover tracking
     internal int _hoveredDayIndex = -1;
 
-    public DatePickerCalendarOverlay(DatePicker datePicker)
-    {
-        _datePicker = datePicker;
-        DisplayedMonth = new DateOnly(
-            datePicker.SelectedDate?.Year ?? DateTime.Today.Year,
-            datePicker.SelectedDate?.Month ?? DateTime.Today.Month,
-            1);
-    }
-
     public override void Render(SKCanvas canvas)
     {
-        if (!_datePicker.IsOpen) return;
+        if (!datePicker.IsOpen) return;
 
         var calendarHeight = CalculateCalendarHeight();
-        var calendarRect = _datePicker.GetCalendarRect(CalendarWidth, calendarHeight);
+        var calendarRect = datePicker.GetCalendarRect(CalendarWidth, calendarHeight);
 
         // Draw background
         using var bgPaint = new SKPaint
         {
-            Color = _datePicker.CalendarBackground,
+            Color = datePicker.CalendarBackground,
             IsAntialias = true,
             Style = SKPaintStyle.Fill
         };
-        canvas.DrawRoundRect(calendarRect, _datePicker.CornerRadius, _datePicker.CornerRadius, bgPaint);
+        canvas.DrawRoundRect(calendarRect, datePicker.CornerRadius, datePicker.CornerRadius, bgPaint);
 
         // Draw border
         using var borderPaint = new SKPaint
         {
-            Color = _datePicker.TextColor,
+            Color = datePicker.TextColor,
             IsAntialias = true,
             Style = SKPaintStyle.Stroke,
             StrokeWidth = 1
         };
-        canvas.DrawRoundRect(calendarRect, _datePicker.CornerRadius, _datePicker.CornerRadius, borderPaint);
+        canvas.DrawRoundRect(calendarRect, datePicker.CornerRadius, datePicker.CornerRadius, borderPaint);
 
         // Render calendar content
         RenderHeader(canvas, calendarRect);
         RenderDayHeaders(canvas, calendarRect);
         RenderDays(canvas, calendarRect);
 
-        if (_datePicker.ShowTodayButton)
+        if (datePicker.ShowTodayButton)
         {
             RenderTodayButton(canvas, calendarRect);
         }
@@ -89,7 +81,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
     private float CalculateCalendarHeight()
     {
         var height = HeaderHeight + DayHeaderHeight + (MaxWeeksShown * DayCellSize) + CalendarPadding * 2;
-        if (_datePicker.ShowTodayButton)
+        if (datePicker.ShowTodayButton)
         {
             height += TodayButtonHeight;
         }
@@ -104,12 +96,12 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
         // Month/Year text
         var monthYearText = DisplayedMonth.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
 
-        _datePicker.Font.GetFontMetrics(out var fontMetrics);
+        datePicker.Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         using var textPaint = new SKPaint
         {
-            Color = _datePicker.TextColor,
+            Color = datePicker.TextColor,
             IsAntialias = true
         };
 
@@ -118,7 +110,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
             calendarRect.Left + CalendarWidth / 2,
             headerCenterY + textHeight / 2 - fontMetrics.Descent,
             SKTextAlign.Center,
-            _datePicker.Font,
+            datePicker.Font,
             textPaint);
 
         // Navigation arrows
@@ -130,7 +122,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
     {
         using var arrowPaint = new SKPaint
         {
-            Color = _datePicker.TextColor,
+            Color = datePicker.TextColor,
             IsAntialias = true,
             Style = SKPaintStyle.Fill
         };
@@ -166,7 +158,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
             IsAntialias = true
         };
 
-        _datePicker.Font.GetFontMetrics(out var fontMetrics);
+        datePicker.Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         for (int i = 0; i < DaysInWeek; i++)
@@ -180,7 +172,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
                 cellCenterX,
                 cellCenterY + textHeight / 2 - fontMetrics.Descent,
                 SKTextAlign.Center,
-                _datePicker.Font,
+                datePicker.Font,
                 headerPaint);
         }
     }
@@ -189,7 +181,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
     {
         var culture = CultureInfo.CurrentCulture;
         var dayNames = new string[7];
-        var startDay = _datePicker.WeekStart == DayOfWeekStart.Monday ? DayOfWeek.Monday : DayOfWeek.Sunday;
+        var startDay = datePicker.WeekStart == DayOfWeekStart.Monday ? DayOfWeek.Monday : DayOfWeek.Sunday;
 
         for (int i = 0; i < 7; i++)
         {
@@ -207,7 +199,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
         var daysInMonth = DateTime.DaysInMonth(DisplayedMonth.Year, DisplayedMonth.Month);
 
         // Calculate starting position based on day of week
-        var startDayOfWeek = _datePicker.WeekStart == DayOfWeekStart.Monday
+        var startDayOfWeek = datePicker.WeekStart == DayOfWeekStart.Monday
             ? ((int)firstDayOfMonth.DayOfWeek + 6) % 7
             : (int)firstDayOfMonth.DayOfWeek;
 
@@ -215,7 +207,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
 
         using var dayPaint = new SKPaint
         {
-            Color = _datePicker.TextColor,
+            Color = datePicker.TextColor,
             IsAntialias = true
         };
 
@@ -225,7 +217,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
             IsAntialias = true
         };
 
-        _datePicker.Font.GetFontMetrics(out var fontMetrics);
+        datePicker.Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         for (int day = 1; day <= daysInMonth; day++)
@@ -239,17 +231,17 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
             var cellY = daysStartY + (row * DayCellSize);
             var cellRect = new SKRect(cellX, cellY, cellX + DayCellSize, cellY + DayCellSize);
 
-            var isSelected = _datePicker.SelectedDate == currentDate;
+            var isSelected = datePicker.SelectedDate == currentDate;
             var isToday = currentDate == today;
             var isHovered = dayIndex == _hoveredDayIndex;
-            var isSelectable = _datePicker.IsDateInRange(currentDate);
+            var isSelectable = datePicker.IsDateInRange(currentDate);
 
             // Background for selected/hovered day
             if (isSelected)
             {
                 using var selectedPaint = new SKPaint
                 {
-                    Color = _datePicker.SelectedBackground,
+                    Color = datePicker.SelectedBackground,
                     IsAntialias = true,
                     Style = SKPaintStyle.Fill
                 };
@@ -259,7 +251,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
             {
                 using var hoverPaint = new SKPaint
                 {
-                    Color = _datePicker.HoverBackground,
+                    Color = datePicker.HoverBackground,
                     IsAntialias = true,
                     Style = SKPaintStyle.Fill
                 };
@@ -271,7 +263,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
             {
                 using var todayPaint = new SKPaint
                 {
-                    Color = _datePicker.TodayBorderColor,
+                    Color = datePicker.TodayBorderColor,
                     IsAntialias = true,
                     Style = SKPaintStyle.Stroke,
                     StrokeWidth = 1.5f
@@ -287,7 +279,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
                 cellX + DayCellSize / 2,
                 cellY + DayCellSize / 2 + textHeight / 2 - fontMetrics.Descent,
                 SKTextAlign.Center,
-                _datePicker.Font,
+                datePicker.Font,
                 paint);
         }
     }
@@ -303,7 +295,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
 
         using var buttonPaint = new SKPaint
         {
-            Color = _datePicker.HoverBackground,
+            Color = datePicker.HoverBackground,
             IsAntialias = true,
             Style = SKPaintStyle.Fill
         };
@@ -311,11 +303,11 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
 
         using var textPaint = new SKPaint
         {
-            Color = _datePicker.TextColor,
+            Color = datePicker.TextColor,
             IsAntialias = true
         };
 
-        _datePicker.Font.GetFontMetrics(out var fontMetrics);
+        datePicker.Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         canvas.DrawText(
@@ -323,18 +315,18 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
             buttonRect.MidX,
             buttonRect.MidY + textHeight / 2 - fontMetrics.Descent,
             SKTextAlign.Center,
-            _datePicker.Font,
+            datePicker.Font,
             textPaint);
     }
 
     public override UiElement? HitTest(Point point)
     {
-        if (!_datePicker.IsOpen) return null;
+        if (!datePicker.IsOpen) return null;
 
         ResetHitState();
 
         var calendarHeight = CalculateCalendarHeight();
-        var calendarRect = _datePicker.GetCalendarRect(CalendarWidth, calendarHeight);
+        var calendarRect = datePicker.GetCalendarRect(CalendarWidth, calendarHeight);
 
         // Check if inside calendar
         if (point.X >= calendarRect.Left && point.X <= calendarRect.Right &&
@@ -360,7 +352,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
             }
 
             // Check Today button
-            if (_datePicker.ShowTodayButton)
+            if (datePicker.ShowTodayButton)
             {
                 var buttonY = calendarRect.Bottom - TodayButtonHeight - CalendarPadding;
                 if (point.Y >= buttonY && point.Y <= buttonY + TodayButtonHeight)
@@ -402,8 +394,8 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
         _hoveredDayIndex = -1;
 
         // Check if on DatePicker itself
-        if (point.X >= _datePicker.Position.X && point.X <= _datePicker.Position.X + _datePicker.ElementSize.Width &&
-            point.Y >= _datePicker.Position.Y && point.Y <= _datePicker.Position.Y + _datePicker.ElementSize.Height)
+        if (point.X >= datePicker.Position.X && point.X <= datePicker.Position.X + datePicker.ElementSize.Width &&
+            point.Y >= datePicker.Position.Y && point.Y <= datePicker.Position.Y + datePicker.ElementSize.Height)
         {
             _hitOnDatePicker = true;
             return this;
@@ -426,7 +418,7 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
         var firstDayOfMonth = new DateOnly(DisplayedMonth.Year, DisplayedMonth.Month, 1);
         var daysInMonth = DateTime.DaysInMonth(DisplayedMonth.Year, DisplayedMonth.Month);
 
-        var startDayOfWeek = _datePicker.WeekStart == DayOfWeekStart.Monday
+        var startDayOfWeek = datePicker.WeekStart == DayOfWeekStart.Monday
             ? ((int)firstDayOfMonth.DayOfWeek + 6) % 7
             : (int)firstDayOfMonth.DayOfWeek;
 
@@ -461,10 +453,10 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
         if (_hitTodayButton)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
-            if (_datePicker.IsDateInRange(today))
+            if (datePicker.IsDateInRange(today))
             {
-                _datePicker.SetSelectedDate(today);
-                _datePicker.InvokeSetters();
+                datePicker.SetSelectedDate(today);
+                datePicker.InvokeSetters();
             }
             Dismiss();
             return;
@@ -476,10 +468,10 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
             if (day.HasValue)
             {
                 var selectedDate = new DateOnly(DisplayedMonth.Year, DisplayedMonth.Month, day.Value);
-                if (_datePicker.IsDateInRange(selectedDate))
+                if (datePicker.IsDateInRange(selectedDate))
                 {
-                    _datePicker.SetSelectedDate(selectedDate);
-                    _datePicker.InvokeSetters();
+                    datePicker.SetSelectedDate(selectedDate);
+                    datePicker.InvokeSetters();
                     Dismiss();
                 }
             }
@@ -488,6 +480,6 @@ internal class DatePickerCalendarOverlay : UiElement, IInputControl, IDismissabl
 
     public void Dismiss()
     {
-        _datePicker.SetIsOpen(false);
+        datePicker.SetIsOpen(false);
     }
 }

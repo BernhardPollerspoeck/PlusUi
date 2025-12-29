@@ -5,10 +5,8 @@ using PlusUi.core;
 
 namespace Sandbox.Pages.AccessibilityDemo;
 
-public class AccessibilityDemoPageViewModel : INotifyPropertyChanged
+public class AccessibilityDemoPageViewModel(INavigationService navigationService) : INotifyPropertyChanged
 {
-    private readonly INavigationService _navigationService;
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private bool _isChecked;
@@ -29,11 +27,6 @@ public class AccessibilityDemoPageViewModel : INotifyPropertyChanged
         "Belgien",
         "Polen"
     ];
-
-    public AccessibilityDemoPageViewModel(INavigationService navigationService)
-    {
-        _navigationService = navigationService;
-    }
 
     public bool IsChecked
     {
@@ -59,7 +52,7 @@ public class AccessibilityDemoPageViewModel : INotifyPropertyChanged
         set { _lastAction = value; OnPropertyChanged(); }
     }
 
-    public ICommand GoBackCommand => new RelayCommand(() => _navigationService.GoBack());
+    public ICommand GoBackCommand => new RelayCommand(() => navigationService.GoBack());
     public ICommand ButtonCommand => new RelayCommand(() => LastAction = "Button geklickt!");
 
     protected void OnPropertyChanged([CallerMemberName] string? name = null)
