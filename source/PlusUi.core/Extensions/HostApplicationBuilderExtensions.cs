@@ -38,6 +38,7 @@ public static class HostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IFontRegistryService, FontRegistryService>();
         builder.Services.AddSingleton<IImageLoaderService, ImageLoaderService>();
+        builder.Services.AddSingleton<IImageExportService, ImageExportService>();
 
         builder.Services.AddSingleton(sp => TimeProvider.System);
         builder.Services.AddSingleton<PlusUiPopupService>();

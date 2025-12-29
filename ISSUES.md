@@ -12,9 +12,6 @@
 ### Daten-Controls
 27. Weitere DataGrid Column-Typen fehlen (z.B. ComboBox, DatePicker)
 
-### Druck & Export
-38. Export zu Bildern fehlt
-
 ---
 
 ## Dokumentation
@@ -32,7 +29,6 @@
 
 | Kategorie | Anzahl |
 |-----------|--------|
-| Fehlende Features | 5 |
-| Architektur-Probleme | 1 |
+| Fehlende Features | 4 |
 | Dokumentation | 6 |
-| **Gesamt** | **12** |
+| **Gesamt** | **10** |

@@ -23,6 +23,7 @@ using Sandbox.Pages.GestureDemo;
 using Sandbox.Pages.DataGridDemo;
 using Sandbox.Pages.TreeViewDemo;
 using Sandbox.Pages.MenuDemo;
+using Sandbox.Pages.ImageExportDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -338,7 +339,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     .SetPadding(new(20, 5))
                     .SetBackground(new SolidColorBackground(new Color(52, 120, 246)))
                     .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(MenuDemoPage))
+                    .SetCommandParameter(typeof(MenuDemoPage)),
+                new Button()
+                    .SetText("Image Export Demo")
+                    .SetPadding(new(20, 5))
+                    .SetBackground(new SolidColorBackground(new Color(255, 140, 0)))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(ImageExportDemoPage))
             ).SetMargin(new Margin(20, 0, 0, 0))
         );
     }
