@@ -4,7 +4,6 @@
 
 ### Layout-Controls
 12. WrapPanel fehlt (automatisches Umbrechen von Elementen)
-16. UniformGrid fehlt
 
 ### Daten-Controls
 27. Weitere DataGrid Column-Typen fehlen (z.B. ComboBox, DatePicker)
@@ -26,6 +25,6 @@
 
 | Kategorie | Anzahl |
 |-----------|--------|
-| Fehlende Features | 3 |
+| Fehlende Features | 2 |
 | Dokumentation | 6 |
-| **Gesamt** | **9** |
+| **Gesamt** | **8** |

@@ -20,18 +20,34 @@ public abstract class GestureDetector<T> : UiLayoutElement where T : GestureDete
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        Content.Measure(availableSize, dontStretch);
-        return Content.ElementSize;
+        // Content gets available size minus our margin
+        var contentAvailable = new Size(
+            Math.Max(0, availableSize.Width - Margin.Horizontal),
+            Math.Max(0, availableSize.Height - Margin.Vertical));
+        Content.Measure(contentAvailable, dontStretch);
+        return new Size(
+            Content.ElementSize.Width + Margin.Horizontal,
+            Content.ElementSize.Height + Margin.Vertical);
     }
 
     protected override Point ArrangeInternal(Rect bounds)
     {
-        Content.Arrange(bounds);
-        return new Point(bounds.X, bounds.Y);
+        // Let base handle our positioning (respects alignment and margin)
+        var position = base.ArrangeInternal(bounds);
+
+        // Content fills our entire element area (no additional margin between us and content)
+        var contentBounds = new Rect(
+            position.X,
+            position.Y,
+            ElementSize.Width,
+            ElementSize.Height);
+        Content.Arrange(contentBounds);
+
+        return position;
     }
 
     public override void Render(SKCanvas canvas)
     {
-        Content.Render(canvas);
+        base.Render(canvas);
     }
 }

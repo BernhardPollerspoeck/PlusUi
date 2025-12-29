@@ -130,7 +130,15 @@ public partial class Border : UiLayoutElement
 
     internal override Size? DesiredSize
     {
-        get => this.Children.FirstOrDefault()?.DesiredSize ?? field;
+        get
+        {
+            // Don't inherit child's DesiredSize when Border has Stretch alignment
+            if (field is not null)
+                return field;
+            if (HorizontalAlignment == HorizontalAlignment.Stretch || VerticalAlignment == VerticalAlignment.Stretch)
+                return null;
+            return this.Children.FirstOrDefault()?.DesiredSize;
+        }
         set
         {
             field = value;

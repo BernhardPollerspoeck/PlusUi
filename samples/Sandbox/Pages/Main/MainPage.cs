@@ -25,6 +25,7 @@ using Sandbox.Pages.TreeViewDemo;
 using Sandbox.Pages.MenuDemo;
 using Sandbox.Pages.ImageExportDemo;
 using Sandbox.Pages.SvgDemo;
+using Sandbox.Pages.UniformGridDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -352,7 +353,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     .SetPadding(new(20, 5))
                     .SetBackground(new SolidColorBackground(new Color(0, 191, 255)))
                     .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(SvgDemoPage))
+                    .SetCommandParameter(typeof(SvgDemoPage)),
+                new Button()
+                    .SetText("UniformGrid Demo")
+                    .SetPadding(new(20, 5))
+                    .SetBackground(new SolidColorBackground(new Color(138, 43, 226)))
+                    .SetCommand(vm.NavigateCommand)
+                    .SetCommandParameter(typeof(UniformGridDemoPage))
             ).SetMargin(new Margin(20, 0, 0, 0))
         );
     }
