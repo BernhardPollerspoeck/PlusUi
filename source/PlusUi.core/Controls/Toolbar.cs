@@ -238,7 +238,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         {
             field = value;
             _imageLoaderService ??= ServiceProviderService.ServiceProvider?.GetRequiredService<IImageLoaderService>();
-            var (staticImage, _) = _imageLoaderService?.LoadImage(value, OnOverflowIconLoadedFromWeb, null) ?? (default, default);
+            var (staticImage, _, _) = _imageLoaderService?.LoadImage(value, OnOverflowIconLoadedFromWeb, null, null) ?? (default, default, default);
             _overflowIconImage = staticImage;
             InvalidateMeasure();
         }

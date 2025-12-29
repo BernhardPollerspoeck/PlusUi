@@ -61,18 +61,26 @@ public partial class Image : UiElement
             StopAnimation();
 
             _imageLoaderService ??= ServiceProviderService.ServiceProvider?.GetRequiredService<IImageLoaderService>();
-            var (staticImage, animatedImage) = _imageLoaderService?.LoadImage(value, OnImageLoadedFromWeb, OnAnimatedImageLoadedFromWeb) ?? (default, default);
+            var (staticImage, animatedImage, svgImage) = _imageLoaderService?.LoadImage(value, OnImageLoadedFromWeb, OnAnimatedImageLoadedFromWeb, OnSvgImageLoadedFromWeb) ?? (default, default, default);
 
-            if (animatedImage != null)
+            if (svgImage != null)
+            {
+                _svgImageInfo = svgImage;
+                _image = null;
+                _animatedImageInfo = null;
+            }
+            else if (animatedImage != null)
             {
                 _animatedImageInfo = animatedImage;
                 _image = null;
+                _svgImageInfo = null;
                 StartAnimation();
             }
             else
             {
                 _image = staticImage;
                 _animatedImageInfo = null;
+                _svgImageInfo = null;
             }
 
             // Force re-render when image source changes
@@ -116,6 +124,9 @@ public partial class Image : UiElement
     #region render cache and animation
     private SKImage? _image;
     private AnimatedImageInfo? _animatedImageInfo;
+    private SvgImageInfo? _svgImageInfo;
+    private SKImage? _renderedSvgImage;
+    private Size _lastSvgRenderSize;
     private int _currentFrameIndex = 0;
     private System.Threading.Timer? _animationTimer;
 
@@ -127,6 +138,7 @@ public partial class Image : UiElement
             StopAnimation();
             _image = image;
             _animatedImageInfo = null;
+            _svgImageInfo = null;
 
             // Trigger UI update
             InvalidateMeasure();
@@ -141,7 +153,24 @@ public partial class Image : UiElement
             StopAnimation();
             _animatedImageInfo = animatedImage;
             _image = null;
+            _svgImageInfo = null;
             StartAnimation();
+
+            // Trigger UI update
+            InvalidateMeasure();
+        }
+    }
+
+    private void OnSvgImageLoadedFromWeb(SvgImageInfo? svgImage)
+    {
+        // Update the SVG image if this is still the active source
+        if (svgImage != null)
+        {
+            StopAnimation();
+            _svgImageInfo = svgImage;
+            _image = null;
+            _animatedImageInfo = null;
+            _renderedSvgImage = null;
 
             // Trigger UI update
             InvalidateMeasure();
@@ -193,8 +222,33 @@ public partial class Image : UiElement
         {
             StopAnimation();
             _animatedImageInfo?.Dispose();
+            _svgImageInfo?.Dispose();
+            _renderedSvgImage?.Dispose();
         }
         base.Dispose(disposing);
+    }
+    #endregion
+
+    #region TintColor
+    internal Color? TintColor { get; set; }
+
+    public Image SetTintColor(Color tintColor)
+    {
+        TintColor = tintColor;
+        _renderedSvgImage = null; // Force re-render with new tint
+        InvalidateMeasure();
+        return this;
+    }
+
+    public Image BindTintColor(string propertyName, Func<Color?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () =>
+        {
+            TintColor = propertyGetter();
+            _renderedSvgImage = null;
+            InvalidateMeasure();
+        });
+        return this;
     }
     #endregion
 
@@ -209,8 +263,20 @@ public partial class Image : UiElement
 
         SKImage? imageToRender = null;
 
-        // Determine which image to render (static or current animation frame)
-        if (_animatedImageInfo != null && _animatedImageInfo.FrameCount > 0)
+        // Determine which image to render (SVG, animation frame, or static)
+        if (_svgImageInfo != null)
+        {
+            // For SVG, render at the current element size for best quality
+            var targetSize = new Size(ElementSize.Width, ElementSize.Height);
+            if (_renderedSvgImage == null || Math.Abs(_lastSvgRenderSize.Width - targetSize.Width) > 0.1f || Math.Abs(_lastSvgRenderSize.Height - targetSize.Height) > 0.1f)
+            {
+                _renderedSvgImage?.Dispose();
+                _renderedSvgImage = _svgImageInfo.RenderToImage(targetSize.Width, targetSize.Height, TintColor);
+                _lastSvgRenderSize = targetSize;
+            }
+            imageToRender = _renderedSvgImage;
+        }
+        else if (_animatedImageInfo != null && _animatedImageInfo.FrameCount > 0)
         {
             imageToRender = _animatedImageInfo.Frames[_currentFrameIndex];
         }

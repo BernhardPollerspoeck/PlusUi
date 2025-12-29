@@ -26,6 +26,7 @@ using Sandbox.Pages.DataGridDemo;
 using Sandbox.Pages.TreeViewDemo;
 using Sandbox.Pages.MenuDemo;
 using Sandbox.Pages.ImageExportDemo;
+using Sandbox.Pages.SvgDemo;
 using Sandbox.Popups;
 using Sandbox.Services;
 
@@ -79,6 +80,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<TreeViewDemoPage>().WithViewModel<TreeViewDemoPageViewModel>();
         builder.AddPage<MenuDemoPage>().WithViewModel<MenuDemoPageViewModel>();
         builder.AddPage<ImageExportDemoPage>().WithViewModel<ImageExportDemoPageViewModel>();
+        builder.AddPage<SvgDemoPage>().WithViewModel<SvgDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 

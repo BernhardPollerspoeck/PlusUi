@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.Models;
 using SkiaSharp;
 using System.Windows.Input;
 
@@ -125,10 +126,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         set
         {
             field = value;
-            // For button icons, we only support static images (no animation)
+            // For button icons, we support static images and SVGs
             _imageLoaderService ??= ServiceProviderService.ServiceProvider?.GetRequiredService<IImageLoaderService>();
-            var (staticImage, _) = _imageLoaderService?.LoadImage(value, OnIconLoadedFromWeb, null) ?? (default, default);
+            var (staticImage, _, svgImage) = _imageLoaderService?.LoadImage(value, OnIconLoadedFromWeb, null, OnSvgIconLoadedFromWeb) ?? (default, default, default);
             _iconImage = staticImage;
+            _iconSvgImage = svgImage;
             InvalidateMeasure();
         }
     }
@@ -168,15 +170,52 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
 
     #region Icon rendering cache
     private SKImage? _iconImage;
+    private SvgImageInfo? _iconSvgImage;
+    private SKImage? _renderedIconSvg;
+    private float _lastIconSvgSize;
 
     private void OnIconLoadedFromWeb(SKImage? image)
     {
-        // Update the icon if this is still the active icon source
         if (image != null)
         {
             _iconImage = image;
+            _iconSvgImage = null;
             InvalidateMeasure();
         }
+    }
+
+    private void OnSvgIconLoadedFromWeb(SvgImageInfo? svgImage)
+    {
+        if (svgImage != null)
+        {
+            _iconSvgImage = svgImage;
+            _iconImage = null;
+            _renderedIconSvg = null;
+            InvalidateMeasure();
+        }
+    }
+    #endregion
+
+    #region IconTintColor
+    internal Color? IconTintColor { get; set; }
+
+    public Button SetIconTintColor(Color tintColor)
+    {
+        IconTintColor = tintColor;
+        _renderedIconSvg = null;
+        InvalidateMeasure();
+        return this;
+    }
+
+    public Button BindIconTintColor(string propertyName, Func<Color?> propertyGetter)
+    {
+        RegisterBinding(propertyName, () =>
+        {
+            IconTintColor = propertyGetter();
+            _renderedIconSvg = null;
+            InvalidateMeasure();
+        });
+        return this;
     }
     #endregion
 
@@ -249,10 +288,24 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
 
         // Calculate icon sizes and spacing
         var hasText = !string.IsNullOrEmpty(Text);
-        var hasLeadingIcon = _iconImage != null && IconPosition.HasFlag(IconPosition.Leading);
-        var hasTrailingIcon = _iconImage != null && IconPosition.HasFlag(IconPosition.Trailing);
+        var hasIcon = _iconImage != null || _iconSvgImage != null;
+        var hasLeadingIcon = hasIcon && IconPosition.HasFlag(IconPosition.Leading);
+        var hasTrailingIcon = hasIcon && IconPosition.HasFlag(IconPosition.Trailing);
         var iconSize = TextSize; // Icon size matches text size
         var iconSpacing = hasText ? 8f : 0f; // Spacing between icon and text
+
+        // Render SVG icon at correct size if needed
+        SKImage? iconToRender = _iconImage;
+        if (_iconSvgImage != null)
+        {
+            if (_renderedIconSvg == null || Math.Abs(_lastIconSvgSize - iconSize) > 0.1f)
+            {
+                _renderedIconSvg?.Dispose();
+                _renderedIconSvg = _iconSvgImage.RenderToImage(iconSize, iconSize, IconTintColor);
+                _lastIconSvgSize = iconSize;
+            }
+            iconToRender = _renderedIconSvg;
+        }
 
         // Calculate total content width
         var textWidth = hasText ? Font.MeasureText(Text!) : 0f;
@@ -266,7 +319,7 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         var centerY = textRect.MidY;
 
         // Render leading icon
-        if (hasLeadingIcon)
+        if (hasLeadingIcon && iconToRender != null)
         {
             var iconRect = new SKRect(
                 currentX,
@@ -274,7 +327,7 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
                 currentX + iconSize,
                 centerY + iconSize / 2);
             var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear);
-            canvas.DrawImage(_iconImage, iconRect, samplingOptions);
+            canvas.DrawImage(iconToRender, iconRect, samplingOptions);
             currentX += iconSize + iconSpacing;
         }
 
@@ -294,7 +347,7 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         }
 
         // Render trailing icon
-        if (hasTrailingIcon)
+        if (hasTrailingIcon && iconToRender != null)
         {
             var iconRect = new SKRect(
                 currentX,
@@ -302,15 +355,16 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
                 currentX + iconSize,
                 centerY + iconSize / 2);
             var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear);
-            canvas.DrawImage(_iconImage, iconRect, samplingOptions);
+            canvas.DrawImage(iconToRender, iconRect, samplingOptions);
         }
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         var hasText = !string.IsNullOrEmpty(Text);
-        var hasLeadingIcon = _iconImage != null && IconPosition.HasFlag(IconPosition.Leading);
-        var hasTrailingIcon = _iconImage != null && IconPosition.HasFlag(IconPosition.Trailing);
+        var hasIcon = _iconImage != null || _iconSvgImage != null;
+        var hasLeadingIcon = hasIcon && IconPosition.HasFlag(IconPosition.Leading);
+        var hasTrailingIcon = hasIcon && IconPosition.HasFlag(IconPosition.Trailing);
 
         var textWidth = hasText ? Font.MeasureText(Text!) : 0f;
         Font.GetFontMetrics(out var fontMetrics);
