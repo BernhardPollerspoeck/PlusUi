@@ -6,7 +6,7 @@ on:
       version:
         description: "Version (e.g., 1.2.3.4)"
         required: true
-        default: "1.0.0.0"
+        default: "10.0.0.0"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,20 +27,20 @@ jobs:
         dotnet-version: '10.0.x'
         dotnet-quality: 'preview'
 
+    - name: Install workloads
+      run: dotnet workload install android ios wasm-tools
+
     - name: Set VERSION variable from input
       run: echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-    
+
     - name: Restore
-      run: dotnet restore nuget.sln -f
-    
+      run: dotnet restore PlusUi.sln
+
     - name: Build
-      run: dotnet build nuget.sln --no-restore --configuration Release /p:Version=${VERSION}
-    
-    - name: Build Source Generator
-      run: dotnet build source/PlusUi.SourceGenerators/PlusUi.SourceGenerators.csproj --no-restore --configuration Release
-    
+      run: dotnet build PlusUi.sln --no-restore --configuration Release /p:Version=${VERSION}
+
     - name: Pack
-      run: dotnet pack nuget.sln --no-build --no-restore --configuration Release /p:Version=${VERSION} --output .
+      run: dotnet pack PlusUi.sln --no-build --no-restore --configuration Release /p:Version=${VERSION} --output .
     
     - name: Push
       run: dotnet nuget push **.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate

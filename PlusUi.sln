@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0_Solution Items", "0_Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.github\workflows\ci.yml = .github\workflows\ci.yml
 		CLAUDE.md = CLAUDE.md
 		.github\copilot-instructions.md = .github\copilot-instructions.md
 		.github\workflows\main.yml = .github\workflows\main.yml
@@ -49,6 +50,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Web", "source\PlusUi.Web\PlusUi.Web.csproj", "{2927AFDB-B5DD-695F-EFC1-D144737AF6D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Headless", "source\PlusUi.Headless\PlusUi.Headless.csproj", "{C1A2B3D4-5E6F-7890-ABCD-EF1234567890}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Templates", "templates\PlusUi.Templates.csproj", "{B5C6D7E8-9F01-2345-6789-ABCDEF012345}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -120,6 +123,10 @@ Global
 		{C1A2B3D4-5E6F-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1A2B3D4-5E6F-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1A2B3D4-5E6F-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5C6D7E8-9F01-2345-6789-ABCDEF012345}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5C6D7E8-9F01-2345-6789-ABCDEF012345}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5C6D7E8-9F01-2345-6789-ABCDEF012345}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5C6D7E8-9F01-2345-6789-ABCDEF012345}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
