@@ -1,15 +1,7 @@
 # PlusUi - Offene Punkte
 
-## Fehlende Features
-
 ### Text-Rendering
 15. Label: Text-Clipping fehlt - Text geht über Element-Bounds hinaus und überlappt andere Controls (Rendering sollte an Bounds abgeschnitten werden)
-
-### Sonstiges
-13. Dotnet 10
-14. CI Unittests
----
-
 ## Dokumentation
 
 62. Plattform-Support-Matrix nicht dokumentiert
@@ -23,6 +15,5 @@
 
 | Kategorie | Anzahl |
 |-----------|--------|
-| Fehlende Features | 3 |
 | Dokumentation | 4 |
-| **Gesamt** | **7** |
+| **Gesamt** | **4** |

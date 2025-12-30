@@ -22,7 +22,7 @@ dotnet test PlusUi.sln --filter "FullyQualifiedName~PlusUi.core.Tests.LabelTests
 - **Naming**: PascalCase for types, methods, and properties; camelCase for local variables and parameters
 - **Nullable**: Enable nullable reference types (`<Nullable>enable</Nullable>`)
 - **Language**: Use latest C# features (`<LangVersion>latest</LangVersion>` or `<LangVersion>preview</LangVersion>`)
-- **Framework**: Target .NET 9.0
+- **Framework**: Target .NET 10.0
 - **Primary Constructors**: Use primary constructors for DI and initialization. Parameters are directly accessible in the class body - no extra fields required
 - **Styles**: Fluent API style with builder pattern (method chaining)
 - **UI Components**: Follow the pattern of exposing properties with internal setters and public fluent Set* methods

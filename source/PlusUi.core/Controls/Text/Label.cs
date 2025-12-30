@@ -46,6 +46,15 @@ public partial class Label : UiTextElement
             return;
         }
 
+        // Clip to element bounds to prevent text from spilling into other controls
+        var clipRect = new SKRect(
+            Position.X + VisualOffset.X,
+            Position.Y + VisualOffset.Y,
+            Position.X + VisualOffset.X + ElementSize.Width,
+            Position.Y + VisualOffset.Y + ElementSize.Height);
+        canvas.Save();
+        canvas.ClipRect(clipRect);
+
         Font.GetFontMetrics(out var fontMetrics);
         var lineHeight = fontMetrics.Descent - fontMetrics.Ascent;
         var text = Text ?? string.Empty;
@@ -54,7 +63,7 @@ public partial class Label : UiTextElement
         {
             // Single line rendering with optional truncation
             var truncatedText = ApplyTruncation(text, ElementSize.Width);
-            
+
             // Calculate X position based on text alignment
             var x = HorizontalTextAlignment switch
             {
@@ -62,7 +71,7 @@ public partial class Label : UiTextElement
                 HorizontalTextAlignment.Right => Position.X + VisualOffset.X + ElementSize.Width,
                 _ => Position.X + VisualOffset.X
             };
-            
+
             canvas.DrawText(
                 truncatedText,
                 x,
@@ -75,12 +84,12 @@ public partial class Label : UiTextElement
         {
             // Multi-line rendering with wrapping
             var lines = WrapText(text, ElementSize.Width);
-            
+
             // Apply MaxLines if set
             if (MaxLines.HasValue && lines.Count > MaxLines.Value)
             {
                 lines = lines.Take(MaxLines.Value).ToList();
-                
+
                 // Apply truncation to the last line if needed
                 if (TextTruncation != TextTruncation.None && lines.Count > 0)
                 {
@@ -99,7 +108,7 @@ public partial class Label : UiTextElement
                     HorizontalTextAlignment.Right => Position.X + VisualOffset.X + ElementSize.Width,
                     _ => Position.X + VisualOffset.X
                 };
-                
+
                 canvas.DrawText(
                     line,
                     x,
@@ -110,6 +119,8 @@ public partial class Label : UiTextElement
                 y += lineHeight;
             }
         }
+
+        canvas.Restore();
     }
 
     #endregion
