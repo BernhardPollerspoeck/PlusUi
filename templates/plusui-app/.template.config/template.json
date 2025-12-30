@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "PlusUi",
+  "classifications": ["Desktop", "Mobile", "Cross-Platform", "UI"],
+  "identity": "PlusUi.App",
+  "name": "PlusUi Application",
+  "shortName": "plusui",
+  "description": "A cross-platform PlusUi application with platform-specific projects",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "PlusUiApp",
+  "preferNameDirectory": true,
+  "symbols": {
+    "Desktop": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "displayName": "Desktop (Windows, Linux, macOS)",
+      "description": "Include a Desktop project for Windows, Linux and macOS"
+    },
+    "Android": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "displayName": "Android",
+      "description": "Include an Android project"
+    },
+    "iOS": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "displayName": "iOS",
+      "description": "Include an iOS project"
+    },
+    "Framework": {
+      "type": "parameter",
+      "displayName": "Target Framework",
+      "description": "The target framework for the project",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net10.0",
+          "description": ".NET 10"
+        },
+        {
+          "choice": "net9.0",
+          "description": ".NET 9"
+        }
+      ],
+      "replaces": "net10.0",
+      "defaultValue": "net10.0"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!Desktop)",
+          "exclude": ["PlusUiApp.Desktop/**/*"]
+        },
+        {
+          "condition": "(!Android)",
+          "exclude": ["PlusUiApp.Android/**/*"]
+        },
+        {
+          "condition": "(!iOS)",
+          "exclude": ["PlusUiApp.iOS/**/*"]
+        }
+      ]
+    }
+  ],
+  "primaryOutputs": [
+    {
+      "path": "PlusUiApp.sln"
+    }
+  ]
+}

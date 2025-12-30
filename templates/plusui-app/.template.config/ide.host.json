@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json.schemastore.org/vs-2017.3.host",
+  "order": 0,
+  "icon": "icon.png",
+  "symbolInfo": [
+    {
+      "id": "Desktop",
+      "name": {
+        "text": "Desktop (Windows, Linux, macOS)"
+      },
+      "description": {
+        "text": "Include a Desktop project for Windows, Linux and macOS"
+      },
+      "isVisible": true
+    },
+    {
+      "id": "Android",
+      "name": {
+        "text": "Android"
+      },
+      "description": {
+        "text": "Include an Android project"
+      },
+      "isVisible": true
+    },
+    {
+      "id": "iOS",
+      "name": {
+        "text": "iOS"
+      },
+      "description": {
+        "text": "Include an iOS project"
+      },
+      "isVisible": true
+    },
+    {
+      "id": "Framework",
+      "name": {
+        "text": "Target Framework"
+      },
+      "isVisible": true
+    }
+  ]
+}
