@@ -1,0 +1,45 @@
+<Project>
+
+  <!-- Common SDK/Compiler Settings -->
+  <PropertyGroup>
+    <LangVersion>preview</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- Common NuGet Package Metadata -->
+  <PropertyGroup>
+    <Authors>Bernhard Pollerspöck</Authors>
+    <Company>PlusUi</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
+  </PropertyGroup>
+
+  <!-- Centralized Package Versions -->
+  <PropertyGroup>
+    <!-- SkiaSharp -->
+    <SkiaSharpVersion>3.119.1</SkiaSharpVersion>
+
+    <!-- Silk.NET -->
+    <SilkNetVersion>2.22.0</SilkNetVersion>
+
+    <!-- Microsoft Extensions -->
+    <MicrosoftExtensionsHostingVersion>10.0.0-*</MicrosoftExtensionsHostingVersion>
+    <MicrosoftAspNetCoreComponentsVersion>10.0.0-*</MicrosoftAspNetCoreComponentsVersion>
+
+    <!-- Roslyn/CodeAnalysis -->
+    <MicrosoftCodeAnalysisVersion>4.14.0</MicrosoftCodeAnalysisVersion>
+    <MicrosoftCodeAnalysisAnalyzersVersion>3.11.0</MicrosoftCodeAnalysisAnalyzersVersion>
+
+    <!-- Testing -->
+    <MicrosoftNETTestSdkVersion>18.0.0</MicrosoftNETTestSdkVersion>
+    <MSTestVersion>4.0.1</MSTestVersion>
+
+    <!-- Other -->
+    <SvgSkiaVersion>2.0.0.4</SvgSkiaVersion>
+    <FFMpegCoreVersion>5.3.0</FFMpegCoreVersion>
+    <SpectreConsoleVersion>0.53.0</SpectreConsoleVersion>
+  </PropertyGroup>
+
+</Project>

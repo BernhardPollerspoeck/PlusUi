@@ -1,21 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-android</TargetFramework>
-    <LangVersion>preview</LangVersion>
     <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
     <IsTrimmable>true</IsTrimmable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>PlusUi.droid</PackageId>
-    <Authors>Bernhard Pollerspoeck</Authors>
-    <Company>PlusUi</Company>
     <Product>PlusUi.droid</Product>
     <Description>The Android PlusUi Package</Description>
     <PackageTags>PlusUi;UiFramework;Android;Skiasharp</PackageTags>
-    <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
     <PackageIcon>plusui.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
@@ -24,8 +16,9 @@
     <None Include="..\..\gfx\plusui.png" Link="plusui.png" Pack="true" PackagePath="plusui.png" />
     <None Include="..\..\README.md" Link="readme.md" Pack="true" PackagePath="readme.md" />
   </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="Silk.NET.OpenGL" Version="2.22.0" />
+    <PackageReference Include="Silk.NET.OpenGL" Version="$(SilkNetVersion)" />
   </ItemGroup>
 
   <ItemGroup>

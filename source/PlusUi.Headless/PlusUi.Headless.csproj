@@ -2,19 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>PlusUi.headless</PackageId>
-    <Authors>Bernhard Pollerspoeck</Authors>
-    <Company>PlusUi</Company>
     <Product>PlusUi.headless</Product>
     <Description>The Headless PlusUi Package for testing and screenshots</Description>
     <PackageTags>PlusUi;UiFramework;Headless;Testing;Skiasharp</PackageTags>
-    <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
     <PackageIcon>plusui.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
@@ -25,14 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Core Framework -->
     <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />
-
-    <!-- SkiaSharp für CPU-basiertes Rendering -->
-    <PackageReference Include="SkiaSharp" Version="3.119.1" />
-
-    <!-- Microsoft Hosting -->
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0-*" />
+    <PackageReference Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsHostingVersion)" />
   </ItemGroup>
 
 </Project>

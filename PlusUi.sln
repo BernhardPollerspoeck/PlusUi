@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0_Solution Items", "0_Solut
 		.github\workflows\ci.yml = .github\workflows\ci.yml
 		CLAUDE.md = CLAUDE.md
 		.github\copilot-instructions.md = .github\copilot-instructions.md
+		Directory.Build.props = Directory.Build.props
 		.github\workflows\main.yml = .github\workflows\main.yml
 		README.md = README.md
 	EndProjectSection
@@ -74,17 +75,13 @@ Global
 		{0E36168E-6AFF-4A5D-B871-7EC9CE8797E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0E36168E-6AFF-4A5D-B871-7EC9CE8797E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E36168E-6AFF-4A5D-B871-7EC9CE8797E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E36168E-6AFF-4A5D-B871-7EC9CE8797E6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{81D9EBC3-0A38-4647-8EFB-9CDFA2EB6033}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{81D9EBC3-0A38-4647-8EFB-9CDFA2EB6033}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81D9EBC3-0A38-4647-8EFB-9CDFA2EB6033}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81D9EBC3-0A38-4647-8EFB-9CDFA2EB6033}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ABDB8E7D-DDE7-45A0-A20A-6EAE66E7C72E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ABDB8E7D-DDE7-45A0-A20A-6EAE66E7C72E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABDB8E7D-DDE7-45A0-A20A-6EAE66E7C72E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{ABDB8E7D-DDE7-45A0-A20A-6EAE66E7C72E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABDB8E7D-DDE7-45A0-A20A-6EAE66E7C72E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ABDB8E7D-DDE7-45A0-A20A-6EAE66E7C72E}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{84849601-1348-4C5E-B654-9A984A08E62E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{84849601-1348-4C5E-B654-9A984A08E62E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84849601-1348-4C5E-B654-9A984A08E62E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -93,8 +90,6 @@ Global
 		{BFF236E5-6FA1-4A70-90AD-A0C9609FE29B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFF236E5-6FA1-4A70-90AD-A0C9609FE29B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{BFF236E5-6FA1-4A70-90AD-A0C9609FE29B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BFF236E5-6FA1-4A70-90AD-A0C9609FE29B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BFF236E5-6FA1-4A70-90AD-A0C9609FE29B}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{FD4CEB9D-0EC5-49E1-B37D-C1170E581842}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FD4CEB9D-0EC5-49E1-B37D-C1170E581842}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD4CEB9D-0EC5-49E1-B37D-C1170E581842}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -102,11 +97,9 @@ Global
 		{7AB3027C-DDFB-4781-9D97-CDA6A204DC42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7AB3027C-DDFB-4781-9D97-CDA6A204DC42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AB3027C-DDFB-4781-9D97-CDA6A204DC42}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7AB3027C-DDFB-4781-9D97-CDA6A204DC42}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D5E6F7A8-9B0C-1D2E-3F4A-5B6C7D8E9F0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D5E6F7A8-9B0C-1D2E-3F4A-5B6C7D8E9F0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5E6F7A8-9B0C-1D2E-3F4A-5B6C7D8E9F0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5E6F7A8-9B0C-1D2E-3F4A-5B6C7D8E9F0A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2B71706-0A48-42C1-AFC0-6D850EA76F3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2B71706-0A48-42C1-AFC0-6D850EA76F3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2B71706-0A48-42C1-AFC0-6D850EA76F3D}.Release|Any CPU.ActiveCfg = Release|Any CPU

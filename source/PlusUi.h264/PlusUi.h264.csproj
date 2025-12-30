@@ -2,19 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>preview</LangVersion>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>PlusUi.h264</PackageId>
-    <Authors>Bernhard Pollerspöck</Authors>
-    <Company>PlusUi</Company>
     <Product>PlusUi.h264</Product>
     <Description>The H264 Video Rendering PlusUi Package</Description>
     <PackageTags>PlusUi;UiFramework;Silk.net;Skiasharp;Video;H264;FFmpeg</PackageTags>
-    <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
     <PackageIcon>plusui.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
@@ -30,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0-*" />
-    <PackageReference Include="FFMpegCore" Version="5.3.0" />
-    <PackageReference Include="Spectre.Console" Version="0.53.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsHostingVersion)" />
+    <PackageReference Include="FFMpegCore" Version="$(FFMpegCoreVersion)" />
+    <PackageReference Include="Spectre.Console" Version="$(SpectreConsoleVersion)" />
   </ItemGroup>
   
   <!-- FFmpeg Binaries for Windows -->

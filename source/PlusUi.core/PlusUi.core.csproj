@@ -2,23 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>PlusUi.core</PackageId>
-    <Authors>Bernhard Pollerspöck</Authors>
-    <Company>PlusUi</Company>
     <Product>PlusUi.core</Product>
-    <Description>The Core PlusiUi Package</Description>
+    <Description>The Core PlusUi Package</Description>
     <PackageTags>PlusUi;UiFramework;Skiasharp</PackageTags>
-    <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
     <PackageIcon>plusui.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <InternalsVisibleTo Include="PlusUi.core.Tests" />
   </ItemGroup>
@@ -29,11 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0-*" />
-    <PackageReference Include="SkiaSharp" Version="3.119.1" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.1" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="3.119.1" />
-    <PackageReference Include="Svg.Skia" Version="2.0.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsHostingVersion)" />
+    <PackageReference Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="Svg.Skia" Version="$(SvgSkiaVersion)" />
   </ItemGroup>
 
   <!-- Development Reference to Source Generator -->
