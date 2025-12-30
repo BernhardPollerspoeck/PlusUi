@@ -2,9 +2,12 @@
 
 ## Fehlende Features
 
-### Layout-Controls
-12. WrapPanel fehlt (automatisches Umbrechen von Elementen)
+### Text-Rendering
+15. Label: Text-Clipping fehlt - Text geht über Element-Bounds hinaus und überlappt andere Controls (Rendering sollte an Bounds abgeschnitten werden)
 
+### Sonstiges
+13. Dotnet 10
+14. CI Unittests
 ---
 
 ## Dokumentation
@@ -20,6 +23,6 @@
 
 | Kategorie | Anzahl |
 |-----------|--------|
-| Fehlende Features | 1 |
+| Fehlende Features | 3 |
 | Dokumentation | 4 |
-| **Gesamt** | **5** |
+| **Gesamt** | **7** |

@@ -14,7 +14,7 @@ public abstract class UiElement : IDisposable
 
 
     protected virtual bool NeedsMeasure { get; set; } = true;
-    protected virtual bool NeedsArrange { get; set; } = true;
+    protected internal virtual bool NeedsArrange { get; set; } = true;
 
     #region Debug
     protected bool Debug { get; private set; }
@@ -906,7 +906,14 @@ public abstract class UiElement : IDisposable
     {
         if (NeedsMeasure || dontStretch)
         {
-            var measuredSize = MeasureInternal(availableSize, dontStretch);
+            // Constrain available size by DesiredSize before measuring children
+            // This ensures children know the actual available space for wrapping
+            var constrainedAvailable = new Size(
+                DesiredSize?.Width >= 0 ? Math.Min(DesiredSize.Value.Width, availableSize.Width) : availableSize.Width,
+                DesiredSize?.Height >= 0 ? Math.Min(DesiredSize.Value.Height, availableSize.Height) : availableSize.Height
+            );
+
+            var measuredSize = MeasureInternal(constrainedAvailable, dontStretch);
 
             // For width: Use DesiredSize if set, or stretch to available width if alignment is Stretch, otherwise use measured width
             var desiredWidth = DesiredSize?.Width >= 0

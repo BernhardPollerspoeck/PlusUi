@@ -26,6 +26,7 @@ using Sandbox.Pages.MenuDemo;
 using Sandbox.Pages.ImageExportDemo;
 using Sandbox.Pages.SvgDemo;
 using Sandbox.Pages.UniformGridDemo;
+using Sandbox.Pages.WrapDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -210,158 +211,157 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     private HStack CreateTestButtons()
     {
         return new HStack(
-            // Spalte 1
-            new VStack(
-                new Button()
-                    .SetText("New Controls Demo")
-                    .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new Color(52, 199, 89)))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(NewControlsDemoPage)),
-                new Button()
-                    .SetText("Go to Grid")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(ControlsGridPage)),
-                new Button()
-                    .SetText("Go to TextRendering")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(TextRenderPage)),
-                new Button()
-                    .SetText("Text Wrap & Truncation")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(TextWrapDemoPage)),
-                new Button()
-                    .SetText("Custom Font Demo")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(FontDemoPage)),
-                new Button()
-                    .SetText("Go to Form")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(FormDemoPage)),
-                new Button()
-                    .SetText("Go to Button Demo")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(ButtonDemoPage)),
-                new Button()
-                    .SetText("Go to Link Demo")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(LinkDemoPage)),
-                new Button()
-                    .SetText("Popup")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.PopupCommand),
-                new Button()
-                    .SetText("ScrollView Example")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(ScrollViewExamplePage))
-            ),
-
-            // Spalte 2
-            new VStack(
-                new Button()
-                    .SetText("ItemsList Example")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(ItemsListDemoPage)),
-                new Button()
-                    .SetText("Shadow Demo")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(ShadowDemoPage)),
-                new Button()
-                    .SetText("RawUserControl")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(RawUserControlPage)),
-                new Button()
-                    .SetText("BgTest Example")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(BgTestPage)),
-                new Button()
-                    .SetText("Toolbar Demo")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(ToolbarDemoPage)),
-                new Button()
-                    .SetText("ComboBox Demo")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(ComboBoxDemoPage)),
-                new Button()
-                    .SetText("DatePicker & TimePicker")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(DateTimePickerDemoPage)),
-                new Button()
-                    .SetText("RadioButton Demo")
-                    .SetPadding(new(20, 5))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(RadioButtonDemoPage)),
-                new Button()
-                    .SetText("Accessibility Demo")
-                    .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new Color(0, 122, 255)))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(AccessibilityDemoPage)),
-                new Button()
-                    .SetText("TabControl Demo")
-                    .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new Color(255, 149, 0)))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(TabControlDemoPage)),
-                new Button()
-                    .SetText("Gesture & Haptic Demo")
-                    .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new Color(175, 82, 222)))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(GestureDemoPage)),
-                new Button()
-                    .SetText("DataGrid Demo")
-                    .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new Color(255, 59, 48)))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(DataGridDemoPage)),
-                new Button()
-                    .SetText("TreeView Demo")
-                    .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new Color(88, 86, 214)))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(TreeViewDemoPage)),
-                new Button()
-                    .SetText("Menu Demo")
-                    .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new Color(52, 120, 246)))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(MenuDemoPage)),
-                new Button()
-                    .SetText("Image Export Demo")
-                    .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new Color(255, 140, 0)))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(ImageExportDemoPage)),
-                new Button()
-                    .SetText("SVG Demo")
-                    .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new Color(0, 191, 255)))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(SvgDemoPage)),
-                new Button()
-                    .SetText("UniformGrid Demo")
-                    .SetPadding(new(20, 5))
-                    .SetBackground(new SolidColorBackground(new Color(138, 43, 226)))
-                    .SetCommand(vm.NavigateCommand)
-                    .SetCommandParameter(typeof(UniformGridDemoPage))
-            ).SetMargin(new Margin(20, 0, 0, 0))
-        );
+            new Button()
+                .SetText("New Controls Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(52, 199, 89)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(NewControlsDemoPage)),
+            new Button()
+                .SetText("Go to Grid")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ControlsGridPage)),
+            new Button()
+                .SetText("Go to TextRendering")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(TextRenderPage)),
+            new Button()
+                .SetText("Text Wrap & Truncation")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(TextWrapDemoPage)),
+            new Button()
+                .SetText("Custom Font Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(FontDemoPage)),
+            new Button()
+                .SetText("Go to Form")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(FormDemoPage)),
+            new Button()
+                .SetText("Go to Button Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ButtonDemoPage)),
+            new Button()
+                .SetText("Go to Link Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(LinkDemoPage)),
+            new Button()
+                .SetText("Popup")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.PopupCommand),
+            new Button()
+                .SetText("ScrollView Example")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ScrollViewExamplePage)),
+            new Button()
+                .SetText("ItemsList Example")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ItemsListDemoPage)),
+            new Button()
+                .SetText("Shadow Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ShadowDemoPage)),
+            new Button()
+                .SetText("RawUserControl")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(RawUserControlPage)),
+            new Button()
+                .SetText("BgTest Example")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(BgTestPage)),
+            new Button()
+                .SetText("Toolbar Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ToolbarDemoPage)),
+            new Button()
+                .SetText("ComboBox Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ComboBoxDemoPage)),
+            new Button()
+                .SetText("DatePicker & TimePicker")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(DateTimePickerDemoPage)),
+            new Button()
+                .SetText("RadioButton Demo")
+                .SetPadding(new(20, 5))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(RadioButtonDemoPage)),
+            new Button()
+                .SetText("Accessibility Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(0, 122, 255)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(AccessibilityDemoPage)),
+            new Button()
+                .SetText("TabControl Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(255, 149, 0)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(TabControlDemoPage)),
+            new Button()
+                .SetText("Gesture & Haptic Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(175, 82, 222)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(GestureDemoPage)),
+            new Button()
+                .SetText("DataGrid Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(255, 59, 48)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(DataGridDemoPage)),
+            new Button()
+                .SetText("TreeView Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(88, 86, 214)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(TreeViewDemoPage)),
+            new Button()
+                .SetText("Menu Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(52, 120, 246)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(MenuDemoPage)),
+            new Button()
+                .SetText("Image Export Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(255, 140, 0)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(ImageExportDemoPage)),
+            new Button()
+                .SetText("SVG Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(0, 191, 255)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(SvgDemoPage)),
+            new Button()
+                .SetText("UniformGrid Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(138, 43, 226)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(UniformGridDemoPage)),
+            new Button()
+                .SetText("Wrap Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(50, 205, 50)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(WrapDemoPage))
+        ).SetWrap(true);
     }
 
     public override void Appearing()

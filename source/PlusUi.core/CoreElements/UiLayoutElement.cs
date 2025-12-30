@@ -136,6 +136,22 @@ public abstract class UiLayoutElement : UiElement
         InvalidateMeasure();
         return this;
     }
+
+    /// <summary>
+    /// Invalidates arrange on all children recursively.
+    /// Used when parent layout changes require children to be repositioned.
+    /// </summary>
+    protected void InvalidateArrangeChildren()
+    {
+        foreach (var child in Children)
+        {
+            child.NeedsArrange = true;
+            if (child is UiLayoutElement layoutChild)
+            {
+                layoutChild.InvalidateArrangeChildren();
+            }
+        }
+    }
     #endregion
 
     public override void BuildContent()
