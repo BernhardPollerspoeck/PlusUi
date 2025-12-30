@@ -226,6 +226,15 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
     }
     #endregion
 
+    /// <inheritdoc />
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
+    {
+        // Return available width (minus margin) and desired height so the control stretches properly
+        var height = DesiredSize?.Height ?? 30f;
+        var width = Math.Max(0, availableSize.Width - Margin.Horizontal);
+        return new Size(width, height);
+    }
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);

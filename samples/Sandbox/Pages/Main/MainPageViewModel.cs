@@ -55,7 +55,7 @@ public partial class MainPageViewModel(INavigationService navigationService, IPo
             onClosed: () => Color = Colors.Green,
             configure: cfg =>
             {
-                cfg.CloseOnBackgroundClick = false;
+                cfg.CloseOnBackgroundClick = true;
                 cfg.CloseOnEscape = true;
                 cfg.BackgroundColor = new Color(200, 0, 0, 220);
             });

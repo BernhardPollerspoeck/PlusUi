@@ -1087,7 +1087,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         foreach (var child in Children)
         {
             var hit = child.HitTest(point);
-            if (hit is IInputControl or ITextInputControl or IToggleButtonControl)
+            if (hit is IInputControl or ITextInputControl or IToggleButtonControl or IDraggableControl)
             {
                 _hoveredRowIndex = -1;
                 return hit;

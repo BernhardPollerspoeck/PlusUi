@@ -87,6 +87,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 
         builder.AddPopup<TestPopup>().WithViewModel<TestPopupViewModel>();
+        builder.AddPopup<PersonDetailsPopup>().WithViewModel<PersonDetailsPopupViewModel>();
     }
 
     public UiPageElement GetRootPage(IServiceProvider serviceProvider)

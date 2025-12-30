@@ -24,7 +24,7 @@ public abstract class UiPopupElement<TArgument>(INotifyPropertyChanged vm) : UiP
         }
     }
 }
-public abstract class UiPopupElement : UiElement
+public abstract class UiPopupElement : UiElement, IInputControl
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -112,12 +112,20 @@ public abstract class UiPopupElement : UiElement
         {
             return hitControl;
         }
+        // Return this (the popup background) so click can be handled by InvokeCommand
+        return CloseOnBackgroundClick ? this : null;
+    }
+
+    /// <summary>
+    /// Called when the popup background is clicked (if CloseOnBackgroundClick is true).
+    /// </summary>
+    public void InvokeCommand()
+    {
         if (CloseOnBackgroundClick)
         {
             var popupService = ServiceProviderService.ServiceProvider?.GetRequiredService<IPopupService>();
             popupService?.ClosePopup(false);
         }
-        return null;
     }
     public override void ApplyStyles()
     {
