@@ -21,10 +21,9 @@ namespace PlusUi.core;
 ///     protected override UiElement Build() =>
 ///         new VStack(
 ///             new Label().SetText(Name).SetFontWeight(FontWeight.Bold),
-///             new Label().SetText(Email).SetFontSize(12)
+///             new Label().SetText(Email).SetTextSize(12).SetMargin(new Margin(0, 4, 0, 0))
 ///         )
-///         .SetSpacing(4)
-///         .SetPadding(new Margin(12));
+///         .SetMargin(new Margin(12));
 /// }
 ///
 /// // Usage

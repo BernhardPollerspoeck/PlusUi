@@ -12,9 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0_Solution Items", "0_Solut
 		.editorconfig = .editorconfig
 		CLAUDE.md = CLAUDE.md
 		.github\copilot-instructions.md = .github\copilot-instructions.md
-		ISSUES.md = ISSUES.md
 		.github\workflows\main.yml = .github\workflows\main.yml
-		obj.log = obj.log
 		README.md = README.md
 	EndProjectSection
 EndProject

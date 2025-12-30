@@ -5,7 +5,24 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>preview</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>PlusUi.web</PackageId>
+    <Authors>Bernhard Pollerspoeck</Authors>
+    <Company>PlusUi</Company>
+    <Product>PlusUi.web</Product>
+    <Description>The Blazor WebAssembly PlusUi Package</Description>
+    <PackageTags>PlusUi;UiFramework;Blazor;WebAssembly;Skiasharp</PackageTags>
+    <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
+    <PackageIcon>plusui.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\gfx\plusui.png" Link="plusui.png" Pack="true" PackagePath="plusui.png" />
+    <None Include="..\..\README.md" Link="readme.md" Pack="true" PackagePath="readme.md" />
+  </ItemGroup>
 
   <ItemGroup>
     <!-- Blazor WebAssembly -->

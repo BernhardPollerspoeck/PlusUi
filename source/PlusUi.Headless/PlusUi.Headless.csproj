@@ -5,7 +5,24 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>PlusUi.headless</PackageId>
+    <Authors>Bernhard Pollerspoeck</Authors>
+    <Company>PlusUi</Company>
+    <Product>PlusUi.headless</Product>
+    <Description>The Headless PlusUi Package for testing and screenshots</Description>
+    <PackageTags>PlusUi;UiFramework;Headless;Testing;Skiasharp</PackageTags>
+    <RepositoryUrl>https://github.com/BernhardPollerspoeck/PlusUi</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/BernhardPollerspoeck/PlusUi</PackageProjectUrl>
+    <PackageIcon>plusui.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\gfx\plusui.png" Link="plusui.png" Pack="true" PackagePath="plusui.png" />
+    <None Include="..\..\README.md" Link="readme.md" Pack="true" PackagePath="readme.md" />
+  </ItemGroup>
 
   <ItemGroup>
     <!-- Core Framework -->
