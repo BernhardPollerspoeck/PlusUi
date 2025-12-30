@@ -9,8 +9,8 @@ on:
         default: "10.0.0.0"
 jobs:
   build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    runs-on: macos-latest
+    timeout-minutes: 20
     steps:
     
     - name: Checkout
