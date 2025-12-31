@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core;
 using Sandbox.Pages.BgTest;
 using Sandbox.Pages.ButtonDemo;
@@ -54,7 +53,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         //configuration.WindowBorder = Silk.NET.Windowing.WindowBorder.Hidden;
         //configuration.WindowState = Silk.NET.Windowing.WindowState.Maximized;
     }
-    public void ConfigureApp(HostApplicationBuilder builder)
+    public void ConfigureApp(IPlusUiAppBuilder builder)
     {
         builder.StylePlusUi<DefaultStyle>();
 

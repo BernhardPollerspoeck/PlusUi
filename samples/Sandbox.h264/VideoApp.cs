@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core;
 using PlusUi.h264;
 
 namespace Sandbox.h264;
 public class VideoApp : IVideoAppConfiguration
 {
-    public void ConfigureApp(HostApplicationBuilder builder)
+    public void ConfigureApp(IPlusUiAppBuilder builder)
     {
         builder.Services.AddSingleton<MainPageViewModel>();
         builder.Services.AddSingleton<MainPage>();

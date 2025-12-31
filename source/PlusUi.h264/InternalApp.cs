@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Hosting;
 using PlusUi.core;
 
 namespace PlusUi.h264;
 
 internal class InternalApp(IVideoAppConfiguration videoAppConfiguration) : IAppConfiguration
 {
-    public void ConfigureApp(HostApplicationBuilder builder)
+    public void ConfigureApp(IPlusUiAppBuilder builder)
     {
         videoAppConfiguration.ConfigureApp(builder);
     }

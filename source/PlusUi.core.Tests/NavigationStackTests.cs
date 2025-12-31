@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using System.ComponentModel;
 
@@ -81,7 +79,7 @@ public class NavigationStackTests
 
     private class TestAppConfiguration : IAppConfiguration
     {
-        public void ConfigureApp(HostApplicationBuilder builder)
+        public void ConfigureApp(IPlusUiAppBuilder builder)
         {
         }
 

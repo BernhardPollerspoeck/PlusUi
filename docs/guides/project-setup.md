@@ -23,7 +23,7 @@ public class App : IAppConfiguration
         // Window settings
     }
 
-    public void ConfigureApp(HostApplicationBuilder builder)
+    public void ConfigureApp(IPlusUiAppBuilder builder)
     {
         // Register pages, ViewModels, services
     }
@@ -70,7 +70,7 @@ public void ConfigureWindow(PlusUiConfiguration configuration)
 Register all your pages in `ConfigureApp`:
 
 ```csharp
-public void ConfigureApp(HostApplicationBuilder builder)
+public void ConfigureApp(IPlusUiAppBuilder builder)
 {
     // Register pages with their ViewModels
     builder.AddPage<MainPage>().WithViewModel<MainPageViewModel>();

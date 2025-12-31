@@ -69,7 +69,6 @@ Create a simple counter application:
 
 **App.cs**
 ```csharp
-using Microsoft.Extensions.Hosting;
 using PlusUi.core;
 
 namespace MyFirstApp;
@@ -82,7 +81,7 @@ public class App : IAppConfiguration
         config.Size = new SizeI(800, 600);
     }
 
-    public void ConfigureApp(HostApplicationBuilder builder)
+    public void ConfigureApp(IPlusUiAppBuilder builder)
     {
         // Register your pages
         builder.AddPage<MainPage>().WithViewModel<MainPageViewModel>();

@@ -7,6 +7,7 @@
 @inject RenderService RenderService
 @inject InputService InputService
 @inject NavigationContainer NavigationContainer
+@inject PlusUiNavigationService NavigationService
 @inject ILogger<PlusUiRootComponent> Logger
 
 <div class="plusui-container" @ref="_containerRef">
@@ -45,16 +46,19 @@
             // In a real implementation, you'd use JSInterop to get actual viewport size
             _width = 1920;  // Default size, will be updated on first paint
             _height = 1080;
-            
+
             // Set display density (for HiDPI screens)
             // In production, get this from JSInterop: window.devicePixelRatio
             RenderService.DisplayDensity = 1.0f;
-            
+
+            // Initialize navigation (loads root page)
+            NavigationService.Initialize();
+
             _isInitialized = true;
-            
+
             // Force initial render
             StateHasChanged();
-            
+
             Logger.LogInformation("PlusUi Web initialized with size {Width}x{Height}", _width, _height);
         }
         catch (Exception ex)
