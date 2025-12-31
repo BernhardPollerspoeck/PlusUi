@@ -16,6 +16,7 @@ In-depth guides for building great PlusUi applications.
 | [Project Setup](project-setup.html) | App configuration, DI, pages, navigation |
 | [Theming](theming.html) | Styles, colors, fonts, custom themes |
 | [Best Practices](best-practices.html) | Patterns, performance, do's and don'ts |
+| [Headless Mode](headless.html) | Automated testing, screenshots, CI/CD |
 
 ## Quick Tips
 

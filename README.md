@@ -16,7 +16,7 @@ A fully cross-platform UI Framework for .NET, delivering consistent user experie
 | Web | PlusUi.web | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.web.svg)](https://www.nuget.org/packages/PlusUi.web) |
 | iOS | PlusUi.ios | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.ios.svg)](https://www.nuget.org/packages/PlusUi.ios) |
 | Android | PlusUi.droid | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.droid.svg)](https://www.nuget.org/packages/PlusUi.droid) |
-| Headless | PlusUi.headless | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.headless.svg)](https://www.nuget.org/packages/PlusUi.headless) |
+| Headless | PlusUi.headless | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.headless.svg)](https://www.nuget.org/packages/PlusUi.headless) |
 | **Video Rendering** | **PlusUi.h264** | ✅ **Stable** | [![NuGet](https://img.shields.io/nuget/v/PlusUi.h264.svg)](https://www.nuget.org/packages/PlusUi.h264) |
 
 **Core Library:** [![NuGet](https://img.shields.io/nuget/v/PlusUi.core.svg)](https://www.nuget.org/packages/PlusUi.core) (Required by all platforms)

@@ -20,7 +20,7 @@ PlusUi supports multiple platforms through a single codebase.
 | Android | 🧪 Preview | API 21 (Android 5.0+) | `PlusUi.droid` |
 | iOS | 🧪 Preview | iOS 14.0+ | `PlusUi.ios` |
 | Web (Blazor) | 🧪 Preview | Modern browsers | `PlusUi.web` |
-| Headless | 🧪 Preview | .NET 10 | `PlusUi.headless` |
+| Headless | ✅ Stable | .NET 10 | `PlusUi.headless` |
 
 ---
 
