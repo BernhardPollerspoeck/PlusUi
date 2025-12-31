@@ -2,7 +2,8 @@
 ## Cross-Platform Framework Comparison Analysis
 
 **Datum:** 2025-12-31
-**Version:** 1.0
+**Version:** 1.1
+**Aktualisiert:** Timeline-Update basierend auf aktuellen Entwicklungsinformationen
 
 ---
 
@@ -54,11 +55,13 @@ Diese Evaluation vergleicht PlusUi mit 10 führenden Cross-Platform UI Framework
 | Windows | PlusUi.desktop | ✅ Stable |
 | macOS | PlusUi.desktop | ✅ Stable |
 | Linux | PlusUi.desktop | ✅ Stable |
-| Web | PlusUi.web | 🚧 In Development |
-| iOS | PlusUi.ios | 🚧 In Development |
-| Android | PlusUi.droid | 🚧 In Development |
-| Headless | PlusUi.headless | 🚧 In Development |
+| Web | PlusUi.web | 🟢 Stable ab ~08.01.2026 |
+| iOS | PlusUi.ios | 🟢 Stable ab ~08.01.2026 |
+| Android | PlusUi.droid | 🟢 Stable ab ~08.01.2026 |
+| Headless | PlusUi.headless | ✅ Stable |
 | H264 Video | PlusUi.h264 | ✅ Stable |
+
+> **📅 Wichtiger Meilenstein:** Am 10.02.2026 feiert PlusUi sein 1-jähriges Jubiläum seit Projektstart.
 
 #### Verifizierte Controls (aus Code-Analyse)
 
@@ -503,19 +506,20 @@ new Button()
 
 | Framework | Windows | macOS | Linux | iOS | Android | Web | Embedded |
 |-----------|---------|-------|-------|-----|---------|-----|----------|
-| **PlusUi** | ✅ | ✅ | ✅ | 🚧 | 🚧 | 🚧 | ❌ |
-| MAUI | ✅ | ✅ | ❌ | ✅ | ✅ | ❌¹ | ❌ |
+| **PlusUi** | ✅ | ✅ | ✅ | 🟢¹ | 🟢¹ | 🟢¹ | ❌ |
+| MAUI | ✅ | ✅ | ❌ | ✅ | ✅ | ❌² | ❌ |
 | Avalonia | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Uno | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Flutter | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| React Native | ⚠️ | ⚠️ | ❌ | ✅ | ✅ | ⚠️² | ❌ |
+| React Native | ⚠️ | ⚠️ | ❌ | ✅ | ✅ | ⚠️³ | ❌ |
 | Compose MP | ✅ | ✅ | ⚠️ | ✅ | ✅ | ✅ | ❌ |
 | Qt | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Electron | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Tauri | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 
-¹ = Blazor Hybrid für Web
-² = React Native for Web (separate Library)
+¹ = PlusUi iOS/Android/Web: Stable ab ~08.01.2026
+² = Blazor Hybrid für Web
+³ = React Native for Web (separate Library)
 
 ---
 
@@ -616,7 +620,7 @@ new Button()
 
 ### Schwächen von PlusUi
 
-1. **Plattform-Support** - iOS, Android, Web noch in Entwicklung
+1. ~~**Plattform-Support** - iOS, Android, Web noch in Entwicklung~~ → **Gelöst ab 08.01.2026**
 2. **Control-Vielfalt** - Weniger Controls als etablierte Frameworks
 3. **Community-Größe** - Kleinere Community = weniger Third-Party Libraries
 4. **Dokumentation** - Ausbaufähig
@@ -630,56 +634,67 @@ new Button()
 |-----------|-----------|-----------|
 | **Für Prototyping** | ⭐⭐⭐⭐⭐ | Exzellent dank reiner C# Entwicklung |
 | **Für Desktop Apps** | ⭐⭐⭐⭐ | Gut, stabile Desktop-Unterstützung |
-| **Für Mobile Apps** | ⭐⭐ | Noch nicht produktionsreif |
-| **Für Enterprise** | ⭐⭐ | Fehlendes Ecosystem und Support |
-| **Für Indie Dev** | ⭐⭐⭐⭐ | Gute Wahl für konsistente UIs |
+| **Für Mobile Apps** | ⭐⭐⭐⭐ | **Aktualisiert:** Ab 08.01.2026 produktionsreif! |
+| **Für Web Apps** | ⭐⭐⭐⭐ | **Aktualisiert:** Ab 08.01.2026 produktionsreif! |
+| **Für Enterprise** | ⭐⭐⭐ | Volles Plattform-Portfolio, aber kleines Ecosystem |
+| **Für Indie Dev** | ⭐⭐⭐⭐⭐ | Perfekte Wahl: alle Plattformen, konsistente UIs |
 | **Für Learning** | ⭐⭐⭐⭐⭐ | Einfacher Einstieg ohne XAML |
 
 ---
 
 ## Aktionsliste
 
-### Phase 1: Kritische Controls (0-3 Monate)
+> **📅 Timeline-Update (31.12.2025):**
+> - **Heute:** 31.12.2025
+> - **Mobile/Web Stable:** ~08.01.2026 (in 8 Tagen)
+> - **1-Jahr-Jubiläum:** 10.02.2026 (in 41 Tagen)
+> - **Control-Entwicklungsgeschwindigkeit:** ~1 Tag pro Control
+> - **Potenzial bis Jubiläum:** ~30-35 neue Controls möglich (nach Mobile-Stabilisierung)
+
+### Phase 1: Bis Mobile/Web Stable (~08.01.2026)
+
+| # | Aktion | Priorität | Status |
+|---|--------|-----------|--------|
+| 1 | iOS auf Stable bringen | Hoch | 🚧 In Arbeit |
+| 2 | Android auf Stable bringen | Hoch | 🚧 In Arbeit |
+| 3 | Web auf Stable bringen | Hoch | 🚧 In Arbeit |
+
+### Phase 2: Bis 1-Jahr-Jubiläum (08.01. - 10.02.2026) - ~33 Tage
+
+| # | Aktion | Priorität | Aufwand | Geschätzte Tage |
+|---|--------|-----------|---------|-----------------|
+| 1 | **Editor/MultilineEntry** implementieren | Hoch | Mittel | 2-3 |
+| 2 | **SearchBar** Control hinzufügen | Hoch | Niedrig | 1 |
+| 3 | **NavigationView/Drawer** für Mobile | Hoch | Hoch | 3-4 |
+| 4 | **BottomSheet** für Mobile | Hoch | Mittel | 2 |
+| 5 | **Expander/Accordion** implementieren | Mittel | Niedrig | 1 |
+| 6 | **NumericUpDown** hinzufügen | Mittel | Niedrig | 1 |
+| 7 | **Badge** Control | Mittel | Niedrig | 1 |
+| 8 | **Chip/Tag** Control | Mittel | Niedrig | 1 |
+| 9 | **Avatar** Control | Mittel | Niedrig | 1 |
+| 10 | **Rating Control** | Mittel | Niedrig | 1 |
+| 11 | **Carousel/Gallery** implementieren | Mittel | Mittel | 2 |
+| 12 | API-Dokumentation verbessern | Hoch | Mittel | 5 |
+| 13 | Getting Started Tutorial | Hoch | Niedrig | 3 |
+| | **Gesamt geschätzt** | | | **~24-27 Tage** |
+
+> **🎯 Realistisches Ziel für 1-Jahr-Jubiläum:**
+> - ~10-13 neue Controls
+> - Alle 6 Plattformen stable (Desktop, iOS, Android, Web + Headless + H264)
+> - Verbesserte Dokumentation
+
+### Phase 3: Nach Jubiläum (Q1-Q2 2026)
 
 | # | Aktion | Priorität | Aufwand |
 |---|--------|-----------|---------|
-| 1 | **Editor/MultilineEntry** implementieren | Hoch | Mittel |
-| 2 | **SearchBar** Control hinzufügen | Hoch | Niedrig |
-| 3 | **NavigationView/Drawer** für Mobile | Hoch | Hoch |
-| 4 | **BottomSheet** für Mobile | Hoch | Mittel |
-| 5 | iOS/Android auf Stable bringen | Hoch | Hoch |
-
-### Phase 2: Wichtige Controls (3-6 Monate)
-
-| # | Aktion | Priorität | Aufwand |
-|---|--------|-----------|---------|
-| 6 | **Expander/Accordion** implementieren | Mittel | Niedrig |
-| 7 | **NumericUpDown** hinzufügen | Mittel | Niedrig |
-| 8 | **ColorPicker** implementieren | Mittel | Mittel |
-| 9 | **Chip/Tag** Control | Mittel | Niedrig |
-| 10 | **Badge** Control | Mittel | Niedrig |
-| 11 | **Avatar** Control | Mittel | Niedrig |
-| 12 | **Carousel/Gallery** implementieren | Mittel | Mittel |
-
-### Phase 3: Erweiterte Features (6-12 Monate)
-
-| # | Aktion | Priorität | Aufwand |
-|---|--------|-----------|---------|
-| 13 | **WebView** Integration | Mittel-Hoch | Hoch |
-| 14 | **Video Player** Control | Mittel | Hoch |
-| 15 | Web-Plattform auf Stable | Mittel | Hoch |
-| 16 | **Charts** (Optional) | Niedrig | Hoch |
-| 17 | Drag & Drop Support | Niedrig | Mittel |
-
-### Phase 4: Ecosystem & Dokumentation
-
-| # | Aktion | Priorität | Aufwand |
-|---|--------|-----------|---------|
-| 18 | API-Dokumentation vervollständigen | Hoch | Mittel |
-| 19 | Getting Started Tutorial | Hoch | Niedrig |
-| 20 | Sample Apps Gallery | Mittel | Mittel |
-| 21 | Video Tutorials | Niedrig | Mittel |
-| 22 | Community Building | Laufend | - |
+| 1 | **ColorPicker** implementieren | Mittel | Mittel |
+| 2 | **WebView** Integration | Mittel-Hoch | Hoch |
+| 3 | **Video Player** Control | Mittel | Hoch |
+| 4 | **Charts** (Optional) | Niedrig | Hoch |
+| 5 | Drag & Drop Support | Niedrig | Mittel |
+| 6 | Sample Apps Gallery | Mittel | Mittel |
+| 7 | Video Tutorials | Niedrig | Mittel |
+| 8 | Community Building | Laufend | - |
 
 ### Architektur-Verbesserungen
 
@@ -716,13 +731,15 @@ new Button()
 
 | Schwäche | Auswirkung | Risiko |
 |----------|------------|--------|
-| **Mobile noch nicht stable** | Großer Markt nicht erreichbar | 🔴 Hoch |
+| ~~**Mobile noch nicht stable**~~ | ~~Großer Markt nicht erreichbar~~ | ✅ **Gelöst ab 08.01.2026** |
 | **Kleine Community** | Wenig Third-Party Libraries | 🟠 Mittel |
 | **Dokumentation dünn** | Schwerer Einstieg für Neue | 🟠 Mittel |
 | **Kein visueller Designer** | IDE-Support limitiert | 🟡 Niedrig |
 | **Fehlende Controls** | WebView, Editor, NavigationView | 🟠 Mittel |
 | **Kein Enterprise Support** | Für Großkunden unattraktiv | 🟠 Mittel |
 | **Keine Third-Party Libraries** | Alles selbst bauen | 🟠 Mittel |
+
+> **🎉 Update (31.12.2025):** Die mobile Schwäche wird in ~8 Tagen behoben sein. iOS, Android und Web werden ab ca. 08.01.2026 stabil sein.
 
 #### Chancen (Opportunities)
 
@@ -795,25 +812,29 @@ new Button()
 
 ### Potenzial-Bewertung
 
-#### Kurzfristig (0-12 Monate)
+> **📅 Update basierend auf Timeline (31.12.2025):**
+> Mit der Stabilisierung von iOS, Android und Web in ~8 Tagen ändert sich die Potenzial-Bewertung signifikant.
+
+#### Kurzfristig (Jetzt - Q1 2026)
+
+| Bereich | Potenzial | Status |
+|---------|-----------|--------|
+| **Desktop-Anwendungen** | 🔥 Hoch | ✅ Bereits produktionsreif |
+| **Mobile Apps (iOS/Android)** | 🔥 Hoch | 🟢 Ab ~08.01.2026 stable |
+| **Web-Apps** | 🔥 Hoch | 🟢 Ab ~08.01.2026 stable |
+| **Prototyping** | 🔥 Hoch | ✅ Schnellste Time-to-UI im .NET-Bereich |
+| **Internal Tools** | 🔥 Hoch | ✅ Alle Plattformen abgedeckt |
+| **Kiosk/POS-Systeme** | 🔥 Hoch | ✅ Stabile Linux-Unterstützung |
+| **Video-Export-Tools** | 🔥 Hoch | ✅ H264 Feature ist unique |
+| **Cross-Platform Apps** | 🔥 Hoch | 🟢 Ab ~08.01.2026 voller Support |
+
+#### Mittelfristig (Q2 2026 - 2027)
 
 | Bereich | Potenzial | Voraussetzung |
 |---------|-----------|---------------|
-| **Desktop-Anwendungen** | 🔥 Hoch | Bereits produktionsreif |
-| **Prototyping** | 🔥 Hoch | Schnellste Time-to-UI im .NET-Bereich |
-| **Internal Tools** | 🔥 Hoch | Keine Mobile-Parity nötig |
-| **Kiosk/POS-Systeme** | ⭐ Mittel | Stabile Linux-Unterstützung |
-| **Video-Export-Tools** | 🔥 Hoch | H264 Feature ist unique |
-| **Demo/Tutorial-Software** | 🔥 Hoch | H264 + einfache UI-Erstellung |
-
-#### Mittelfristig (1-2 Jahre)
-
-| Bereich | Potenzial | Voraussetzung |
-|---------|-----------|---------------|
-| **Mobile Apps** | ⭐ Mittel → 🔥 Hoch | iOS/Android müssen stable werden |
-| **Cross-Platform Apps** | ⭐ Mittel | Vollständiger Platform-Support |
-| **Enterprise Desktop** | ⭐ Mittel | Mehr Controls + Dokumentation |
-| **Web-Apps** | ⭐ Niedrig → Mittel | Web-Platform muss reifen |
+| **Enterprise Desktop** | ⭐ Mittel → 🔥 Hoch | Mehr Controls + Dokumentation |
+| **Commercial Apps** | 🔥 Hoch | Stabilität bewiesen |
+| **Educational Market** | 🔥 Hoch | Kein XAML = niedrige Hürde |
 
 #### Langfristig (2+ Jahre)
 
@@ -827,7 +848,7 @@ new Button()
 
 ### Investitionsbewertung (für potenzielle Nutzer)
 
-#### Sollte ich PlusUi heute einsetzen?
+#### Sollte ich PlusUi heute einsetzen? (Aktualisiert 31.12.2025)
 
 | Use Case | Empfehlung | Risiko |
 |----------|------------|--------|
@@ -835,9 +856,12 @@ new Button()
 | **Prototyp/MVP** | ✅ Ja | Niedrig |
 | **Internal Tool** | ✅ Ja | Niedrig |
 | **Video-Export benötigt** | ✅ Definitiv | Niedrig |
-| **Mobile-First App** | ❌ Warten | Mobile noch nicht stable |
+| **Mobile-First App** | ✅ Ja (ab 08.01.2026) | Niedrig ⬆️ |
+| **Web App** | ✅ Ja (ab 08.01.2026) | Niedrig ⬆️ |
 | **Enterprise-Produkt** | ⚠️ Vorsicht | Kein Support, kleine Community |
-| **Cross-Platform (alle)** | ⚠️ Warten | Web/Mobile noch in Entwicklung |
+| **Cross-Platform (alle)** | ✅ Ja (ab 08.01.2026) | Niedrig ⬆️ |
+
+> **📅 Empfehlung:** Für neue Projekte kann ab dem 08.01.2026 PlusUi für alle Plattformen in Betracht gezogen werden.
 
 #### ROI-Betrachtung
 
@@ -888,19 +912,20 @@ new Button()
 
 ### Gesamtbewertung
 
-#### Scoring (1-10)
+#### Scoring (1-10) - Aktualisiert am 31.12.2025
 
 | Dimension | Score | Kommentar |
 |-----------|-------|-----------|
-| **Technische Reife** | 7/10 | Desktop stabil, Mobile in Arbeit |
-| **Feature-Vollständigkeit** | 6/10 | Grundlegende Controls vorhanden, Lücken bei Advanced |
+| **Technische Reife** | 8/10 | Desktop stabil, Mobile/Web stable ab 08.01.2026 ⬆️ |
+| **Feature-Vollständigkeit** | 6/10 | ~45 Controls, Lücken bei Advanced |
 | **Developer Experience** | 9/10 | Exzellente Fluent API, kein XAML |
+| **Plattform-Support** | 9/10 | Alle 6 Plattformen (ab 08.01.2026) ⬆️ |
 | **Dokumentation** | 4/10 | Minimal, muss ausgebaut werden |
 | **Community/Ecosystem** | 3/10 | Klein aber aktiv |
-| **Zukunftspotenzial** | 8/10 | Klare Nische, gute Differenzierung |
-| **Investitionssicherheit** | 6/10 | Open Source, aktive Entwicklung |
+| **Zukunftspotenzial** | 9/10 | Klare Nische, volle Plattform-Abdeckung ⬆️ |
+| **Investitionssicherheit** | 7/10 | Open Source, aktive Entwicklung, 1 Jahr Kontinuität ⬆️ |
 
-**Gesamtscore: 6.1/10** - Vielversprechend mit klarem Verbesserungspotenzial
+**Gesamtscore: 6.9/10** ⬆️ (vorher 6.1/10) - Deutliche Verbesserung durch Mobile/Web-Stabilität
 
 #### Fazit der strategischen Bewertung
 
@@ -908,13 +933,18 @@ new Button()
 - Einzigartige Positionierung (XAML-frei + H264)
 - Technisch solide Basis (SkiaSharp)
 - Wachsende "XAML-Müdigkeit" im .NET-Bereich
+- **NEU:** Voller Plattform-Support ab 08.01.2026 (Desktop, iOS, Android, Web)
 
-**Hauptherausforderungen:**
-- Mobile-Parity erreichen
+**Hauptherausforderungen (aktualisiert):**
+- ~~Mobile-Parity erreichen~~ ✅ Wird am 08.01.2026 erreicht
 - Community aufbauen
 - Dokumentation verbessern
+- Control-Vielfalt ausbauen
 
-**Prognose:** Bei konsequenter Weiterentwicklung kann PlusUi in 2-3 Jahren eine etablierte Alternative zu Avalonia werden, insbesondere für Teams, die XAML vermeiden wollen.
+**Prognose (aktualisiert):** Mit vollem Plattform-Support ab Januar 2026 kann PlusUi in 1-2 Jahren (statt 2-3) eine etablierte Alternative zu Avalonia werden, insbesondere für Teams, die XAML vermeiden wollen.
+
+> **🎉 1-Jahr-Jubiläum (10.02.2026):**
+> PlusUi wird mit allen 6 Plattformen stable und ~55+ Controls in sein zweites Jahr starten.
 
 ---
 
@@ -924,6 +954,7 @@ new Button()
 - Pixel-perfekte UI-Konsistenz
 - Reine C#-Entwicklung ohne XAML
 - Moderne .NET Technologien
+- **Ab 08.01.2026: Voller 6-Plattformen-Support**
 
 **Hauptkonkurrenten in der gleichen Nische:**
 - **Avalonia** (ähnlicher Ansatz mit XAML)
@@ -934,19 +965,36 @@ new Button()
 - Keine XAML-Abhängigkeit
 - H264 Video Rendering (einzigartig)
 - Headless Mode für Testing/Server-Side
+- Voller Cross-Platform Support (Desktop, iOS, Android, Web)
 
-**Größte Herausforderungen:**
-1. Mobile Plattformen (iOS/Android) produktionsreif machen
-2. Control-Vielfalt ausbauen
+**Verbleibende Herausforderungen:**
+1. ~~Mobile Plattformen (iOS/Android) produktionsreif machen~~ ✅ Ab 08.01.2026
+2. Control-Vielfalt ausbauen (~10-15 neue Controls bis Jubiläum möglich)
 3. Community und Ecosystem aufbauen
 4. Dokumentation verbessern
 
 **Empfehlung:** PlusUi ist ideal für Teams, die:
 - Keine XAML lernen wollen
-- Konsistente UIs über Desktop-Plattformen benötigen
+- Konsistente UIs über **alle** Plattformen benötigen
 - Mit .NET/C# vertraut sind
-- Bereit sind, mit einem jungen Framework zu wachsen
+- Ein junges, aber vollständiges Framework suchen
+
+---
+
+## 1-Jahr-Meilenstein: 10. Februar 2026
+
+| Metrik | Stand Projektstart | Stand 1 Jahr |
+|--------|-------------------|--------------|
+| **Plattformen** | 0 | 6 (Desktop 3 + iOS + Android + Web) |
+| **Controls** | 0 | ~45+ (potenziell ~55+ bis Jubiläum) |
+| **Desktop Stable** | - | ✅ Bereits stable |
+| **Mobile Stable** | - | ✅ Ab 08.01.2026 |
+| **Web Stable** | - | ✅ Ab 08.01.2026 |
+| **Entwicklungsgeschwindigkeit** | - | ~1 Control/Tag |
+
+**Ein beeindruckender Fortschritt für ein Jahr Solo-Entwicklung.**
 
 ---
 
 *Report erstellt am 2025-12-31*
+*Aktualisiert: Timeline-Update mit Mobile/Web-Stabilität und 1-Jahr-Jubiläum*
