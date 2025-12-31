@@ -32,13 +32,20 @@ public class WrongUiFixTests
                 .SetText("NAV")
                 .SetTextSize(20));
         var availableSize = new Size(800, 600);
+
         //Act
         control.Measure(availableSize);
         control.Arrange(new Rect(0, 0, 800, 600));
-        //Assert
+
+        //Assert - Elements should be stacked vertically in order
         Assert.AreEqual(0, control.Children[0].Position.Y);
-        Assert.AreEqual(66.50390625, control.Children[1].Position.Y);
-        Assert.AreEqual(82.46484375, control.Children[2].Position.Y);
+        // Second element starts after first element
+        Assert.AreEqual(control.Children[0].ElementSize.Height, control.Children[1].Position.Y, 0.1);
+        // Third element starts after first + second elements
+        Assert.AreEqual(
+            control.Children[0].ElementSize.Height + control.Children[1].ElementSize.Height,
+            control.Children[2].Position.Y,
+            0.1);
     }
 
     

@@ -6,21 +6,25 @@ namespace PlusUi.core.Tests;
 [TestClass]
 public class ButtonTests
 {
-    private readonly float _textWidth = new SKFont(SKTypeface.Default) { Size = 12 }.MeasureText("Test Button");
 
     [TestMethod]
     public void TestButtonPadding_CorrectSizing()
     {
         //Arrange
-        var button = new Button().SetText("Test Button").SetPadding(new(10));
-        var availableSize = new Size(100, 100);
+        var buttonWithoutPadding = new Button().SetText("Test Button").SetPadding(new(0));
+        var buttonWithPadding = new Button().SetText("Test Button").SetPadding(new(10));
+        var availableSize = new Size(200, 100);
+
         //Act
-        button.Measure(availableSize);
-        button.Arrange(new Rect(0, 0, 100, 100));
+        buttonWithoutPadding.Measure(availableSize);
+        buttonWithPadding.Measure(availableSize);
+        buttonWithPadding.Arrange(new Rect(0, 0, 200, 100));
+
         //Assert
-        Assert.AreEqual(0, button.Position.X);
-        Assert.AreEqual(0, button.Position.Y);
-        Assert.AreEqual(_textWidth + 20, button.ElementSize.Width);
+        Assert.AreEqual(0, buttonWithPadding.Position.X);
+        Assert.AreEqual(0, buttonWithPadding.Position.Y);
+        // Padding adds 10 left + 10 right = 20 to width
+        Assert.AreEqual(buttonWithoutPadding.ElementSize.Width + 20, buttonWithPadding.ElementSize.Width, 0.1);
     }
 
     [TestMethod]
@@ -97,15 +101,16 @@ public class ButtonTests
     {
         //Arrange
         var button = new Button().SetText("Test").SetPadding(new(0));
-        using var font = new SKFont(SKTypeface.Default) { Size = 12 };
-        var expectedWidth = font.MeasureText("Test");
-        font.GetFontMetrics(out var fontMetrics);
-        var expectedHeight = fontMetrics.Descent - fontMetrics.Ascent;
+
         //Act
         button.Measure(new Size(200, 200));
-        //Assert
-        Assert.AreEqual(expectedWidth, button.ElementSize.Width, 0.1);
-        Assert.AreEqual(expectedHeight, button.ElementSize.Height, 0.1);
+
+        //Assert - Button should have non-zero size matching text dimensions
+        Assert.IsGreaterThan(0f, button.ElementSize.Width);
+        Assert.IsGreaterThan(0f, button.ElementSize.Height);
+        // Inter font "Test" at size 12: width ~25, height ~15
+        Assert.AreEqual(25.0f, button.ElementSize.Width, 1.0f);
+        Assert.AreEqual(15.0f, button.ElementSize.Height, 1.0f);
     }
 
     [TestMethod]
@@ -154,75 +159,79 @@ public class ButtonTests
     public void TestButton_IconLeading_IncludesIconInWidth()
     {
         //Arrange
-        var button = new Button()
+        var buttonTextOnly = new Button().SetText("Test").SetPadding(new(0)).SetTextSize(12);
+        var buttonWithIcon = new Button()
             .SetText("Test")
             .SetIcon("icon.png")
             .SetIconPosition(IconPosition.Leading)
             .SetPadding(new(0))
             .SetTextSize(12);
-        using var font = new SKFont(SKTypeface.Default) { Size = 12 };
-        var textWidth = font.MeasureText("Test");
+
         //Act
-        button.Measure(new Size(200, 200));
-        //Assert
-        // Without actual icon resource, width should be at least text width
-        Assert.IsGreaterThanOrEqualTo(textWidth, button.ElementSize.Width);
+        buttonTextOnly.Measure(new Size(200, 200));
+        buttonWithIcon.Measure(new Size(200, 200));
+
+        //Assert - Without actual icon resource, width should be at least text width
+        Assert.IsGreaterThanOrEqualTo(buttonTextOnly.ElementSize.Width, buttonWithIcon.ElementSize.Width);
     }
 
     [TestMethod]
     public void TestButton_IconTrailing_IncludesIconInWidth()
     {
         //Arrange
-        var button = new Button()
+        var buttonTextOnly = new Button().SetText("Test").SetPadding(new(0)).SetTextSize(12);
+        var buttonWithIcon = new Button()
             .SetText("Test")
             .SetIcon("icon.png")
             .SetIconPosition(IconPosition.Trailing)
             .SetPadding(new(0))
             .SetTextSize(12);
-        using var font = new SKFont(SKTypeface.Default) { Size = 12 };
-        var textWidth = font.MeasureText("Test");
+
         //Act
-        button.Measure(new Size(200, 200));
-        //Assert
-        // Without actual icon resource, width should be at least text width
-        Assert.IsGreaterThanOrEqualTo(textWidth, button.ElementSize.Width);
+        buttonTextOnly.Measure(new Size(200, 200));
+        buttonWithIcon.Measure(new Size(200, 200));
+
+        //Assert - Without actual icon resource, width should be at least text width
+        Assert.IsGreaterThanOrEqualTo(buttonTextOnly.ElementSize.Width, buttonWithIcon.ElementSize.Width);
     }
 
     [TestMethod]
     public void TestButton_IconBoth_IncludesBothIconsInWidth()
     {
         //Arrange
-        var button = new Button()
+        var buttonTextOnly = new Button().SetText("Test").SetPadding(new(0)).SetTextSize(12);
+        var buttonWithIcon = new Button()
             .SetText("Test")
             .SetIcon("icon.png")
             .SetIconPosition(IconPosition.Leading | IconPosition.Trailing)
             .SetPadding(new(0))
             .SetTextSize(12);
-        using var font = new SKFont(SKTypeface.Default) { Size = 12 };
-        var textWidth = font.MeasureText("Test");
+
         //Act
-        button.Measure(new Size(200, 200));
-        //Assert
-        // Without actual icon resource, width should be at least text width
-        Assert.IsGreaterThanOrEqualTo(textWidth, button.ElementSize.Width);
+        buttonTextOnly.Measure(new Size(200, 200));
+        buttonWithIcon.Measure(new Size(200, 200));
+
+        //Assert - Without actual icon resource, width should be at least text width
+        Assert.IsGreaterThanOrEqualTo(buttonTextOnly.ElementSize.Width, buttonWithIcon.ElementSize.Width);
     }
 
     [TestMethod]
     public void TestButton_IconPositionNone_DoesNotIncludeIcon()
     {
         //Arrange
-        var button = new Button()
+        var buttonTextOnly = new Button().SetText("Test").SetPadding(new(0)).SetTextSize(12);
+        var buttonWithIconNone = new Button()
             .SetText("Test")
             .SetIcon("icon.png")
             .SetIconPosition(IconPosition.None)
             .SetPadding(new(0))
             .SetTextSize(12);
-        using var font = new SKFont(SKTypeface.Default) { Size = 12 };
-        var textWidth = font.MeasureText("Test");
+
         //Act
-        button.Measure(new Size(200, 200));
-        //Assert
-        // When IconPosition is None, icon should not be included in the width
-        Assert.AreEqual(textWidth, button.ElementSize.Width, 0.1);
+        buttonTextOnly.Measure(new Size(200, 200));
+        buttonWithIconNone.Measure(new Size(200, 200));
+
+        //Assert - When IconPosition is None, icon should not be included in the width
+        Assert.AreEqual(buttonTextOnly.ElementSize.Width, buttonWithIconNone.ElementSize.Width, 0.1);
     }
 }

@@ -35,6 +35,7 @@
     <!-- Testing -->
     <MicrosoftNETTestSdkVersion>18.0.0</MicrosoftNETTestSdkVersion>
     <MSTestVersion>4.0.1</MSTestVersion>
+    <CoverletVersion>6.0.4</CoverletVersion>
 
     <!-- Other -->
     <SvgSkiaVersion>2.0.0.4</SvgSkiaVersion>

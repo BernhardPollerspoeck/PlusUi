@@ -30,8 +30,17 @@ jobs:
     - name: Build
       run: dotnet build PlusUi.sln --no-restore --configuration Release
 
-    - name: Test
-      run: dotnet test PlusUi.sln --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+    - name: Test with Coverage
+      run: dotnet test PlusUi.sln --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./TestResults
+
+    - name: Install ReportGenerator
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+    - name: Generate Coverage Report
+      run: reportgenerator -reports:"./TestResults/**/coverage.cobertura.xml" -targetdir:"./TestResults/CoverageReport" -reporttypes:"Html;Cobertura;TextSummary"
+
+    - name: Display Coverage Summary
+      run: cat ./TestResults/CoverageReport/Summary.txt
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -39,4 +48,12 @@ jobs:
       with:
         name: test-results
         path: '**/TestResults/*.trx'
+        retention-days: 30
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-report
+        path: './TestResults/CoverageReport'
         retention-days: 30
