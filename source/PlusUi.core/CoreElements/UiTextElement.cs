@@ -444,33 +444,15 @@ public abstract class UiTextElement : UiElement
 
         SKTypeface? typeface = null;
 
-        // Try to get custom font from registry
-        if (!string.IsNullOrEmpty(FontFamily))
+        // Try to get font from registry (includes default Inter font)
+        try
         {
-            try
-            {
-                var fontRegistry = ServiceProviderService.ServiceProvider?.GetService<IFontRegistryService>();
-                typeface = fontRegistry?.GetTypeface(FontFamily, FontWeight, FontStyle);
-            }
-            catch
-            {
-                // Silently fallback to system font
-            }
+            var fontRegistry = ServiceProviderService.ServiceProvider?.GetService<IFontRegistryService>();
+            typeface = fontRegistry?.GetTypeface(FontFamily, FontWeight, FontStyle);
         }
-
-        // Fallback to system font if custom font not found
-        if (typeface == null)
+        catch
         {
-            // Create SKFontStyle from our enums
-            var skFontWeight = (SKFontStyleWeight)(int)FontWeight;
-            var skFontSlant = FontStyle switch
-            {
-                FontStyle.Italic => SKFontStyleSlant.Italic,
-                FontStyle.Oblique => SKFontStyleSlant.Oblique,
-                _ => SKFontStyleSlant.Upright
-            };
-            var skFontStyle = new SKFontStyle(skFontWeight, SKFontStyleWidth.Normal, skFontSlant);
-            typeface = SKTypeface.FromFamilyName(FontFamily, skFontStyle);
+            // Silently continue - will use SKTypeface.Default as last resort
         }
 
         // Apply system font scaling if enabled

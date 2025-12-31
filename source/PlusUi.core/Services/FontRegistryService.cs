@@ -9,8 +9,14 @@ namespace PlusUi.core.Services;
 public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontRegistryService>? logger = null) : IFontRegistryService
 {
     private readonly ConcurrentDictionary<string, SKTypeface> _fontCache = new();
+    private SKTypeface? _defaultTypeface;
     private bool _initialized = false;
     private readonly object _initLock = new();
+
+    /// <summary>
+    /// The default font family name used by PlusUi.
+    /// </summary>
+    public const string DefaultFontFamily = "Inter";
 
     private void EnsureInitialized()
     {
@@ -20,6 +26,9 @@ public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontR
         {
             if (_initialized) return;
 
+            // Load embedded Inter font as default
+            LoadDefaultFont();
+
             // Load all registered fonts
             var registrations = serviceProvider.GetServices<IFontRegistration>();
             foreach (var registration in registrations)
@@ -28,6 +37,35 @@ public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontR
             }
 
             _initialized = true;
+        }
+    }
+
+    private void LoadDefaultFont()
+    {
+        try
+        {
+            var assembly = typeof(FontRegistryService).Assembly;
+            var resourceName = "PlusUi.core.Fonts.InterVariable.ttf";
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream != null)
+            {
+                _defaultTypeface = SKTypeface.FromStream(stream);
+                if (_defaultTypeface != null)
+                {
+                    // Register Inter for all common weights (variable font supports all)
+                    var key = GetFontKey(DefaultFontFamily, FontWeight.Regular, FontStyle.Normal);
+                    _fontCache[key] = _defaultTypeface;
+                    logger?.LogDebug("Loaded default font: Inter (Variable)");
+                }
+            }
+            else
+            {
+                logger?.LogWarning("Default font resource not found: {ResourceName}", resourceName);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(ex, "Error loading default font");
         }
     }
 
@@ -78,9 +116,10 @@ public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontR
     {
         EnsureInitialized();
 
+        // If no font family specified, use default
         if (string.IsNullOrEmpty(fontFamily))
         {
-            return null;
+            return _defaultTypeface;
         }
 
         var key = GetFontKey(fontFamily, fontWeight, fontStyle);
@@ -120,7 +159,8 @@ public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontR
             }
         }
 
-        return null;
+        // Fallback to default font (Inter) if no match found
+        return _defaultTypeface;
     }
 
     private static string GetFontKey(string fontFamily, FontWeight fontWeight, FontStyle fontStyle)
