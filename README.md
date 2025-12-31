@@ -11,8 +11,10 @@ A fully cross-platform UI Framework for .NET, delivering consistent user experie
 | Windows | PlusUi.desktop | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
 | macOS | PlusUi.desktop | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
 | Linux | PlusUi.desktop | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
+| Web | PlusUi.web | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.web.svg)](https://www.nuget.org/packages/PlusUi.web) |
 | iOS | PlusUi.ios | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.ios.svg)](https://www.nuget.org/packages/PlusUi.ios) |
 | Android | PlusUi.droid | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.droid.svg)](https://www.nuget.org/packages/PlusUi.droid) |
+| Headless | PlusUi.headless | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.headless.svg)](https://www.nuget.org/packages/PlusUi.headless) |
 | **Video Rendering** | **PlusUi.h264** | ✅ **Stable** | [![NuGet](https://img.shields.io/nuget/v/PlusUi.h264.svg)](https://www.nuget.org/packages/PlusUi.h264) |
 
 **Core Library:** [![NuGet](https://img.shields.io/nuget/v/PlusUi.core.svg)](https://www.nuget.org/packages/PlusUi.core) (Required by all platforms)
@@ -38,6 +40,10 @@ Install the PlusUi packages via NuGet:
 dotnet add package PlusUi.core
 dotnet add package PlusUi.desktop
 
+# For Web (Blazor WebAssembly)
+dotnet add package PlusUi.core
+dotnet add package PlusUi.web
+
 # For iOS
 dotnet add package PlusUi.core
 dotnet add package PlusUi.ios
@@ -45,6 +51,10 @@ dotnet add package PlusUi.ios
 # For Android
 dotnet add package PlusUi.core
 dotnet add package PlusUi.droid
+
+# For Headless (server-side rendering, testing, automation)
+dotnet add package PlusUi.core
+dotnet add package PlusUi.headless
 
 # For Video Rendering (H264)
 dotnet add package PlusUi.core
@@ -443,23 +453,17 @@ Join our Discord community to get support, share feedback, or discuss your exper
 
 ## Contributing
 
-We welcome contributions! Please open an issue to discuss any planned changes before submitting a pull request. This helps ensure that your contribution aligns with the project's goals and avoids duplication of effort.
+We welcome all contributions! Whether it's fixing a typo, improving documentation, reporting bugs, or implementing new features - every contribution matters and is appreciated.
 
-### Contribution Guidelines
+Please read our [Contributing Guide](CONTRIBUTING.md) before submitting a pull request. It contains important information about our PR requirements, including our test-first approach that helps ensure changes can be reviewed and merged efficiently.
 
-1. **Discuss First:** Open an issue to propose changes before starting work
-2. **Code Standards:** Follow the project's coding standards (see CLAUDE.md for details)
-3. **Tests:** Include appropriate tests for new features or bug fixes
-4. **Documentation:** Update documentation for any user-facing changes
-5. **Small PRs:** Keep pull requests focused and manageable
+**Quick Overview:**
+- Open an issue first to discuss significant changes
+- For bug fixes: first commit with failing tests, then the fix
+- Follow the project's coding standards (see `CLAUDE.md`)
+- Keep PRs focused and manageable
 
-We also welcome contributions to:
-- Documentation improvements
-- Sample applications
-- Bug reports and feature requests
-- Code reviews and discussions
-
-Thank you for your interest in contributing to PlusUi!
+Thank you for helping make PlusUi better!
 
 ---
 

@@ -20,6 +20,7 @@ PlusUi supports multiple platforms through a single codebase.
 | Android | 🧪 Preview | API 21 (Android 5.0+) | `PlusUi.droid` |
 | iOS | 🧪 Preview | iOS 14.0+ | `PlusUi.ios` |
 | Web (Blazor) | 🧪 Preview | Modern browsers | `PlusUi.web` |
+| Headless | 🧪 Preview | .NET 10 | `PlusUi.headless` |
 
 ---
 
@@ -27,38 +28,38 @@ PlusUi supports multiple platforms through a single codebase.
 
 ### Core Features
 
-| Feature | Windows | macOS | Linux | Android | iOS | Web |
-|:--------|:-------:|:-----:|:-----:|:-------:|:---:|:---:|
-| Basic Controls | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Data Binding | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Navigation | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Popups/Dialogs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Custom Fonts | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| SVG Icons | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Theming | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Feature | Windows | macOS | Linux | Android | iOS | Web | Headless |
+|:--------|:-------:|:-----:|:-----:|:-------:|:---:|:---:|:--------:|
+| Basic Controls | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Data Binding | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Navigation | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Popups/Dialogs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Custom Fonts | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| SVG Icons | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Theming | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ### Input Features
 
-| Feature | Windows | macOS | Linux | Android | iOS | Web |
-|:--------|:-------:|:-----:|:-----:|:-------:|:---:|:---:|
-| Mouse Input | ✅ | ✅ | ✅ | N/A | N/A | ✅ |
-| Touch Input | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Keyboard Input | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Keyboard Shortcuts | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ✅ |
-| Scroll Wheel | ✅ | ✅ | ✅ | N/A | N/A | ✅ |
-| Stylus/Pen | ✅ | ✅ | ⚠️ | ✅ | ✅ | ⚠️ |
+| Feature | Windows | macOS | Linux | Android | iOS | Web | Headless |
+|:--------|:-------:|:-----:|:-----:|:-------:|:---:|:---:|:--------:|
+| Mouse Input | ✅ | ✅ | ✅ | N/A | N/A | ✅ | N/A |
+| Touch Input | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | N/A |
+| Keyboard Input | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | N/A |
+| Keyboard Shortcuts | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | N/A |
+| Scroll Wheel | ✅ | ✅ | ✅ | N/A | N/A | ✅ | N/A |
+| Stylus/Pen | ✅ | ✅ | ⚠️ | ✅ | ✅ | ⚠️ | N/A |
 
 ### Advanced Features
 
-| Feature | Windows | macOS | Linux | Android | iOS | Web |
-|:--------|:-------:|:-----:|:-----:|:-------:|:---:|:---:|
-| Hardware Acceleration | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
-| High DPI Support | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Dark Mode Detection | ✅ | ✅ | ⚠️ | ✅ | ✅ | ✅ |
-| System Tray | ✅ | ✅ | ✅ | N/A | N/A | N/A |
-| File Dialogs | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
-| Clipboard | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Drag and Drop | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ |
+| Feature | Windows | macOS | Linux | Android | iOS | Web | Headless |
+|:--------|:-------:|:-----:|:-----:|:-------:|:---:|:---:|:--------:|
+| Hardware Acceleration | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | N/A |
+| High DPI Support | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Dark Mode Detection | ✅ | ✅ | ⚠️ | ✅ | ✅ | ✅ | N/A |
+| System Tray | ✅ | ✅ | ✅ | N/A | N/A | N/A | N/A |
+| File Dialogs | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | N/A |
+| Clipboard | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | N/A |
+| Drag and Drop | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | N/A |
 
 **Legend:**
 - ✅ Fully supported
@@ -176,6 +177,49 @@ sudo dnf install fontconfig freetype
 </Project>
 ```
 
+### Web (Blazor)
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PlusUi.core" Version="*" />
+    <PackageReference Include="PlusUi.web" Version="*" />
+  </ItemGroup>
+</Project>
+```
+
+### Headless
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PlusUi.core" Version="*" />
+    <PackageReference Include="PlusUi.headless" Version="*" />
+  </ItemGroup>
+</Project>
+```
+
+**Use cases for Headless:**
+- Automated UI testing without a display
+- Server-side rendering and screenshot generation
+- CI/CD pipelines for visual regression testing
+- Batch processing of UI exports
+
 ---
 
 ## Multi-Platform Project Structure
@@ -292,3 +336,9 @@ switch (PlatformInfo.Current)
 
 - Dark mode detection depends on desktop environment
 - Stylus support varies by distribution and hardware
+
+### Headless
+
+- No user input (designed for server-side rendering)
+- No window or display output
+- Ideal for automated testing, screenshot generation, and CI/CD pipelines

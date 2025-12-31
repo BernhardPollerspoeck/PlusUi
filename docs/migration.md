@@ -274,7 +274,7 @@ public partial class MainViewModel : ObservableObject
 2. Add PlusUi NuGet packages:
    ```bash
    dotnet add package PlusUi.core
-   dotnet add package PlusUi.Windows  # or platform-specific
+   dotnet add package PlusUi.desktop  # or other platform-specific package
    ```
 3. Add CommunityToolkit.Mvvm for MVVM support:
    ```bash

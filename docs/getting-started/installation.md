@@ -39,6 +39,13 @@ dotnet add package PlusUi.core
 dotnet add package PlusUi.web
 ```
 
+### For Headless (Testing, Automation, Server-side Rendering)
+
+```bash
+dotnet add package PlusUi.core
+dotnet add package PlusUi.headless
+```
+
 ---
 
 ## Project File Setup
