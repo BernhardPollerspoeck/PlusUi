@@ -1,8 +1,8 @@
 title: PlusUi Documentation
 description: A cross-platform UI framework built with SkiaSharp
 theme: just-the-docs
-url: https://bernhardpollerspoeck.github.io
-baseurl: /PlusUi
+url: https://plusui.qsp.app
+baseurl: ""
 
 # Repository
 gh_repo_url: https://github.com/BernhardPollerspoeck/PlusUi

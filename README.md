@@ -4,6 +4,8 @@ A fully cross-platform UI Framework for .NET, delivering consistent user experie
 
 [![Build Status](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml/badge.svg)](https://github.com/BernhardPollerspoeck/PlusUi/actions/workflows/main.yml)
 
+**[Documentation](https://plusui.qsp.app)** | **[NuGet Packages](https://www.nuget.org/profiles/BernhardPollerspoeck)**
+
 ## Supported Platforms
 
 | Platform | Package | Status | NuGet |
