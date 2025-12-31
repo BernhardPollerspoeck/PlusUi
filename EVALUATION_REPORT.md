@@ -554,31 +554,30 @@ new Button()
 
 ## Gap-Analyse: Fehlende Features in PlusUi
 
-### Kritische Lücken (Priorität: HOCH)
+### Echte Control-Lücken (nicht komponierbar)
 
-| Feature | Status | Vergleich | Empfehlung |
-|---------|--------|-----------|------------|
-| **WebView** | ❌ Fehlt | Alle anderen haben es | Essentiell für Embedded Web Content |
-| **NavigationView/Drawer** | ❌ Fehlt | Standard in Mobile Apps | Für Mobile-Parity erforderlich |
-| **Video Player** | ❌ Fehlt | MAUI, Flutter, Qt haben es | Media-Apps benötigen dies |
-| **Multi-Line Entry (Editor)** | ❌ Fehlt | Standard überall | Formulare, Notes-Apps |
-| **SearchBar** | ❌ Fehlt | Standard in Mobile | Wichtig für Listen-Filterung |
-| **Maps Integration** | ❌ Fehlt | MAUI, Flutter haben es | Location-based Apps |
-
-### Wichtige Lücken (Priorität: MITTEL)
-
-| Feature | Status | Empfehlung |
+| Feature | Status | Begründung |
 |---------|--------|------------|
-| **BottomSheet** | ❌ Fehlt | Mobile UI Pattern |
-| **Flyout/SplitView** | ❌ Fehlt | Desktop Navigation |
-| **NumericUpDown/Stepper** | ❌ Fehlt | Zahlen-Eingabe |
-| **ColorPicker** | ❌ Fehlt | Design/Settings Apps |
-| **Expander/Accordion** | ❌ Fehlt | Content-Organisation |
-| **Badge** | ❌ Fehlt | Notification Indicators |
-| **Chip/Tag** | ❌ Fehlt | Kategorisierung |
-| **Avatar** | ❌ Fehlt | User Profiles |
-| **Rating Control** | ❌ Fehlt | Bewertungen |
-| **Carousel** | ❌ Fehlt | Image Galleries |
+| **Multi-Line Entry (Editor)** | ❌ Fehlt | Text-Layout, Cursor, Selection - echte Komplexität |
+| **NavigationView/Drawer** | ❌ Fehlt | Gesture-Integration, Animation, State Management |
+| **NumericUpDown/Stepper** | ❌ Fehlt | Accessibility (VoiceOver Increment/Decrement) |
+| **WebView** | ❌ Fehlt | Plattform-spezifische Integration nötig |
+| **Video Player** | ❌ Fehlt | Codec-Handling, Plattform-APIs |
+| **Maps Integration** | ❌ Fehlt | Externe API-Integration |
+
+### Patterns (komponierbar - gehören in Docs)
+
+| "Feature" | Realität | Lösung |
+|-----------|----------|--------|
+| SearchBar | HStack + Entry + Button | Jede App hat custom Requirements |
+| BottomSheet | Popup + Positioning | Pattern in Docs dokumentieren |
+| Badge | Label + Overlay | Styling-Pattern |
+| Chip/Tag | Styled Button | Styling-Pattern |
+| Avatar | Image + CornerRadius | Styling-Pattern |
+| Rating | HStack + Toggles | Composition-Pattern |
+| Expander | VStack + Button + Animation | App-spezifisches Styling |
+| Carousel | ScrollView + Snap | Composition-Pattern |
+| ColorPicker | UserControl mit Slider | Komplexes Pattern |
 
 ### Nice-to-Have (Priorität: NIEDRIG)
 
@@ -666,25 +665,34 @@ new Button()
 
 ### Phase 2: Bis 1-Jahr-Jubiläum (08.01. - 10.02.2026) - ~33 Tage
 
-| # | Aktion | Priorität | Aufwand | Geschätzte Tage |
-|---|--------|-----------|---------|-----------------|
-| 1 | **Editor/MultilineEntry** implementieren | Hoch | Mittel | 2-3 |
-| 2 | **SearchBar** Control hinzufügen | Hoch | Niedrig | 1 |
-| 3 | **NavigationView/Drawer** für Mobile | Hoch | Hoch | 3-4 |
-| 4 | **BottomSheet** für Mobile | Hoch | Mittel | 2 |
-| 5 | **Expander/Accordion** implementieren | Mittel | Niedrig | 1 |
-| 6 | **NumericUpDown** hinzufügen | Mittel | Niedrig | 1 |
-| 7 | **Badge** Control | Mittel | Niedrig | 1 |
-| 8 | **Chip/Tag** Control | Mittel | Niedrig | 1 |
-| 9 | **Avatar** Control | Mittel | Niedrig | 1 |
-| 10 | **Rating Control** | Mittel | Niedrig | 1 |
-| 11 | **Carousel/Gallery** implementieren | Mittel | Mittel | 2 |
-| | **Gesamt geschätzt** | | | **~16-19 Tage** |
+#### Echte Control-Lücken (nicht komponierbar)
+
+| # | Control | Begründung | Geschätzte Tage |
+|---|---------|------------|-----------------|
+| 1 | **Editor/MultilineEntry** | Text-Layout, Cursor, Selection über Zeilen - echte Komplexität | 3-5 |
+| 2 | **NavigationView/Drawer** | Gesture-Integration, Animation, State - schwer selbst zu bauen | 3-4 |
+| 3 | **NumericUpDown** | Optional - Accessibility (VoiceOver Increment/Decrement) ist tricky | 1-2 |
+
+#### Patterns statt Controls (→ Docs/Recipes)
+
+Diese "Controls" sind mit bestehenden Mitteln komponierbar und gehören in die Dokumentation:
+
+| Pattern | Umsetzung mit PlusUi |
+|---------|---------------------|
+| SearchBar | `HStack` + `Entry` + `Button` - jede App hat custom Requirements |
+| BottomSheet | `Popup` mit Bottom-Positioning + Drag-Gesture |
+| Badge | `Label` mit Overlay-Positioning auf Icon |
+| Chip/Tag | Styled `Button` mit Border und CornerRadius |
+| Avatar | `Image` + `CornerRadius` + Fallback-Logic im ViewModel |
+| Rating | `HStack` + `Toggle`-Buttons oder Images |
+| Expander | `VStack` + `Button` + Animation - Styling ist app-spezifisch |
+| Carousel | `ScrollView` horizontal mit Snap-Behavior |
 
 > **🎯 Realistisches Ziel für 1-Jahr-Jubiläum:**
-> - ~10-13 neue Controls möglich in verbleibender Zeit
-> - Alle 6 Plattformen stable (Desktop, iOS, Android, Web + Headless + H264)
-> - ✅ Dokumentation bereits umfangreich vorhanden (41 Pages, ~745 Tests)
+> - 2-3 echte neue Controls (Editor, Drawer, ggf. NumericUpDown)
+> - Alle 6 Plattformen stable
+> - Optional: 2-3 Pattern-Recipes in der Dokumentation
+> - ✅ Dokumentation bereits umfangreich (41 Pages, ~745 Tests)
 
 ### Phase 3: Nach Jubiläum (Q1-Q2 2026)
 
@@ -738,7 +746,7 @@ new Button()
 | **Kleine Community** | Wenig Third-Party Libraries | 🟠 Mittel |
 | **Dokumentation dünn** | Schwerer Einstieg für Neue | 🟠 Mittel |
 | **Kein visueller Designer** | IDE-Support limitiert | 🟡 Niedrig |
-| **Fehlende Controls** | WebView, Editor, NavigationView | 🟠 Mittel |
+| **Fehlende Controls** | Editor, NavigationView (Rest sind Patterns) | 🟡 Niedrig-Mittel |
 | **Kein Enterprise Support** | Für Großkunden unattraktiv | 🟠 Mittel |
 | **Keine Third-Party Libraries** | Alles selbst bauen | 🟠 Mittel |
 
@@ -990,7 +998,7 @@ new Button()
 | Metrik | Stand Projektstart | Stand 1 Jahr |
 |--------|-------------------|--------------|
 | **Plattformen** | 0 | 6 (Desktop 3 + iOS + Android + Web) |
-| **Controls** | 0 | ~45+ (potenziell ~55+ bis Jubiläum) |
+| **Controls** | 0 | ~45+ |
 | **Desktop Stable** | - | ✅ Bereits stable |
 | **Mobile Stable** | - | ✅ Ab 08.01.2026 |
 | **Web Stable** | - | ✅ Ab 08.01.2026 |
@@ -998,7 +1006,17 @@ new Button()
 | **Unit Tests** | 0 | ~745 Tests in 34 Test-Dateien |
 | **Entwicklungsgeschwindigkeit** | - | ~1 Control/Tag |
 
-**Ein beeindruckender Fortschritt für ein Jahr Solo-Entwicklung.**
+### Perspektive: Solo-Projekt Realität
+
+Für ein **Ein-Personen-Projekt** ist der aktuelle Stand bemerkenswert:
+- 6 Plattformen in 1 Jahr
+- ~45 Controls mit vollständiger Dokumentation
+- ~745 Unit-Tests
+- Fluent API durchgängig implementiert
+
+Die "fehlenden" Controls (Badge, Chip, Avatar, etc.) sind keine echten Lücken - sie sind **Styling-Patterns**, die jede App individuell umsetzt. Die echten Lücken (Editor, Drawer) sind überschaubar.
+
+**Das Framework wächst organisch.** Neue Controls kommen, wenn sie gebraucht werden.
 
 ---
 
