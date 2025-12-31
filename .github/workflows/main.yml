@@ -39,6 +39,10 @@ jobs:
     - name: Build
       run: dotnet build PlusUi.sln --no-restore --configuration Release /p:Version=${VERSION}
 
+    - name: Replace template version placeholder
+      run: |
+        find templates/plusui-app -name "*.csproj" -exec sed -i "s/PLUSUI_VERSION/${VERSION}/g" {} \;
+
     - name: Pack
       run: dotnet pack PlusUi.sln --no-build --no-restore --configuration Release /p:Version=${VERSION} --output .
     

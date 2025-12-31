@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PlusUi.ios" Version="1.0.0" />
+    <PackageReference Include="PlusUi.ios" Version="PLUSUI_VERSION" />
     <ProjectReference Include="..\PlusUiApp\PlusUiApp.csproj" />
   </ItemGroup>
 </Project>

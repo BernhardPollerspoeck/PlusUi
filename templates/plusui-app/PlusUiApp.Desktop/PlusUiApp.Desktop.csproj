@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PlusUi.desktop" Version="1.0.0" />
+    <PackageReference Include="PlusUi.desktop" Version="PLUSUI_VERSION" />
     <ProjectReference Include="..\PlusUiApp\PlusUiApp.csproj" />
   </ItemGroup>
 

@@ -12,7 +12,7 @@
     <TrimMode>full</TrimMode>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="PlusUi.droid" Version="1.0.0" />
+    <PackageReference Include="PlusUi.droid" Version="PLUSUI_VERSION" />
     <ProjectReference Include="..\PlusUiApp\PlusUiApp.csproj" />
   </ItemGroup>
 
