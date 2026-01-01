@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Extensions.Logging
+@using Microsoft.JSInterop
 @using PlusUi.core
 @using SkiaSharp
 @using SkiaSharp.Views.Blazor
@@ -8,7 +9,11 @@
 @inject InputService InputService
 @inject NavigationContainer NavigationContainer
 @inject PlusUiNavigationService NavigationService
+@inject WebKeyboardHandler KeyboardHandler
+@inject WebPlatformService PlatformService
+@inject IJSRuntime JsRuntime
 @inject ILogger<PlusUiRootComponent> Logger
+@implements IAsyncDisposable
 
 <div class="plusui-container" @ref="_containerRef">
     <SKCanvasView @ref="_canvasView"
@@ -16,11 +21,13 @@
                   @onpointerdown="HandlePointerDown"
                   @onpointermove="HandlePointerMove"
                   @onpointerup="HandlePointerUp"
+                  @onpointercancel="HandlePointerCancel"
+                  @onpointerleave="HandlePointerLeave"
                   @onwheel="HandleWheel"
                   @onkeydown="HandleKeyDown"
                   @onkeyup="HandleKeyUp"
                   tabindex="0"
-                  style="width: 100%; height: 100vh; outline: none; display: block;" />
+                  style="width: 100%; height: 100vh; outline: none; display: block; touch-action: none; overscroll-behavior: contain;" />
 </div>
 
 @code {
@@ -28,7 +35,12 @@
     private ElementReference _containerRef;
     private int _width;
     private int _height;
+    private float _devicePixelRatio = 1.0f;
     private bool _isInitialized;
+    private bool _isVisible = true;
+    private DotNetObjectReference<PlusUiRootComponent>? _dotNetRef;
+    private IJSObjectReference? _jsModule;
+    private readonly HashSet<int> _activePointers = [];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -42,14 +54,34 @@
     {
         try
         {
-            // Get initial canvas size from browser
-            // In a real implementation, you'd use JSInterop to get actual viewport size
-            _width = 1920;  // Default size, will be updated on first paint
-            _height = 1080;
+            // Create .NET reference for JS callbacks
+            _dotNetRef = DotNetObjectReference.Create(this);
 
-            // Set display density (for HiDPI screens)
-            // In production, get this from JSInterop: window.devicePixelRatio
-            RenderService.DisplayDensity = 1.0f;
+            // Import the JavaScript module
+            _jsModule = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/PlusUi.Web/plusui-interop.js");
+
+            // Initialize JavaScript interop and get viewport info
+            var viewportInfo = await JsRuntime.InvokeAsync<ViewportInfo>(
+                "PlusUiInterop.initialize", _dotNetRef);
+
+            _width = (int)viewportInfo.Width;
+            _height = (int)viewportInfo.Height;
+            _devicePixelRatio = viewportInfo.DevicePixelRatio;
+
+            // Update render service with actual display density
+            RenderService.DisplayDensity = _devicePixelRatio;
+
+            // Update platform service with window size
+            PlatformService.SetWindowSize(viewportInfo.Width, viewportInfo.Height);
+
+            // Prevent context menu, touch defaults, and wheel defaults on the container
+            await JsRuntime.InvokeVoidAsync("PlusUiInterop.preventContextMenu", _containerRef);
+            await JsRuntime.InvokeVoidAsync("PlusUiInterop.preventTouchDefaults", _containerRef);
+            await JsRuntime.InvokeVoidAsync("PlusUiInterop.preventWheelDefault", _containerRef);
+
+            // Setup color scheme observer
+            await JsRuntime.InvokeVoidAsync("PlusUiInterop.setupColorSchemeObserver");
 
             // Initialize navigation (loads root page)
             NavigationService.Initialize();
@@ -59,7 +91,9 @@
             // Force initial render
             StateHasChanged();
 
-            Logger.LogInformation("PlusUi Web initialized with size {Width}x{Height}", _width, _height);
+            Logger.LogInformation(
+                "PlusUi Web initialized - Size: {Width}x{Height}, DPI: {Dpi}",
+                _width, _height, _devicePixelRatio);
         }
         catch (Exception ex)
         {
@@ -69,19 +103,23 @@
 
     private void OnPaintSurface(SKPaintSurfaceEventArgs e)
     {
-        if (!_isInitialized)
+        if (!_isInitialized || !_isVisible)
         {
             return;
         }
 
         var surface = e.Surface;
         var canvas = surface.Canvas;
-        
+
         // Update size if canvas size changed
         if (_width != e.Info.Width || _height != e.Info.Height)
         {
             _width = e.Info.Width;
             _height = e.Info.Height;
+
+            // Update platform service
+            PlatformService.SetWindowSize(_width / _devicePixelRatio, _height / _devicePixelRatio);
+
             NavigationContainer.CurrentPage.InvalidateMeasure();
             Logger.LogDebug("Canvas resized to {Width}x{Height}", _width, _height);
         }
@@ -89,7 +127,6 @@
         try
         {
             // Call the platform-agnostic render service
-            // Note: We pass null for GL and GRContext since Blazor SkiaSharp handles this internally
             RenderService.Render(
                 clearAction: null,
                 canvas: canvas,
@@ -104,50 +141,93 @@
 
     private void HandlePointerDown(PointerEventArgs e)
     {
-        var position = new Vector2((float)e.OffsetX, (float)e.OffsetY);
-        InputService.MouseDown(position / RenderService.DisplayDensity);
+        _activePointers.Add((int)e.PointerId);
+        var position = GetScaledPosition(e);
+        InputService.MouseDown(position);
         RequestRender();
     }
 
     private void HandlePointerMove(PointerEventArgs e)
     {
-        var position = new Vector2((float)e.OffsetX, (float)e.OffsetY);
-        InputService.MouseMove(position / RenderService.DisplayDensity);
-        RequestRender();
+        var position = GetScaledPosition(e);
+        InputService.MouseMove(position);
+
+        // Only request render if there are active pointers (dragging) for performance
+        if (_activePointers.Count > 0)
+        {
+            RequestRender();
+        }
     }
 
     private void HandlePointerUp(PointerEventArgs e)
     {
-        var position = new Vector2((float)e.OffsetX, (float)e.OffsetY);
-        InputService.MouseUp(position / RenderService.DisplayDensity);
+        _activePointers.Remove((int)e.PointerId);
+        var position = GetScaledPosition(e);
+        InputService.MouseUp(position);
         RequestRender();
+    }
+
+    private void HandlePointerCancel(PointerEventArgs e)
+    {
+        _activePointers.Remove((int)e.PointerId);
+        var position = GetScaledPosition(e);
+        InputService.MouseUp(position);
+        RequestRender();
+    }
+
+    private void HandlePointerLeave(PointerEventArgs e)
+    {
+        // Only handle if pointer was actively pressed
+        if (_activePointers.Remove((int)e.PointerId))
+        {
+            var position = GetScaledPosition(e);
+            InputService.MouseUp(position);
+            RequestRender();
+        }
     }
 
     private void HandleWheel(WheelEventArgs e)
     {
-        // Note: Browser wheel events use deltaY for vertical scroll
-        // We need to invert and scale similar to desktop implementation
-        float scrollSpeed = 20f;
-        float deltaX = (float)e.DeltaX;
-        float deltaY = -(float)e.DeltaY; // Invert for natural scrolling
-        
-        var position = new Vector2((float)e.OffsetX, (float)e.OffsetY);
-        InputService.MouseWheel(
-            position / RenderService.DisplayDensity,
-            deltaX * scrollSpeed,
-            deltaY * scrollSpeed);
-        
+        // Browser wheel events use deltaY for vertical scroll
+        // DeltaMode: 0 = pixels, 1 = lines, 2 = pages
+        float multiplier = e.DeltaMode switch
+        {
+            1 => 20f, // Lines - multiply by typical line height
+            2 => 400f, // Pages - multiply by typical page height
+            _ => 1f // Pixels - use as-is
+        };
+
+        float deltaX = (float)e.DeltaX * multiplier;
+        float deltaY = -(float)e.DeltaY * multiplier; // Invert for natural scrolling
+
+        var position = new Vector2((float)e.OffsetX, (float)e.OffsetY) / _devicePixelRatio;
+        InputService.MouseWheel(position, deltaX, deltaY);
+
         RequestRender();
     }
 
     private void HandleKeyDown(KeyboardEventArgs e)
     {
-        Logger.LogDebug("Key down: {Key}", e.Key);
+        // Handle Shift+Tab combination
+        if (e.Key == "Tab" && e.ShiftKey)
+        {
+            KeyboardHandler.OnKeyDown("ShiftTab", "ShiftTab");
+        }
+        else
+        {
+            KeyboardHandler.OnKeyDown(e.Key, e.Code);
+        }
+        RequestRender();
     }
 
     private void HandleKeyUp(KeyboardEventArgs e)
     {
-        Logger.LogDebug("Key up: {Key}", e.Key);
+        KeyboardHandler.OnKeyUp(e.Key, e.Code);
+    }
+
+    private Vector2 GetScaledPosition(PointerEventArgs e)
+    {
+        return new Vector2((float)e.OffsetX, (float)e.OffsetY) / _devicePixelRatio;
     }
 
     private void RequestRender()
@@ -155,4 +235,94 @@
         // In Blazor, we need to trigger a state change to re-render
         InvokeAsync(StateHasChanged);
     }
+
+    // JavaScript callback methods
+
+    [JSInvokable]
+    public void OnWindowResize(float width, float height, float devicePixelRatio)
+    {
+        _width = (int)(width * devicePixelRatio);
+        _height = (int)(height * devicePixelRatio);
+        _devicePixelRatio = devicePixelRatio;
+
+        RenderService.DisplayDensity = devicePixelRatio;
+        PlatformService.SetWindowSize(width, height);
+
+        NavigationContainer.CurrentPage.InvalidateMeasure();
+
+        Logger.LogDebug("Window resized to {Width}x{Height}, DPI: {Dpi}", width, height, devicePixelRatio);
+        RequestRender();
+    }
+
+    [JSInvokable]
+    public void OnVisibilityChange(bool isVisible)
+    {
+        _isVisible = isVisible;
+        Logger.LogDebug("Visibility changed: {IsVisible}", isVisible);
+
+        if (isVisible)
+        {
+            RequestRender();
+        }
+    }
+
+    [JSInvokable]
+    public void OnColorSchemeChange(string scheme)
+    {
+        Logger.LogDebug("Color scheme changed to: {Scheme}", scheme);
+        // Could trigger theme change here if supported
+        RequestRender();
+    }
+
+    [JSInvokable]
+    public void OnTextInput(string text)
+    {
+        foreach (var c in text)
+        {
+            KeyboardHandler.RaiseCharInput(c);
+        }
+        RequestRender();
+    }
+
+    [JSInvokable]
+    public void OnKeyDown(string key, string code, bool shiftKey, bool ctrlKey, bool altKey, bool metaKey)
+    {
+        if (key == "Tab" && shiftKey)
+        {
+            KeyboardHandler.OnKeyDown("ShiftTab", "ShiftTab");
+        }
+        else
+        {
+            KeyboardHandler.OnKeyDown(key, code);
+        }
+        RequestRender();
+    }
+
+    [JSInvokable]
+    public void OnKeyUp(string key, string code, bool shiftKey, bool ctrlKey, bool altKey, bool metaKey)
+    {
+        KeyboardHandler.OnKeyUp(key, code);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_jsModule != null)
+            {
+                await JsRuntime.InvokeVoidAsync("PlusUiInterop.dispose");
+                await _jsModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Circuit disconnected, ignore
+        }
+        finally
+        {
+            _dotNetRef?.Dispose();
+        }
+    }
+
+    private record ViewportInfo(float Width, float Height, float DevicePixelRatio);
 }

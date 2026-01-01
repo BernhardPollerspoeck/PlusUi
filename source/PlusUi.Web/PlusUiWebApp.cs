@@ -32,11 +32,17 @@ public class PlusUiWebApp(WebAssemblyHostBuilder builder)
 
         // Register PlusUi core services (shared with all platforms)
         builder.Services.AddPlusUiCore(appConfig, []);
-        // Note: No AddHostedService for StartupStyleService in Blazor WASM
 
         // Register web-specific services
+        // Platform service
+        builder.Services.AddSingleton<WebPlatformService>();
+        builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<WebPlatformService>());
+
+        // Keyboard handler
         builder.Services.AddSingleton<WebKeyboardHandler>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<WebKeyboardHandler>());
+
+        // Haptic service
         builder.Services.AddSingleton<WebHapticService>();
         builder.Services.AddSingleton<IHapticService>(sp => sp.GetRequiredService<WebHapticService>());
 

@@ -104,7 +104,6 @@ public static class HostApplicationBuilderExtensions
         string[] args)
     {
         builder.Services.AddPlusUiCore(appConfiguration, args);
-        builder.Services.AddHostedService<StartupStyleService>();
         return builder;
     }
 }
