@@ -89,7 +89,7 @@
             _isInitialized = true;
 
             // Force initial render
-            StateHasChanged();
+            RequestRender();
 
             Logger.LogInformation(
                 "PlusUi Web initialized - Size: {Width}x{Height}, DPI: {Dpi}",
@@ -141,6 +141,7 @@
 
     private void HandlePointerDown(PointerEventArgs e)
     {
+        if (!_isInitialized) return;
         _activePointers.Add((int)e.PointerId);
         var position = GetScaledPosition(e);
         InputService.MouseDown(position);
@@ -149,6 +150,7 @@
 
     private void HandlePointerMove(PointerEventArgs e)
     {
+        if (!_isInitialized) return;
         var position = GetScaledPosition(e);
         InputService.MouseMove(position);
 
@@ -161,6 +163,7 @@
 
     private void HandlePointerUp(PointerEventArgs e)
     {
+        if (!_isInitialized) return;
         _activePointers.Remove((int)e.PointerId);
         var position = GetScaledPosition(e);
         InputService.MouseUp(position);
@@ -169,6 +172,7 @@
 
     private void HandlePointerCancel(PointerEventArgs e)
     {
+        if (!_isInitialized) return;
         _activePointers.Remove((int)e.PointerId);
         var position = GetScaledPosition(e);
         InputService.MouseUp(position);
@@ -177,6 +181,7 @@
 
     private void HandlePointerLeave(PointerEventArgs e)
     {
+        if (!_isInitialized) return;
         // Only handle if pointer was actively pressed
         if (_activePointers.Remove((int)e.PointerId))
         {
@@ -188,6 +193,7 @@
 
     private void HandleWheel(WheelEventArgs e)
     {
+        if (!_isInitialized) return;
         // Browser wheel events use deltaY for vertical scroll
         // DeltaMode: 0 = pixels, 1 = lines, 2 = pages
         float multiplier = e.DeltaMode switch
@@ -208,6 +214,7 @@
 
     private void HandleKeyDown(KeyboardEventArgs e)
     {
+        if (!_isInitialized) return;
         // Handle Shift+Tab combination
         if (e.Key == "Tab" && e.ShiftKey)
         {
@@ -222,6 +229,7 @@
 
     private void HandleKeyUp(KeyboardEventArgs e)
     {
+        if (!_isInitialized) return;
         KeyboardHandler.OnKeyUp(e.Key, e.Code);
     }
 
@@ -232,8 +240,7 @@
 
     private void RequestRender()
     {
-        // In Blazor, we need to trigger a state change to re-render
-        InvokeAsync(StateHasChanged);
+        _canvasView?.Invalidate();
     }
 
     // JavaScript callback methods

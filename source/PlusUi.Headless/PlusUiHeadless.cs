@@ -52,6 +52,7 @@ public static class PlusUiHeadless
 
         // Build and start host
         var host = builder.Build();
+        host.InitializePlusUi();
         host.Start(); // Start synchronously
 
         // Return wrapper that implements IPlusUiHeadlessService

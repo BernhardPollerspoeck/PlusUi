@@ -53,6 +53,7 @@ public class PlusUiWebApp(WebAssemblyHostBuilder builder)
         builder.RootComponents.Add<PlusUiRootComponent>("#app");
 
         var host = builder.Build();
+        PlusUiHostExtensions.InitializePlusUi(host.Services);
         await host.RunAsync();
     }
 }

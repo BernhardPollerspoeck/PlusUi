@@ -119,6 +119,7 @@ public abstract class PlusUiActivity : Activity
         builder.ConfigurePlusUiApp(app);
 
         var host = builder.Build();
+        host.InitializePlusUi();
         host.Start();
         return host;
     }

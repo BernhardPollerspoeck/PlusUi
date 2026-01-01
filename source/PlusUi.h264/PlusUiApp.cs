@@ -51,6 +51,7 @@ public class PlusUiApp(string[] args)
         builder.ConfigurePlusUiApp(app);
 
         var host = builder.Build();
+        host.InitializePlusUi();
         host.Run();
     }
 
