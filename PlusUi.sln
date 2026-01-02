@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0_Solution Items", "0_Solut
 		Directory.Build.props = Directory.Build.props
 		.github\workflows\main.yml = .github\workflows\main.yml
 		README.md = README.md
+		render-loop-analysis.md = render-loop-analysis.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.desktop", "source\PlusUi.desktop\PlusUi.desktop.csproj", "{5ED91092-A0FC-48EB-B7BC-F8AC2E601D65}"

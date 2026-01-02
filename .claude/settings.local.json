@@ -5,7 +5,8 @@
       "Bash(dotnet build:*)",
       "Bash(dotnet test:*)",
       "Bash(xargs:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []
