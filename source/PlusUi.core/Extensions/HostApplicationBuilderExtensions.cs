@@ -4,6 +4,7 @@ using PlusUi.core.CoreElements;
 using PlusUi.core.Services;
 using PlusUi.core.Services.Accessibility;
 using PlusUi.core.Services.Focus;
+using PlusUi.core.Services.Rendering;
 using System.ComponentModel;
 
 namespace PlusUi.core;
@@ -35,6 +36,8 @@ public static class PlusUiServiceCollectionExtensions
         services.AddSingleton(appConfiguration);
         services.AddSingleton<ICommandLineService>(sp => new CommandLineService(args));
         services.AddSingleton<ServiceProviderService>();
+        services.AddSingleton<InvalidationTracker>();
+        services.AddSingleton<RenderLoopService>();
         services.AddSingleton<RenderService>();
         services.AddSingleton<InputService>();
 

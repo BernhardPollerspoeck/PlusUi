@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Services;
+using PlusUi.core.Services.Rendering;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -7,7 +8,7 @@ namespace PlusUi.core;
 /// <summary>
 /// Internal overlay element that renders the tooltip above all page content.
 /// </summary>
-internal class TooltipOverlay : UiElement
+internal class TooltipOverlay : UiElement, IInvalidator
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -18,21 +19,33 @@ internal class TooltipOverlay : UiElement
     private const float Padding = 8f;
     private const float Spacing = 4f;
     private const float DefaultFontSize = 14f;
+    private const int FadeInDuration = 200; // ms
 
     private readonly UiElement _targetElement;
     private readonly TooltipAttachment _attachment;
     private readonly IPlatformService? _platformService;
+    private readonly InvalidationTracker? _invalidationTracker;
+    private readonly TimeProvider _timeProvider;
 
     private SKPaint? _textPaint;
     private SKFont? _font;
     private UiElement? _contentElement;
     private Size _measuredSize;
+    private bool _isAnimating;
+    private float _opacity;
+    private DateTimeOffset _animationStart;
+
+    // IInvalidator implementation
+    public bool NeedsRendering => _isAnimating;
+    public event EventHandler? InvalidationChanged;
 
     public TooltipOverlay(UiElement targetElement, TooltipAttachment attachment)
     {
         _targetElement = targetElement;
         _attachment = attachment;
         _platformService = ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
+        _invalidationTracker = ServiceProviderService.ServiceProvider?.GetService<InvalidationTracker>();
+        _timeProvider = ServiceProviderService.ServiceProvider?.GetService<TimeProvider>() ?? TimeProvider.System;
 
         Background = new SolidColorBackground(new Color(30, 30, 30, 230));
         CornerRadius = 4f;
@@ -43,6 +56,18 @@ internal class TooltipOverlay : UiElement
         InitializeContent();
         MeasureContent();
         CalculatePosition();
+
+        // Register with InvalidationTracker and start fade-in animation
+        _invalidationTracker?.Register(this);
+        StartFadeIn();
+    }
+
+    private void StartFadeIn()
+    {
+        _isAnimating = true;
+        _opacity = 0f;
+        _animationStart = _timeProvider.GetUtcNow();
+        InvalidationChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void InitializeContent()
@@ -179,13 +204,32 @@ internal class TooltipOverlay : UiElement
 
     public override void Render(SKCanvas canvas)
     {
-        // Render background and shadow
-        base.Render(canvas);
-
         if (!IsVisible)
         {
             return;
         }
+
+        // Update animation if running
+        if (_isAnimating)
+        {
+            var elapsed = (_timeProvider.GetUtcNow() - _animationStart).TotalMilliseconds;
+            _opacity = Math.Min(1f, (float)(elapsed / FadeInDuration));
+
+            if (elapsed >= FadeInDuration)
+            {
+                _isAnimating = false;
+                _opacity = 1f;
+                InvalidationChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        // Apply opacity to rendering
+        canvas.Save();
+        var paint = new SKPaint { Color = new SKColor(255, 255, 255, (byte)(_opacity * 255)) };
+        canvas.SaveLayer(paint);
+
+        // Render background and shadow
+        base.Render(canvas);
 
         // Render content
         if (_contentElement != null)
@@ -204,6 +248,9 @@ internal class TooltipOverlay : UiElement
                 _font,
                 _textPaint);
         }
+
+        canvas.Restore();
+        canvas.Restore();
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
@@ -225,6 +272,9 @@ internal class TooltipOverlay : UiElement
             _font?.Dispose();
             // Note: _contentElement is not disposed here because we don't own it.
             // It was provided by the user through TooltipAttachment and may be reused.
+
+            // Unregister from InvalidationTracker
+            _invalidationTracker?.Unregister(this);
         }
         base.Dispose(disposing);
     }

@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.Services.Rendering;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -7,9 +9,11 @@ namespace PlusUi.core;
 /// An activity indicator (spinner) for showing indeterminate progress/loading states.
 /// </summary>
 [GenerateShadowMethods]
-public partial class ActivityIndicator : UiElement
+public partial class ActivityIndicator : UiElement, IInvalidator
 {
-    private DateTime _startTime;
+    private TimeProvider? _timeProvider;
+    private DateTimeOffset _startTime;
+    private InvalidationTracker? _invalidationTracker;
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -17,10 +21,27 @@ public partial class ActivityIndicator : UiElement
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Spinner;
 
+    // IInvalidator implementation
+    public bool NeedsRendering => IsRunning;
+    public event EventHandler? InvalidationChanged;
+
     public ActivityIndicator()
     {
         SetDesiredSize(new(40, 40));
-        _startTime = DateTime.Now;
+    }
+
+    public override void BuildContent()
+    {
+        base.BuildContent();
+
+        // Get TimeProvider and InvalidationTracker from DI
+        _timeProvider = ServiceProviderService.ServiceProvider?.GetService<TimeProvider>() ?? TimeProvider.System;
+        _invalidationTracker = ServiceProviderService.ServiceProvider?.GetService<InvalidationTracker>();
+
+        _startTime = _timeProvider.GetUtcNow();
+
+        // Register with InvalidationTracker for continuous rendering when running
+        _invalidationTracker?.Register(this);
     }
 
     /// <inheritdoc />
@@ -49,10 +70,13 @@ public partial class ActivityIndicator : UiElement
             if (field != value)
             {
                 field = value;
-                if (value)
+                if (value && _timeProvider != null)
                 {
-                    _startTime = DateTime.Now;
+                    _startTime = _timeProvider.GetUtcNow();
                 }
+
+                // Notify InvalidationTracker that rendering state changed
+                InvalidationChanged?.Invoke(this, EventArgs.Empty);
             }
         }
     } = true;
@@ -134,7 +158,7 @@ public partial class ActivityIndicator : UiElement
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
-        if (!IsVisible || !IsRunning)
+        if (!IsVisible || !IsRunning || _timeProvider == null)
         {
             return;
         }
@@ -143,8 +167,8 @@ public partial class ActivityIndicator : UiElement
         var centerY = Position.Y + VisualOffset.Y + (ElementSize.Height / 2);
         var radius = Math.Min(ElementSize.Width, ElementSize.Height) / 2 - 2;
 
-        // Calculate rotation based on elapsed time
-        var elapsedSeconds = (DateTime.Now - _startTime).TotalSeconds;
+        // Calculate rotation based on elapsed time (using TimeProvider for testability)
+        var elapsedSeconds = (_timeProvider.GetUtcNow() - _startTime).TotalSeconds;
         var rotationDegrees = (float)((elapsedSeconds * 360 * Speed) % 360);
 
         using var paint = new SKPaint
@@ -166,5 +190,15 @@ public partial class ActivityIndicator : UiElement
 
         path.AddArc(rect, rotationDegrees, 270);
         canvas.DrawPath(path, paint);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            // Unregister from InvalidationTracker
+            _invalidationTracker?.Unregister(this);
+        }
+        base.Dispose(disposing);
     }
 }

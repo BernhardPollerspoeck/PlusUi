@@ -27,6 +27,7 @@ using Sandbox.Pages.ImageExportDemo;
 using Sandbox.Pages.SvgDemo;
 using Sandbox.Pages.UniformGridDemo;
 using Sandbox.Pages.WrapDemo;
+using Sandbox.Pages.RenderLoopDemo;
 using SkiaSharp;
 
 namespace Sandbox.Pages.Main;
@@ -211,6 +212,12 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     private HStack CreateTestButtons()
     {
         return new HStack(
+            new Button()
+                .SetText("🔄 Render Loop Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(255, 59, 48)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(RenderLoopDemoPage)),
             new Button()
                 .SetText("New Controls Demo")
                 .SetPadding(new(20, 5))

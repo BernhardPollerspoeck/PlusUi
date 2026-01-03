@@ -899,7 +899,47 @@ public abstract class UiElement : IDisposable
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Point Position { get; protected set; }
 
-    public virtual INotifyPropertyChanged? Context { get; internal set; }
+    public virtual INotifyPropertyChanged? Context
+    {
+        get => field;
+        internal set
+        {
+            if (field == value) return;
+
+            // Unsubscribe from old context
+            if (field != null)
+            {
+                field.PropertyChanged -= OnContextPropertyChanged;
+            }
+
+            field = value;
+
+            // Subscribe to new context
+            if (field != null)
+            {
+                field.PropertyChanged += OnContextPropertyChanged;
+            }
+
+            // Update all bindings with new context
+            UpdateBindings();
+        }
+    }
+
+    private void OnContextPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Update bindings for the changed property (or all if null)
+        if (!string.IsNullOrEmpty(e.PropertyName))
+        {
+            UpdateBindings(e.PropertyName);
+        }
+        else
+        {
+            UpdateBindings();
+        }
+
+        // Trigger re-measure and render
+        InvalidateMeasure();
+    }
 
     #region Measuring
     public Size Measure(Size availableSize, bool dontStretch = false)

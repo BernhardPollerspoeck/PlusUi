@@ -7,6 +7,88 @@
 - **Ziel:** Render nur on-demand (Events, Invalidation, Animations)
 - **Aufgabe:** Conditional rendering basierend auf InvalidationTracker
 
+#### Platform-Specific Implementation:
+
+**iOS (OpenGlViewController.cs) - ✅ Perfekt!**
+```csharp
+// Bereits event-driven via SKCanvasView!
+public void Invalidate()
+{
+    _canvasView?.SetNeedsDisplay();  // On-demand rendering
+}
+```
+- **Status:** Keine Änderungen nötig! ✅
+- SKCanvasView.PaintSurface feuert nur bei SetNeedsDisplay()
+
+**Android (PlusUiActivity.cs) - ⚠️ Kleine Änderung**
+```csharp
+// Aktuell: GLSurfaceView rendert continuous
+_glSurfaceView = new GLSurfaceView(this);
+_glSurfaceView.SetRenderer(...);
+
+// FIX: WhenDirty Mode aktivieren
+_glSurfaceView.RenderMode = Rendermode.WhenDirty;  // ← Hinzufügen!
+
+// Dann on-demand rendern:
+public void RequestRender()
+{
+    _glSurfaceView?.RequestRender();
+}
+```
+- **Status:** RenderMode.WhenDirty + RequestRender() implementieren
+
+**Desktop (WindowManager.cs) - ⚠️ Zwei Optionen**
+
+*Option 1: IsEventDriven Mode (Clean)*
+```csharp
+var options = WindowOptions.Default with
+{
+    // ... existing options
+    IsEventDriven = true,   // Kein Auto-Render
+    UpdatesPerSecond = 0,   // Kein Auto-Update
+    FramesPerSecond = 0     // Kein Auto-Render FPS limit
+};
+
+public void RequestRender()
+{
+    _window?.DoRender();  // Manuell rendern
+}
+```
+
+*Option 2: Conditional Skip (Einfacher)*
+```csharp
+private void HandleWindowRender(double delta)
+{
+    if (!_invalidationTracker.NeedsRendering)
+        return;  // Skip wenn nichts zu tun
+
+    // Existing render code...
+    renderService.Render(...);
+}
+```
+- **Status:** Option 2 (conditional skip) ist einfacher und sicherer
+
+**Web (PlusUiRootComponent.razor) - ✅ Bereits implementiert!**
+```csharp
+// Bereits event-driven via SKCanvasView.Invalidate()
+private void RequestRender()
+{
+    _canvasView?.Invalidate();  // Triggert OnPaintSurface
+}
+```
+- **Status:** Keine Änderungen nötig! ✅
+
+#### Zusammenfassung Platform Rendering:
+
+| Platform | Aktueller Zustand | Änderung nötig? | Lösung |
+|----------|-------------------|-----------------|--------|
+| **iOS** | SKCanvasView (event-driven) | ❌ Nein | Already perfect! |
+| **Web** | SKCanvasView (event-driven) | ❌ Nein | Already perfect! |
+| **Android** | GLSurfaceView (continuous) | ✅ Ja | RenderMode.WhenDirty |
+| **Desktop** | Silk.NET Window (continuous) | ✅ Ja | Conditional skip in HandleWindowRender |
+
+**Resize Events:** Alle Platforms rufen bereits `InvalidateMeasure()` auf! ✅
+
 ### Step 2: Platform layout events implementieren
 - **Platform → Core propagation:**
   - Window Resize → InvalidateMeasure + Render

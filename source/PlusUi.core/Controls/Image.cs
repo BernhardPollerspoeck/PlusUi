@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Models;
+using PlusUi.core.Services.Rendering;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -33,15 +34,31 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
-public partial class Image : UiElement
+public partial class Image : UiElement, IInvalidator
 {
     private IImageLoaderService? _imageLoaderService;
+    private InvalidationTracker? _invalidationTracker;
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
 
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Image;
+
+    // IInvalidator implementation
+    public bool NeedsRendering => _animatedImageInfo != null && _animationTimer != null;
+    public event EventHandler? InvalidationChanged;
+
+    public override void BuildContent()
+    {
+        base.BuildContent();
+
+        // Get InvalidationTracker from DI
+        _invalidationTracker = ServiceProviderService.ServiceProvider?.GetService<InvalidationTracker>();
+
+        // Register with InvalidationTracker (will only need rendering when animation is active)
+        _invalidationTracker?.Register(this);
+    }
 
     /// <inheritdoc />
     public override string? GetComputedAccessibilityLabel()
@@ -190,6 +207,9 @@ public partial class Image : UiElement
             state: null,
   dueTime: _animatedImageInfo.FrameDelays[0],
             period: System.Threading.Timeout.Infinite);
+
+        // Notify InvalidationTracker that continuous rendering is now required
+        InvalidationChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void StopAnimation()
@@ -197,6 +217,9 @@ public partial class Image : UiElement
         _animationTimer?.Dispose();
         _animationTimer = null;
         _currentFrameIndex = 0;
+
+        // Notify InvalidationTracker that continuous rendering is no longer required
+        InvalidationChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnAnimationTick()
@@ -224,6 +247,9 @@ public partial class Image : UiElement
             _animatedImageInfo?.Dispose();
             _svgImageInfo?.Dispose();
             _renderedSvgImage?.Dispose();
+
+            // Unregister from InvalidationTracker
+            _invalidationTracker?.Unregister(this);
         }
         base.Dispose(disposing);
     }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using PlusUi.core;
 using PlusUi.core.Services;
 using PlusUi.core.Services.Accessibility;
+using PlusUi.core.Services.Rendering;
 using PlusUi.droid.Accessibility;
 
 namespace PlusUi.droid;
@@ -39,7 +40,15 @@ public abstract class PlusUiActivity : Activity
 
         _glSurfaceView = new GLSurfaceView(this);
         _glSurfaceView.SetEGLContextClientVersion(3); // OpenGL ES 3.0
-        _glSurfaceView.SetRenderer(_host.Services.GetRequiredService<SilkRenderer>());
+
+        var renderer = _host.Services.GetRequiredService<SilkRenderer>();
+        _glSurfaceView.SetRenderer(renderer);
+
+        // Enable on-demand rendering instead of continuous (battery optimization)
+        _glSurfaceView.RenderMode = Rendermode.WhenDirty;
+
+        // Give renderer reference to surface view for RequestRender() calls
+        renderer.SetView(_glSurfaceView);
 
         _glSurfaceView.SetOnTouchListener(_host.Services.GetRequiredService<TapGestureListener>());
 
@@ -67,6 +76,20 @@ public abstract class PlusUiActivity : Activity
     {
         base.OnResume();
         _glSurfaceView?.OnResume();
+    }
+
+    public override void OnConfigurationChanged(Android.Content.Res.Configuration newConfig)
+    {
+        base.OnConfigurationChanged(newConfig);
+
+        // Configuration changed (rotation, locale, font scale, etc.)
+        // GLSurfaceView will call OnSurfaceChanged automatically for size changes
+        // Request render to ensure UI updates
+        if (_host != null)
+        {
+            var invalidationTracker = _host.Services.GetRequiredService<InvalidationTracker>();
+            invalidationTracker.RequestRender();
+        }
     }
 
     protected override void OnDestroy()
@@ -105,6 +128,7 @@ public abstract class PlusUiActivity : Activity
             new TapGestureListener(
                 sp.GetRequiredService<InputService>(),
                 sp.GetRequiredService<RenderService>(),
+                sp.GetRequiredService<InvalidationTracker>(),
                 sp.GetRequiredService<Android.Content.Context>()));
         builder.Services.AddSingleton<KeyCaptureEditText>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<KeyCaptureEditText>());
