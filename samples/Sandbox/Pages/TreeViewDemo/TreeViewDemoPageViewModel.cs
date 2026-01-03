@@ -116,21 +116,3 @@ public partial class TreeViewDemoPageViewModel : ObservableObject
     [ObservableProperty]
     private string _selectedItemName = "(nothing selected)";
 }
-
-public class Drive
-{
-    public string Name { get; set; } = string.Empty;
-    public List<Folder> Folders { get; set; } = new();
-}
-
-public class Folder
-{
-    public string Name { get; set; } = string.Empty;
-    public List<Folder> SubFolders { get; set; } = new();
-    public List<FileItem> Files { get; set; } = new();
-}
-
-public class FileItem
-{
-    public string Name { get; set; } = string.Empty;
-}

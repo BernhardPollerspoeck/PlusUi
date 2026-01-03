@@ -2,8 +2,6 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
-public enum ScrollbarOrientation { Vertical, Horizontal }
-
 public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
 {
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Scrollbar;

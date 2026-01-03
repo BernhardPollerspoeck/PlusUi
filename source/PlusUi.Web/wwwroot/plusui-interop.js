@@ -3,6 +3,7 @@
 window.PlusUiInterop = {
     // Reference to the .NET object for callbacks
     dotNetReference: null,
+    resizeObserver: null,
 
     // Initialize the interop with a .NET object reference
     initialize: function (dotNetRef) {
@@ -27,6 +28,30 @@ window.PlusUiInterop = {
         };
     },
 
+    // Force canvas resize
+    resizeCanvas: function () {
+        const container = document.querySelector('.plusui-container');
+        const canvas = container?.querySelector('canvas');
+        if (canvas) {
+            const dpr = window.devicePixelRatio || 1;
+
+            // Use viewport dimensions
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            // Set canvas pixel size (actual buffer size)
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+
+            // Keep CSS at 100% to fill container
+            canvas.style.width = '100%';
+            canvas.style.height = '100vh';
+
+            return true;
+        }
+        return false;
+    },
+
     // Get element dimensions
     getElementDimensions: function (element) {
         if (!element) {
@@ -46,6 +71,32 @@ window.PlusUiInterop = {
         let resizeTimeout;
         const debounceDelay = 16; // ~60fps
 
+        // Delay ResizeObserver setup to ensure DOM is ready
+        const setupObserver = () => {
+            const container = document.querySelector('.plusui-container');
+            if (container && window.ResizeObserver) {
+                this.resizeObserver = new ResizeObserver((entries) => {
+                    if (resizeTimeout) {
+                        clearTimeout(resizeTimeout);
+                    }
+                    resizeTimeout = setTimeout(() => {
+                        if (this.dotNetReference) {
+                            const info = this.getViewportInfo();
+                            this.dotNetReference.invokeMethodAsync('OnWindowResize', info.width, info.height, info.devicePixelRatio);
+                        }
+                    }, debounceDelay);
+                });
+                this.resizeObserver.observe(container);
+            } else if (!container) {
+                // Retry if container not found yet
+                setTimeout(setupObserver, 100);
+            }
+        };
+
+        // Start trying to setup the observer
+        setupObserver();
+
+        // Fallback to window resize event for older browsers
         window.addEventListener('resize', () => {
             if (resizeTimeout) {
                 clearTimeout(resizeTimeout);
@@ -358,6 +409,10 @@ window.PlusUiInterop = {
 
     // Dispose and cleanup
     dispose: function () {
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+            this.resizeObserver = null;
+        }
         this.dotNetReference = null;
         if (this.keyboard.hiddenInput) {
             this.keyboard.hiddenInput.remove();

@@ -123,22 +123,14 @@
         var surface = e.Surface;
         var canvas = surface.Canvas;
 
-        // Update size if canvas size changed
-        if (_width != e.Info.Width || _height != e.Info.Height)
-        {
-            _width = e.Info.Width;
-            _height = e.Info.Height;
-
-            // Update platform service
-            PlatformService.SetWindowSize(_width / _devicePixelRatio, _height / _devicePixelRatio);
-
-            NavigationContainer.CurrentPage.InvalidateMeasure();
-            Logger.LogDebug("Canvas resized to {Width}x{Height}", _width, _height);
-        }
+        // Use our tracked dimensions instead of e.Info dimensions
+        // This ensures we render at the correct size even if SKCanvasView hasn't updated yet
+        Logger.LogTrace("Rendering - Tracked: {Width}x{Height}, Canvas: {CanvasWidth}x{CanvasHeight}",
+            _width, _height, e.Info.Width, e.Info.Height);
 
         try
         {
-            // Call the platform-agnostic render service
+            // Call the platform-agnostic render service with our tracked size
             RenderService.Render(
                 clearAction: null,
                 canvas: canvas,
@@ -273,7 +265,13 @@
         NavigationContainer.CurrentPage.InvalidateMeasure();
 
         Logger.LogDebug("Window resized to {Width}x{Height}, DPI: {Dpi}", width, height, devicePixelRatio);
-        RequestRender();
+
+        // Force SKCanvasView to re-render with new dimensions
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+            RequestRender();
+        });
     }
 
     [JSInvokable]

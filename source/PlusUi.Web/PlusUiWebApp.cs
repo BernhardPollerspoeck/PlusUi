@@ -6,15 +6,6 @@ using PlusUi.core.Services;
 namespace PlusUi.Web;
 
 /// <summary>
-/// Wrapper for WebAssemblyHostBuilder implementing IPlusUiAppBuilder.
-/// </summary>
-public class WebAppBuilder(WebAssemblyHostBuilder builder) : IPlusUiAppBuilder
-{
-    public IServiceCollection Services => builder.Services;
-    public WebAssemblyHostBuilder Inner => builder;
-}
-
-/// <summary>
 /// Main entry point for PlusUi Web applications using Blazor WebAssembly.
 /// Usage:
 /// <code>
@@ -55,20 +46,5 @@ public class PlusUiWebApp(WebAssemblyHostBuilder builder)
         var host = builder.Build();
         PlusUiHostExtensions.InitializePlusUi(host.Services);
         await host.RunAsync();
-    }
-}
-
-/// <summary>
-/// Extension methods for WebAssemblyHostBuilder to support PlusUi.
-/// </summary>
-public static class WebAssemblyHostBuilderExtensions
-{
-    public static WebAssemblyHostBuilder ConfigurePlusUiApp(
-        this WebAssemblyHostBuilder builder,
-        IAppConfiguration appConfiguration)
-    {
-        builder.Services.Configure<PlusUiConfiguration>(appConfiguration.ConfigureWindow);
-        appConfiguration.ConfigureApp(new WebAppBuilder(builder));
-        return builder;
     }
 }

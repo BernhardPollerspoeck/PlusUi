@@ -4,19 +4,6 @@ using SkiaSharp;
 namespace PlusUi.core;
 
 /// <summary>
-/// Defines the stroke pattern types available for Border control.
-/// </summary>
-public enum StrokeType
-{
-    /// <summary>Solid continuous stroke</summary>
-    Solid,
-    /// <summary>Dashed stroke pattern</summary>
-    Dashed,
-    /// <summary>Dotted stroke pattern</summary>
-    Dotted
-}
-
-/// <summary>
 /// Border control that provides background color, stroke color, stroke thickness, and stroke type.
 /// Inherits from UiLayoutElement to support a single child element with proper border spacing.
 /// </summary>

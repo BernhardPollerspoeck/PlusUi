@@ -187,14 +187,3 @@ public class VideoRenderingProgressService
     /// </summary>
     public int TotalFrames => _totalFrames;
 }
-
-/// <summary>
-/// Defines the types of messages that can be displayed
-/// </summary>
-public enum MessageType
-{
-    Info,
-    Warning,
-    Error,
-    Success
-}
