@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Services;
+using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -7,13 +8,19 @@ namespace PlusUi.core;
 /// <summary>
 /// Overlay element that renders the toolbar overflow menu above all page content.
 /// </summary>
-internal class ToolbarOverflowMenuOverlay(Toolbar toolbar) : UiElement, IDismissableOverlay
+internal class ToolbarOverflowMenuOverlay(Toolbar toolbar) : UiElement, IDismissableOverlay, IDebugInspectable
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
 
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Menu;
+
+    /// <summary>
+    /// Returns the overflow menu content for debug inspection.
+    /// </summary>
+    IEnumerable<UiElement> IDebugInspectable.GetDebugChildren() =>
+        toolbar._overflowMenuContent != null ? [toolbar._overflowMenuContent] : [];
 
     private SKRect _menuRect;
     private bool _measured;

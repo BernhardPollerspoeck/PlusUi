@@ -17,6 +17,7 @@ internal class DebugBridgeClient : IDisposable
     private readonly NavigationContainer _navigationContainer;
     private readonly InvalidationTracker _invalidationTracker;
     private readonly ILogger<DebugBridgeClient>? _logger;
+    private readonly DebugTreeInspector _treeInspector = new();
 
     private ClientWebSocket? _webSocket;
     private CancellationTokenSource? _cancellationTokenSource;
@@ -113,23 +114,34 @@ internal class DebugBridgeClient : IDisposable
         {
             while (!cancellationToken.IsCancellationRequested && _webSocket != null)
             {
-                var result = await _webSocket.ReceiveAsync(
-                    new ArraySegment<byte>(buffer),
-                    cancellationToken);
+                // Receive message in chunks until EndOfMessage is true
+                var messageBytes = new List<byte>();
+                WebSocketReceiveResult result;
 
-                if (result.MessageType == WebSocketMessageType.Close)
+                do
                 {
-                    _logger?.LogInformation("Server closed connection");
-                    _isConnected = false;
+                    result = await _webSocket.ReceiveAsync(
+                        new ArraySegment<byte>(buffer),
+                        cancellationToken);
 
-                    // Auto-reconnect
-                    _ = ConnectAsync();
-                    break;
-                }
+                    if (result.MessageType == WebSocketMessageType.Close)
+                    {
+                        _logger?.LogInformation("Server closed connection");
+                        _isConnected = false;
+
+                        // Auto-reconnect
+                        _ = ConnectAsync();
+                        return;
+                    }
+
+                    // Append received bytes to message
+                    messageBytes.AddRange(buffer.Take(result.Count));
+
+                } while (!result.EndOfMessage);
 
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    var json = Encoding.UTF8.GetString(messageBytes.ToArray());
                     var message = JsonSerializer.Deserialize<DebugMessage>(json);
 
                     if (message != null)
@@ -159,13 +171,14 @@ internal class DebugBridgeClient : IDisposable
             switch (message.Type)
             {
                 case "get_tree":
-                    // Will be implemented in DebugTreeInspector
-                    _logger?.LogDebug("Received get_tree command");
+                    await HandleGetTreeCommandAsync();
                     break;
 
                 case "get_element_details":
-                    // Will be implemented in DebugTreeInspector
-                    _logger?.LogDebug("Received get_element_details command");
+                    if (message.Data is string elementId)
+                    {
+                        await HandleGetElementDetailsCommandAsync(elementId);
+                    }
                     break;
 
                 case "set_property":
@@ -184,6 +197,71 @@ internal class DebugBridgeClient : IDisposable
         }
 
         await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Handles get_tree command - serializes and sends the UI tree.
+    /// </summary>
+    private async Task HandleGetTreeCommandAsync()
+    {
+        try
+        {
+            var currentPage = _navigationContainer.CurrentPage;
+            if (currentPage == null)
+            {
+                _logger?.LogWarning("No current page to inspect");
+                return;
+            }
+
+            var treeData = _treeInspector.SerializeTree(currentPage);
+
+            await SendAsync(new DebugMessage
+            {
+                Type = "ui_tree",
+                Data = treeData
+            });
+
+            _logger?.LogDebug("Sent UI tree with {Count} properties", treeData.Properties.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling get_tree command");
+        }
+    }
+
+    /// <summary>
+    /// Handles get_element_details command - sends details for a specific element.
+    /// </summary>
+    private async Task HandleGetElementDetailsCommandAsync(string elementId)
+    {
+        try
+        {
+            var currentPage = _navigationContainer.CurrentPage;
+            if (currentPage == null)
+            {
+                _logger?.LogWarning("No current page to inspect");
+                return;
+            }
+
+            var details = _treeInspector.GetElementDetails(currentPage, elementId);
+            if (details == null)
+            {
+                _logger?.LogWarning("Element {ElementId} not found", elementId);
+                return;
+            }
+
+            await SendAsync(new DebugMessage
+            {
+                Type = "element_details",
+                Data = details
+            });
+
+            _logger?.LogDebug("Sent element details for {ElementId}", elementId);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling get_element_details command");
+        }
     }
 
     /// <summary>

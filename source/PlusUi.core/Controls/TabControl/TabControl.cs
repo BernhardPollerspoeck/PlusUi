@@ -37,6 +37,12 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Tab;
 
+    /// <summary>
+    /// Returns all tab contents for debug inspection (not just the active tab).
+    /// </summary>
+    protected override IEnumerable<UiElement> GetDebugChildrenCore() =>
+        _tabs.Select(t => t.Content).Where(c => c != null)!;
+
     public TabControl()
     {
         _headerFont = new SKFont(SKTypeface.Default) { Size = HeaderTextSize };

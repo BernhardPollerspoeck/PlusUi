@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -34,6 +35,12 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
 
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Menu;
+
+    /// <summary>
+    /// Returns the active menu overlay for debug inspection.
+    /// </summary>
+    protected override IEnumerable<UiElement> GetDebugChildrenCore() =>
+        _activeOverlay != null ? Children.Append(_activeOverlay) : Children;
 
     public Menu()
     {

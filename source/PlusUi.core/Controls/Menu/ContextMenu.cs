@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -20,7 +21,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
-public partial class ContextMenu : UiElement
+public partial class ContextMenu : UiElement, IDebugInspectable
 {
     private static readonly IBackground DefaultBackground = new SolidColorBackground(new Color(45, 45, 45));
 
@@ -29,6 +30,12 @@ public partial class ContextMenu : UiElement
 
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Menu;
+
+    /// <summary>
+    /// Returns the menu overlay for debug inspection.
+    /// </summary>
+    IEnumerable<UiElement> IDebugInspectable.GetDebugChildren() =>
+        _overlay != null ? [_overlay] : [];
 
     public ContextMenu()
     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Animations;
+using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
 using System.ComponentModel;
 
@@ -14,6 +15,11 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
     /// Gets the root element of the page's content tree for traversal purposes.
     /// </summary>
     internal UiElement ContentTree => _tree;
+
+    /// <summary>
+    /// Pages return ContentTree for debug inspection, not Children.
+    /// </summary>
+    protected override IEnumerable<UiElement> GetDebugChildrenCore() => [ContentTree];
 
     /// <summary>
     /// Optional page-specific transition that overrides the global default transition.

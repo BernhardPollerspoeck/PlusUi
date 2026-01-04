@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Services;
+using PlusUi.core.Services.DebugBridge;
 using PlusUi.core.Services.Rendering;
 using SkiaSharp;
 
@@ -8,7 +9,7 @@ namespace PlusUi.core;
 /// <summary>
 /// Internal overlay element that renders the tooltip above all page content.
 /// </summary>
-internal class TooltipOverlay : UiElement, IInvalidator
+internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -38,6 +39,10 @@ internal class TooltipOverlay : UiElement, IInvalidator
     // IInvalidator implementation
     public bool NeedsRendering => _isAnimating;
     public event EventHandler? InvalidationChanged;
+
+    // IDebugInspectable implementation
+    IEnumerable<UiElement> IDebugInspectable.GetDebugChildren() =>
+        _contentElement != null ? [_contentElement] : [];
 
     public TooltipOverlay(UiElement targetElement, TooltipAttachment attachment)
     {

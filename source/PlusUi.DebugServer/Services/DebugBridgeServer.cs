@@ -143,20 +143,31 @@ internal class DebugBridgeServer : IDisposable
         {
             while (!cancellationToken.IsCancellationRequested && webSocket.State == WebSocketState.Open)
             {
-                var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
+                // Receive message in chunks until EndOfMessage is true
+                var messageBytes = new List<byte>();
+                WebSocketReceiveResult result;
 
-                if (result.MessageType == WebSocketMessageType.Close)
+                do
                 {
-                    await webSocket.CloseAsync(
-                        WebSocketCloseStatus.NormalClosure,
-                        "Closing",
-                        CancellationToken.None);
-                    break;
-                }
+                    result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
+
+                    if (result.MessageType == WebSocketMessageType.Close)
+                    {
+                        await webSocket.CloseAsync(
+                            WebSocketCloseStatus.NormalClosure,
+                            "Closing",
+                            CancellationToken.None);
+                        return;
+                    }
+
+                    // Append received bytes to message
+                    messageBytes.AddRange(buffer.Take(result.Count));
+
+                } while (!result.EndOfMessage);
 
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    var json = Encoding.UTF8.GetString(messageBytes.ToArray());
                     var message = JsonSerializer.Deserialize<DebugMessage>(json);
 
                     if (message != null)

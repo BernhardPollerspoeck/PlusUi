@@ -34,6 +34,21 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Toolbar;
 
+    /// <summary>
+    /// Returns all child elements including Children, LeftItems, RightItems, CenterContent, title label, overflow button, and overflow menu content.
+    /// </summary>
+    protected override IEnumerable<UiElement> GetDebugChildrenCore()
+    {
+        var elements = Children.AsEnumerable();
+        elements = elements.Concat(LeftItems);
+        elements = elements.Concat(RightItems);
+        if (CenterContent != null) elements = elements.Append(CenterContent);
+        if (_titleLabel != null) elements = elements.Append(_titleLabel);
+        if (_overflowButton != null) elements = elements.Append(_overflowButton);
+        if (_overflowMenuContent != null) elements = elements.Append(_overflowMenuContent);
+        return elements;
+    }
+
     private Label? _titleLabel;
     internal Button? _overflowButton;
     private List<UiElement> _overflowItems = new();

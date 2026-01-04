@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Services;
+using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
 using System.Collections;
 using System.Collections.Specialized;
@@ -25,8 +26,14 @@ namespace PlusUi.core;
 ///     .BindSelectedItem(nameof(vm.SelectedPerson), () => vm.SelectedPerson, p => vm.SelectedPerson = p);
 /// </code>
 /// </example>
-public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboardInputHandler
+public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboardInputHandler, IDebugInspectable
 {
+    /// <summary>
+    /// Returns the dropdown overlay for debug inspection.
+    /// </summary>
+    IEnumerable<UiElement> IDebugInspectable.GetDebugChildren() =>
+        _dropdownOverlay != null ? [_dropdownOverlay] : [];
+
     private IEnumerable<T>? _itemsSource;
     internal readonly List<T> _cachedItems = new();
     internal const float DropdownMaxHeight = 200f;

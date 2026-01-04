@@ -1,4 +1,5 @@
-﻿using PlusUi.core.Services.Focus;
+﻿using PlusUi.core.Services.DebugBridge;
+using PlusUi.core.Services.Focus;
 using SkiaSharp;
 using System.ComponentModel;
 
@@ -42,7 +43,7 @@ public abstract class UiLayoutElement<T> : UiLayoutElement where T : UiLayoutEle
     }
 }
 
-public abstract class UiLayoutElement : UiElement
+public abstract class UiLayoutElement : UiElement, IDebugInspectable
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -117,6 +118,17 @@ public abstract class UiLayoutElement : UiElement
 
     #region children
     public virtual List<UiElement> Children { get; } = [];
+
+    /// <summary>
+    /// Returns children for debug inspection (virtual for UiPageElement override).
+    /// </summary>
+    protected virtual IEnumerable<UiElement> GetDebugChildrenCore() => Children;
+
+    /// <summary>
+    /// IDebugInspectable implementation - delegates to virtual method.
+    /// </summary>
+    IEnumerable<UiElement> IDebugInspectable.GetDebugChildren() => GetDebugChildrenCore();
+
     public UiElement AddChild(UiElement child)
     {
         child.Parent = this;

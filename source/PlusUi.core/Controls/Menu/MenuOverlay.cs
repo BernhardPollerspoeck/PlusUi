@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Services;
+using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -8,7 +9,7 @@ namespace PlusUi.core;
 /// Overlay element that renders a menu dropdown with items.
 /// Supports nested submenus, keyboard navigation, and hover tracking.
 /// </summary>
-internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKeyboardInputHandler
+internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKeyboardInputHandler, IDebugInspectable
 {
     private static readonly Color DefaultBackgroundColor = new Color(45, 45, 45);
 
@@ -17,6 +18,12 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
 
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Menu;
+
+    /// <summary>
+    /// Returns the active submenu for debug inspection.
+    /// </summary>
+    IEnumerable<UiElement> IDebugInspectable.GetDebugChildren() =>
+        _activeSubmenu != null ? [_activeSubmenu] : [];
 
     #region Constants
     private const float ItemHeight = 32f;

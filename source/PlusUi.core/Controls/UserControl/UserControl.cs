@@ -1,4 +1,5 @@
-﻿using PlusUi.core.Attributes;
+using PlusUi.core.Attributes;
+using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
 
 namespace PlusUi.core;
@@ -31,7 +32,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateGenericWrapper]
-public abstract class UserControl : UiElement<UserControl>
+public abstract class UserControl : UiElement<UserControl>, IDebugInspectable
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -41,6 +42,11 @@ public abstract class UserControl : UiElement<UserControl>
 
     private UiElement _content = new NullElement();
     protected abstract UiElement Build();
+
+    /// <summary>
+    /// Returns the content element for debug inspection.
+    /// </summary>
+    IEnumerable<UiElement> IDebugInspectable.GetDebugChildren() => [_content];
 
 
     public override void BuildContent()

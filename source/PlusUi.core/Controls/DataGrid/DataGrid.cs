@@ -14,6 +14,12 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Grid;
 
+    /// <summary>
+    /// Returns Children plus the two scrollbars for debug inspection.
+    /// </summary>
+    protected override IEnumerable<UiElement> GetDebugChildrenCore() =>
+        Children.Concat(new[] { VerticalScrollbar, HorizontalScrollbar });
+
     private int _hoveredRowIndex = -1;
 
     private IEnumerable<T>? _itemsSource;
