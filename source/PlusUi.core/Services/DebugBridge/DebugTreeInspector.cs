@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Reflection;
 using PlusUi.core.Services.DebugBridge.Models;
 using SkiaSharp;
@@ -34,7 +35,7 @@ internal class DebugTreeInspector
             Id = id,
             Type = element.GetType().Name,
             IsVisible = element.IsVisible,
-            Properties = ExtractProperties(element),
+            Properties = ExtractProperties(element, id),
             Children = []
         };
 
@@ -56,7 +57,7 @@ internal class DebugTreeInspector
     /// <summary>
     /// Extracts properties from an element via Reflection.
     /// </summary>
-    private List<PropertyDto> ExtractProperties(UiElement element)
+    private List<PropertyDto> ExtractProperties(UiElement element, string elementId)
     {
         var properties = new List<PropertyDto>();
         var type = element.GetType();
@@ -80,14 +81,19 @@ internal class DebugTreeInspector
                 var value = prop.GetValue(element);
                 var valueString = FormatValue(value);
 
-                properties.Add(new PropertyDto
+                var propertyDto = new PropertyDto
                 {
                     Name = prop.Name,
                     Type = prop.PropertyType.Name,
                     Value = valueString,
                     CanWrite = prop.CanWrite && prop.SetMethod != null,
-                    IsInternal = !prop.GetMethod!.IsPublic
-                });
+                    IsInternal = !prop.GetMethod!.IsPublic,
+                    Path = prop.Name,
+                    ElementId = elementId
+                };
+
+                ExpandComplexProperty(propertyDto, value, prop.Name, elementId);
+                properties.Add(propertyDto);
             }
             catch
             {
@@ -98,9 +104,97 @@ internal class DebugTreeInspector
         return properties.OrderBy(p => p.Name).ToList();
     }
 
-    /// <summary>
-    /// Formats a property value for display.
-    /// </summary>
+    private void ExpandComplexProperty(PropertyDto property, object? value, string parentPath, string elementId, int depth = 0)
+    {
+        if (value == null || depth > 2) return;
+
+        var type = value.GetType();
+
+        if (IsSimpleType(type))
+            return;
+
+        if (type.IsArray || typeof(System.Collections.IEnumerable).IsAssignableFrom(type))
+            return;
+
+        if (type == typeof(Type) || type.IsSubclassOf(typeof(Type)))
+            return;
+
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (var prop in properties)
+        {
+            try
+            {
+                if (prop.GetIndexParameters().Length > 0)
+                    continue;
+
+                if (!prop.CanRead || prop.GetMethod == null)
+                    continue;
+
+                if (prop.DeclaringType == typeof(UiElement) || prop.DeclaringType?.IsSubclassOf(typeof(UiElement)) == true)
+                    continue;
+
+                if (prop.GetCustomAttribute<ObsoleteAttribute>() != null)
+                    continue;
+
+                if (prop.PropertyType == typeof(Type) || prop.PropertyType.IsSubclassOf(typeof(Type)))
+                    continue;
+
+                if (prop.PropertyType.IsGenericParameter)
+                    continue;
+
+                if (prop.PropertyType.IsPointer || prop.PropertyType.IsByRef)
+                    continue;
+
+                object? childValue = null;
+                try
+                {
+                    childValue = prop.GetValue(value);
+                }
+                catch (TargetInvocationException)
+                {
+                    continue;
+                }
+                catch (NotSupportedException)
+                {
+                    continue;
+                }
+
+                var childValueString = FormatValue(childValue);
+                var childPath = $"{parentPath}.{prop.Name}";
+
+                var childDto = new PropertyDto
+                {
+                    Name = prop.Name,
+                    Type = prop.PropertyType.Name,
+                    Value = childValueString,
+                    CanWrite = prop.CanWrite && prop.SetMethod?.IsPublic == true,
+                    IsInternal = false,
+                    Path = childPath,
+                    ElementId = elementId
+                };
+
+                ExpandComplexProperty(childDto, childValue, childPath, elementId, depth + 1);
+                property.Children.Add(childDto);
+            }
+            catch (Exception)
+            {
+            }
+        }
+    }
+
+    private bool IsSimpleType(Type type)
+    {
+        return type.IsPrimitive
+            || type.IsEnum
+            || type == typeof(string)
+            || type == typeof(decimal)
+            || type == typeof(DateTime)
+            || type == typeof(DateTimeOffset)
+            || type == typeof(TimeSpan)
+            || type == typeof(Guid);
+    }
+
     private string FormatValue(object? value)
     {
         if (value == null)
@@ -185,5 +279,148 @@ internal class DebugTreeInspector
             return null;
 
         return SerializeElement(element);
+    }
+
+    /// <summary>
+    /// Updates a property value on an element.
+    /// </summary>
+    public bool UpdateProperty(UiElement root, string elementId, string propertyPath, string value)
+    {
+        try
+        {
+            // Ensure IDs are populated
+            SerializeTree(root);
+
+            // Find the element by ID
+            var element = _elementIds.FirstOrDefault(kvp => kvp.Value == elementId).Key;
+            if (element == null)
+                return false;
+
+            // Parse property path (e.g., "Margin.Left" -> ["Margin", "Left"])
+            var pathParts = propertyPath.Split('.');
+            if (pathParts.Length == 0)
+                return false;
+
+            // Navigate to the target object and property
+            object? targetObject = element;
+            PropertyInfo? targetProperty = null;
+
+            for (int i = 0; i < pathParts.Length; i++)
+            {
+                var propertyName = pathParts[i];
+                var type = targetObject.GetType();
+                var property = type.GetProperty(propertyName,
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if (property == null)
+                    return false;
+
+                // If this is the last part, this is our target property
+                if (i == pathParts.Length - 1)
+                {
+                    targetProperty = property;
+                }
+                else
+                {
+                    // Navigate to the next level
+                    targetObject = property.GetValue(targetObject);
+                    if (targetObject == null)
+                        return false;
+                }
+            }
+
+            if (targetProperty == null || !targetProperty.CanWrite)
+                return false;
+
+            // Convert value to the correct type and set it
+            var convertedValue = ConvertValue(value, targetProperty.PropertyType);
+            if (convertedValue == null && targetProperty.PropertyType.IsValueType &&
+                Nullable.GetUnderlyingType(targetProperty.PropertyType) == null)
+            {
+                return false; // Can't set null to non-nullable value type
+            }
+
+            targetProperty.SetValue(targetObject, convertedValue);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Converts a string value to the target type.
+    /// </summary>
+    private object? ConvertValue(string value, Type targetType)
+    {
+        if (string.IsNullOrEmpty(value))
+            return null;
+
+        try
+        {
+            // Handle nullable types
+            var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            // Primitives and common types
+            if (underlyingType == typeof(string))
+                return value;
+
+            if (underlyingType == typeof(int))
+                return int.Parse(value);
+
+            if (underlyingType == typeof(float))
+                return float.Parse(value);
+
+            if (underlyingType == typeof(double))
+                return double.Parse(value);
+
+            if (underlyingType == typeof(bool))
+                return bool.Parse(value);
+
+            if (underlyingType == typeof(byte))
+                return byte.Parse(value);
+
+            // Enums
+            if (underlyingType.IsEnum)
+                return Enum.Parse(underlyingType, value, ignoreCase: true);
+
+            // Color (hex string like #RRGGBBAA)
+            if (underlyingType == typeof(Color))
+            {
+                if (value.StartsWith("#") && value.Length >= 7)
+                {
+                    var r = Convert.ToByte(value.Substring(1, 2), 16);
+                    var g = Convert.ToByte(value.Substring(3, 2), 16);
+                    var b = Convert.ToByte(value.Substring(5, 2), 16);
+                    var a = value.Length >= 9 ? Convert.ToByte(value.Substring(7, 2), 16) : (byte)255;
+                    return new Color(r, g, b, a);
+                }
+            }
+
+            // SKColor (hex string like #RRGGBBAA)
+            if (underlyingType == typeof(SKColor))
+            {
+                if (value.StartsWith("#") && value.Length >= 7)
+                {
+                    var r = Convert.ToByte(value.Substring(1, 2), 16);
+                    var g = Convert.ToByte(value.Substring(3, 2), 16);
+                    var b = Convert.ToByte(value.Substring(5, 2), 16);
+                    var a = value.Length >= 9 ? Convert.ToByte(value.Substring(7, 2), 16) : (byte)255;
+                    return new SKColor(r, g, b, a);
+                }
+            }
+
+            // Fallback: use type converter
+            var converter = System.ComponentModel.TypeDescriptor.GetConverter(underlyingType);
+            if (converter.CanConvertFrom(typeof(string)))
+                return converter.ConvertFromString(value);
+
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

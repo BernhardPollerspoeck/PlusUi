@@ -178,8 +178,7 @@ internal class DebugBridgeClient : IDisposable
                     break;
 
                 case "set_property":
-                    // Will be implemented in DebugPropertyReflector
-                    _logger?.LogDebug("Received set_property command");
+                    await HandleSetPropertyCommandAsync(message.Data);
                     break;
 
                 default:
@@ -269,6 +268,69 @@ internal class DebugBridgeClient : IDisposable
         {
             _logger?.LogError(ex, "Error handling get_element_details command");
         }
+    }
+
+    /// <summary>
+    /// Handles set_property command - updates a property value on an element.
+    /// </summary>
+    private async Task HandleSetPropertyCommandAsync(object? data)
+    {
+        try
+        {
+            if (data == null)
+            {
+                _logger?.LogWarning("set_property command received with null data");
+                return;
+            }
+
+            var json = JsonSerializer.Serialize(data);
+            var propertyUpdate = JsonSerializer.Deserialize<PropertyUpdateDto>(json);
+
+            if (propertyUpdate == null || string.IsNullOrEmpty(propertyUpdate.ElementId))
+            {
+                _logger?.LogWarning("Invalid property update data");
+                return;
+            }
+
+            var currentPage = _navigationContainer.CurrentPage;
+            if (currentPage == null)
+            {
+                _logger?.LogWarning("No current page to update");
+                return;
+            }
+
+            // Update the property
+            var success = _treeInspector.UpdateProperty(
+                currentPage,
+                propertyUpdate.ElementId,
+                propertyUpdate.PropertyPath,
+                propertyUpdate.Value);
+
+            if (success)
+            {
+                _logger?.LogDebug("Updated property {Path} on element {ElementId}",
+                    propertyUpdate.PropertyPath, propertyUpdate.ElementId);
+
+                // Send updated tree back
+                await HandleGetTreeCommandAsync();
+            }
+            else
+            {
+                _logger?.LogWarning("Failed to update property {Path} on element {ElementId}",
+                    propertyUpdate.PropertyPath, propertyUpdate.ElementId);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error handling set_property command");
+        }
+    }
+
+    private class PropertyUpdateDto
+    {
+        public string ElementId { get; set; } = "";
+        public string PropertyPath { get; set; } = "";
+        public string Value { get; set; } = "";
     }
 
     /// <summary>

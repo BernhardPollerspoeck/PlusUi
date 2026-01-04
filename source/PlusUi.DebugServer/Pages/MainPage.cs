@@ -15,17 +15,25 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
             .AddColumn(Column.Star) // TreeView (left half)
             .AddColumn(Column.Star) // DataGrid (right half)
 
-            // Status label - spans both columns
             .AddChild(
                 row: 0,
                 column: 0,
                 columnSpan: 2,
-                child: new Label()
-                    .BindText(nameof(vm.StatusText), () => vm.StatusText)
-                    .SetTextSize(14)
-                    .SetTextColor(Colors.White)
+                child: new HStack()
                     .SetMargin(new Margin(8))
-                    .SetBackground(new Color(45, 45, 45)))
+                    .SetBackground(new Color(45, 45, 45))
+                    .AddChild(new Label()
+                        .BindText(nameof(vm.StatusText), () => vm.StatusText)
+                        .SetTextSize(14)
+                        .SetTextColor(Colors.White)
+                        .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+                        .SetMargin(new Margin(0, 0, 8, 0)))
+                    .AddChild(new Button()
+                        .SetText("Refresh Tree")
+                        .SetCommand(vm.RefreshTreeCommand)
+                        .SetBackground(new Color(60, 60, 60))
+                        .SetTextColor(Colors.White)
+                        .SetPadding(new Margin(12, 6))))
 
             // TreeView for UI hierarchy - left column
             .AddChild(
@@ -76,29 +84,60 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
         return treeView;
     }
 
-    private DataGrid<PropertyDto> BuildPropertyGrid()
+    private TreeView BuildPropertyGrid()
     {
-        var grid = new DataGrid<PropertyDto>();
-        grid.SetItemsSource(vm.SelectedProperties);
-        grid.SetAlternatingRowStyles(true);
-        grid.SetEvenRowStyle(new SolidColorBackground(new Color(40, 40, 40)), Colors.White);
-        grid.SetOddRowStyle(new SolidColorBackground(new Color(35, 35, 35)), Colors.White);
-        grid.SetShowColumnSeparators(true);
-        grid.SetHeaderSeparatorColor(new SKColor(80, 80, 80));
-        grid.AddColumn(new DataGridTextColumn<PropertyDto>()
-            .SetHeader("Property")
-            .SetBinding(p => p.Name)
-            .SetWidth(DataGridColumnWidth.Star(1)));
-        grid.AddColumn(new DataGridTextColumn<PropertyDto>()
-            .SetHeader("Value")
-            .SetBinding(p => p.Value)
-            .SetWidth(DataGridColumnWidth.Star(2)));
-        grid.AddColumn(new DataGridTextColumn<PropertyDto>()
-            .SetHeader("Type")
-            .SetBinding(p => p.Type)
-            .SetWidth(DataGridColumnWidth.Star(1)));
-        grid.SetRowHeight(28);
-        grid.SetHeaderHeight(36);
-        return grid;
+        var treeView = new TreeView();
+        treeView.SetItemsSource(vm.SelectedProperties);
+        treeView.SetChildrenSelector<PropertyDto>(prop => prop.Children);
+        treeView.SetItemTemplate((item, depth) =>
+        {
+            if (item is not PropertyDto prop)
+                return new Label()
+                    .SetText("")
+                    .SetTextColor(Colors.Gray)
+                    .SetTextSize(12);
+
+            var valueControl = prop.CanWrite && !prop.HasChildren
+                ? (UiElement)new Entry()
+                    .SetText(prop.Value)
+                    .SetTextColor(Colors.LightGray)
+                    .SetTextSize(12)
+                    .SetBackground(new Color(40, 40, 40))
+                    .SetVerticalAlignment(VerticalAlignment.Center)
+                    .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+                    .SetMargin(new Margin(0, 2, 16, 2))
+                    .SetPadding(new Margin(4, 2))
+                    .BindText($"Property_{prop.Path}", () => prop.Value, newValue => vm.UpdatePropertyValue(prop, newValue))
+                : new Label()
+                    .SetText(prop.Value)
+                    .SetTextColor(Colors.LightGray)
+                    .SetTextSize(12)
+                    .SetVerticalAlignment(VerticalAlignment.Center)
+                    .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+                    .SetMargin(new Margin(0, 0, 16, 0));
+
+            return new HStack()
+                .SetVerticalAlignment(VerticalAlignment.Center)
+                .AddChild(new Label()
+                    .SetText(prop.Name)
+                    .SetTextColor(prop.HasChildren ? Colors.LightBlue : Colors.White)
+                    .SetTextSize(12)
+                    .SetVerticalAlignment(VerticalAlignment.Center)
+                    .SetMargin(new Margin(8, 0, 16, 0)))
+                .AddChild(valueControl)
+                .AddChild(new Label()
+                    .SetText(prop.Type)
+                    .SetTextColor(Colors.Gray)
+                    .SetTextSize(11)
+                    .SetVerticalAlignment(VerticalAlignment.Center)
+                    .SetMargin(new Margin(0, 0, 8, 0)));
+        });
+        treeView.SetItemHeight(28);
+        treeView.SetIndentation(24);
+        treeView.SetExpanderSize(16);
+        treeView.SetShowLines(true);
+        treeView.SetLineColor(new Color(60, 60, 60));
+        treeView.SetBackground(new Color(30, 30, 30));
+        return treeView;
     }
 }

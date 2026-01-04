@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using PlusUi.core.Services.DebugBridge.Models;
 using PlusUi.DebugServer.Services;
 
@@ -9,6 +10,10 @@ namespace PlusUi.DebugServer.Pages;
 public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly DebugBridgeServer _server;
+    private readonly object _timerLock = new();
+    private Timer? _retryTimer;
+    private string? _currentClientId;
+    private bool _treeReceived;
 
     [ObservableProperty]
     private string _statusText = "Waiting for client...";
@@ -50,17 +55,47 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
-    private async void OnClientConnected(object? sender, string clientId)
+    private void OnClientConnected(object? sender, string clientId)
     {
-        StatusText = $"Client connected: {clientId}";
+        lock (_timerLock)
+        {
+            _currentClientId = clientId;
+            _treeReceived = false;
+            StatusText = $"Client connected: {clientId} - requesting tree...";
 
-        // Auto-request tree
-        await Task.Delay(500);
-        await _server.SendToClientAsync(clientId, new DebugMessage { Type = "get_tree" });
+            _retryTimer?.Dispose();
+            _retryTimer = new Timer(async _ =>
+            {
+                bool shouldRequest = false;
+                string? currentClient = null;
+
+                lock (_timerLock)
+                {
+                    if (!_treeReceived && _currentClientId != null)
+                    {
+                        shouldRequest = true;
+                        currentClient = _currentClientId;
+                    }
+                }
+
+                if (shouldRequest && currentClient != null)
+                {
+                    await _server.SendToClientAsync(currentClient, new DebugMessage { Type = "get_tree" });
+                }
+            }, null, TimeSpan.FromMilliseconds(500), TimeSpan.FromSeconds(2));
+        }
     }
 
     private void OnClientDisconnected(object? sender, string clientId)
     {
+        lock (_timerLock)
+        {
+            _retryTimer?.Dispose();
+            _retryTimer = null;
+            _currentClientId = null;
+            _treeReceived = false;
+        }
+
         StatusText = "Client disconnected. Waiting for client...";
         RootItems.Clear();
         SelectedNode = null;
@@ -72,7 +107,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             try
             {
-                // Deserialize TreeNodeDto from JsonElement
                 var json = JsonSerializer.Serialize(e.Message.Data);
                 var tree = JsonSerializer.Deserialize<TreeNodeDto>(json);
 
@@ -81,6 +115,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     RootItems.Clear();
                     RootItems.Add(tree);
                     StatusText = $"Tree received from {e.ClientId} - {CountNodes(tree)} elements";
+
+                    lock (_timerLock)
+                    {
+                        _treeReceived = true;
+                        _retryTimer?.Dispose();
+                        _retryTimer = null;
+                    }
                 }
             }
             catch (Exception ex)
@@ -100,10 +141,45 @@ public partial class MainViewModel : ObservableObject, IDisposable
         return count;
     }
 
+    [RelayCommand]
+    private async Task RefreshTreeAsync()
+    {
+        if (_currentClientId != null)
+        {
+            StatusText = "Refreshing tree...";
+            await _server.SendToClientAsync(_currentClientId, new DebugMessage { Type = "get_tree" });
+        }
+    }
+
+    public async void UpdatePropertyValue(PropertyDto property, string newValue)
+    {
+        if (_currentClientId == null || string.IsNullOrEmpty(property.ElementId))
+            return;
+
+        await _server.SendToClientAsync(_currentClientId, new DebugMessage
+        {
+            Type = "set_property",
+            Data = new
+            {
+                elementId = property.ElementId,
+                propertyPath = property.Path,
+                value = newValue
+            }
+        });
+
+        StatusText = $"Updated {property.Path} = {newValue}";
+    }
+
     public void Dispose()
     {
         Console.WriteLine("[VIEWMODEL] Dispose called - unsubscribing from events");
-        // Unsubscribe from events to prevent memory leaks
+
+        lock (_timerLock)
+        {
+            _retryTimer?.Dispose();
+            _retryTimer = null;
+        }
+
         _server.ClientConnected -= OnClientConnected;
         _server.ClientDisconnected -= OnClientDisconnected;
         _server.ClientMessageReceived -= OnClientMessageReceived;
