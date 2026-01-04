@@ -205,7 +205,15 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region TextColor
-    internal SKColor TextColor { get; set; } = SKColors.White;
+    internal SKColor TextColor
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdatePaint();
+        }
+    } = SKColors.White;
 
     public TimePicker SetTextColor(SKColor color)
     {
@@ -221,12 +229,20 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region TextSize
-    internal float TextSize { get; set; } = 14f;
+    internal float TextSize
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdatePaint();
+            InvalidateMeasure();
+        }
+    } = 14f;
 
     public TimePicker SetTextSize(float size)
     {
         TextSize = size;
-        InvalidateMeasure();
         return this;
     }
 
@@ -238,12 +254,20 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region FontFamily
-    internal string? FontFamily { get; set; }
+    internal string? FontFamily
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdatePaint();
+            InvalidateMeasure();
+        }
+    }
 
     public TimePicker SetFontFamily(string fontFamily)
     {
         FontFamily = fontFamily;
-        InvalidateMeasure();
         return this;
     }
 
@@ -383,42 +407,12 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     public bool IsHovered { get; set; }
     #endregion
 
-    private SKFont? _font;
-    internal SKFont Font
-    {
-        get
-        {
-            if (_font == null)
-            {
-                var typeface = string.IsNullOrEmpty(FontFamily)
-                    ? SKTypeface.FromFamilyName(null)
-                    : SKTypeface.FromFamilyName(FontFamily);
-                _font = new SKFont(typeface, TextSize);
-            }
-            return _font;
-        }
-    }
+    private SKFont _font;
+    private SKPaint _paint;
 
-    private SKPaint? _paint;
-    internal SKPaint Paint
-    {
-        get
-        {
-            if (_paint == null)
-            {
-                _paint = new SKPaint
-                {
-                    Color = TextColor,
-                    IsAntialias = true
-                };
-            }
-            else
-            {
-                _paint.Color = TextColor;
-            }
-            return _paint;
-        }
-    }
+    // Internal accessors for TimePickerSelectorOverlay
+    internal SKFont Font => _font;
+    internal SKPaint Paint => _paint;
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => true;
@@ -429,6 +423,31 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     public TimePicker()
     {
         SetDesiredSize(new Size(150, 40));
+        UpdatePaint();
+    }
+
+    private void UpdatePaint()
+    {
+        // Skip if PaintRegistry not available (during shutdown)
+        if (PaintRegistry == null)
+            return;
+
+        // Release old paint if exists (for property changes)
+        if (_paint != null)
+        {
+            PaintRegistry.Release(_paint, _font);
+        }
+
+        // Get or create paint from registry
+        var typeface = string.IsNullOrEmpty(FontFamily)
+            ? SKTypeface.FromFamilyName(null)
+            : SKTypeface.FromFamilyName(FontFamily);
+
+        (_paint, _font) = PaintRegistry.GetOrCreate(
+            color: TextColor,
+            size: TextSize,
+            typeface: typeface
+        );
     }
 
     /// <inheritdoc />
@@ -711,13 +730,13 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         // Render text
         if (!string.IsNullOrEmpty(displayText))
         {
-            var originalColor = Paint.Color;
+            var originalColor = _paint.Color;
             if (showingPlaceholder)
             {
-                Paint.Color = PlaceholderColor;
+                _paint.Color = PlaceholderColor;
             }
 
-            Font.GetFontMetrics(out var fontMetrics);
+            _font.GetFontMetrics(out var fontMetrics);
             var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
             canvas.DrawText(
@@ -725,12 +744,12 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
                 rect.Left + Padding.Left,
                 rect.Top + Padding.Top + textHeight,
                 SKTextAlign.Left,
-                Font,
-                Paint);
+                _font,
+                _paint);
 
             if (showingPlaceholder)
             {
-                Paint.Color = originalColor;
+                _paint.Color = originalColor;
             }
         }
 
@@ -752,8 +771,8 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
             var displayText = !string.IsNullOrEmpty(_inputBuffer) ? _inputBuffer :
                 (SelectedTime?.ToString(DisplayFormat, CultureInfo.CurrentCulture) ?? string.Empty);
 
-            var textWidth = Font.MeasureText(displayText);
-            Font.GetFontMetrics(out var fontMetrics);
+            var textWidth = _font.MeasureText(displayText);
+            _font.GetFontMetrics(out var fontMetrics);
             var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
             using var cursorPaint = new SKPaint
@@ -834,7 +853,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        Font.GetFontMetrics(out var fontMetrics);
+        _font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         var width = DesiredSize?.Width ?? 150f;
@@ -860,8 +879,12 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         if (disposing)
         {
             UnregisterSelectorOverlay();
-            _font?.Dispose();
-            _paint?.Dispose();
+
+            // Release paint from registry (safe even if ClearAll already called or during shutdown)
+            if (_paint != null)
+            {
+                PaintRegistry?.Release(_paint, _font);
+            }
         }
         base.Dispose(disposing);
     }

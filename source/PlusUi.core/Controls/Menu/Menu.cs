@@ -45,6 +45,32 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     public Menu()
     {
         SetBackground(DefaultBackgroundColor);
+        UpdatePaints();
+    }
+
+    private void UpdatePaints()
+    {
+        // Skip if PaintRegistry not available (during shutdown)
+        if (PaintRegistry == null)
+            return;
+
+        // Release old paints if exists (for property changes)
+        if (_textPaint != null)
+        {
+            PaintRegistry.Release(_textPaint, _font);
+            PaintRegistry.Release(_disabledTextPaint, _font);
+        }
+
+        // Get or create paints from registry
+        (_textPaint, _font) = PaintRegistry.GetOrCreate(
+            color: TextColor,
+            size: TextSize
+        );
+
+        (_disabledTextPaint, _) = PaintRegistry.GetOrCreate(
+            color: new SKColor(128, 128, 128),
+            size: TextSize
+        );
     }
 
     #region Constants
@@ -93,7 +119,12 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     internal Color TextColor
     {
         get => field;
-        set { field = value; InvalidateMeasure(); }
+        set
+        {
+            field = value;
+            UpdatePaints();
+            InvalidateMeasure();
+        }
     } = Colors.White;
 
     public Menu SetTextColor(Color color)
@@ -111,7 +142,12 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     internal float TextSize
     {
         get => field;
-        set { field = value; _font = null; InvalidateMeasure(); }
+        set
+        {
+            field = value;
+            UpdatePaints();
+            InvalidateMeasure();
+        }
     } = 14f;
 
     public Menu SetTextSize(float size)
@@ -151,11 +187,9 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     public bool IsHovered { get; set; }
     #endregion
 
-    private SKFont? _font;
-    private SKFont Font => _font ??= new SKFont(SKTypeface.FromFamilyName(null), TextSize);
-
-    private SKPaint? _textPaint;
-    private SKPaint TextPaint => _textPaint ??= new SKPaint { IsAntialias = true };
+    private SKFont _font;
+    private SKPaint _textPaint;
+    private SKPaint _disabledTextPaint;
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
@@ -163,7 +197,7 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
 
         foreach (var item in _items)
         {
-            var textWidth = Font.MeasureText(item.Text);
+            var textWidth = _font.MeasureText(item.Text);
             totalWidth += textWidth + ItemPaddingHorizontal * 2;
         }
 
@@ -194,13 +228,13 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
         // Calculate and draw menu items
         _itemRects.Clear();
         float currentX = Position.X + VisualOffset.X;
-        Font.GetFontMetrics(out var metrics);
+        _font.GetFontMetrics(out var metrics);
         var textY = Position.Y + VisualOffset.Y + MenuHeight / 2 - (metrics.Ascent + metrics.Descent) / 2;
 
         for (int i = 0; i < _items.Count; i++)
         {
             var item = _items[i];
-            var textWidth = Font.MeasureText(item.Text);
+            var textWidth = _font.MeasureText(item.Text);
             var itemWidth = textWidth + ItemPaddingHorizontal * 2;
 
             var itemRect = new SKRect(
@@ -222,9 +256,9 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
                 canvas.DrawRect(itemRect, hoverPaint);
             }
 
-            // Draw text
-            TextPaint.Color = item.IsEnabled ? TextColor : new SKColor(128, 128, 128);
-            canvas.DrawText(item.Text, currentX + ItemPaddingHorizontal, textY, SKTextAlign.Left, Font, TextPaint);
+            // Draw text (use appropriate paint based on enabled state)
+            var paint = item.IsEnabled ? _textPaint : _disabledTextPaint;
+            canvas.DrawText(item.Text, currentX + ItemPaddingHorizontal, textY, SKTextAlign.Left, _font, paint);
 
             currentX += itemWidth;
         }
@@ -344,8 +378,13 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
         if (disposing)
         {
             CloseMenu();
-            _font?.Dispose();
-            _textPaint?.Dispose();
+
+            // Release paints from registry (safe even if ClearAll already called or during shutdown)
+            if (_textPaint != null)
+            {
+                PaintRegistry?.Release(_textPaint, _font);
+                PaintRegistry?.Release(_disabledTextPaint, _font);
+            }
         }
         base.Dispose(disposing);
     }

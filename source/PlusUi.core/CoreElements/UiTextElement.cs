@@ -31,17 +31,15 @@ public abstract class UiTextElement : UiElement
     {
         if (e.SettingName == nameof(IAccessibilitySettingsService.FontScaleFactor) && SupportsSystemFontScaling)
         {
-            // Recreate font with new scale factor
-            Font?.Dispose();
-            Font = CreateFont();
+            // Recreate paint/font with new scale factor
+            UpdatePaintFromRegistry();
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
         else if (e.SettingName == nameof(IAccessibilitySettingsService.IsHighContrastEnabled))
         {
             // Recreate paint with appropriate color
-            Paint?.Dispose();
-            Paint = CreatePaint();
+            UpdatePaintFromRegistry();
         }
     }
     #endregion
@@ -78,7 +76,7 @@ public abstract class UiTextElement : UiElement
     public UiTextElement SetSupportsSystemFontScaling(bool supports)
     {
         _supportsSystemFontScaling = supports;
-        Font = CreateFont();
+        UpdatePaintFromRegistry();
         InvalidateTextLayoutCache();
         InvalidateMeasure();
         return this;
@@ -117,7 +115,7 @@ public abstract class UiTextElement : UiElement
         {
             if (field == value) return;
             field = value;
-            Font = CreateFont();
+            UpdatePaintFromRegistry();
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
@@ -142,7 +140,7 @@ public abstract class UiTextElement : UiElement
         {
             if (field == value) return;
             field = value;
-            Paint = CreatePaint();
+            UpdatePaintFromRegistry();
         }
     } = Colors.White;
     public UiTextElement SetTextColor(Color color)
@@ -165,7 +163,7 @@ public abstract class UiTextElement : UiElement
         {
             if (field == value) return;
             field = value;
-            Font = CreateFont();
+            UpdatePaintFromRegistry();
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
@@ -190,7 +188,7 @@ public abstract class UiTextElement : UiElement
         {
             if (field == value) return;
             field = value;
-            Font = CreateFont();
+            UpdatePaintFromRegistry();
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
@@ -215,7 +213,7 @@ public abstract class UiTextElement : UiElement
         {
             if (field == value) return;
             field = value;
-            Font = CreateFont();
+            UpdatePaintFromRegistry();
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
@@ -329,8 +327,8 @@ public abstract class UiTextElement : UiElement
 
     public UiTextElement()
     {
-        Paint = CreatePaint();
-        Font = CreateFont();
+        // Initialize Paint/Font from registry
+        UpdatePaintFromRegistry();
     }
 
     /// <inheritdoc />
@@ -404,15 +402,8 @@ public abstract class UiTextElement : UiElement
     }
 
     #region render cache
-    protected SKPaint Paint { get; set; } = null!;
-    private SKPaint CreatePaint()
-    {
-        return new SKPaint
-        {
-            Color = GetEffectiveTextColor(),
-            IsAntialias = true,
-        };
-    }
+    protected SKPaint Paint { get; private set; }
+    protected SKFont Font { get; private set; }
 
     /// <summary>
     /// Gets the effective text color considering high contrast mode.
@@ -436,15 +427,24 @@ public abstract class UiTextElement : UiElement
         }
         return TextColor;
     }
-    protected SKFont Font { get; set; } = null!;
-    private SKFont CreateFont()
+
+    private void UpdatePaintFromRegistry()
     {
         // Ensure we're subscribed to accessibility changes
         EnsureAccessibilitySubscription();
 
-        SKTypeface? typeface = null;
+        // Skip if PaintRegistry not available (during shutdown)
+        if (PaintRegistry == null)
+            return;
 
-        // Try to get font from registry (includes default Inter font)
+        // Release old paint if exists (for property changes)
+        if (Paint != null)
+        {
+            PaintRegistry.Release(Paint, Font);
+        }
+
+        // Get typeface from FontRegistry
+        SKTypeface? typeface = null;
         try
         {
             var fontRegistry = ServiceProviderService.ServiceProvider?.GetService<IFontRegistryService>();
@@ -455,19 +455,21 @@ public abstract class UiTextElement : UiElement
             // Silently continue - will use SKTypeface.Default as last resort
         }
 
-        // Apply system font scaling if enabled
-        var effectiveTextSize = TextSize;
+        // Calculate effective size (with accessibility scaling)
+        var effectiveSize = TextSize;
         if (SupportsSystemFontScaling)
         {
             var accessibilitySettings = ServiceProviderService.ServiceProvider?.GetService<IAccessibilitySettingsService>();
-            var scaleFactor = accessibilitySettings?.FontScaleFactor ?? 1.0f;
-            effectiveTextSize *= scaleFactor;
+            effectiveSize *= accessibilitySettings?.FontScaleFactor ?? 1.0f;
         }
 
-        return new SKFont(typeface ?? SKTypeface.Default)
-        {
-            Size = effectiveTextSize,
-        };
+        // Get or create from registry (uses inherited PaintRegistry property)
+        (Paint, Font) = PaintRegistry.GetOrCreate(
+            color: GetEffectiveTextColor(),
+            size: effectiveSize,
+            typeface: typeface
+            // Other params use defaults: isAntialias=true, subpixel=true, etc.
+        );
     }
     #endregion
 
@@ -692,9 +694,11 @@ public abstract class UiTextElement : UiElement
                 _accessibilitySettings = null;
             }
 
-            // Dispose SKPaint and SKFont resources
-            Paint?.Dispose();
-            Font?.Dispose();
+            // Release paint from registry (safe even if ClearAll already called or during shutdown)
+            if (Paint != null)
+            {
+                PaintRegistry?.Release(Paint, Font);
+            }
         }
         base.Dispose(disposing);
     }

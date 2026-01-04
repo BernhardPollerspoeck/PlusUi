@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.Services;
 using SkiaSharp;
 using System.ComponentModel;
 
@@ -1138,6 +1139,28 @@ public abstract class UiElement : IDisposable
     }
     protected virtual void UpdateBindingsInternal() { }
     protected virtual void UpdateBindingsInternal(string propertyName) { }
+    #endregion
+
+    #region Services
+    /// <summary>
+    /// Helper property for accessing PaintRegistry service without local caching.
+    /// Returns null during shutdown when ServiceProvider is disposed.
+    /// </summary>
+    protected IPaintRegistryService? PaintRegistry
+    {
+        get
+        {
+            try
+            {
+                return ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>();
+            }
+            catch (ObjectDisposedException)
+            {
+                // ServiceProvider already disposed during shutdown - return null gracefully
+                return null;
+            }
+        }
+    }
     #endregion
 
     #region rendering

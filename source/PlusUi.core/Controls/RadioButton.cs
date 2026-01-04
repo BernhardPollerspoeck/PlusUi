@@ -26,8 +26,8 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
     private const float CircleTextSpacing = 8f;
 
     private IRadioButtonManager? _manager;
-    private SKFont? _font;
-    private SKPaint? _textPaint;
+    private SKFont _font;
+    private SKPaint _textPaint;
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => true;
@@ -37,8 +37,26 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
 
     public RadioButton()
     {
-        _font = new SKFont(SKTypeface.Default) { Size = TextSize };
-        _textPaint = new SKPaint { Color = TextColor, IsAntialias = true };
+        UpdatePaint();
+    }
+
+    private void UpdatePaint()
+    {
+        // Skip if PaintRegistry not available (during shutdown)
+        if (PaintRegistry == null)
+            return;
+
+        // Release old paint if exists (for property changes)
+        if (_textPaint != null)
+        {
+            PaintRegistry.Release(_textPaint, _font);
+        }
+
+        // Get or create from registry
+        (_textPaint, _font) = PaintRegistry.GetOrCreate(
+            color: TextColor,
+            size: TextSize
+        );
     }
 
     /// <inheritdoc />
@@ -185,8 +203,7 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         {
             if (field == value) return;
             field = value;
-            _font?.Dispose();
-            _font = new SKFont(SKTypeface.Default) { Size = value };
+            UpdatePaint();
             InvalidateMeasure();
         }
     } = 14f;
@@ -212,8 +229,7 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         {
             if (field == value) return;
             field = value;
-            _textPaint?.Dispose();
-            _textPaint = new SKPaint { Color = value, IsAntialias = true };
+            UpdatePaint();
         }
     } = Colors.White;
 
@@ -388,8 +404,12 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         if (disposing)
         {
             GetManager()?.Unregister(this);
-            _font?.Dispose();
-            _textPaint?.Dispose();
+
+            // Release paint from registry (safe even if ClearAll already called or during shutdown)
+            if (_textPaint != null)
+            {
+                PaintRegistry?.Release(_textPaint, _font);
+            }
         }
         base.Dispose(disposing);
     }

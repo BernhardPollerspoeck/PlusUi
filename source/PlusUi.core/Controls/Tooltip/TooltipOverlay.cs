@@ -28,8 +28,8 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
     private readonly InvalidationTracker? _invalidationTracker;
     private readonly TimeProvider _timeProvider;
 
-    private SKPaint? _textPaint;
-    private SKFont? _font;
+    private SKPaint _textPaint;
+    private SKFont _font;
     private UiElement? _contentElement;
     private Size _measuredSize;
     private bool _isAnimating;
@@ -58,6 +58,7 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
         ShadowBlur = 8f;
         ShadowOffset = new Point(0, 2);
 
+        UpdatePaint();
         InitializeContent();
         MeasureContent();
         CalculatePosition();
@@ -65,6 +66,25 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
         // Register with InvalidationTracker and start fade-in animation
         _invalidationTracker?.Register(this);
         StartFadeIn();
+    }
+
+    private void UpdatePaint()
+    {
+        // Skip if PaintRegistry not available (during shutdown)
+        if (PaintRegistry == null)
+            return;
+
+        // Release old paint if exists (for property changes)
+        if (_textPaint != null)
+        {
+            PaintRegistry.Release(_textPaint, _font);
+        }
+
+        // Get or create paint from registry
+        (_textPaint, _font) = PaintRegistry.GetOrCreate(
+            color: SKColors.White,
+            size: DefaultFontSize
+        );
     }
 
     private void StartFadeIn()
@@ -81,18 +101,7 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
         {
             _contentElement = element;
         }
-        else
-        {
-            _textPaint = new SKPaint
-            {
-                Color = SKColors.White,
-                IsAntialias = true
-            };
-            _font = new SKFont(SKTypeface.Default)
-            {
-                Size = DefaultFontSize
-            };
-        }
+        // Paint is already initialized in UpdatePaint()
     }
 
     private void MeasureContent()
@@ -105,7 +114,7 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
                 contentSize.Width + Padding * 2,
                 contentSize.Height + Padding * 2);
         }
-        else if (_attachment.Content is string text && _font != null)
+        else if (_attachment.Content is string text)
         {
             var textWidth = _font.MeasureText(text);
             _font.GetFontMetrics(out var metrics);
@@ -241,7 +250,7 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
         {
             _contentElement.Render(canvas);
         }
-        else if (_attachment.Content is string text && _textPaint != null && _font != null)
+        else if (_attachment.Content is string text)
         {
             _font.GetFontMetrics(out var metrics);
             var textY = Position.Y + Padding + (-metrics.Ascent);
@@ -273,8 +282,12 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
     {
         if (disposing)
         {
-            _textPaint?.Dispose();
-            _font?.Dispose();
+            // Release paint from registry (safe even if ClearAll already called or during shutdown)
+            if (_textPaint != null)
+            {
+                PaintRegistry?.Release(_textPaint, _font);
+            }
+
             // Note: _contentElement is not disposed here because we don't own it.
             // It was provided by the user through TooltipAttachment and may be reused.
 

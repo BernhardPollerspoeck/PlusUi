@@ -34,6 +34,7 @@ public static class PlusUiServiceCollectionExtensions
         services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
         services.AddSingleton<IFontRegistryService, FontRegistryService>();
+        services.AddSingleton<IPaintRegistryService, PaintRegistryService>();
         services.AddSingleton<IImageLoaderService, ImageLoaderService>();
         services.AddSingleton<IImageExportService, ImageExportService>();
 

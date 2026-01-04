@@ -26,10 +26,10 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
 {
     private readonly List<TabItem> _tabs = [];
     private int _hoveredTabIndex = -1;
-    private SKFont? _headerFont;
-    private SKPaint? _headerPaint;
-    private SKPaint? _activeHeaderPaint;
-    private SKPaint? _disabledHeaderPaint;
+    private SKFont _headerFont;
+    private SKPaint _headerPaint;
+    private SKPaint _activeHeaderPaint;
+    private SKPaint _disabledHeaderPaint;
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => true;
@@ -45,10 +45,39 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
 
     public TabControl()
     {
-        _headerFont = new SKFont(SKTypeface.Default) { Size = HeaderTextSize };
-        _headerPaint = new SKPaint { Color = HeaderTextColor, IsAntialias = true };
-        _activeHeaderPaint = new SKPaint { Color = ActiveHeaderTextColor, IsAntialias = true };
-        _disabledHeaderPaint = new SKPaint { Color = DisabledHeaderTextColor, IsAntialias = true };
+        UpdatePaints();
+    }
+
+    private void UpdatePaints()
+    {
+        // Skip if PaintRegistry not available (during shutdown)
+        if (PaintRegistry == null)
+            return;
+
+        // Release old paints if exists (for property changes)
+        if (_headerPaint != null)
+        {
+            PaintRegistry.Release(_headerPaint, _headerFont);
+            PaintRegistry.Release(_activeHeaderPaint, _headerFont);
+            PaintRegistry.Release(_disabledHeaderPaint, _headerFont);
+        }
+
+        // Get or create all three paints from registry (same font, different colors)
+        (_headerPaint, _headerFont) = PaintRegistry.GetOrCreate(
+            color: HeaderTextColor,
+            size: HeaderTextSize
+        );
+
+        // Active and disabled use same font instance but different colors
+        (_activeHeaderPaint, _) = PaintRegistry.GetOrCreate(
+            color: ActiveHeaderTextColor,
+            size: HeaderTextSize
+        );
+
+        (_disabledHeaderPaint, _) = PaintRegistry.GetOrCreate(
+            color: DisabledHeaderTextColor,
+            size: HeaderTextSize
+        );
     }
 
     #region IFocusable
@@ -313,8 +342,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         set
         {
             field = value;
-            _headerFont?.Dispose();
-            _headerFont = new SKFont(SKTypeface.Default) { Size = value };
+            UpdatePaints();
             InvalidateMeasure();
         }
     } = 14f;
@@ -337,8 +365,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         set
         {
             field = value;
-            _headerPaint?.Dispose();
-            _headerPaint = new SKPaint { Color = value, IsAntialias = true };
+            UpdatePaints();
         }
     } = SKColors.White;
 
@@ -360,8 +387,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         set
         {
             field = value;
-            _activeHeaderPaint?.Dispose();
-            _activeHeaderPaint = new SKPaint { Color = value, IsAntialias = true };
+            UpdatePaints();
         }
     } = new SKColor(52, 199, 89); // Green
 
@@ -383,8 +409,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         set
         {
             field = value;
-            _disabledHeaderPaint?.Dispose();
-            _disabledHeaderPaint = new SKPaint { Color = value, IsAntialias = true };
+            UpdatePaints();
         }
     } = new SKColor(100, 100, 100);
 
@@ -938,10 +963,13 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     {
         if (disposing)
         {
-            _headerFont?.Dispose();
-            _headerPaint?.Dispose();
-            _activeHeaderPaint?.Dispose();
-            _disabledHeaderPaint?.Dispose();
+            // Release paints from registry (safe even if ClearAll already called or during shutdown)
+            if (_headerPaint != null)
+            {
+                PaintRegistry?.Release(_headerPaint, _headerFont);
+                PaintRegistry?.Release(_activeHeaderPaint, _headerFont);
+                PaintRegistry?.Release(_disabledHeaderPaint, _headerFont);
+            }
 
             foreach (var tab in _tabs)
             {

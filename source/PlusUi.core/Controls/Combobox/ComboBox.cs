@@ -257,7 +257,15 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     #endregion
 
     #region TextColor
-    internal SKColor TextColor { get; set; } = SKColors.White;
+    internal SKColor TextColor
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdatePaint();
+        }
+    } = SKColors.White;
 
     public ComboBox<T> SetTextColor(SKColor color)
     {
@@ -273,12 +281,20 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     #endregion
 
     #region TextSize
-    internal float TextSize { get; set; } = 14f;
+    internal float TextSize
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdatePaint();
+            InvalidateMeasure();
+        }
+    } = 14f;
 
     public ComboBox<T> SetTextSize(float size)
     {
         TextSize = size;
-        InvalidateMeasure();
         return this;
     }
 
@@ -363,12 +379,20 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     #endregion
 
     #region FontFamily
-    internal string? FontFamily { get; set; }
+    internal string? FontFamily
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdatePaint();
+            InvalidateMeasure();
+        }
+    }
 
     public ComboBox<T> SetFontFamily(string fontFamily)
     {
         FontFamily = fontFamily;
-        InvalidateMeasure();
         return this;
     }
 
@@ -379,42 +403,8 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     }
     #endregion
 
-    private SKFont? _font;
-    private SKFont Font
-    {
-        get
-        {
-            if (_font == null)
-            {
-                var typeface = string.IsNullOrEmpty(FontFamily)
-                    ? SKTypeface.FromFamilyName(null)
-                    : SKTypeface.FromFamilyName(FontFamily);
-                _font = new SKFont(typeface, TextSize);
-            }
-            return _font;
-        }
-    }
-
-    private SKPaint? _paint;
-    private SKPaint Paint
-    {
-        get
-        {
-            if (_paint == null)
-            {
-                _paint = new SKPaint
-                {
-                    Color = TextColor,
-                    IsAntialias = true
-                };
-            }
-            else
-            {
-                _paint.Color = TextColor;
-            }
-            return _paint;
-        }
-    }
+    private SKFont _font;
+    private SKPaint _paint;
 
     internal int _hoveredIndex = -1;
     internal int _scrollStartIndex = 0; // First visible item index for scrolling
@@ -428,6 +418,31 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     public ComboBox()
     {
         SetDesiredSize(new Size(200, 40));
+        UpdatePaint();
+    }
+
+    private void UpdatePaint()
+    {
+        // Skip if PaintRegistry not available (during shutdown)
+        if (PaintRegistry == null)
+            return;
+
+        // Release old paint if exists (for property changes)
+        if (_paint != null)
+        {
+            PaintRegistry.Release(_paint, _font);
+        }
+
+        // Get or create paint from registry
+        var typeface = string.IsNullOrEmpty(FontFamily)
+            ? SKTypeface.FromFamilyName(null)
+            : SKTypeface.FromFamilyName(FontFamily);
+
+        (_paint, _font) = PaintRegistry.GetOrCreate(
+            color: TextColor,
+            size: TextSize,
+            typeface: typeface
+        );
     }
 
     /// <inheritdoc />
@@ -669,13 +684,13 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         // Render text
         if (!string.IsNullOrEmpty(displayText))
         {
-            var originalColor = Paint.Color;
+            var originalColor = _paint.Color;
             if (showingPlaceholder)
             {
-                Paint.Color = PlaceholderColor;
+                _paint.Color = PlaceholderColor;
             }
 
-            Font.GetFontMetrics(out var fontMetrics);
+            _font.GetFontMetrics(out var fontMetrics);
             var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
             canvas.DrawText(
@@ -683,12 +698,12 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
                 rect.Left + Padding.Left,
                 rect.Top + Padding.Top + textHeight,
                 SKTextAlign.Left,
-                Font,
-                Paint);
+                _font,
+                _paint);
 
             if (showingPlaceholder)
             {
-                Paint.Color = originalColor;
+                _paint.Color = originalColor;
             }
         }
 
@@ -790,7 +805,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         canvas.ClipRoundRect(new SKRoundRect(dropdownRect, CornerRadius, CornerRadius));
 
         // Draw items
-        Font.GetFontMetrics(out var fontMetrics);
+        _font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         var visibleItemCount = (int)(dropdownHeight / ItemHeight);
@@ -826,8 +841,8 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
                 itemRect.Left + Padding.Left,
                 itemRect.Top + (ItemHeight / 2) + (textHeight / 2),
                 SKTextAlign.Left,
-                Font,
-                Paint);
+                _font,
+                _paint);
         }
 
         // Restore canvas (remove clipping)
@@ -847,7 +862,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
         // Get font metrics for height calculation
-        Font.GetFontMetrics(out var fontMetrics);
+        _font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
         var width = DesiredSize?.Width ?? 200f;
@@ -906,8 +921,12 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
             }
 
             UnregisterDropdownOverlay();
-            _font?.Dispose();
-            _paint?.Dispose();
+
+            // Release paint from registry (safe even if ClearAll already called or during shutdown)
+            if (_paint != null)
+            {
+                PaintRegistry?.Release(_paint, _font);
+            }
         }
         base.Dispose(disposing);
     }

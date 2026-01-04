@@ -64,11 +64,8 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
     private float _calculatedHeight;
     private bool _measured;
 
-    private SKFont? _font;
-    private SKFont Font => _font ??= new SKFont(SKTypeface.FromFamilyName(null), 14);
-
-    private SKPaint? _textPaint;
-    private SKPaint TextPaint => _textPaint ??= new SKPaint { IsAntialias = true };
+    private SKFont _font;
+    private SKPaint _textPaint;
 
     /// <summary>
     /// Creates a new MenuOverlay.
@@ -91,6 +88,26 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         _parentOverlay = parentOverlay;
         _onDismiss = onDismiss;
         SetBackground(DefaultBackgroundColor);
+        UpdatePaint();
+    }
+
+    private void UpdatePaint()
+    {
+        // Skip if PaintRegistry not available (during shutdown)
+        if (PaintRegistry == null)
+            return;
+
+        // Release old paint if exists (for property changes)
+        if (_textPaint != null)
+        {
+            PaintRegistry.Release(_textPaint, _font);
+        }
+
+        // Get or create paint from registry
+        (_textPaint, _font) = PaintRegistry.GetOrCreate(
+            color: TextColor,
+            size: 14f
+        );
     }
 
     private void EnsureMeasured()
@@ -108,12 +125,12 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         {
             if (item is MenuItem menuItem)
             {
-                var textWidth = Font.MeasureText(menuItem.Text);
+                var textWidth = _font.MeasureText(menuItem.Text);
                 maxTextWidth = Math.Max(maxTextWidth, textWidth);
 
                 if (!string.IsNullOrEmpty(menuItem.Shortcut))
                 {
-                    var shortcutWidth = Font.MeasureText(menuItem.Shortcut);
+                    var shortcutWidth = _font.MeasureText(menuItem.Shortcut);
                     maxShortcutWidth = Math.Max(maxShortcutWidth, shortcutWidth);
                 }
 
@@ -249,18 +266,18 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         }
 
         var textColor = item.IsEnabled ? TextColor : DisabledTextColor;
-        TextPaint.Color = textColor;
+        _textPaint.Color = textColor;
 
         float currentX = x + HorizontalPadding;
-        Font.GetFontMetrics(out var metrics);
+        _font.GetFontMetrics(out var metrics);
         var textY = y + ItemHeight / 2 - (metrics.Ascent + metrics.Descent) / 2;
 
         // Draw checkmark if checked
         if (item.IsChecked)
         {
-            TextPaint.Color = item.IsEnabled ? CheckmarkColor : DisabledTextColor;
-            canvas.DrawText("\u2713", currentX, textY, SKTextAlign.Left, Font, TextPaint);
-            TextPaint.Color = textColor;
+            _textPaint.Color = item.IsEnabled ? CheckmarkColor : DisabledTextColor;
+            canvas.DrawText("\u2713", currentX, textY, SKTextAlign.Left, _font, _textPaint);
+            _textPaint.Color = textColor;
         }
         currentX += CheckmarkWidth;
 
@@ -268,22 +285,22 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         currentX += IconAreaWidth;
 
         // Draw text
-        canvas.DrawText(item.Text, currentX, textY, SKTextAlign.Left, Font, TextPaint);
+        canvas.DrawText(item.Text, currentX, textY, SKTextAlign.Left, _font, _textPaint);
 
         // Draw shortcut (right-aligned)
         if (!string.IsNullOrEmpty(item.Shortcut))
         {
-            TextPaint.Color = item.IsEnabled ? ShortcutColor : DisabledTextColor;
+            _textPaint.Color = item.IsEnabled ? ShortcutColor : DisabledTextColor;
             var shortcutX = x + _calculatedWidth - HorizontalPadding - (item.HasSubItems ? SubmenuArrowWidth : 0);
-            canvas.DrawText(item.Shortcut, shortcutX, textY, SKTextAlign.Right, Font, TextPaint);
+            canvas.DrawText(item.Shortcut, shortcutX, textY, SKTextAlign.Right, _font, _textPaint);
         }
 
         // Draw submenu arrow
         if (item.HasSubItems)
         {
-            TextPaint.Color = textColor;
+            _textPaint.Color = textColor;
             var arrowX = x + _calculatedWidth - HorizontalPadding - 8;
-            canvas.DrawText("\u25B6", arrowX, textY, SKTextAlign.Center, Font, TextPaint);
+            canvas.DrawText("\u25B6", arrowX, textY, SKTextAlign.Center, _font, _textPaint);
         }
     }
 
@@ -578,8 +595,11 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
     {
         if (disposing)
         {
-            _font?.Dispose();
-            _textPaint?.Dispose();
+            // Release paint from registry (safe even if ClearAll already called or during shutdown)
+            if (_textPaint != null)
+            {
+                PaintRegistry?.Release(_textPaint, _font);
+            }
         }
         base.Dispose(disposing);
     }

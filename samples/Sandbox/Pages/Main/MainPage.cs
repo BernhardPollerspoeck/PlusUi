@@ -86,6 +86,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                             .SetDesiredWidth(150)
                             .SetDesiredHeight(150))
                     ),
+                
 
                 new HelloWorldControl(),
                 new Label()
@@ -199,6 +200,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetDesiredWidth(100)
                         .SetDesiredHeight(100))))
             ,
+            new VStack(BuildLabelTest()),
             CreateTestButtons()
                     );
     }
@@ -207,6 +209,24 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
     {
         pageStyle.AddStyle<UiPageElement>(element
             => element.SetBackground(new SolidColorBackground(Colors.White)));
+    }
+
+    private UiElement[] BuildLabelTest()
+    {
+        var count = 25;
+        var result = new UiElement[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            var size = count - i;
+            result[i] = new Label()
+                .SetText($"My size is {size}")
+                .SetTextSize(size)
+                .SetTextColor(Colors.Black)
+                .SetMargin(new(0));
+        }
+
+        return result;
     }
 
     private HStack CreateTestButtons()
