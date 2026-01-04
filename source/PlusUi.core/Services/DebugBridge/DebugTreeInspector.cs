@@ -110,6 +110,34 @@ internal class DebugTreeInspector
         if (value is SKColor color)
             return $"#{color.Red:X2}{color.Green:X2}{color.Blue:X2}{color.Alpha:X2}";
 
+        // SKPaint
+        if (value is SKPaint paint)
+            return $"SKPaint(Color: #{paint.Color.Red:X2}{paint.Color.Green:X2}{paint.Color.Blue:X2}{paint.Color.Alpha:X2}, AA: {paint.IsAntialias})";
+
+        // SKFont
+        if (value is SKFont font)
+            return $"SKFont(Size: {font.Size}, Hinting: {font.Hinting}, Subpixel: {font.Subpixel})";
+
+        // SKTypeface
+        if (value is SKTypeface typeface)
+            return $"SKTypeface({typeface.FamilyName}, Weight: {typeface.FontWeight}, Style: {typeface.FontSlant})";
+
+        // Point
+        if (value is Point point)
+            return $"Point({point.X}, {point.Y})";
+
+        // Size
+        if (value is Size size)
+            return $"Size({size.Width}x{size.Height})";
+
+        // Rect
+        if (value is Rect rect)
+            return $"Rect(X:{rect.X}, Y:{rect.Y}, W:{rect.Width}, H:{rect.Height})";
+
+        // Color (PlusUi Color)
+        if (value is Color clr)
+            return $"#{clr.R:X2}{clr.G:X2}{clr.B:X2}{clr.A:X2}";
+
         // Enums
         if (value.GetType().IsEnum)
             return value.ToString() ?? "null";

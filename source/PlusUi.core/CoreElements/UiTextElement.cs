@@ -334,8 +334,6 @@ public abstract class UiTextElement : UiElement
     /// <inheritdoc />
     public override void Render(SKCanvas canvas)
     {
-        // Update paint color for high contrast mode (ServiceProvider may not be available at construction time)
-        Paint.Color = GetEffectiveTextColor();
         base.Render(canvas);
     }
 

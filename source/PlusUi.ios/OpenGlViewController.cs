@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using PlusUi.core.Services;
 using PlusUi.core.Services.Accessibility;
-using PlusUi.core.Services.Rendering;
 using SkiaSharp.Views.iOS;
 using System.Numerics;
 
@@ -12,8 +11,6 @@ public class OpenGlViewController(
     RenderService renderService,
     PlusUiNavigationService plusUiNavigationService,
     InputService inputService,
-    InvalidationTracker invalidationTracker,
-    RenderLoopService renderLoopService,
     KeyboardTextField keyboardTextField,
     IosPlatformService platformService,
     NavigationContainer navigationContainer,
@@ -70,24 +67,13 @@ public class OpenGlViewController(
         // Initialize accessibility with root provider that returns current page
         accessibilityService.Initialize(() => navigationContainer.CurrentPage);
 
-        // Subscribe to cross-platform render loop for continuous rendering (animations, transitions, etc.)
-        renderLoopService.RenderRequested += (_, _) => _canvasView?.SetNeedsDisplay();
     }
 
     private void OnCanvasPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
-        // Skip rendering if nothing needs to be rendered
-        if (!invalidationTracker.NeedsRendering)
-        {
-            return;
-        }
-
         var canvas = e.Surface.Canvas;
         var canvasSize = new Vector2(e.Info.Width, e.Info.Height);
         renderService.Render(clearAction: null, canvas, grContext: null, canvasSize);
-
-        // Notify tracker that we rendered a frame (clears manual render requests)
-        invalidationTracker.FrameRendered();
     }
 
     public override void ViewDidLayoutSubviews()
@@ -100,9 +86,6 @@ public class OpenGlViewController(
 
             // Invalidate layout when view bounds change (rotation, size change)
             navigationContainer.CurrentPage.InvalidateMeasure();
-
-            // Request render to display layout changes
-            invalidationTracker.RequestRender();
         }
     }
 
@@ -120,9 +103,6 @@ public class OpenGlViewController(
             renderService.DisplayDensity = newScale;
             navigationContainer.CurrentPage.InvalidateMeasure();
         }
-
-        // Request render for trait changes
-        invalidationTracker.RequestRender();
     }
 
     public void Invalidate()

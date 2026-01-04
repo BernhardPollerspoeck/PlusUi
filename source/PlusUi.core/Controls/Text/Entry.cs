@@ -205,27 +205,35 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
             ? (IsPassword ? new string(PasswordChar, Text!.Length) : Text!)
             : (Placeholder ?? string.Empty);
 
-        // Save original color and temporarily change if showing placeholder
-        var originalColor = Paint.Color;
+        // For placeholder, create a temporary paint instead of mutating the shared one
         var showingPlaceholder = !hasText && !string.IsNullOrEmpty(Placeholder);
 
         if (showingPlaceholder)
         {
-            Paint.Color = PlaceholderColor;
+            // Create temporary paint for placeholder (don't mutate shared Paint from registry!)
+            using var placeholderPaint = new SKPaint
+            {
+                Color = PlaceholderColor,
+                IsAntialias = Paint.IsAntialias
+            };
+
+            canvas.DrawText(
+                displayText,
+                Position.X + VisualOffset.X + Padding.Left,
+                Position.Y + VisualOffset.Y + textHeight,
+                (SKTextAlign)HorizontalTextAlignment,
+                Font,
+                placeholderPaint);
         }
-
-        canvas.DrawText(
-            displayText,
-            Position.X + VisualOffset.X + Padding.Left,
-            Position.Y + VisualOffset.Y + textHeight,
-            (SKTextAlign)HorizontalTextAlignment,
-            Font,
-            Paint);
-
-        // Restore original color
-        if (showingPlaceholder)
+        else
         {
-            Paint.Color = originalColor;
+            canvas.DrawText(
+                displayText,
+                Position.X + VisualOffset.X + Padding.Left,
+                Position.Y + VisualOffset.Y + textHeight,
+                (SKTextAlign)HorizontalTextAlignment,
+                Font,
+                Paint);
         }
 
         // Show cursor when selected

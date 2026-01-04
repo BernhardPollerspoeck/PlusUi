@@ -1,7 +1,6 @@
 using PlusUi.core;
 using PlusUi.core.Animations;
 using PlusUi.core.Services.Accessibility;
-using PlusUi.core.Services.Rendering;
 
 namespace PlusUi.core.Tests;
 
@@ -10,7 +9,7 @@ public class TransitionTests
 {
     private static TransitionService CreateTransitionService()
     {
-        return new TransitionService(new PlusUiConfiguration(), new AccessibilitySettingsService(), new InvalidationTracker());
+        return new TransitionService(new PlusUiConfiguration(), new AccessibilitySettingsService());
     }
 
     #region Easing Tests

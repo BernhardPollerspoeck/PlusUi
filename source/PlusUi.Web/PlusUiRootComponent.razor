@@ -2,14 +2,11 @@
 @using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @using PlusUi.core
-@using PlusUi.core.Services.Rendering
 @using SkiaSharp
 @using SkiaSharp.Views.Blazor
 @using System.Numerics
 @inject RenderService RenderService
 @inject InputService InputService
-@inject InvalidationTracker InvalidationTracker
-@inject RenderLoopService RenderLoopService
 @inject NavigationContainer NavigationContainer
 @inject PlusUiNavigationService NavigationService
 @inject WebKeyboardHandler KeyboardHandler
@@ -91,9 +88,6 @@
 
             _isInitialized = true;
 
-            // Subscribe to cross-platform render loop for continuous rendering (animations, transitions, etc.)
-            RenderLoopService.RenderRequested += (_, _) => RequestRender();
-
             // Force initial render
             RequestRender();
 
@@ -114,12 +108,6 @@
             return;
         }
 
-        // Skip rendering if nothing needs to be rendered
-        if (!InvalidationTracker.NeedsRendering)
-        {
-            return;
-        }
-
         var surface = e.Surface;
         var canvas = surface.Canvas;
 
@@ -136,9 +124,6 @@
                 canvas: canvas,
                 grContext: null,
                 canvasSize: new Vector2(_width, _height));
-
-            // Notify tracker that we rendered a frame (clears manual render requests)
-            InvalidationTracker.FrameRendered();
         }
         catch (Exception ex)
         {

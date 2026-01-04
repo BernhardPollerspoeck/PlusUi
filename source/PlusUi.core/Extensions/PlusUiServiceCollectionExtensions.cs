@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Services;
 using PlusUi.core.Services.Accessibility;
+using PlusUi.core.Services.DebugBridge;
 using PlusUi.core.Services.Focus;
-using PlusUi.core.Services.Rendering;
 
 namespace PlusUi.core;
 
@@ -23,8 +23,6 @@ public static class PlusUiServiceCollectionExtensions
         services.AddSingleton(appConfiguration);
         services.AddSingleton<ICommandLineService>(sp => new CommandLineService(args));
         services.AddSingleton<ServiceProviderService>();
-        services.AddSingleton<InvalidationTracker>();
-        services.AddSingleton<RenderLoopService>();
         services.AddSingleton<RenderService>();
         services.AddSingleton<InputService>();
 
@@ -34,7 +32,11 @@ public static class PlusUiServiceCollectionExtensions
         services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
         services.AddSingleton<IFontRegistryService, FontRegistryService>();
-        services.AddSingleton<IPaintRegistryService, PaintRegistryService>();
+        services.AddSingleton<IPaintRegistryService>(sp =>
+        {
+            var debugBridgeClient = sp.GetService<DebugBridgeClient>();
+            return new PaintRegistryService(debugBridgeClient);
+        });
         services.AddSingleton<IImageLoaderService, ImageLoaderService>();
         services.AddSingleton<IImageExportService, ImageExportService>();
 

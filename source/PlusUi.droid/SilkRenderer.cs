@@ -4,7 +4,6 @@ using Javax.Microedition.Khronos.Opengles;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using PlusUi.core.Services.Accessibility;
-using PlusUi.core.Services.Rendering;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using SkiaSharp;
@@ -15,8 +14,6 @@ namespace PlusUi.droid;
 internal class SilkRenderer(
     PlusUiNavigationService plusUiNavigationService,
     RenderService renderService,
-    InvalidationTracker invalidationTracker,
-    RenderLoopService renderLoopService,
     AndroidPlatformService platformService,
     NavigationContainer navigationContainer,
     IAccessibilityService accessibilityService,
@@ -51,19 +48,10 @@ internal class SilkRenderer(
     public void SetView(GLSurfaceView view)
     {
         _glSurfaceView = view;
-
-        // Subscribe to cross-platform render loop for continuous rendering (animations, transitions, etc.)
-        renderLoopService.RenderRequested += (_, _) => _glSurfaceView?.RequestRender();
     }
 
     public void OnDrawFrame(IGL10? _)
     {
-        // Skip rendering if nothing needs to be rendered (battery optimization)
-        if (!invalidationTracker.NeedsRendering)
-        {
-            return;
-        }
-
         if (this is not { _initialized: true, _glContext: not null, _canvas: not null, _size: not null })
         {
             logger.LogWarning("Render skipped: GL context, canvas, GR context, or window is not initialized.");
@@ -75,9 +63,6 @@ internal class SilkRenderer(
             _canvas,
             _grContext,
             new(_size.Value.X, _size.Value.Y));
-
-        // Notify tracker that we rendered a frame (clears manual render requests)
-        invalidationTracker.FrameRendered();
     }
 
     public void OnSurfaceChanged(IGL10? _, int width, int height)
@@ -105,9 +90,6 @@ internal class SilkRenderer(
 
         // Invalidate layout when surface changes (rotation, resize, DPI change)
         navigationContainer.CurrentPage.InvalidateMeasure();
-
-        // Request initial render and render after surface change
-        invalidationTracker.RequestRender();
     }
 
     private void CreateSurface(Vector2D<int> size)

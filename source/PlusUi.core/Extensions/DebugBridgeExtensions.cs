@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PlusUi.core.Services.DebugBridge;
-using PlusUi.core.Services.Rendering;
 
 namespace PlusUi.core;
 
@@ -36,18 +35,12 @@ public static class DebugBridgeExtensions
 
         var serverUrl = $"ws://{host}:{port}";
 
-        // Register DebugBridgeClient as singleton
         builder.Services.AddSingleton(sp =>
         {
             var navigationContainer = sp.GetRequiredService<NavigationContainer>();
-            var invalidationTracker = sp.GetRequiredService<InvalidationTracker>();
             var logger = sp.GetService<ILogger<DebugBridgeClient>>();
-
-            var client = new DebugBridgeClient(serverUrl, navigationContainer, invalidationTracker, logger);
-
-            // Connect asynchronously
+            var client = new DebugBridgeClient(serverUrl, navigationContainer, logger);
             _ = client.ConnectAsync();
-
             return client;
         });
 

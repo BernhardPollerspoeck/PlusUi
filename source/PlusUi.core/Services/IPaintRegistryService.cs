@@ -17,7 +17,7 @@ public interface IPaintRegistryService
         SKTypeface? typeface = null,
         bool isAntialias = true,
         bool subpixel = true,
-        SKFontEdging edging = SKFontEdging.SubpixelAntialias,
+        SKFontEdging edging = SKFontEdging.Antialias,
         SKFontHinting hinting = SKFontHinting.Full,
         SKTextAlign textAlign = SKTextAlign.Left
     );

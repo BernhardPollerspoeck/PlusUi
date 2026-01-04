@@ -99,12 +99,11 @@ public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement
     /// </summary>
     /// <remarks>
     /// This method is part of the navigation lifecycle and is called every time navigation occurs away from this page.
-    /// Paint registry is automatically cleared here to free up cached SKPaint/SKFont instances.
+    /// Paint cleanup is handled automatically via reference counting when controls are disposed.
     /// </remarks>
     public virtual void OnNavigatedFrom()
     {
-        // Clear entire paint registry - all paints disposed, cache cleared
-        PaintRegistry?.ClearAll();
+        // Paint cleanup handled by reference counting in control Dispose() methods
     }
 
     protected override void UpdateBindingsInternal()

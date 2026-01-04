@@ -50,7 +50,6 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
     private TreeView BuildTreeView()
     {
         var treeView = new TreeView();
-        treeView.SetBackground(Colors.Transparent);
         treeView.SetItemsSource(vm.RootItems);
         treeView.SetChildrenSelector<TreeNodeDto>(node => node.Children);
         treeView.SetItemTemplate((item, depth) => item switch
@@ -58,10 +57,12 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
             TreeNodeDto node => new Label()
                 .SetText($"{node.Type} ({node.Id})")
                 .SetTextColor(Colors.LightBlue)
+                .SetTextSize(13)
                 .SetVerticalAlignment(VerticalAlignment.Center),
             _ => new Label()
                 .SetText(item?.ToString() ?? "")
                 .SetTextColor(Colors.Gray)
+                .SetTextSize(13)
                 .SetVerticalAlignment(VerticalAlignment.Center)
         });
         treeView.SetItemHeight(28);

@@ -1,29 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
-using PlusUi.core.Services.Rendering;
 using SkiaSharp;
 
 namespace PlusUi.core;
 
-/// <summary>
-/// An activity indicator (spinner) for showing indeterminate progress/loading states.
-/// </summary>
 [GenerateShadowMethods]
-public partial class ActivityIndicator : UiElement, IInvalidator
+public partial class ActivityIndicator : UiElement
 {
     private TimeProvider? _timeProvider;
     private DateTimeOffset _startTime;
-    private InvalidationTracker? _invalidationTracker;
 
-    /// <inheritdoc />
     protected internal override bool IsFocusable => false;
-
-    /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Spinner;
-
-    // IInvalidator implementation
-    public bool NeedsRendering => IsRunning;
-    public event EventHandler? InvalidationChanged;
 
     public ActivityIndicator()
     {
@@ -33,15 +21,8 @@ public partial class ActivityIndicator : UiElement, IInvalidator
     public override void BuildContent()
     {
         base.BuildContent();
-
-        // Get TimeProvider and InvalidationTracker from DI
         _timeProvider = ServiceProviderService.ServiceProvider?.GetService<TimeProvider>() ?? TimeProvider.System;
-        _invalidationTracker = ServiceProviderService.ServiceProvider?.GetService<InvalidationTracker>();
-
         _startTime = _timeProvider.GetUtcNow();
-
-        // Register with InvalidationTracker for continuous rendering when running
-        _invalidationTracker?.Register(this);
     }
 
     /// <inheritdoc />
@@ -76,7 +57,6 @@ public partial class ActivityIndicator : UiElement, IInvalidator
                 }
 
                 // Notify InvalidationTracker that rendering state changed
-                InvalidationChanged?.Invoke(this, EventArgs.Empty);
             }
         }
     } = true;
@@ -192,13 +172,4 @@ public partial class ActivityIndicator : UiElement, IInvalidator
         canvas.DrawPath(path, paint);
     }
 
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            // Unregister from InvalidationTracker
-            _invalidationTracker?.Unregister(this);
-        }
-        base.Dispose(disposing);
-    }
 }

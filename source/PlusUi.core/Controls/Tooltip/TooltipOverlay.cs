@@ -1,31 +1,23 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Services;
 using PlusUi.core.Services.DebugBridge;
-using PlusUi.core.Services.Rendering;
 using SkiaSharp;
 
 namespace PlusUi.core;
 
-/// <summary>
-/// Internal overlay element that renders the tooltip above all page content.
-/// </summary>
-internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
+internal class TooltipOverlay : UiElement, IDebugInspectable
 {
-    /// <inheritdoc />
     protected internal override bool IsFocusable => false;
-
-    /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Tooltip;
 
     private const float Padding = 8f;
     private const float Spacing = 4f;
     private const float DefaultFontSize = 14f;
-    private const int FadeInDuration = 200; // ms
+    private const int FadeInDuration = 200;
 
     private readonly UiElement _targetElement;
     private readonly TooltipAttachment _attachment;
     private readonly IPlatformService? _platformService;
-    private readonly InvalidationTracker? _invalidationTracker;
     private readonly TimeProvider _timeProvider;
 
     private SKPaint _textPaint;
@@ -36,11 +28,6 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
     private float _opacity;
     private DateTimeOffset _animationStart;
 
-    // IInvalidator implementation
-    public bool NeedsRendering => _isAnimating;
-    public event EventHandler? InvalidationChanged;
-
-    // IDebugInspectable implementation
     IEnumerable<UiElement> IDebugInspectable.GetDebugChildren() =>
         _contentElement != null ? [_contentElement] : [];
 
@@ -49,7 +36,6 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
         _targetElement = targetElement;
         _attachment = attachment;
         _platformService = ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
-        _invalidationTracker = ServiceProviderService.ServiceProvider?.GetService<InvalidationTracker>();
         _timeProvider = ServiceProviderService.ServiceProvider?.GetService<TimeProvider>() ?? TimeProvider.System;
 
         Background = new SolidColorBackground(new Color(30, 30, 30, 230));
@@ -64,7 +50,6 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
         CalculatePosition();
 
         // Register with InvalidationTracker and start fade-in animation
-        _invalidationTracker?.Register(this);
         StartFadeIn();
     }
 
@@ -92,7 +77,6 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
         _isAnimating = true;
         _opacity = 0f;
         _animationStart = _timeProvider.GetUtcNow();
-        InvalidationChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void InitializeContent()
@@ -233,7 +217,6 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
             {
                 _isAnimating = false;
                 _opacity = 1f;
-                InvalidationChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -292,7 +275,6 @@ internal class TooltipOverlay : UiElement, IInvalidator, IDebugInspectable
             // It was provided by the user through TooltipAttachment and may be reused.
 
             // Unregister from InvalidationTracker
-            _invalidationTracker?.Unregister(this);
         }
         base.Dispose(disposing);
     }

@@ -1,63 +1,21 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Models;
-using PlusUi.core.Services.Rendering;
 using SkiaSharp;
 
 namespace PlusUi.core;
 
-/// <summary>
-/// Displays static and animated images from various sources (embedded resources, files, URLs).
-/// Supports automatic GIF animation playback and aspect ratio control.
-/// </summary>
-/// <remarks>
-/// Image sources can use different prefixes:
-/// - No prefix: Embedded resource in any loaded assembly
-/// - "file:": Local file path (e.g., "file:/path/to/image.png")
-/// - "http://" or "https://": Web image (loaded asynchronously)
-/// </remarks>
-/// <example>
-/// <code>
-/// // Embedded resource
-/// new Image().SetImageSource("logo.png");
-///
-/// // Local file
-/// new Image().SetImageSource("file:/images/photo.jpg");
-///
-/// // Web image
-/// new Image().SetImageSource("https://example.com/image.png");
-///
-/// // With aspect ratio
-/// new Image()
-///     .SetImageSource("photo.jpg")
-///     .SetAspect(Aspect.AspectFill);
-/// </code>
-/// </example>
 [GenerateShadowMethods]
-public partial class Image : UiElement, IInvalidator
+public partial class Image : UiElement
 {
     private IImageLoaderService? _imageLoaderService;
-    private InvalidationTracker? _invalidationTracker;
 
-    /// <inheritdoc />
     protected internal override bool IsFocusable => false;
-
-    /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Image;
-
-    // IInvalidator implementation
-    public bool NeedsRendering => _animatedImageInfo != null && _animationTimer != null;
-    public event EventHandler? InvalidationChanged;
 
     public override void BuildContent()
     {
         base.BuildContent();
-
-        // Get InvalidationTracker from DI
-        _invalidationTracker = ServiceProviderService.ServiceProvider?.GetService<InvalidationTracker>();
-
-        // Register with InvalidationTracker (will only need rendering when animation is active)
-        _invalidationTracker?.Register(this);
     }
 
     /// <inheritdoc />
@@ -207,9 +165,6 @@ public partial class Image : UiElement, IInvalidator
             state: null,
   dueTime: _animatedImageInfo.FrameDelays[0],
             period: System.Threading.Timeout.Infinite);
-
-        // Notify InvalidationTracker that continuous rendering is now required
-        InvalidationChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void StopAnimation()
@@ -217,9 +172,6 @@ public partial class Image : UiElement, IInvalidator
         _animationTimer?.Dispose();
         _animationTimer = null;
         _currentFrameIndex = 0;
-
-        // Notify InvalidationTracker that continuous rendering is no longer required
-        InvalidationChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnAnimationTick()
@@ -247,9 +199,6 @@ public partial class Image : UiElement, IInvalidator
             _animatedImageInfo?.Dispose();
             _svgImageInfo?.Dispose();
             _renderedSvgImage?.Dispose();
-
-            // Unregister from InvalidationTracker
-            _invalidationTracker?.Unregister(this);
         }
         base.Dispose(disposing);
     }

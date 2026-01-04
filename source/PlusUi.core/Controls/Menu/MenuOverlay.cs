@@ -266,18 +266,20 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         }
 
         var textColor = item.IsEnabled ? TextColor : DisabledTextColor;
-        _textPaint.Color = textColor;
 
         float currentX = x + HorizontalPadding;
         _font.GetFontMetrics(out var metrics);
         var textY = y + ItemHeight / 2 - (metrics.Ascent + metrics.Descent) / 2;
 
+        // Create temporary paints for different colors instead of mutating _textPaint
+        using var textPaint = new SKPaint { Color = textColor, IsAntialias = true };
+
         // Draw checkmark if checked
         if (item.IsChecked)
         {
-            _textPaint.Color = item.IsEnabled ? CheckmarkColor : DisabledTextColor;
-            canvas.DrawText("\u2713", currentX, textY, SKTextAlign.Left, _font, _textPaint);
-            _textPaint.Color = textColor;
+            var checkColor = item.IsEnabled ? CheckmarkColor : DisabledTextColor;
+            using var checkPaint = new SKPaint { Color = checkColor, IsAntialias = true };
+            canvas.DrawText("\u2713", currentX, textY, SKTextAlign.Left, _font, checkPaint);
         }
         currentX += CheckmarkWidth;
 
@@ -285,22 +287,22 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         currentX += IconAreaWidth;
 
         // Draw text
-        canvas.DrawText(item.Text, currentX, textY, SKTextAlign.Left, _font, _textPaint);
+        canvas.DrawText(item.Text, currentX, textY, SKTextAlign.Left, _font, textPaint);
 
         // Draw shortcut (right-aligned)
         if (!string.IsNullOrEmpty(item.Shortcut))
         {
-            _textPaint.Color = item.IsEnabled ? ShortcutColor : DisabledTextColor;
+            var shortcutColor = item.IsEnabled ? ShortcutColor : DisabledTextColor;
+            using var shortcutPaint = new SKPaint { Color = shortcutColor, IsAntialias = true };
             var shortcutX = x + _calculatedWidth - HorizontalPadding - (item.HasSubItems ? SubmenuArrowWidth : 0);
-            canvas.DrawText(item.Shortcut, shortcutX, textY, SKTextAlign.Right, _font, _textPaint);
+            canvas.DrawText(item.Shortcut, shortcutX, textY, SKTextAlign.Right, _font, shortcutPaint);
         }
 
         // Draw submenu arrow
         if (item.HasSubItems)
         {
-            _textPaint.Color = textColor;
             var arrowX = x + _calculatedWidth - HorizontalPadding - 8;
-            canvas.DrawText("\u25B6", arrowX, textY, SKTextAlign.Center, _font, _textPaint);
+            canvas.DrawText("\u25B6", arrowX, textY, SKTextAlign.Center, _font, textPaint);
         }
     }
 

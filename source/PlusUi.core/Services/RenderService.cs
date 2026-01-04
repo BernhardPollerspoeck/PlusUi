@@ -16,11 +16,12 @@ public class RenderService(NavigationContainer navigationContainer, PlusUiPopupS
 
         try
         {
-            canvas.Save();
-            canvas.Scale(DisplayDensity);
-
+            // Clear BEFORE applying any transforms to ensure entire buffer is cleared
             clearAction?.Invoke();
             canvas.Clear(SKColors.Transparent);
+
+            canvas.Save();
+            canvas.Scale(DisplayDensity);
 
             var availableSize = new Size(canvasSize.X, canvasSize.Y);
             var bounds = new Rect(0, 0, canvasSize.X, canvasSize.Y);

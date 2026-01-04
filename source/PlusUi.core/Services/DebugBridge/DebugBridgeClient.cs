@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using PlusUi.core.Services.DebugBridge.Models;
-using PlusUi.core.Services.Rendering;
 
 namespace PlusUi.core.Services.DebugBridge;
 
@@ -15,7 +14,6 @@ internal class DebugBridgeClient : IDisposable
 {
     private readonly string _serverUrl;
     private readonly NavigationContainer _navigationContainer;
-    private readonly InvalidationTracker _invalidationTracker;
     private readonly ILogger<DebugBridgeClient>? _logger;
     private readonly DebugTreeInspector _treeInspector = new();
 
@@ -28,12 +26,10 @@ internal class DebugBridgeClient : IDisposable
     public DebugBridgeClient(
         string serverUrl,
         NavigationContainer navigationContainer,
-        InvalidationTracker invalidationTracker,
         ILogger<DebugBridgeClient>? logger = null)
     {
         _serverUrl = serverUrl;
         _navigationContainer = navigationContainer;
-        _invalidationTracker = invalidationTracker;
         _logger = logger;
     }
 
@@ -206,7 +202,18 @@ internal class DebugBridgeClient : IDisposable
     {
         try
         {
-            var currentPage = _navigationContainer.CurrentPage;
+            // Check if navigation stack has any pages before accessing CurrentPage
+            UiPageElement? currentPage;
+            try
+            {
+                currentPage = _navigationContainer.CurrentPage;
+            }
+            catch (InvalidOperationException)
+            {
+                _logger?.LogWarning("Navigation stack is empty - cannot inspect tree");
+                return;
+            }
+
             if (currentPage == null)
             {
                 _logger?.LogWarning("No current page to inspect");

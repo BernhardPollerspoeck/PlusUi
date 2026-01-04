@@ -1161,6 +1161,7 @@ public abstract class UiElement : IDisposable
             }
         }
     }
+
     #endregion
 
     #region rendering

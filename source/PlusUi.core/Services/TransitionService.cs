@@ -1,14 +1,12 @@
 using PlusUi.core.Animations;
 using PlusUi.core.Services.Accessibility;
-using PlusUi.core.Services.Rendering;
 
 namespace PlusUi.core;
 
-internal class TransitionService : ITransitionService, IInvalidator
+internal class TransitionService : ITransitionService
 {
     private readonly PlusUiConfiguration _config;
     private readonly IAccessibilitySettingsService _accessibilitySettings;
-    private readonly InvalidationTracker _invalidationTracker;
 
     private DateTime _transitionStart;
     private IPageTransition? _activeTransition;
@@ -18,21 +16,12 @@ internal class TransitionService : ITransitionService, IInvalidator
     public bool IsTransitioning => _activeTransition != null;
     public UiPageElement? OutgoingPage => _outgoingPage;
 
-    // IInvalidator implementation
-    public bool NeedsRendering => IsTransitioning;
-    public event EventHandler? InvalidationChanged;
-
     public TransitionService(
         PlusUiConfiguration config,
-        IAccessibilitySettingsService accessibilitySettings,
-        InvalidationTracker invalidationTracker)
+        IAccessibilitySettingsService accessibilitySettings)
     {
         _config = config;
         _accessibilitySettings = accessibilitySettings;
-        _invalidationTracker = invalidationTracker;
-
-        // Register with InvalidationTracker to enable continuous rendering during transitions
-        _invalidationTracker.Register(this);
     }
 
     public void StartTransition(UiPageElement outgoingPage, UiPageElement incomingPage, IPageTransition transition)
@@ -42,10 +31,6 @@ internal class TransitionService : ITransitionService, IInvalidator
         _activeTransition = transition;
         _transitionStart = DateTime.Now;
 
-        // Notify that rendering is now required
-        InvalidationChanged?.Invoke(this, EventArgs.Empty);
-
-        // If RespectReducedMotion is enabled in config and system has reduced motion preference, skip animation
         if (_config.RespectReducedMotion && _accessibilitySettings.IsReducedMotionEnabled)
         {
             CompleteTransition();
@@ -97,8 +82,5 @@ internal class TransitionService : ITransitionService, IInvalidator
         _outgoingPage = null;
         _incomingPage = null;
         _activeTransition = null;
-
-        // Notify that rendering is no longer required
-        InvalidationChanged?.Invoke(this, EventArgs.Empty);
     }
 }

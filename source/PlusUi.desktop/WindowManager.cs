@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlusUi.core;
 using PlusUi.core.Services.Accessibility;
-using PlusUi.core.Services.Rendering;
 using Silk.NET.GLFW;
 using Silk.NET.Input;
 using Silk.NET.Maths;
@@ -19,7 +18,6 @@ internal class WindowManager(
     IOptions<PlusUiConfiguration> uiOptions,
     RenderService renderService,
     InputService inputService,
-    InvalidationTracker invalidationTracker,
     DesktopKeyboardHandler desktopKeyboardHandler,
     DesktopPlatformService platformService,
     PlusUiNavigationService plusUiNavigationService,
@@ -80,12 +78,6 @@ internal class WindowManager(
     #region event handling
     private void HandleWindowRender(double delta)
     {
-        // Skip rendering if nothing needs to be rendered (battery optimization)
-        if (!invalidationTracker.NeedsRendering)
-        {
-            return;
-        }
-
         if (this is not { _glContext: not null, _canvas: not null, _grContext: not null, _window: not null })
         {
             logger.LogWarning("Render skipped: GL context, canvas, GR context, or window is not initialized.");
@@ -97,9 +89,6 @@ internal class WindowManager(
             _canvas,
             _grContext,
             new(_window.Size.X, _window.Size.Y));
-
-        // Notify tracker that we rendered a frame (clears manual render requests)
-        invalidationTracker.FrameRendered();
     }
     private void HandleWindowLoad()
     {
@@ -134,7 +123,6 @@ internal class WindowManager(
         SetupInputHandling();
 
         // Request initial render after load
-        invalidationTracker.RequestRender();
     }
     private void HandleWindowClosing()
     {
@@ -171,7 +159,6 @@ internal class WindowManager(
         navigationContainer.CurrentPage.InvalidateMeasure();
 
         // Request render to display resized content
-        invalidationTracker.RequestRender();
     }
 
     private void HandleWindowStateChanged(WindowState state)
@@ -181,7 +168,6 @@ internal class WindowManager(
         // When window is restored or maximized, request a render
         if (state is WindowState.Normal or WindowState.Maximized)
         {
-            invalidationTracker.RequestRender();
         }
         // When minimized or hidden, no need to render (optimization handled by event-driven mode)
     }
@@ -193,7 +179,6 @@ internal class WindowManager(
         // Request render when window regains focus (content might have changed)
         if (focused)
         {
-            invalidationTracker.RequestRender();
         }
     }
     #endregion
@@ -237,7 +222,6 @@ internal class WindowManager(
             _mouse.MouseMove += (_, position) =>
             {
                 inputService.MouseMove(position / renderService.DisplayDensity);
-                invalidationTracker.RequestRender();
             };
 
             _mouse.MouseDown += (_, button) =>
@@ -247,12 +231,10 @@ internal class WindowManager(
                 if (button == MouseButton.Left)
                 {
                     inputService.MouseDown(_mouse.Position / renderService.DisplayDensity);
-                    invalidationTracker.RequestRender();
                 }
                 else if (button == MouseButton.Right)
                 {
                     inputService.RightClick(_mouse.Position / renderService.DisplayDensity);
-                    invalidationTracker.RequestRender();
                 }
             };
 
@@ -263,7 +245,6 @@ internal class WindowManager(
                 if (button == MouseButton.Left)
                 {
                     inputService.MouseUp(_mouse.Position / renderService.DisplayDensity);
-                    invalidationTracker.RequestRender();
                 }
             };
 
@@ -283,7 +264,6 @@ internal class WindowManager(
                     deltaX,
                     deltaY);
 
-                invalidationTracker.RequestRender();
             };
         }
 

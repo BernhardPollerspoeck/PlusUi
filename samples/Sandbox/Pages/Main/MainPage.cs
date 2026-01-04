@@ -221,8 +221,10 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
             var size = count - i;
             result[i] = new Label()
                 .SetText($"My size is {size}")
+                .SetCornerRadius(0)
                 .SetTextSize(size)
-                .SetTextColor(Colors.Black)
+                .SetTextColor(i%2 ==0 ? Colors.Black : Colors.White)
+                .SetBackground(i % 2 == 0 ? Colors.White : Colors.Black)
                 .SetMargin(new(0));
         }
 
