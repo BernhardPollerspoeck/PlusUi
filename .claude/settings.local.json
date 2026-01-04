@@ -7,7 +7,8 @@
       "Bash(xargs:*)",
       "WebFetch(domain:github.com)",
       "WebSearch",
-      "Bash(dotnet nuget list:*)"
+      "Bash(dotnet nuget list:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []

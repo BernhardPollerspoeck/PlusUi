@@ -56,6 +56,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
     }
     public void ConfigureApp(IPlusUiAppBuilder builder)
     {
+        builder.EnableDebugBridge("localhost", 5555);
         builder.StylePlusUi<DefaultStyle>();
 
         builder.AddPage<MainPage>().WithViewModel<MainPageViewModel>();

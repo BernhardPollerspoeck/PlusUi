@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PlusUi.core.Services.DebugBridge;
 
 namespace PlusUi.core;
 
@@ -25,5 +26,18 @@ public static class PlusUiHostExtensions
         // Configure application styles
         var style = services.GetRequiredService<Style>();
         services.GetService<IApplicationStyle>()?.ConfigureStyle(style);
+
+        // Initialize Debug Bridge if enabled
+        services.InitializeDebugBridgeIfEnabled();
+    }
+
+    /// <summary>
+    /// Initializes debug bridge if it was enabled via EnableDebugBridge().
+    /// </summary>
+    private static void InitializeDebugBridgeIfEnabled(this IServiceProvider services)
+    {
+        // Force resolution to trigger client creation and connection (if registered)
+        // Returns null if EnableDebugBridge() was not called - that's OK
+        _ = services.GetService<DebugBridgeClient>();
     }
 }
