@@ -199,6 +199,38 @@ public class PlusUiNavigationService(
             return;
         }
 
+        // Resolve the new page
+        if (serviceProvider.GetRequiredService(pageType) is not UiPageElement page)
+        {
+            var exception = new InvalidOperationException(
+                $"Page of type {pageType.Name} could not be resolved or is not a UiPageElement. " +
+                $"Ensure the page is registered in the service collection.");
+            _logger?.LogError(exception, "Navigation failed: Page not found for type {PageType}", pageType.Name);
+            throw exception;
+        }
+
+        // Use the overload that takes a page instance
+        NavigateToInternal(page, parameter, isInitCall);
+    }
+
+    private void NavigateToInternal(UiPageElement page, object? parameter, bool isInitCall)
+    {
+        if (_navigationContainer is null)
+        {
+            var exception = new InvalidOperationException("NavigationContainer is not initialized. Ensure Initialize() is called before navigation.");
+            _logger?.LogError(exception, "Navigation failed: NavigationContainer not initialized");
+            throw exception;
+        }
+
+        var pageType = page.GetType();
+
+        // Check if navigating to the same page type (only if not init call)
+        if (!isInitCall && _navigationContainer.CurrentPage.GetType() == pageType)
+        {
+            _logger?.LogDebug("Already on page type {PageType}, ignoring navigation", pageType.Name);
+            return;
+        }
+
         // Dismiss all overlays before navigating
         _overlayService?.DismissAll();
 
@@ -221,15 +253,6 @@ public class PlusUiNavigationService(
 
         try
         {
-            // Resolve the new page
-            if (serviceProvider.GetRequiredService(pageType) is not UiPageElement page)
-            {
-                var exception = new InvalidOperationException(
-                    $"Page of type {pageType.Name} could not be resolved or is not a UiPageElement. " +
-                    $"Ensure the page is registered in the service collection.");
-                _logger?.LogError(exception, "Navigation failed: Page not found for type {PageType}", pageType.Name);
-                throw exception;
-            }
 
             // Push the new page onto the stack
             _navigationContainer.Push(page, parameter);
@@ -302,6 +325,7 @@ public class PlusUiNavigationService(
 
         var appConfiguration = serviceProvider.GetRequiredService<IAppConfiguration>();
         var mainPage = appConfiguration.GetRootPage(serviceProvider);
-        NavigateToInternal(mainPage.GetType(), null, true);
+        // Use the page instance directly instead of re-resolving by type
+        NavigateToInternal(mainPage, null, true);
     }
 }

@@ -604,6 +604,19 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         }
 
         var items = _itemsSource.ToList();
+
+        // Create header cells even when there are no items
+        if (_headerCells == null)
+        {
+            _headerCells = CreateHeaderCells();
+            Children.Clear();
+            foreach (var headerCell in _headerCells)
+            {
+                headerCell.Parent = this;
+                Children.Add(headerCell);
+            }
+        }
+
         if (items.Count == 0)
         {
             return;
@@ -685,6 +698,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         {
             var headerCell = new Label()
                 .SetText(column.Header)
+                .SetTextSize(14)
                 .SetFontWeight(FontWeight.Bold)
                 .SetTextColor(Colors.White)
                 .SetHorizontalAlignment(HorizontalAlignment.Center)

@@ -30,10 +30,30 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     /// </summary>
     public TreeView SetItemsSource(IEnumerable<object> items)
     {
+        // Unsubscribe from old collection
+        if (_itemsSource is INotifyCollectionChanged oldCollection)
+        {
+            oldCollection.CollectionChanged -= OnCollectionChanged;
+        }
+
         _itemsSource = items;
+
+        // Subscribe to new collection
+        if (_itemsSource is INotifyCollectionChanged newCollection)
+        {
+            newCollection.CollectionChanged += OnCollectionChanged;
+        }
+
         BuildNodes();
         InvalidateMeasure();
         return this;
+    }
+
+    private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        // Rebuild the entire tree when collection changes
+        BuildNodes();
+        InvalidateMeasure();
     }
 
     /// <summary>

@@ -3,7 +3,7 @@ namespace PlusUi.core.Services.DebugBridge.Models;
 /// <summary>
 /// Base message type for debug bridge communication.
 /// </summary>
-internal class DebugMessage
+public class DebugMessage
 {
     /// <summary>
     /// Message type: "ui_tree", "performance_frame", "log_entry", "invalidation", etc.
