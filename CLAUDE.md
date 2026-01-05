@@ -31,6 +31,8 @@ dotnet test PlusUi.sln --filter "FullyQualifiedName~PlusUi.core.Tests.LabelTests
 - **Architecture**: Controls inherit from base elements (UiElement, UiTextElement)
 - **Error Handling**: Avoid exceptions for control flow; use nullable types appropriately
 - **Component Structure**: Components should have predictable initialization through constructor and fluent methods
+- **Comments**: Do NOT add unnecessary comments to code. Code should be self-explanatory
+- **Registry Disposal**: In Dispose methods, set registry-managed resources (Paint, Font) to null without calling Release(). Registries handle cleanup themselves
 
 ## UiElement Control Rules
 - **Partial Class**: ALL controls inheriting from UiElement MUST be declared as `partial class`

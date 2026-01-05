@@ -691,12 +691,6 @@ public abstract class UiTextElement : UiElement
                 _subscribedToAccessibilityChanges = false;
                 _accessibilitySettings = null;
             }
-
-            // Release paint from registry (safe even if ClearAll already called or during shutdown)
-            if (Paint != null)
-            {
-                PaintRegistry?.Release(Paint, Font);
-            }
         }
         base.Dispose(disposing);
     }

@@ -36,6 +36,7 @@ internal class WindowManager(
     private IInputContext? _inputContext;
     private IMouse? _mouse;
     private IKeyboard? _keyboard;
+    private bool _isClosing;
     #endregion
 
     #region IHostedService
@@ -78,6 +79,10 @@ internal class WindowManager(
     #region event handling
     private void HandleWindowRender(double delta)
     {
+        // Stop rendering immediately when closing to prevent accessing disposed services
+        if (_isClosing)
+            return;
+
         if (this is not { _glContext: not null, _canvas: not null, _grContext: not null, _window: not null })
         {
             logger.LogWarning("Render skipped: GL context, canvas, GR context, or window is not initialized.");
@@ -126,9 +131,31 @@ internal class WindowManager(
     }
     private void HandleWindowClosing()
     {
+        // Set closing flag immediately to stop render loop
+        _isClosing = true;
+
+        // Unsubscribe from input events first to prevent ObjectDisposedException
+        if (_mouse is not null)
+        {
+            _mouse.MouseMove -= HandleMouseMove;
+            _mouse.MouseDown -= HandleMouseDown;
+            _mouse.MouseUp -= HandleMouseUp;
+            _mouse.Scroll -= HandleMouseScroll;
+            _mouse = null;
+        }
+
+        if (_keyboard is not null)
+        {
+            _keyboard.KeyDown -= HandleKeyDown;
+            _keyboard.KeyUp -= HandleKeyUp;
+            _keyboard = null;
+        }
+
+        // Dispose resources in reverse order of creation
         try
         {
             _surface?.Dispose();
+            _surface = null;
         }
         catch
         {
@@ -137,6 +164,7 @@ internal class WindowManager(
         try
         {
             _grContext?.Dispose();
+            _grContext = null;
         }
         catch
         {
@@ -145,6 +173,7 @@ internal class WindowManager(
         try
         {
             _inputContext?.Dispose();
+            _inputContext = null;
         }
         catch
         {
@@ -219,52 +248,10 @@ internal class WindowManager(
         if (_inputContext.Mice.Count > 0)
         {
             _mouse = _inputContext.Mice[0];
-            _mouse.MouseMove += (_, position) =>
-            {
-                inputService.MouseMove(position / renderService.DisplayDensity);
-            };
-
-            _mouse.MouseDown += (_, button) =>
-            {
-                if (_mouse is null) return;
-
-                if (button == MouseButton.Left)
-                {
-                    inputService.MouseDown(_mouse.Position / renderService.DisplayDensity);
-                }
-                else if (button == MouseButton.Right)
-                {
-                    inputService.RightClick(_mouse.Position / renderService.DisplayDensity);
-                }
-            };
-
-            _mouse.MouseUp += (_, button) =>
-            {
-                if (_mouse is null) return;
-
-                if (button == MouseButton.Left)
-                {
-                    inputService.MouseUp(_mouse.Position / renderService.DisplayDensity);
-                }
-            };
-
-            // Add mouse wheel event handler
-            _mouse.Scroll += (_, scrollDelta) =>
-            {
-                if (_mouse is null) return;
-
-                // Scale the scroll delta and invert Y for natural scrolling direction
-                // Multiply by a scroll speed factor (e.g., 20) for better UX
-                float scrollSpeed = 20f;
-                float deltaX = scrollDelta.X * scrollSpeed;
-                float deltaY = -scrollDelta.Y * scrollSpeed; // Invert Y for natural scrolling
-
-                inputService.MouseWheel(
-                    _mouse.Position / renderService.DisplayDensity,
-                    deltaX,
-                    deltaY);
-
-            };
+            _mouse.MouseMove += HandleMouseMove;
+            _mouse.MouseDown += HandleMouseDown;
+            _mouse.MouseUp += HandleMouseUp;
+            _mouse.Scroll += HandleMouseScroll;
         }
 
         // Setup keyboard if available
@@ -272,22 +259,68 @@ internal class WindowManager(
         {
             _keyboard = _inputContext.Keyboards[0];
             desktopKeyboardHandler.SetKeyboard(_keyboard);
+            _keyboard.KeyDown += HandleKeyDown;
+            _keyboard.KeyUp += HandleKeyUp;
+        }
+    }
 
-            // Track Ctrl key for Pinch gesture
-            _keyboard.KeyDown += (_, key, _) =>
-            {
-                if (key == Key.ControlLeft || key == Key.ControlRight)
-                {
-                    inputService.SetCtrlPressed(true);
-                }
-            };
-            _keyboard.KeyUp += (_, key, _) =>
-            {
-                if (key == Key.ControlLeft || key == Key.ControlRight)
-                {
-                    inputService.SetCtrlPressed(false);
-                }
-            };
+    private void HandleMouseMove(IMouse mouse, System.Numerics.Vector2 position)
+    {
+        inputService.MouseMove(position / renderService.DisplayDensity);
+    }
+
+    private void HandleMouseDown(IMouse mouse, MouseButton button)
+    {
+        if (_mouse is null) return;
+
+        if (button == MouseButton.Left)
+        {
+            inputService.MouseDown(_mouse.Position / renderService.DisplayDensity);
+        }
+        else if (button == MouseButton.Right)
+        {
+            inputService.RightClick(_mouse.Position / renderService.DisplayDensity);
+        }
+    }
+
+    private void HandleMouseUp(IMouse mouse, MouseButton button)
+    {
+        if (_mouse is null) return;
+
+        if (button == MouseButton.Left)
+        {
+            inputService.MouseUp(_mouse.Position / renderService.DisplayDensity);
+        }
+    }
+
+    private void HandleMouseScroll(IMouse mouse, ScrollWheel scrollDelta)
+    {
+        if (_mouse is null) return;
+
+        // Scale the scroll delta and invert Y for natural scrolling direction
+        float scrollSpeed = 20f;
+        float deltaX = scrollDelta.X * scrollSpeed;
+        float deltaY = -scrollDelta.Y * scrollSpeed;
+
+        inputService.MouseWheel(
+            _mouse.Position / renderService.DisplayDensity,
+            deltaX,
+            deltaY);
+    }
+
+    private void HandleKeyDown(IKeyboard keyboard, Key key, int scanCode)
+    {
+        if (key == Key.ControlLeft || key == Key.ControlRight)
+        {
+            inputService.SetCtrlPressed(true);
+        }
+    }
+
+    private void HandleKeyUp(IKeyboard keyboard, Key key, int scanCode)
+    {
+        if (key == Key.ControlLeft || key == Key.ControlRight)
+        {
+            inputService.SetCtrlPressed(false);
         }
     }
     #endregion

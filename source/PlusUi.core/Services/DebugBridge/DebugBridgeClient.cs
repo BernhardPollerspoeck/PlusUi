@@ -1,3 +1,5 @@
+using System.Net.Http;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -15,7 +17,7 @@ internal class DebugBridgeClient : IDisposable
 {
     private readonly string _serverUrl;
     private readonly NavigationContainer _navigationContainer;
-    private readonly ILogger<DebugBridgeClient>? _logger;
+    private readonly ILogger<DebugBridgeClient> _logger;
     private readonly DebugTreeInspector _treeInspector = new();
 
     private ClientWebSocket? _webSocket;
@@ -27,7 +29,7 @@ internal class DebugBridgeClient : IDisposable
     public DebugBridgeClient(
         string serverUrl,
         NavigationContainer navigationContainer,
-        ILogger<DebugBridgeClient>? logger = null)
+        ILogger<DebugBridgeClient> logger)
     {
         _serverUrl = serverUrl;
         _navigationContainer = navigationContainer;
@@ -47,7 +49,7 @@ internal class DebugBridgeClient : IDisposable
             _cancellationTokenSource = new CancellationTokenSource();
             _webSocket = new ClientWebSocket();
 
-            _logger?.LogInformation("Connecting to debug server at {ServerUrl}", _serverUrl);
+            _logger.LogInformation("Connecting to debug server at {ServerUrl}", _serverUrl);
 
             await _webSocket.ConnectAsync(new Uri(_serverUrl), _cancellationTokenSource.Token);
 
@@ -59,8 +61,18 @@ internal class DebugBridgeClient : IDisposable
         }
         catch (Exception ex)
         {
-            _logger?.LogWarning(ex, "Failed to connect to debug server");
             _isConnected = false;
+
+            // Log connection failures gracefully without stack traces
+            if (ex is WebSocketException or HttpRequestException or SocketException)
+            {
+                _logger.LogInformation("Debug server not reachable at {ServerUrl}", _serverUrl);
+            }
+            else
+            {
+                // Unexpected exceptions should be logged with full details
+                _logger.LogWarning(ex, "Failed to connect to debug server");
+            }
 
             // Auto-reconnect after delay
             _ = Task.Run(async () =>
@@ -92,7 +104,7 @@ internal class DebugBridgeClient : IDisposable
         }
         catch (Exception ex)
         {
-            _logger?.LogWarning(ex, "Failed to send message to debug server");
+            _logger.LogWarning(ex, "Failed to send message to debug server");
             _isConnected = false;
 
             // Trigger reconnect
