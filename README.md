@@ -11,13 +11,18 @@ A fully cross-platform UI Framework for .NET, delivering consistent user experie
 | Platform | Package | Status | NuGet |
 |----------|---------|--------|-------|
 | Windows | PlusUi.desktop | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
-| macOS | PlusUi.desktop | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
-| Linux | PlusUi.desktop | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
+| macOS | PlusUi.desktop | ⚠️ Untested | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
+| Linux | PlusUi.desktop | ⚠️ Untested | [![NuGet](https://img.shields.io/nuget/v/PlusUi.desktop.svg)](https://www.nuget.org/packages/PlusUi.desktop) |
 | Web | PlusUi.web | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.web.svg)](https://www.nuget.org/packages/PlusUi.web) |
 | iOS | PlusUi.ios | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.ios.svg)](https://www.nuget.org/packages/PlusUi.ios) |
 | Android | PlusUi.droid | 🚧 In Development | [![NuGet](https://img.shields.io/nuget/v/PlusUi.droid.svg)](https://www.nuget.org/packages/PlusUi.droid) |
-| Headless | PlusUi.headless | ✅ Stable | [![NuGet](https://img.shields.io/nuget/v/PlusUi.headless.svg)](https://www.nuget.org/packages/PlusUi.headless) |
+| Headless | PlusUi.headless | ⚠️ Untested | [![NuGet](https://img.shields.io/nuget/v/PlusUi.headless.svg)](https://www.nuget.org/packages/PlusUi.headless) |
 | **Video Rendering** | **PlusUi.h264** | ✅ **Stable** | [![NuGet](https://img.shields.io/nuget/v/PlusUi.h264.svg)](https://www.nuget.org/packages/PlusUi.h264) |
+
+**Legend:**
+- ✅ **Stable:** Fully tested and production-ready
+- 🚧 **In Development:** Currently being developed, not yet feature-complete
+- ⚠️ **Untested:** Feature-complete but not fully validated across all scenarios
 
 **Core Library:** [![NuGet](https://img.shields.io/nuget/v/PlusUi.core.svg)](https://www.nuget.org/packages/PlusUi.core) (Required by all platforms)
 

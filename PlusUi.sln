@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0_Solution Items", "0_Solut
 		CLAUDE.md = CLAUDE.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		.github\copilot-instructions.md = .github\copilot-instructions.md
+		DEBUG-SERVER-TODO.md = DEBUG-SERVER-TODO.md
 		Directory.Build.props = Directory.Build.props
 		.github\workflows\main.yml = .github\workflows\main.yml
 		README.md = README.md
@@ -57,7 +58,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Templates", "templat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.Web", "samples\Sandbox.Web\Sandbox.Web.csproj", "{D134FEC6-FBEF-4A4D-B835-6EFD279A1569}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{B8EFCA5F-814F-285C-A8CB-F00F14650265}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5_ Debug Server", "5_ Debug Server", "{B8EFCA5F-814F-285C-A8CB-F00F14650265}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.DebugServer", "source\PlusUi.DebugServer\PlusUi.DebugServer.csproj", "{8E4D4531-315A-46FB-BD52-9DAD31DD0742}"
 EndProject
