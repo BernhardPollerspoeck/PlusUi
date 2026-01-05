@@ -3,6 +3,7 @@ using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using PlusUi.core.Services.DebugBridge.Models;
 using PlusUi.DebugServer.Services;
@@ -13,6 +14,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly DebugBridgeServer _server;
     private readonly IPopupService _popupService;
+    private readonly ILogger<MainViewModel> _logger;
     private readonly object _timerLock = new();
     private Timer? _retryTimer;
     private string? _currentClientId;
@@ -29,22 +31,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<PropertyDto> SelectedProperties { get; } = new();
 
-    public MainViewModel(DebugBridgeServer server, IPopupService popupService)
+    public MainViewModel(DebugBridgeServer server, IPopupService popupService, ILogger<MainViewModel> logger)
     {
-        Console.WriteLine("[VIEWMODEL] Constructor called");
         _server = server;
         _popupService = popupService;
+        _logger = logger;
 
-        // Unsubscribe first to prevent duplicate subscriptions
+        _logger.LogDebug("ViewModel constructor called");
+
         _server.ClientConnected -= OnClientConnected;
         _server.ClientDisconnected -= OnClientDisconnected;
         _server.ClientMessageReceived -= OnClientMessageReceived;
 
-        // Subscribe to server events
         _server.ClientConnected += OnClientConnected;
         _server.ClientDisconnected += OnClientDisconnected;
         _server.ClientMessageReceived += OnClientMessageReceived;
-        Console.WriteLine("[VIEWMODEL] Event handlers registered");
+
+        _logger.LogDebug("Event handlers registered");
     }
 
     partial void OnSelectedNodeChanged(TreeNodeDto? value)
@@ -215,7 +218,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        Console.WriteLine("[VIEWMODEL] Dispose called - unsubscribing from events");
+        _logger.LogDebug("Dispose called - unsubscribing from events");
 
         lock (_timerLock)
         {

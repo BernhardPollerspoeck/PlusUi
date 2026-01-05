@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using PlusUi.desktop;
 using PlusUi.DebugServer;
@@ -10,17 +11,15 @@ var plusUiApp = new PlusUiApp(args);
 
 plusUiApp.CreateApp(builder =>
 {
-    // Register DebugBridgeServer as singleton
     builder.Services.AddSingleton(sp =>
     {
-        var server = new DebugBridgeServer(port: 5555);
+        var logger = sp.GetRequiredService<ILogger<DebugBridgeServer>>();
+        var server = new DebugBridgeServer(logger, port: 5555);
 
-        // Start server automatically
         _ = server.StartAsync();
 
         return server;
     });
 
-    // Create app configuration
     return new DebugServerApp();
 });
