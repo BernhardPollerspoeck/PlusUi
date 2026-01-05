@@ -8,6 +8,7 @@
 - [ ] 1.3 Better navigation handling when pages change
 - [ ] 1.4 Maintain expansion state during updates
 - [ ] 1.5 Auto-expand first 2-3 levels on tree load
+- [ ] 1.6 Fix TreeView scrolling - can scroll too far down until all content is off-screen
 
 ### 2. Property Grid Improvements
 - [ ] 2.1 Pin properties per element type
@@ -75,11 +76,11 @@
   - Switch between apps updates all UI accordingly
 
 - [ ] 9.2 App Tabs Component
-  - Horizontal tabs showing connected apps
-  - LED indicator: ● (green) for connected, ○ (gray) for disconnected
-  - Close button (×) per tab to disconnect specific app
-  - [+] button to manually add/connect app
+  - Use PlusUi.core TabControl with BindTabs() instead of custom control
+  - Each connected app = one TabItem
+  - Tab header shows app name with LED indicator: ● (green) for connected
   - Selected tab determines active app in ViewModel
+  - TabControl automatically handles dynamic tab addition/removal via bindings
 
 - [ ] 9.3 Global Status Bar Component
   - FPS counter with utilization % (received from app via WebSocket)

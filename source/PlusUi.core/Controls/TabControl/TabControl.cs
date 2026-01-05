@@ -1,5 +1,6 @@
 using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Collections.Specialized;
 using System.Windows.Input;
 
 namespace PlusUi.core;
@@ -151,6 +152,8 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     #region Tabs
     public IReadOnlyList<TabItem> Tabs => _tabs;
 
+    private INotifyCollectionChanged? _boundCollection;
+
     public TabControl AddTab(TabItem tab)
     {
         _tabs.Add(tab);
@@ -191,6 +194,13 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
 
     public TabControl SetTabs(IEnumerable<TabItem> tabs)
     {
+        // Unsubscribe from old collection
+        if (_boundCollection != null)
+        {
+            _boundCollection.CollectionChanged -= OnBoundCollectionChanged;
+            _boundCollection = null;
+        }
+
         _tabs.Clear();
         foreach (var tab in tabs)
         {
@@ -204,6 +214,14 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         {
             SelectedIndex = 0;
         }
+
+        // Subscribe to new collection if it's observable
+        if (tabs is INotifyCollectionChanged observable)
+        {
+            _boundCollection = observable;
+            _boundCollection.CollectionChanged += OnBoundCollectionChanged;
+        }
+
         InvalidateMeasure();
         return this;
     }
@@ -212,6 +230,32 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     {
         RegisterBinding(propertyName, () => SetTabs(propertyGetter()));
         return this;
+    }
+
+    private void OnBoundCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (sender is not IEnumerable<TabItem> tabs) return;
+
+        // Clear and rebuild from collection
+        _tabs.Clear();
+        foreach (var tab in tabs)
+        {
+            _tabs.Add(tab);
+            if (tab.Content != null)
+            {
+                tab.Content.Parent = this;
+            }
+        }
+        if (_tabs.Count > 0 && SelectedIndex < 0)
+        {
+            SelectedIndex = 0;
+        }
+        else if (SelectedIndex >= _tabs.Count)
+        {
+            SelectedIndex = _tabs.Count - 1;
+        }
+
+        InvalidateMeasure();
     }
     #endregion
 
@@ -963,6 +1007,13 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     {
         if (disposing)
         {
+            // Unsubscribe from bound collection
+            if (_boundCollection != null)
+            {
+                _boundCollection.CollectionChanged -= OnBoundCollectionChanged;
+                _boundCollection = null;
+            }
+
             // Release paints from registry (safe even if ClearAll already called or during shutdown)
             if (_headerPaint != null)
             {

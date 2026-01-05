@@ -1,0 +1,109 @@
+using PlusUi.core;
+using PlusUi.core.Services.DebugBridge.Models;
+using PlusUi.DebugServer.Pages;
+using System.ComponentModel;
+
+namespace PlusUi.DebugServer.Components;
+
+/// <summary>
+/// Displays and edits properties of selected UI element.
+/// </summary>
+public class PropertyGridView : UserControl
+{
+    private readonly MainViewModel _viewModel;
+
+    public PropertyGridView(MainViewModel viewModel)
+    {
+        _viewModel = viewModel;
+    }
+
+    protected override UiElement Build()
+    {
+        var treeView = new TreeView();
+        treeView.BindItemsSource(nameof(_viewModel.SelectedProperties),
+            () => _viewModel.SelectedProperties);
+        treeView.SetChildrenSelector<PropertyDto>(prop => prop.Children);
+        treeView.SetItemTemplate((item, depth) =>
+        {
+            if (item is not PropertyDto prop)
+                return new Label()
+                    .SetText("")
+                    .SetTextColor(Colors.Gray)
+                    .SetTextSize(12);
+
+            // For simple writable properties without children: show Entry
+            UiElement valueControl;
+            if (prop.CanWrite && !prop.HasChildren)
+            {
+                valueControl = new Entry()
+                    .SetText(prop.Value)
+                    .SetTextColor(Colors.LightGray)
+                    .SetTextSize(12)
+                    .SetBackground(new Color(40, 40, 40))
+                    .SetVerticalAlignment(VerticalAlignment.Center)
+                    .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+                    .SetMargin(new Margin(0, 2, 16, 2))
+                    .SetPadding(new Margin(4, 2))
+                    .BindText($"Property_{prop.Path}", () => prop.Value, newValue => _viewModel.UpdatePropertyValue(prop, newValue));
+            }
+            // For complex properties (with children) or writable properties: show Label + Edit button
+            else if (prop.CanWrite || prop.HasChildren)
+            {
+                valueControl = new HStack()
+                    .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+                    .SetMargin(new Margin(0, 0, 16, 0))
+                    .AddChild(new Label()
+                        .SetText(prop.Value)
+                        .SetTextColor(Colors.LightGray)
+                        .SetTextSize(12)
+                        .SetVerticalAlignment(VerticalAlignment.Center)
+                        .SetHorizontalAlignment(HorizontalAlignment.Left))
+                    .AddChild(new Button()
+                        .SetText("✏")
+                        .SetTextSize(12)
+                        .SetTextColor(Colors.LightBlue)
+                        .SetBackground(new Color(50, 50, 50))
+                        .SetHoverBackground(new SolidColorBackground(new Color(70, 70, 70)))
+                        .SetPadding(new Margin(6, 2))
+                        .SetMargin(new Margin(8, 0, 0, 0))
+                        .SetCornerRadius(3)
+                        .SetCommand(_viewModel.EditPropertyCommand)
+                        .SetCommandParameter(prop));
+            }
+            // For read-only properties: just show Label
+            else
+            {
+                valueControl = new Label()
+                    .SetText(prop.Value)
+                    .SetTextColor(Colors.LightGray)
+                    .SetTextSize(12)
+                    .SetVerticalAlignment(VerticalAlignment.Center)
+                    .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+                    .SetMargin(new Margin(0, 0, 16, 0));
+            }
+
+            return new HStack()
+                .SetVerticalAlignment(VerticalAlignment.Center)
+                .AddChild(new Label()
+                    .SetText(prop.Name)
+                    .SetTextColor(prop.HasChildren ? Colors.LightBlue : Colors.White)
+                    .SetTextSize(12)
+                    .SetVerticalAlignment(VerticalAlignment.Center)
+                    .SetMargin(new Margin(8, 0, 16, 0)))
+                .AddChild(valueControl)
+                .AddChild(new Label()
+                    .SetText(prop.Type)
+                    .SetTextColor(Colors.Gray)
+                    .SetTextSize(11)
+                    .SetVerticalAlignment(VerticalAlignment.Center)
+                    .SetMargin(new Margin(0, 0, 8, 0)));
+        });
+        treeView.SetItemHeight(28);
+        treeView.SetIndentation(24);
+        treeView.SetExpanderSize(16);
+        treeView.SetShowLines(true);
+        treeView.SetLineColor(new Color(60, 60, 60));
+        treeView.SetBackground(new Color(30, 30, 30));
+        return treeView;
+    }
+}

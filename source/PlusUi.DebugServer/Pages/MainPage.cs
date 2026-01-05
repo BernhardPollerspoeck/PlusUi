@@ -1,5 +1,5 @@
 using PlusUi.core;
-using PlusUi.core.Services.DebugBridge.Models;
+using PlusUi.DebugServer.Components;
 using SkiaSharp;
 
 namespace PlusUi.DebugServer.Pages;
@@ -10,167 +10,58 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
     {
         return new Grid()
             .SetBackground(new Color(25, 25, 25))
+            .AddRow(Row.Auto)      // App Tabs
             .AddRow(Row.Auto)      // Status bar
             .AddRow(Row.Star)      // Main content
             .AddColumn(Column.Star) // TreeView (left half)
             .AddColumn(Column.Star) // DataGrid (right half)
 
+            // App Tabs using TabControl
             .AddChild(
                 row: 0,
                 column: 0,
                 columnSpan: 2,
-                child: new HStack()
-                    .SetMargin(new Margin(8))
-                    .SetBackground(new Color(45, 45, 45))
-                    .AddChild(new Label()
-                        .BindText(nameof(vm.StatusText), () => vm.StatusText)
-                        .SetTextSize(14)
-                        .SetTextColor(Colors.White)
-                        .SetVerticalAlignment(VerticalAlignment.Center)
-                        .SetHorizontalAlignment(HorizontalAlignment.Stretch)
-                        .SetMargin(new Margin(8, 0)))
-                    .AddChild(new Button()
-                        .SetText("Refresh Tree")
-                        .SetCommand(vm.RefreshTreeCommand)
-                        .SetBackground(new Color(60, 60, 60))
-                        .SetTextColor(Colors.White)
-                        .SetPadding(new Margin(12, 6))))
+                child: new TabControl()
+                    .BindTabs(nameof(vm.AppTabs), () => vm.AppTabs)
+                    .BindSelectedIndex(nameof(vm.SelectedAppTabIndex),
+                        () => vm.SelectedAppTabIndex,
+                        index => vm.SelectedAppTabIndex = index)
+                    .SetHeaderBackgroundColor(new SKColor(35, 35, 35))
+                    .SetActiveTabBackgroundColor(new SKColor(50, 50, 50))
+                    .SetHeaderTextSize(13))
 
-            // TreeView for UI hierarchy - left column
+            // Status Bar
             .AddChild(
                 row: 1,
+                column: 0,
+                columnSpan: 2,
+                child: new DebugStatusBar(vm))
+
+            // Element Tree - left column
+            .AddChild(
+                row: 2,
                 column: 0,
                 child: new Border()
                     .SetMargin(new Margin(8, 8, 4, 8))
                     .SetBackground(new Color(30, 30, 30))
                     .SetCornerRadius(4)
-                    .AddChild(BuildTreeView()))
+                    .AddChild(new ElementTreeView(vm)))
 
-            // DataGrid for properties - right column
+            // Property Grid - right column
             .AddChild(
-                row: 1,
+                row: 2,
                 column: 1,
                 child: new Border()
                     .SetMargin(new Margin(4, 8, 8, 8))
                     .SetCornerRadius(4)
-                    .AddChild(BuildPropertyGrid()));
-    }
+                    .AddChild(new PropertyGridView(vm)))
 
-    private TreeView BuildTreeView()
-    {
-        var treeView = new TreeView();
-        treeView.SetItemsSource(vm.RootItems);
-        treeView.SetChildrenSelector<TreeNodeDto>(node => node.Children);
-        treeView.SetItemTemplate((item, depth) => item switch
-        {
-            TreeNodeDto node => new Label()
-                .SetText($"{node.Type} ({node.Id})")
-                .SetTextColor(Colors.LightBlue)
-                .SetTextSize(13)
-                .SetVerticalAlignment(VerticalAlignment.Center),
-            _ => new Label()
-                .SetText(item?.ToString() ?? "")
-                .SetTextColor(Colors.Gray)
-                .SetTextSize(13)
-                .SetVerticalAlignment(VerticalAlignment.Center)
-        });
-        treeView.SetItemHeight(28);
-        treeView.SetIndentation(20);
-        treeView.SetExpanderSize(14);
-        treeView.SetShowLines(true);
-        treeView.SetLineColor(new Color(60, 60, 60));
-        treeView.BindSelectedItem(nameof(vm.SelectedNode),
-            () => vm.SelectedNode,
-            item => vm.SelectedNode = item as TreeNodeDto);
-        return treeView;
-    }
-
-    private TreeView BuildPropertyGrid()
-    {
-        var treeView = new TreeView();
-        treeView.SetItemsSource(vm.SelectedProperties);
-        treeView.SetChildrenSelector<PropertyDto>(prop => prop.Children);
-        treeView.SetItemTemplate((item, depth) =>
-        {
-            if (item is not PropertyDto prop)
-                return new Label()
-                    .SetText("")
-                    .SetTextColor(Colors.Gray)
-                    .SetTextSize(12);
-
-            // For simple writable properties without children: show Entry
-            UiElement valueControl;
-            if (prop.CanWrite && !prop.HasChildren)
-            {
-                valueControl = new Entry()
-                    .SetText(prop.Value)
-                    .SetTextColor(Colors.LightGray)
-                    .SetTextSize(12)
-                    .SetBackground(new Color(40, 40, 40))
-                    .SetVerticalAlignment(VerticalAlignment.Center)
-                    .SetHorizontalAlignment(HorizontalAlignment.Stretch)
-                    .SetMargin(new Margin(0, 2, 16, 2))
-                    .SetPadding(new Margin(4, 2))
-                    .BindText($"Property_{prop.Path}", () => prop.Value, newValue => vm.UpdatePropertyValue(prop, newValue));
-            }
-            // For complex properties (with children) or writable properties: show Label + Edit button
-            else if (prop.CanWrite || prop.HasChildren)
-            {
-                valueControl = new HStack()
-                    .SetHorizontalAlignment(HorizontalAlignment.Stretch)
-                    .SetMargin(new Margin(0, 0, 16, 0))
-                    .AddChild(new Label()
-                        .SetText(prop.Value)
-                        .SetTextColor(Colors.LightGray)
-                        .SetTextSize(12)
-                        .SetVerticalAlignment(VerticalAlignment.Center)
-                        .SetHorizontalAlignment(HorizontalAlignment.Left))
-                    .AddChild(new Button()
-                        .SetText("✏")
-                        .SetTextSize(12)
-                        .SetTextColor(Colors.LightBlue)
-                        .SetBackground(new Color(50, 50, 50))
-                        .SetHoverBackground(new SolidColorBackground(new Color(70, 70, 70)))
-                        .SetPadding(new Margin(6, 2))
-                        .SetMargin(new Margin(8, 0, 0, 0))
-                        .SetCornerRadius(3)
-                        .SetCommand(vm.EditPropertyCommand)
-                        .SetCommandParameter(prop));
-            }
-            // For read-only properties: just show Label
-            else
-            {
-                valueControl = new Label()
-                    .SetText(prop.Value)
-                    .SetTextColor(Colors.LightGray)
-                    .SetTextSize(12)
-                    .SetVerticalAlignment(VerticalAlignment.Center)
-                    .SetHorizontalAlignment(HorizontalAlignment.Stretch)
-                    .SetMargin(new Margin(0, 0, 16, 0));
-            }
-
-            return new HStack()
-                .SetVerticalAlignment(VerticalAlignment.Center)
-                .AddChild(new Label()
-                    .SetText(prop.Name)
-                    .SetTextColor(prop.HasChildren ? Colors.LightBlue : Colors.White)
-                    .SetTextSize(12)
-                    .SetVerticalAlignment(VerticalAlignment.Center)
-                    .SetMargin(new Margin(8, 0, 16, 0)))
-                .AddChild(valueControl)
-                .AddChild(new Label()
-                    .SetText(prop.Type)
-                    .SetTextColor(Colors.Gray)
-                    .SetTextSize(11)
-                    .SetVerticalAlignment(VerticalAlignment.Center)
-                    .SetMargin(new Margin(0, 0, 8, 0)));
-        });
-        treeView.SetItemHeight(28);
-        treeView.SetIndentation(24);
-        treeView.SetExpanderSize(16);
-        treeView.SetShowLines(true);
-        treeView.SetLineColor(new Color(60, 60, 60));
-        treeView.SetBackground(new Color(30, 30, 30));
-        return treeView;
+            // Waiting overlay - spans all content rows when no apps connected
+            .AddChild(
+                row: 0,
+                column: 0,
+                rowSpan: 3,
+                columnSpan: 2,
+                child: new WaitingOverlay(vm));
     }
 }
