@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PlusUi.core;
 using PlusUi.core.Services.DebugBridge.Models;
+using PlusUi.DebugServer.Components;
 using PlusUi.DebugServer.Services;
 
 namespace PlusUi.DebugServer.Pages;
@@ -17,6 +18,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly DebugBridgeServer _server;
     private readonly IPopupService _popupService;
     private readonly ILogger<MainViewModel> _logger;
+    private readonly PinnedPropertiesService _pinnedPropertiesService;
     private readonly Dictionary<string, AppViewModel> _apps = new();
 
     [ObservableProperty]
@@ -38,13 +40,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public ObservableCollection<TreeNodeDto> RootItems { get; } = new();
     public ObservableCollection<PropertyDto> SelectedProperties { get; } = new();
 
-    public bool HasConnectedApps => AppTabs.Count > 0;
+    [ObservableProperty]
+    private int _rootItemsCount;
 
-    public MainViewModel(DebugBridgeServer server, IPopupService popupService, ILogger<MainViewModel> logger)
+    public bool HasConnectedApps => AppTabs.Count > 0;
+    public PinnedPropertiesService PinnedPropertiesService => _pinnedPropertiesService;
+
+    public MainViewModel(DebugBridgeServer server, IPopupService popupService, ILogger<MainViewModel> logger, PinnedPropertiesService pinnedPropertiesService)
     {
         _server = server;
         _popupService = popupService;
         _logger = logger;
+        _pinnedPropertiesService = pinnedPropertiesService;
 
         _logger.LogDebug("ViewModel constructor called");
 
@@ -69,19 +76,27 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     partial void OnSelectedAppTabIndexChanged(int value)
     {
+        _logger.LogDebug("SelectedAppTabIndex changed to {Index}", value);
+
         if (value >= 0 && value < AppTabs.Count)
         {
             var tab = AppTabs[value];
-            SelectedAppId = tab.Header;
+            var clientId = tab.Tag as string;
+            _logger.LogDebug("Tab selected: Header={Header}, Tag={Tag}", tab.Header, clientId);
+            SelectedAppId = clientId;
         }
         else
         {
+            _logger.LogDebug("No tab selected (index out of range)");
             SelectedAppId = null;
         }
     }
 
     partial void OnSelectedAppChanged(AppViewModel? oldValue, AppViewModel? newValue)
     {
+        _logger.LogDebug("SelectedApp changed: {OldApp} -> {NewApp}",
+            oldValue?.ClientId ?? "null", newValue?.ClientId ?? "null");
+
         if (oldValue != null)
         {
             oldValue.PropertyChanged -= OnAppPropertyChanged;
@@ -91,6 +106,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         if (newValue != null)
         {
+            _logger.LogDebug("Subscribing to app {ClientId} events, RootItems.Count={Count}",
+                newValue.ClientId, newValue.RootItems.Count);
             newValue.PropertyChanged += OnAppPropertyChanged;
             newValue.RootItems.CollectionChanged += OnAppRootItemsChanged;
             newValue.SelectedProperties.CollectionChanged += OnAppSelectedPropertiesChanged;
@@ -121,18 +138,29 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnAppRootItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        if (SelectedApp == null) return;
+        _logger.LogDebug("OnAppRootItemsChanged: Action={Action}, NewItems={NewCount}, OldItems={OldCount}",
+            e.Action, e.NewItems?.Count ?? 0, e.OldItems?.Count ?? 0);
+
+        if (SelectedApp == null)
+        {
+            _logger.LogWarning("OnAppRootItemsChanged called but SelectedApp is null");
+            return;
+        }
 
         if (e.Action == NotifyCollectionChangedAction.Reset)
         {
+            _logger.LogDebug("Clearing MainViewModel.RootItems");
             RootItems.Clear();
         }
         else if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
+            _logger.LogDebug("Adding {Count} items to MainViewModel.RootItems", e.NewItems.Count);
             foreach (TreeNodeDto item in e.NewItems)
             {
                 RootItems.Add(item);
+                _logger.LogDebug("Added tree node: Type={Type}, Id={Id}", item.Type, item.Id);
             }
+            _logger.LogDebug("MainViewModel.RootItems.Count is now {Count}", RootItems.Count);
         }
         else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
         {
@@ -141,6 +169,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 RootItems.Remove(item);
             }
         }
+
+        RootItemsCount = RootItems.Count;
+        _logger.LogDebug("Updated RootItemsCount to {Count}", RootItemsCount);
     }
 
     private void OnAppSelectedPropertiesChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -169,15 +200,21 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void SyncCollectionsFromSelectedApp()
     {
+        _logger.LogDebug("SyncCollectionsFromSelectedApp: SelectedApp={AppId}, RootItems.Count={Count}",
+            SelectedApp?.ClientId ?? "null", SelectedApp?.RootItems.Count ?? 0);
+
         RootItems.Clear();
         SelectedProperties.Clear();
 
         if (SelectedApp != null)
         {
+            _logger.LogDebug("Syncing {Count} RootItems from app {ClientId}", SelectedApp.RootItems.Count, SelectedApp.ClientId);
             foreach (var item in SelectedApp.RootItems)
             {
                 RootItems.Add(item);
+                _logger.LogDebug("Synced tree node: Type={Type}, Id={Id}", item.Type, item.Id);
             }
+            _logger.LogDebug("MainViewModel.RootItems.Count after sync: {Count}", RootItems.Count);
 
             SelectedNode = SelectedApp.SelectedNode;
 
@@ -188,8 +225,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         else
         {
+            _logger.LogDebug("SelectedApp is null, clearing collections");
             SelectedNode = null;
         }
+
+        RootItemsCount = RootItems.Count;
+        _logger.LogDebug("Updated RootItemsCount to {Count} after sync", RootItemsCount);
 
         UpdateStatusText();
     }
@@ -210,7 +251,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
-    private void OnClientConnected(object? sender, string clientId)
+    private async void OnClientConnected(object? sender, string clientId)
     {
         _logger.LogDebug("Client connected: {ClientId}", clientId);
 
@@ -224,7 +265,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         var tabItem = new TabItem()
             .SetHeader($"● {clientId}")
-            .SetContent(new Label().SetText($"App: {clientId}"));
+            .SetTag(clientId)  // Store clientId in Tag
+            .SetContent(new AppContentView(this));
 
         AppTabs.Add(tabItem);
 
@@ -233,10 +275,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
             SelectedAppTabIndex = 0;
         }
 
+        // Send immediate tree request
+        _logger.LogDebug("Sending initial get_tree request to {ClientId}", clientId);
+        await _server.SendToClientAsync(clientId, new DebugMessage { Type = "get_tree" });
+
         app.RetryTimer = new Timer(async _ =>
         {
             if (!app.TreeReceived && app.IsConnected)
             {
+                _logger.LogDebug("Retry: Sending get_tree request to {ClientId}", clientId);
                 await _server.SendToClientAsync(clientId, new DebugMessage { Type = "get_tree" });
             }
         }, null, TimeSpan.FromMilliseconds(500), TimeSpan.FromSeconds(2));
@@ -255,7 +302,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             app.Dispose();
         }
 
-        var tabToRemove = AppTabs.FirstOrDefault(t => t.Header == $"● {clientId}");
+        var tabToRemove = AppTabs.FirstOrDefault(t => t.Tag as string == clientId);
         if (tabToRemove != null)
         {
             var index = AppTabs.IndexOf(tabToRemove);
@@ -276,25 +323,46 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnClientMessageReceived(object? sender, ClientMessageReceivedEventArgs e)
     {
+        _logger.LogDebug("Message received from {ClientId}: Type={MessageType}", e.ClientId, e.Message.Type);
+
         if (!_apps.TryGetValue(e.ClientId, out var app))
+        {
+            _logger.LogWarning("Received message from unknown client: {ClientId}", e.ClientId);
             return;
+        }
 
         if (e.Message.Type == "ui_tree" && e.Message.Data != null)
         {
             try
             {
+                _logger.LogDebug("Processing ui_tree message from {ClientId}", e.ClientId);
                 var json = JsonSerializer.Serialize(e.Message.Data);
                 var tree = JsonSerializer.Deserialize<TreeNodeDto>(json);
 
                 if (tree != null)
                 {
+                    var nodeCount = CountNodes(tree);
+                    _logger.LogDebug("Tree parsed successfully: {NodeCount} nodes, Type={Type}, Id={Id}",
+                        nodeCount, tree.Type, tree.Id);
+
+                    _logger.LogDebug("Clearing app.RootItems (count was {Count})", app.RootItems.Count);
                     app.RootItems.Clear();
+
+                    _logger.LogDebug("Adding tree to app.RootItems");
                     app.RootItems.Add(tree);
+                    _logger.LogDebug("app.RootItems.Count is now {Count}", app.RootItems.Count);
+
                     app.SelectedNode = null;
-                    app.StatusText = $"Tree received - {CountNodes(tree)} elements";
+                    app.StatusText = $"Tree received - {nodeCount} elements";
                     app.TreeReceived = true;
                     app.RetryTimer?.Dispose();
                     app.RetryTimer = null;
+
+                    _logger.LogDebug("Tree processing complete for {ClientId}", e.ClientId);
+                }
+                else
+                {
+                    _logger.LogWarning("Tree deserialization returned null");
                 }
             }
             catch (Exception ex)
@@ -302,6 +370,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 app.StatusText = $"Error parsing tree: {ex.Message}";
                 _logger.LogError(ex, "Error parsing tree from {ClientId}", e.ClientId);
             }
+        }
+        else
+        {
+            _logger.LogDebug("Ignoring message type: {MessageType}", e.Message.Type);
         }
     }
 
@@ -384,6 +456,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             SelectedApp.StatusText = $"Updated {property.Name}";
         }
+    }
+
+    public void RefreshProperties()
+    {
+        OnPropertyChanged(nameof(SelectedProperties));
     }
 
     public void CloseApp(string appId)

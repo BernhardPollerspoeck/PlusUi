@@ -230,6 +230,28 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
     #endregion
 
+    #region Auto Expand
+
+    private bool _autoExpandInitialLevels = false;
+    private int _autoExpandDepth = 2;
+
+    /// <summary>
+    /// Gets whether to auto-expand initial tree levels.
+    /// </summary>
+    public bool AutoExpandInitialLevels => _autoExpandInitialLevels;
+
+    /// <summary>
+    /// Sets whether to auto-expand initial tree levels.
+    /// </summary>
+    public TreeView SetAutoExpandInitialLevels(bool autoExpand, int depth = 2)
+    {
+        _autoExpandInitialLevels = autoExpand;
+        _autoExpandDepth = depth;
+        return this;
+    }
+
+    #endregion
+
     #region Tree Lines
 
     private bool _showLines = false;
@@ -389,6 +411,38 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
             node.UpdateExpandedHeight(_itemHeight);
             _rootNodes.Add(node);
             _nodesByItem[item] = node;
+        }
+
+        if (_autoExpandInitialLevels)
+        {
+            PerformAutoExpandInitialLevels();
+        }
+    }
+
+    /// <summary>
+    /// Auto-expands the first 2-3 levels of the tree after building.
+    /// </summary>
+    private void PerformAutoExpandInitialLevels()
+    {
+        foreach (var rootNode in _rootNodes)
+        {
+            ExpandNodeRecursive(rootNode, 0, _autoExpandDepth);
+        }
+    }
+
+    private void ExpandNodeRecursive(TreeViewNode node, int currentDepth, int maxDepth)
+    {
+        if (currentDepth >= maxDepth || !node.HasChildren)
+            return;
+
+        ExpandNode(node.Item);
+
+        if (node.Children != null)
+        {
+            foreach (var child in node.Children)
+            {
+                ExpandNodeRecursive(child, currentDepth + 1, maxDepth);
+            }
         }
     }
 
@@ -611,9 +665,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     /// </summary>
     public void HandleScroll(float deltaX, float deltaY)
     {
-        var newOffset = _scrollOffset + deltaY;
-        var maxOffset = Math.Max(0, TotalHeight);
-        _scrollOffset = Math.Clamp(newOffset, 0, maxOffset);
+        ScrollOffset += deltaY;
         InvalidateMeasure();
     }
 
@@ -862,6 +914,32 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         // Render visible nodes
         var visibleNodes = GetVisibleNodes(_scrollOffset, (float)ElementSize.Height).ToList();
 
+        // Draw selection highlight
+        if (_selectedItem != null)
+        {
+            for (int i = 0; i < visibleNodes.Count; i++)
+            {
+                if (visibleNodes[i].Item == _selectedItem)
+                {
+                    using var selectionPaint = new SKPaint
+                    {
+                        Color = new SKColor(60, 120, 180, 100),
+                        Style = SKPaintStyle.Fill
+                    };
+
+                    float nodeY = i * _itemHeight;
+                    var selectionRect = new SKRect(
+                        (float)baseX,
+                        (float)(baseY + nodeY),
+                        (float)(baseX + ElementSize.Width),
+                        (float)(baseY + nodeY + _itemHeight));
+
+                    canvas.DrawRect(selectionRect, selectionPaint);
+                    break;
+                }
+            }
+        }
+
         // Draw tree connection lines if enabled
         if (_showLines && visibleNodes.Count > 0)
         {
@@ -961,6 +1039,48 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
                 childOriginalOffset.Y + VisualOffset.Y));
             child.Render(canvas);
             child.SetVisualOffset(childOriginalOffset);
+        }
+
+        // Render scrollbar if content exceeds viewport
+        if (TotalHeight > ElementSize.Height)
+        {
+            const float scrollbarWidth = 8f;
+            const float scrollbarPadding = 2f;
+
+            // Scrollbar track
+            var trackRect = new SKRect(
+                (float)(baseX + ElementSize.Width - scrollbarWidth - scrollbarPadding),
+                (float)(baseY + scrollbarPadding),
+                (float)(baseX + ElementSize.Width - scrollbarPadding),
+                (float)(baseY + ElementSize.Height - scrollbarPadding));
+
+            using var trackPaint = new SKPaint
+            {
+                Color = new SKColor(40, 40, 40),
+                Style = SKPaintStyle.Fill
+            };
+            canvas.DrawRoundRect(trackRect, 4, 4, trackPaint);
+
+            // Scrollbar thumb
+            var viewportRatio = (float)(ElementSize.Height / TotalHeight);
+            var thumbHeight = Math.Max(20, ElementSize.Height * viewportRatio);
+            var scrollRange = TotalHeight - ElementSize.Height;
+            var thumbY = scrollRange > 0
+                ? baseY + scrollbarPadding + (_scrollOffset / scrollRange) * (ElementSize.Height - thumbHeight - 2 * scrollbarPadding)
+                : baseY + scrollbarPadding;
+
+            var thumbRect = new SKRect(
+                (float)(baseX + ElementSize.Width - scrollbarWidth - scrollbarPadding),
+                (float)thumbY,
+                (float)(baseX + ElementSize.Width - scrollbarPadding),
+                (float)(thumbY + thumbHeight));
+
+            using var thumbPaint = new SKPaint
+            {
+                Color = new SKColor(100, 100, 100),
+                Style = SKPaintStyle.Fill
+            };
+            canvas.DrawRoundRect(thumbRect, 4, 4, thumbPaint);
         }
 
         canvas.Restore();

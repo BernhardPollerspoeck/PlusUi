@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Input;
 using PlusUi.core;
 using PlusUi.core.Services.DebugBridge.Models;
 using PlusUi.DebugServer.Pages;
@@ -21,7 +22,7 @@ public class PropertyGridView : UserControl
     {
         var treeView = new TreeView();
         treeView.BindItemsSource(nameof(_viewModel.SelectedProperties),
-            () => _viewModel.SelectedProperties);
+            () => SortProperties(_viewModel.SelectedProperties));
         treeView.SetChildrenSelector<PropertyDto>(prop => prop.Children);
         treeView.SetItemTemplate((item, depth) =>
         {
@@ -84,6 +85,7 @@ public class PropertyGridView : UserControl
 
             return new HStack()
                 .SetVerticalAlignment(VerticalAlignment.Center)
+                .AddChild(CreatePinButton(prop))
                 .AddChild(new Label()
                     .SetText(prop.Name)
                     .SetTextColor(prop.HasChildren ? Colors.LightBlue : Colors.White)
@@ -106,4 +108,47 @@ public class PropertyGridView : UserControl
         treeView.SetBackground(new Color(30, 30, 30));
         return treeView;
     }
+
+    private IEnumerable<object> SortProperties(IEnumerable<PropertyDto> properties)
+    {
+        if (_viewModel.SelectedNode == null)
+            return properties;
+
+        var elementType = _viewModel.SelectedNode.Type;
+        var pinnedProps = _viewModel.PinnedPropertiesService.GetPinnedProperties(elementType);
+
+        return properties
+            .OrderByDescending(p => pinnedProps.Contains(p.Path))
+            .ThenBy(p => p.Name);
+    }
+
+    private Button CreatePinButton(PropertyDto prop)
+    {
+        var elementType = _viewModel.SelectedNode?.Type ?? "";
+
+        return new Button()
+            .BindText($"Pin_{prop.Path}",
+                () => _viewModel.PinnedPropertiesService.IsPinned(elementType, prop.Path) ? "📌" : "📍")
+            .SetTextSize(12)
+            .BindTextColor($"PinColor_{prop.Path}",
+                () => _viewModel.PinnedPropertiesService.IsPinned(elementType, prop.Path)
+                    ? Colors.Yellow
+                    : new Color(150, 150, 150))
+            .SetBackground(Colors.Transparent)
+            .SetHoverBackground(new SolidColorBackground(new Color(50, 50, 50)))
+            .SetPadding(new Margin(4, 2))
+            .SetMargin(new Margin(4, 0, 0, 0))
+            .SetCornerRadius(3)
+            .SetCommand(new RelayCommand(() =>
+            {
+                _viewModel.PinnedPropertiesService.TogglePin(elementType, prop.Path);
+                _viewModel.RefreshProperties();
+            }));
+    }
+
+    private void InvalidateElement()
+    {
+        InvalidateMeasure();
+    }
 }
+

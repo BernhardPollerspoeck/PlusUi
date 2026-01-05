@@ -18,6 +18,9 @@ dotnet test PlusUi.sln --filter "FullyQualifiedName=PlusUi.core.Tests.LabelTests
 dotnet test PlusUi.sln --filter "FullyQualifiedName~PlusUi.core.Tests.LabelTests"
 ```
 
+## Behavior
+- You are not allowed to remove or mark tasks in ToDo files as completed unless the user specifically tells you to.
+
 ## Code Style Guidelines
 - **Naming**: PascalCase for types, methods, and properties; camelCase for local variables and parameters
 - **Nullable**: Enable nullable reference types (`<Nullable>enable</Nullable>`)
@@ -33,6 +36,8 @@ dotnet test PlusUi.sln --filter "FullyQualifiedName~PlusUi.core.Tests.LabelTests
 - **Component Structure**: Components should have predictable initialization through constructor and fluent methods
 - **Comments**: Do NOT add unnecessary comments to code. Code should be self-explanatory
 - **Registry Disposal**: In Dispose methods, set registry-managed resources (Paint, Font) to null without calling Release(). Registries handle cleanup themselves
+- **Prefer Built-in Controls**: ALWAYS check if a built-in control exists (TabControl, Grid, VStack, etc.) before creating custom controls. Use existing controls whenever possible
+- **Fix Bugs in Controls, Not Workarounds**: When a bug is found in a core control (PlusUi.core), fix it in the control itself rather than creating workarounds. ALWAYS get user confirmation before modifying core controls
 
 ## UiElement Control Rules
 - **Partial Class**: ALL controls inheriting from UiElement MUST be declared as `partial class`

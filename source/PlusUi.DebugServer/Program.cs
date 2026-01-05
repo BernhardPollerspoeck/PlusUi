@@ -11,6 +11,12 @@ var plusUiApp = new PlusUiApp(args);
 
 plusUiApp.CreateApp(builder =>
 {
+    // Add Debug logging to console
+    builder.Logging.AddDebug();
+    builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
+    builder.Services.AddSingleton<PinnedPropertiesService>();
+
     builder.Services.AddSingleton(sp =>
     {
         var logger = sp.GetRequiredService<ILogger<DebugBridgeServer>>();

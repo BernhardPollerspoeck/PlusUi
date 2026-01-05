@@ -244,6 +244,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
             if (tab.Content != null)
             {
                 tab.Content.Parent = this;
+                tab.Content.BuildContent();
             }
         }
         if (_tabs.Count > 0 && SelectedIndex < 0)

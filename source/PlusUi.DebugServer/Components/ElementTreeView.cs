@@ -41,6 +41,7 @@ public class ElementTreeView : UserControl
         treeView.SetExpanderSize(14);
         treeView.SetShowLines(true);
         treeView.SetLineColor(new Color(60, 60, 60));
+        treeView.SetAutoExpandInitialLevels(true, 2);
         treeView.BindSelectedItem(nameof(_viewModel.SelectedNode),
             () => _viewModel.SelectedNode,
             item => _viewModel.SelectedNode = item as TreeNodeDto);
