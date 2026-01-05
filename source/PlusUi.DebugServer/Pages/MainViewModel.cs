@@ -15,21 +15,35 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly DebugBridgeServer _server;
     private readonly IPopupService _popupService;
     private readonly ILogger<MainViewModel> _logger;
-    private readonly object _timerLock = new();
-    private Timer? _retryTimer;
-    private string? _currentClientId;
-    private bool _treeReceived;
+    private readonly Dictionary<string, AppState> _apps = new();
 
     [ObservableProperty]
-    private string _statusText = "Waiting for client...";
+    private string? _selectedAppId;
 
     [ObservableProperty]
-    private ObservableCollection<TreeNodeDto> _rootItems = new();
+    private string _statusText = "Waiting for clients...";
 
-    [ObservableProperty]
-    private TreeNodeDto? _selectedNode;
+    public ObservableCollection<string> ConnectedApps { get; } = new();
 
-    public ObservableCollection<PropertyDto> SelectedProperties { get; } = new();
+    public ObservableCollection<TreeNodeDto> RootItems => CurrentApp?.RootItems ?? new();
+
+    public TreeNodeDto? SelectedNode
+    {
+        get => CurrentApp?.SelectedNode;
+        set
+        {
+            if (CurrentApp != null)
+            {
+                CurrentApp.SelectedNode = value;
+                OnPropertyChanged();
+                UpdateSelectedProperties();
+            }
+        }
+    }
+
+    public ObservableCollection<PropertyDto> SelectedProperties => CurrentApp?.SelectedProperties ?? new();
+
+    private AppState? CurrentApp => SelectedAppId != null && _apps.TryGetValue(SelectedAppId, out var app) ? app : null;
 
     public MainViewModel(DebugBridgeServer server, IPopupService popupService, ILogger<MainViewModel> logger)
     {
@@ -50,66 +64,101 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _logger.LogDebug("Event handlers registered");
     }
 
-    partial void OnSelectedNodeChanged(TreeNodeDto? value)
+    partial void OnSelectedAppIdChanged(string? value)
     {
-        SelectedProperties.Clear();
-        if (value?.Properties != null)
+        OnPropertyChanged(nameof(RootItems));
+        OnPropertyChanged(nameof(SelectedNode));
+        OnPropertyChanged(nameof(SelectedProperties));
+        UpdateStatusText();
+    }
+
+    private void UpdateSelectedProperties()
+    {
+        if (CurrentApp == null)
+            return;
+
+        CurrentApp.SelectedProperties.Clear();
+        if (CurrentApp.SelectedNode?.Properties != null)
         {
-            foreach (var prop in value.Properties)
+            foreach (var prop in CurrentApp.SelectedNode.Properties)
             {
-                SelectedProperties.Add(prop);
+                CurrentApp.SelectedProperties.Add(prop);
             }
+        }
+        OnPropertyChanged(nameof(SelectedProperties));
+    }
+
+    private void UpdateStatusText()
+    {
+        if (CurrentApp != null)
+        {
+            StatusText = CurrentApp.StatusText;
+        }
+        else if (_apps.Count > 0)
+        {
+            StatusText = $"{_apps.Count} app(s) connected - select one";
+        }
+        else
+        {
+            StatusText = "Waiting for clients...";
         }
     }
 
     private void OnClientConnected(object? sender, string clientId)
     {
-        lock (_timerLock)
+        _logger.LogDebug("Client connected: {ClientId}", clientId);
+
+        var app = new AppState(clientId)
         {
-            _currentClientId = clientId;
-            _treeReceived = false;
-            StatusText = $"Client connected: {clientId} - requesting tree...";
+            IsConnected = true,
+            StatusText = $"Connected: {clientId} - requesting tree..."
+        };
 
-            _retryTimer?.Dispose();
-            _retryTimer = new Timer(async _ =>
-            {
-                bool shouldRequest = false;
-                string? currentClient = null;
+        _apps[clientId] = app;
+        ConnectedApps.Add(clientId);
 
-                lock (_timerLock)
-                {
-                    if (!_treeReceived && _currentClientId != null)
-                    {
-                        shouldRequest = true;
-                        currentClient = _currentClientId;
-                    }
-                }
-
-                if (shouldRequest && currentClient != null)
-                {
-                    await _server.SendToClientAsync(currentClient, new DebugMessage { Type = "get_tree" });
-                }
-            }, null, TimeSpan.FromMilliseconds(500), TimeSpan.FromSeconds(2));
+        if (SelectedAppId == null)
+        {
+            SelectedAppId = clientId;
         }
+
+        app.RetryTimer = new Timer(async _ =>
+        {
+            if (!app.TreeReceived && app.IsConnected)
+            {
+                await _server.SendToClientAsync(clientId, new DebugMessage { Type = "get_tree" });
+            }
+        }, null, TimeSpan.FromMilliseconds(500), TimeSpan.FromSeconds(2));
+
+        UpdateStatusText();
     }
 
     private void OnClientDisconnected(object? sender, string clientId)
     {
-        lock (_timerLock)
+        _logger.LogDebug("Client disconnected: {ClientId}", clientId);
+
+        if (_apps.TryGetValue(clientId, out var app))
         {
-            _retryTimer?.Dispose();
-            _retryTimer = null;
-            _currentClientId = null;
-            _treeReceived = false;
+            app.IsConnected = false;
+            app.StatusText = "Disconnected";
+            app.Dispose();
         }
 
-        StatusText = "Client disconnected. Waiting for client...";
-        RootItems.Clear();
-        SelectedNode = null;
+        ConnectedApps.Remove(clientId);
+
+        if (SelectedAppId == clientId)
+        {
+            SelectedAppId = ConnectedApps.FirstOrDefault();
+        }
+
+        UpdateStatusText();
     }
 
     private void OnClientMessageReceived(object? sender, ClientMessageReceivedEventArgs e)
     {
+        if (!_apps.TryGetValue(e.ClientId, out var app))
+            return;
+
         if (e.Message.Type == "ui_tree" && e.Message.Data != null)
         {
             try
@@ -119,22 +168,29 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
                 if (tree != null)
                 {
-                    RootItems.Clear();
-                    RootItems.Add(tree);
-                    SelectedNode = null; // Clear selection when new tree arrives
-                    StatusText = $"Tree received from {e.ClientId} - {CountNodes(tree)} elements";
+                    app.RootItems.Clear();
+                    app.RootItems.Add(tree);
+                    app.SelectedNode = null;
+                    app.StatusText = $"Tree received - {CountNodes(tree)} elements";
+                    app.TreeReceived = true;
+                    app.RetryTimer?.Dispose();
+                    app.RetryTimer = null;
 
-                    lock (_timerLock)
+                    if (SelectedAppId == e.ClientId)
                     {
-                        _treeReceived = true;
-                        _retryTimer?.Dispose();
-                        _retryTimer = null;
+                        OnPropertyChanged(nameof(RootItems));
+                        OnPropertyChanged(nameof(SelectedNode));
+                        OnPropertyChanged(nameof(SelectedProperties));
                     }
+
+                    UpdateStatusText();
                 }
             }
             catch (Exception ex)
             {
-                StatusText = $"Error parsing tree: {ex.Message}";
+                app.StatusText = $"Error parsing tree: {ex.Message}";
+                _logger.LogError(ex, "Error parsing tree from {ClientId}", e.ClientId);
+                UpdateStatusText();
             }
         }
     }
@@ -152,19 +208,20 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task RefreshTreeAsync()
     {
-        if (_currentClientId != null)
-        {
-            StatusText = "Refreshing tree...";
-            await _server.SendToClientAsync(_currentClientId, new DebugMessage { Type = "get_tree" });
-        }
+        if (CurrentApp == null || SelectedAppId == null)
+            return;
+
+        CurrentApp.StatusText = "Refreshing tree...";
+        UpdateStatusText();
+        await _server.SendToClientAsync(SelectedAppId, new DebugMessage { Type = "get_tree" });
     }
 
     public async void UpdatePropertyValue(PropertyDto property, string newValue)
     {
-        if (_currentClientId == null || string.IsNullOrEmpty(property.ElementId))
+        if (SelectedAppId == null || string.IsNullOrEmpty(property.ElementId))
             return;
 
-        await _server.SendToClientAsync(_currentClientId, new DebugMessage
+        await _server.SendToClientAsync(SelectedAppId, new DebugMessage
         {
             Type = "set_property",
             Data = new
@@ -175,7 +232,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
         });
 
-        StatusText = $"Updated {property.Path} = {newValue}";
+        if (CurrentApp != null)
+        {
+            CurrentApp.StatusText = $"Updated {property.Path} = {newValue}";
+            UpdateStatusText();
+        }
     }
 
     [RelayCommand]
@@ -194,13 +255,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private async Task OnPropertyEditedAsync(PropertyDto property, PropertyEditorResult? result)
     {
-        if (_currentClientId == null || result == null)
+        if (SelectedAppId == null || result == null)
             return;
 
-        // Send update for each changed field
         foreach (var field in result.Fields)
         {
-            await _server.SendToClientAsync(_currentClientId, new DebugMessage
+            await _server.SendToClientAsync(SelectedAppId, new DebugMessage
             {
                 Type = "set_property",
                 Data = new
@@ -212,19 +272,22 @@ public partial class MainViewModel : ObservableObject, IDisposable
             });
         }
 
-        StatusText = $"Updated {property.Name}";
-        // Client automatically refreshes tree after property change, no need to request again
+        if (CurrentApp != null)
+        {
+            CurrentApp.StatusText = $"Updated {property.Name}";
+            UpdateStatusText();
+        }
     }
 
     public void Dispose()
     {
-        _logger.LogDebug("Dispose called - unsubscribing from events");
+        _logger.LogDebug("Dispose called - cleaning up apps and unsubscribing from events");
 
-        lock (_timerLock)
+        foreach (var app in _apps.Values)
         {
-            _retryTimer?.Dispose();
-            _retryTimer = null;
+            app.Dispose();
         }
+        _apps.Clear();
 
         _server.ClientConnected -= OnClientConnected;
         _server.ClientDisconnected -= OnClientDisconnected;
