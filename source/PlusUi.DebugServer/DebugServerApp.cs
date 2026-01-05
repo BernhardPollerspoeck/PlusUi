@@ -19,6 +19,10 @@ public class DebugServerApp : IAppConfiguration
         // Register MainViewModel as Singleton to prevent duplicate event subscriptions
         builder.Services.AddSingleton<MainViewModel>();
         builder.AddPage<MainPage>().WithViewModel<MainViewModel>();
+
+        // Register PropertyEditor Popup
+        builder.Services.AddTransient<PropertyEditorPopupViewModel>();
+        builder.Services.AddTransient<PropertyEditorPopup>();
     }
 
     public UiPageElement GetRootPage(IServiceProvider serviceProvider)

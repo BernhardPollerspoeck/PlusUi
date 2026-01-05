@@ -1264,6 +1264,13 @@ public abstract class UiElement : IDisposable
             ? this
             : null;
     }
+
+    /// <summary>
+    /// Indicates whether this element intercepts and handles click events.
+    /// When false, clicks pass through to the parent (e.g., for row selection in lists).
+    /// Default: false (opt-in for interactive controls like Button, Entry).
+    /// </summary>
+    public virtual bool InterceptsClicks => false;
     #endregion
 
     public virtual void ApplyStyles()

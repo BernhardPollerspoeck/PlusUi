@@ -30,6 +30,9 @@ public partial class Link : UiTextElement, IInputControl, IFocusable
     protected internal override bool IsFocusable => true;
 
     /// <inheritdoc />
+    public override bool InterceptsClicks => true;
+
+    /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Link;
 
     /// <inheritdoc />

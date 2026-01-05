@@ -93,6 +93,17 @@ public partial class VStack : UiLayoutElement
             ? Children.Max(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right)
             : 0;
         var height = Children.Sum(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom);
+
+        // Respect DesiredSize if set
+        if (DesiredSize?.Width > 0)
+        {
+            width = DesiredSize.Value.Width;
+        }
+        if (DesiredSize?.Height > 0)
+        {
+            height = DesiredSize.Value.Height;
+        }
+
         return new Size(width, height);
     }
 
@@ -147,7 +158,20 @@ public partial class VStack : UiLayoutElement
             maxHeight = Math.Max(maxHeight, columnHeight);
         }
 
-        return new Size(totalWidth, Math.Min(maxHeight, availableSize.Height));
+        var width = totalWidth;
+        var height = Math.Min(maxHeight, availableSize.Height);
+
+        // Respect DesiredSize if set
+        if (DesiredSize?.Width > 0)
+        {
+            width = DesiredSize.Value.Width;
+        }
+        if (DesiredSize?.Height > 0)
+        {
+            height = DesiredSize.Value.Height;
+        }
+
+        return new Size(width, height);
     }
 
     protected override Point ArrangeInternal(Rect bounds)

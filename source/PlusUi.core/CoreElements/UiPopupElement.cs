@@ -4,6 +4,47 @@ using System.ComponentModel;
 
 namespace PlusUi.core.CoreElements;
 
+/// <summary>
+/// Popup element with typed argument and result support.
+/// </summary>
+public abstract class UiPopupElement<TArgument, TResult>(INotifyPropertyChanged vm) : UiPopupElement(vm)
+{
+    public TArgument? Argument { get; private set; }
+    public TResult? Result { get; protected set; }
+    public Func<TResult?, Task>? OnClosed { get; private set; }
+
+    internal void SetArgument(TArgument? argument)
+    {
+        Argument = argument;
+    }
+
+    internal void SetOnClosed(Func<TResult?, Task>? onClosed)
+    {
+        OnClosed = onClosed;
+    }
+
+    /// <summary>
+    /// Sets the result that will be passed to the onClosed callback.
+    /// Call this before closing the popup.
+    /// </summary>
+    public void SetResult(TResult? result)
+    {
+        Result = result;
+    }
+
+    public override void Close(bool success)
+    {
+        if (success && OnClosed != null)
+        {
+            // Fire and forget - we can't await here since Close is not async
+            _ = Task.Run(async () => await OnClosed.Invoke(Result));
+        }
+    }
+}
+
+/// <summary>
+/// Popup element with typed argument (no result).
+/// </summary>
 public abstract class UiPopupElement<TArgument>(INotifyPropertyChanged vm) : UiPopupElement(vm)
 {
     public TArgument? Argument { get; private set; }

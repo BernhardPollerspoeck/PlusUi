@@ -926,7 +926,7 @@ public class DataGridTests
         dataGrid.Arrange(new Rect(0, 0, 400, 300));
 
         // Act
-        var hit = dataGrid.HitTest(new Point(200, 150));
+        var hit = dataGrid.HitTest(new Point(200, 50));
 
         // Assert
         Assert.IsNotNull(hit, "HitTest should return a result inside bounds");

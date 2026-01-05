@@ -24,6 +24,7 @@ public static class TestSetup
         services.AddSingleton<Style>();
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<IFontRegistryService, FontRegistryService>();
+        services.AddSingleton<IPaintRegistryService, PaintRegistryService>();
         services.AddSingleton<IImageLoaderService, ImageLoaderService>();
         services.AddSingleton<IImageExportService, ImageExportService>();
 
@@ -57,6 +58,7 @@ public static class TestSetup
         services.AddSingleton<IAccessibilityService>(sp => sp.GetRequiredService<AccessibilityService>());
         services.AddSingleton<IAccessibilitySettingsService, AccessibilitySettingsService>();
 
-        _ = new ServiceProviderService(services.BuildServiceProvider());
+        var serviceProvider = services.BuildServiceProvider();
+        _ = new ServiceProviderService(serviceProvider);
     }
 }

@@ -33,6 +33,9 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
     protected internal override bool IsFocusable => true;
 
     /// <inheritdoc />
+    public override bool InterceptsClicks => true;
+
+    /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.RadioButton;
 
     public RadioButton()

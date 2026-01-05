@@ -42,6 +42,39 @@ public class PlusUiPopupService(IServiceProvider serviceProvider, ILogger<PlusUi
         }
     }
 
+    public void ShowPopup<TPopup, TArg, TResult>(
+        TArg? arg = default,
+        Func<TResult?, Task>? onClosed = null,
+        Action<IPopupConfiguration>? configure = null)
+        where TPopup : UiPopupElement<TArg, TResult>
+    {
+        if (CurrentPopup is not null)
+        {
+            _logger?.LogDebug("Closing existing popup before showing new popup of type {PopupType}", typeof(TPopup).Name);
+            ClosePopup();
+        }
+
+        var configuration = new PopupConfiguration();
+        configure?.Invoke(configuration);
+
+        try
+        {
+            var popup = serviceProvider.GetRequiredService<TPopup>();
+            popup.SetConfiguration(configuration);
+            popup.SetArgument(arg);
+            popup.SetOnClosed(onClosed);
+            popup.BuildPopup();
+
+            CurrentPopup = popup;
+            _logger?.LogDebug("Showing popup of type {PopupType} with result type {ResultType}", typeof(TPopup).Name, typeof(TResult).Name);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to show popup of type {PopupType}. Ensure the popup is registered in the service collection.", typeof(TPopup).Name);
+            throw new InvalidOperationException($"Failed to show popup of type {typeof(TPopup).Name}. Ensure it is registered via services.AddTransient<{typeof(TPopup).Name}>()", ex);
+        }
+    }
+
     public void ClosePopup(bool success = true)
     {
         if (CurrentPopup is not null)

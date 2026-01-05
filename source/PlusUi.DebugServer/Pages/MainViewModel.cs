@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core;
 using PlusUi.core.Services.DebugBridge.Models;
 using PlusUi.DebugServer.Services;
 
@@ -10,6 +12,7 @@ namespace PlusUi.DebugServer.Pages;
 public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly DebugBridgeServer _server;
+    private readonly IPopupService _popupService;
     private readonly object _timerLock = new();
     private Timer? _retryTimer;
     private string? _currentClientId;
@@ -26,10 +29,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<PropertyDto> SelectedProperties { get; } = new();
 
-    public MainViewModel(DebugBridgeServer server)
+    public MainViewModel(DebugBridgeServer server, IPopupService popupService)
     {
         Console.WriteLine("[VIEWMODEL] Constructor called");
         _server = server;
+        _popupService = popupService;
 
         // Unsubscribe first to prevent duplicate subscriptions
         _server.ClientConnected -= OnClientConnected;
@@ -114,6 +118,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 {
                     RootItems.Clear();
                     RootItems.Add(tree);
+                    SelectedNode = null; // Clear selection when new tree arrives
                     StatusText = $"Tree received from {e.ClientId} - {CountNodes(tree)} elements";
 
                     lock (_timerLock)
@@ -168,6 +173,44 @@ public partial class MainViewModel : ObservableObject, IDisposable
         });
 
         StatusText = $"Updated {property.Path} = {newValue}";
+    }
+
+    [RelayCommand]
+    private void EditProperty(PropertyDto property)
+    {
+        _popupService.ShowPopup<PropertyEditorPopup, PropertyDto, PropertyEditorResult>(
+            property,
+            onClosed: async (result) => await OnPropertyEditedAsync(property, result),
+            configure: config =>
+            {
+                config.CloseOnBackgroundClick = true;
+                config.CloseOnEscape = true;
+                config.BackgroundColor = new Color(0, 0, 0, 180);
+            });
+    }
+
+    private async Task OnPropertyEditedAsync(PropertyDto property, PropertyEditorResult? result)
+    {
+        if (_currentClientId == null || result == null)
+            return;
+
+        // Send update for each changed field
+        foreach (var field in result.Fields)
+        {
+            await _server.SendToClientAsync(_currentClientId, new DebugMessage
+            {
+                Type = "set_property",
+                Data = new
+                {
+                    elementId = field.ElementId,
+                    propertyPath = field.Path,
+                    value = field.Value
+                }
+            });
+        }
+
+        StatusText = $"Updated {property.Name}";
+        // Client automatically refreshes tree after property change, no need to request again
     }
 
     public void Dispose()

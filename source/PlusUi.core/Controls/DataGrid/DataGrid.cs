@@ -841,7 +841,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
             {
                 for (int c = 0; c < cells.Count && c < _columnWidths.Length; c++)
                 {
-                    cells[c].Measure(new Size(_columnWidths[c], RowHeight), true);
+                    cells[c].Measure(new Size(_columnWidths[c], RowHeight), false);
                 }
             }
         }
@@ -854,7 +854,35 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         HorizontalScrollbar.Measure(new Size(availableSize.Width - (ShowVerticalScrollbar ? VerticalScrollbar.Width : 0), HorizontalScrollbar.Width), true);
         UpdateScrollbarStates();
 
-        return availableSize;
+        // Calculate actual size based on DesiredSize or content
+        float actualWidth;
+        if (DesiredSize?.Width > 0)
+        {
+            actualWidth = DesiredSize.Value.Width;
+        }
+        else
+        {
+            // Use sum of column widths
+            actualWidth = _columnWidths.Sum();
+        }
+
+        float actualHeight;
+        if (DesiredSize?.Height > 0)
+        {
+            actualHeight = DesiredSize.Value.Height;
+        }
+        else
+        {
+            // Header + all rows
+            var itemCount = _itemsSource?.Count() ?? 0;
+            actualHeight = HeaderHeight + (itemCount * RowHeight);
+        }
+
+        // Clamp to available size
+        actualWidth = Math.Min(actualWidth, availableSize.Width);
+        actualHeight = Math.Min(actualHeight, availableSize.Height);
+
+        return new Size(actualWidth, actualHeight);
     }
 
     protected override Point ArrangeInternal(Rect bounds)

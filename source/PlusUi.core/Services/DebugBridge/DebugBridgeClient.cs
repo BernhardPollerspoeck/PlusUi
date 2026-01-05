@@ -1,6 +1,7 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using PlusUi.core.Services.DebugBridge.Models;
 
@@ -328,8 +329,13 @@ internal class DebugBridgeClient : IDisposable
 
     private class PropertyUpdateDto
     {
+        [JsonPropertyName("elementId")]
         public string ElementId { get; set; } = "";
+
+        [JsonPropertyName("propertyPath")]
         public string PropertyPath { get; set; } = "";
+
+        [JsonPropertyName("value")]
         public string Value { get; set; } = "";
     }
 

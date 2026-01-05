@@ -686,6 +686,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
         // Calculate which row was hit based on Y position
         float relativeY = (float)(point.Y - Position.Y) + _scrollOffset;
+        float relativeX = (float)(point.X - Position.X);
 
         // Walk the visible nodes to find the hit node
         float currentY = 0;
@@ -702,9 +703,8 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         {
             _hoveredItem = hitNode.Item;
 
-            // Check if click was on expander area
+            // FIRST: Check if click was on expander area
             // Expander is at: depth * indentation, width = expanderSize
-            float relativeX = (float)(point.X - Position.X);
             float expanderStart = hitNode.Depth * _indentation;
             float expanderEnd = expanderStart + _expanderSize;
 
@@ -712,9 +712,22 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
             if (hitNode.HasChildren && relativeX >= expanderStart && relativeX < expanderEnd)
             {
                 _isExpanderHit = true;
+                return this; // Expander was hit
             }
         }
 
+        // SECOND: Test if any child element (buttons, entries, etc.) was hit
+        foreach (var child in Children)
+        {
+            var result = child.HitTest(point);
+            if (result?.InterceptsClicks == true)
+            {
+                return result; // Interactive control was hit (button, entry, etc.)
+            }
+            // For non-interactive controls (labels, etc.), continue to row selection
+        }
+
+        // THIRD: Return TreeView for row selection
         return this;
     }
 

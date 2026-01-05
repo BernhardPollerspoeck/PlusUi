@@ -301,52 +301,161 @@ internal class DebugTreeInspector
             if (pathParts.Length == 0)
                 return false;
 
-            // Navigate to the target object and property
-            object? targetObject = element;
-            PropertyInfo? targetProperty = null;
+            // For simple properties (no nesting), set directly
+            if (pathParts.Length == 1)
+            {
+                var property = element.GetType().GetProperty(pathParts[0],
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
-            for (int i = 0; i < pathParts.Length; i++)
+                if (property == null || !property.CanWrite)
+                    return false;
+
+                var convertedValue = ConvertValue(value, property.PropertyType);
+                if (convertedValue == null && property.PropertyType.IsValueType &&
+                    Nullable.GetUnderlyingType(property.PropertyType) == null)
+                {
+                    return false;
+                }
+
+                property.SetValue(element, convertedValue);
+                return true;
+            }
+
+            // For nested properties, we need to handle structs specially
+            // Build a stack of objects and properties to navigate back up
+            var objectStack = new Stack<(object obj, PropertyInfo prop, bool isStruct)>();
+            object? currentObject = element;
+
+            // Navigate down the path, tracking each step
+            for (int i = 0; i < pathParts.Length - 1; i++)
             {
                 var propertyName = pathParts[i];
-                var type = targetObject.GetType();
+                var type = currentObject.GetType();
                 var property = type.GetProperty(propertyName,
                     BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
                 if (property == null)
                     return false;
 
-                // If this is the last part, this is our target property
-                if (i == pathParts.Length - 1)
+                var isStruct = property.PropertyType.IsValueType && !property.PropertyType.IsPrimitive && !property.PropertyType.IsEnum;
+                objectStack.Push((currentObject, property, isStruct));
+
+                currentObject = property.GetValue(currentObject);
+                if (currentObject == null)
+                    return false;
+            }
+
+            // Set the final property
+            var finalPropertyName = pathParts[^1];
+            var finalType = currentObject.GetType();
+            var finalProperty = finalType.GetProperty(finalPropertyName,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (finalProperty == null)
+                return false;
+
+            var finalConvertedValue = ConvertValue(value, finalProperty.PropertyType);
+            if (finalConvertedValue == null && finalProperty.PropertyType.IsValueType &&
+                Nullable.GetUnderlyingType(finalProperty.PropertyType) == null)
+            {
+                return false;
+            }
+
+            // Handle readonly struct properties (like Point.X, Point.Y)
+            if (!finalProperty.CanWrite)
+            {
+                // For readonly properties in structs, we need to recreate the entire struct
+                if (currentObject.GetType().IsValueType)
                 {
-                    targetProperty = property;
+                    currentObject = CreateStructWithModifiedProperty(currentObject, finalPropertyName, finalConvertedValue);
                 }
                 else
                 {
-                    // Navigate to the next level
-                    targetObject = property.GetValue(targetObject);
-                    if (targetObject == null)
-                        return false;
+                    return false; // Can't set readonly property on reference types
                 }
             }
-
-            if (targetProperty == null || !targetProperty.CanWrite)
-                return false;
-
-            // Convert value to the correct type and set it
-            var convertedValue = ConvertValue(value, targetProperty.PropertyType);
-            if (convertedValue == null && targetProperty.PropertyType.IsValueType &&
-                Nullable.GetUnderlyingType(targetProperty.PropertyType) == null)
+            else
             {
-                return false; // Can't set null to non-nullable value type
+                finalProperty.SetValue(currentObject, finalConvertedValue);
             }
 
-            targetProperty.SetValue(targetObject, convertedValue);
+            // Now propagate the changes back up the stack for structs
+            while (objectStack.Count > 0)
+            {
+                var (parentObject, parentProperty, isStruct) = objectStack.Pop();
+
+                // For structs, we need to set the modified copy back to the parent
+                if (isStruct)
+                {
+                    parentProperty.SetValue(parentObject, currentObject);
+                }
+
+                currentObject = parentObject;
+            }
+
             return true;
         }
         catch
         {
             return false;
         }
+    }
+
+    /// <summary>
+    /// Creates a new struct instance with one property modified.
+    /// Used for readonly structs with primary constructors like Point, Size, etc.
+    /// </summary>
+    private object CreateStructWithModifiedProperty(object structInstance, string propertyName, object? newValue)
+    {
+        var structType = structInstance.GetType();
+
+        // Get all public properties
+        var properties = structType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .OrderBy(p => p.MetadataToken) // Preserve declaration order
+            .ToArray();
+
+        // Try to find a constructor that matches the properties
+        var constructors = structType.GetConstructors();
+
+        // Look for primary constructor (matches property count and types)
+        foreach (var ctor in constructors)
+        {
+            var parameters = ctor.GetParameters();
+            if (parameters.Length != properties.Length)
+                continue;
+
+            // Check if parameter types match property types
+            bool matches = true;
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i].ParameterType != properties[i].PropertyType)
+                {
+                    matches = false;
+                    break;
+                }
+            }
+
+            if (matches)
+            {
+                // Build arguments for constructor
+                var args = new object?[parameters.Length];
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    if (string.Equals(properties[i].Name, propertyName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        args[i] = newValue;
+                    }
+                    else
+                    {
+                        args[i] = properties[i].GetValue(structInstance);
+                    }
+                }
+
+                return ctor.Invoke(args);
+            }
+        }
+
+        throw new InvalidOperationException($"Could not find suitable constructor for struct {structType.Name}");
     }
 
     /// <summary>

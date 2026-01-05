@@ -85,8 +85,12 @@ public partial class Person : ObservableObject
     private string _department = string.Empty;
 
     public string Position { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string Phone { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    private string _email = string.Empty;
+
+    [ObservableProperty]
+    private string _phone = string.Empty;
 
     [ObservableProperty]
     private bool _isActive;

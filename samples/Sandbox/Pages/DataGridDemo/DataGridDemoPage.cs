@@ -36,6 +36,12 @@ public class DataGridDemoPage(DataGridDemoPageViewModel vm) : UiPageElement(vm)
                     .SetBinding(p => p.Name)
                     .SetWidth(DataGridColumnWidth.Absolute(150)))
 
+                // NEW: Editor Column
+                .AddColumn(new DataGridEditorColumn<Person>()
+                    .SetHeader("Email")
+                    .SetBinding(p => p.Email, (p, v) => p.Email = v)
+                    .SetWidth(DataGridColumnWidth.Absolute(200)))
+
                 // NEW: ComboBox Column
                 .AddColumn(new DataGridComboBoxColumn<Person, string>()
                     .SetHeader("Department")

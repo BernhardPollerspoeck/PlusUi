@@ -26,8 +26,9 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
                         .BindText(nameof(vm.StatusText), () => vm.StatusText)
                         .SetTextSize(14)
                         .SetTextColor(Colors.White)
+                        .SetVerticalAlignment(VerticalAlignment.Center)
                         .SetHorizontalAlignment(HorizontalAlignment.Stretch)
-                        .SetMargin(new Margin(0, 0, 8, 0)))
+                        .SetMargin(new Margin(8, 0)))
                     .AddChild(new Button()
                         .SetText("Refresh Tree")
                         .SetCommand(vm.RefreshTreeCommand)
@@ -97,8 +98,11 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
                     .SetTextColor(Colors.Gray)
                     .SetTextSize(12);
 
-            var valueControl = prop.CanWrite && !prop.HasChildren
-                ? (UiElement)new Entry()
+            // For simple writable properties without children: show Entry
+            UiElement valueControl;
+            if (prop.CanWrite && !prop.HasChildren)
+            {
+                valueControl = new Entry()
                     .SetText(prop.Value)
                     .SetTextColor(Colors.LightGray)
                     .SetTextSize(12)
@@ -107,14 +111,43 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
                     .SetHorizontalAlignment(HorizontalAlignment.Stretch)
                     .SetMargin(new Margin(0, 2, 16, 2))
                     .SetPadding(new Margin(4, 2))
-                    .BindText($"Property_{prop.Path}", () => prop.Value, newValue => vm.UpdatePropertyValue(prop, newValue))
-                : new Label()
+                    .BindText($"Property_{prop.Path}", () => prop.Value, newValue => vm.UpdatePropertyValue(prop, newValue));
+            }
+            // For complex properties (with children) or writable properties: show Label + Edit button
+            else if (prop.CanWrite || prop.HasChildren)
+            {
+                valueControl = new HStack()
+                    .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+                    .SetMargin(new Margin(0, 0, 16, 0))
+                    .AddChild(new Label()
+                        .SetText(prop.Value)
+                        .SetTextColor(Colors.LightGray)
+                        .SetTextSize(12)
+                        .SetVerticalAlignment(VerticalAlignment.Center)
+                        .SetHorizontalAlignment(HorizontalAlignment.Left))
+                    .AddChild(new Button()
+                        .SetText("✏")
+                        .SetTextSize(12)
+                        .SetTextColor(Colors.LightBlue)
+                        .SetBackground(new Color(50, 50, 50))
+                        .SetHoverBackground(new SolidColorBackground(new Color(70, 70, 70)))
+                        .SetPadding(new Margin(6, 2))
+                        .SetMargin(new Margin(8, 0, 0, 0))
+                        .SetCornerRadius(3)
+                        .SetCommand(vm.EditPropertyCommand)
+                        .SetCommandParameter(prop));
+            }
+            // For read-only properties: just show Label
+            else
+            {
+                valueControl = new Label()
                     .SetText(prop.Value)
                     .SetTextColor(Colors.LightGray)
                     .SetTextSize(12)
                     .SetVerticalAlignment(VerticalAlignment.Center)
                     .SetHorizontalAlignment(HorizontalAlignment.Stretch)
                     .SetMargin(new Margin(0, 0, 16, 0));
+            }
 
             return new HStack()
                 .SetVerticalAlignment(VerticalAlignment.Center)
