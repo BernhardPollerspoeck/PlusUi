@@ -710,6 +710,8 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         }
     }
 
+    protected override Margin? GetDebugPadding() => Padding;
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);

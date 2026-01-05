@@ -264,6 +264,8 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
     #endregion
 
 
+    protected override Margin? GetDebugPadding() => Padding;
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);

@@ -691,6 +691,8 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
             yield return m;
     }
 
+    protected override Margin? GetDebugPadding() => Padding;
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);

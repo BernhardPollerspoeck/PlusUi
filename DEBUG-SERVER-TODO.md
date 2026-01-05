@@ -43,15 +43,15 @@
 - [ ] 6.3 Capture specific element or full page
 
 ### 7. Logging Cleanup
-- [ ] 7.1 Audit codebase for Console.WriteLine/Debug.WriteLine
-- [ ] 7.2 Replace with ILogger calls
-- [ ] 7.3 Ensure proper log levels
+- [x] 7.1 Audit codebase for Console.WriteLine/Debug.WriteLine
+- [x] 7.2 Replace with ILogger calls
+- [x] 7.3 Ensure proper log levels
 
 ## Low Priority / Future
 
 ### 8. Layout Visualization
-- [ ] 8.1 Wireframe overlay showing element bounds (set IsDebug on elements to enable visualization)
-- [ ] 8.2 Margin/padding visualization (together with IsDebug - margin as outline, padding as overlay)
+- [ ] 8.1 Wireframe overlay showing element bounds (server-side feature to toggle debug visualization remotely)
+- [x] 8.2 Margin/padding visualization (PlusUi.core - implemented with IsDebug property)
 
 ### 9. UI Layout & Multi-App Support
 **Target Layout:**

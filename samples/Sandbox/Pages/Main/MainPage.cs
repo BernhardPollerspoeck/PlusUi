@@ -89,6 +89,39 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 
 
                 new HelloWorldControl(),
+
+                // DEBUG TEST: Nur Margin (kein Padding)
+                new Label()
+                    .SetText("DEBUG: Label mit nur MARGIN")
+                    .SetTextColor(Colors.Cyan)
+                    .SetMargin(new(15, 10))
+                    .SetDebug(true)
+                    .IgnoreStyling(),
+
+                // DEBUG TEST: Nur Padding (kein Margin)
+                new Entry()
+                    .SetText("DEBUG: Entry mit nur PADDING")
+                    .SetTextColor(Colors.Black)
+                    .SetPadding(new(12, 8))
+                    .SetDebug(true)
+                    .IgnoreStyling(),
+
+                // DEBUG TEST: Margin + Padding
+                new Button()
+                    .SetText("DEBUG: Button mit MARGIN + PADDING")
+                    .SetMargin(new(20, 10))
+                    .SetPadding(new(15, 8))
+                    .SetBackground(new SolidColorBackground(new Color(0, 150, 200)))
+                    .SetDebug(true)
+                    .IgnoreStyling(),
+
+                // DEBUG TEST: Weder Margin noch Padding
+                new Label()
+                    .SetText("DEBUG: Label OHNE Margin/Padding")
+                    .SetTextColor(Colors.Black)
+                    .SetDebug(true)
+                    .IgnoreStyling(),
+
                 new Label()
                     .BindText(nameof(vm.Text), () => $"The entry input is: [ {vm.Text} ]"),
                 new Entry()

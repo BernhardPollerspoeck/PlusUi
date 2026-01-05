@@ -192,6 +192,8 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         return this;
     }
 
+    protected override Margin? GetDebugPadding() => Padding;
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
@@ -223,7 +225,7 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
             canvas.DrawText(
                 displayText,
                 Position.X + VisualOffset.X + Padding.Left,
-                Position.Y + VisualOffset.Y + textHeight,
+                Position.Y + VisualOffset.Y + Padding.Top + textHeight,
                 (SKTextAlign)HorizontalTextAlignment,
                 Font,
                 placeholderPaint);
@@ -233,7 +235,7 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
             canvas.DrawText(
                 displayText,
                 Position.X + VisualOffset.X + Padding.Left,
-                Position.Y + VisualOffset.Y + textHeight,
+                Position.Y + VisualOffset.Y + Padding.Top + textHeight,
                 (SKTextAlign)HorizontalTextAlignment,
                 Font,
                 Paint);

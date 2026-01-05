@@ -1194,32 +1194,41 @@ public abstract class UiElement : IDisposable
         }
     }
 
+    protected virtual Margin? GetDebugPadding() => null;
+
     public virtual void Render(SKCanvas canvas)
     {
         if (Debug)
         {
-            var debugPaint = new SKPaint
-            {
-                Color = SKColors.Red,
-                IsStroke = true,
-                StrokeWidth = 1
-            };
-            var rect = new SKRect(
+            var elementRect = new SKRect(
                 Position.X + VisualOffset.X,
                 Position.Y + VisualOffset.Y,
                 Position.X + VisualOffset.X + ElementSize.Width,
                 Position.Y + VisualOffset.Y + ElementSize.Height);
-            canvas.DrawRect(rect, debugPaint);
 
             if (Margin.Horizontal > 0 || Margin.Vertical > 0)
             {
+                var marginPaint = new SKPaint
+                {
+                    Color = new SKColor(255, 0, 255, 180),
+                    IsStroke = true,
+                    StrokeWidth = 2
+                };
                 var marginRect = new SKRect(
                     Position.X + VisualOffset.X - Margin.Left,
                     Position.Y + VisualOffset.Y - Margin.Top,
                     Position.X + VisualOffset.X + ElementSize.Width + Margin.Right,
                     Position.Y + VisualOffset.Y + ElementSize.Height + Margin.Bottom);
-                canvas.DrawRect(marginRect, debugPaint);
+                canvas.DrawRect(marginRect, marginPaint);
             }
+
+            var elementBoundsPaint = new SKPaint
+            {
+                Color = new SKColor(255, 0, 0, 180),
+                IsStroke = true,
+                StrokeWidth = 1
+            };
+            canvas.DrawRect(elementRect, elementBoundsPaint);
         }
 
 
@@ -1251,6 +1260,27 @@ public abstract class UiElement : IDisposable
             if (useOpacityLayer)
             {
                 canvas.Restore();
+            }
+        }
+
+        if (Debug)
+        {
+            var padding = GetDebugPadding();
+            if (padding != null && (padding.Value.Horizontal > 0 || padding.Value.Vertical > 0))
+            {
+                var paddingPaint = new SKPaint
+                {
+                    Color = new SKColor(0, 255, 255, 200),
+                    IsStroke = true,
+                    StrokeWidth = 2
+                };
+
+                var contentRect = new SKRect(
+                    Position.X + VisualOffset.X + padding.Value.Left,
+                    Position.Y + VisualOffset.Y + padding.Value.Top,
+                    Position.X + VisualOffset.X + ElementSize.Width - padding.Value.Right,
+                    Position.Y + VisualOffset.Y + ElementSize.Height - padding.Value.Bottom);
+                canvas.DrawRect(contentRect, paddingPaint);
             }
         }
     }

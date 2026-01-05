@@ -652,6 +652,8 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     }
     #endregion
 
+    protected override Margin? GetDebugPadding() => Padding;
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
