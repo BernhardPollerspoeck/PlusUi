@@ -5,23 +5,23 @@
 - Second checkbox: Tested and verified by user
 
 ## Summary
-- **Section 1 - Tree Improvements:** 5/9 done
+- **Section 1 - Tree Improvements:** 6/9 done
 - **Section 2 - Property Grid:** 1/5 done
 - **Section 3 - Change Tracking:** 0/6 done
-- **Section 4 - Logging:** 0/4 done
+- **Section 4 - Logging:** 3/4 done
 - **Section 5 - Performance:** 0/6 done
 - **Section 6 - Screenshot:** 0/3 done
 - **Section 7 - Logging Cleanup:** 3/3 done ✅
 - **Section 8 - Layout Viz:** 1/2 done
-- **Section 9 - Multi-App UI:** 5/9 done
+- **Section 9 - Multi-App UI:** 6/9 done
 
-**Total Progress: 15/46 tasks completed (33%)**
+**Total Progress: 20/46 tasks completed (43%)**
 
 ## High Priority
 
 ### 1. Tree Improvements
 - [ ] [ ] 1.1 Update tree incrementally instead of full reload (including better navigation handling when pages change)
-- [ ] [ ] 1.2 Add page prefix to element IDs for uniqueness (e.g., `MainPage.Button_123`)
+- [x] [x] 1.2 Add page prefix to element IDs for uniqueness (e.g., `MainPage.Button_123`)
 - [ ] [ ] 1.3 Maintain expansion state during updates
 - [x] [x] 1.4 Auto-expand first 2-3 levels on tree load
 - [x] [x] 1.5 Fix TreeView scrolling - can scroll too far down until all content is off-screen
@@ -46,9 +46,9 @@
 - [ ] [ ] 3.6 Style overrides (per page and global)
 
 ### 4. Logging
-- [ ] [ ] 4.1 Log output panel in debug server UI
-- [ ] [ ] 4.2 Log level filtering (Debug, Info, Warning, Error)
-- [ ] [ ] 4.3 Cleanup: Remove console.log, use ILogger everywhere
+- [x] [ ] 4.1 Log output panel in debug server UI
+- [x] [ ] 4.2 Log level filtering (Debug, Info, Warning, Error)
+- [x] [ ] 4.3 Cleanup: Remove console.log, use ILogger everywhere
 - [ ] [ ] 4.4 Event tracing (button clicks, navigation, etc.)
 
 ### 5. Performance Monitor
@@ -124,12 +124,11 @@
   - Right: Property Grid with pinning support (already exists)
   - Split view within tab content area
 
-- [ ] [ ] 9.6 Logs Tab
+- [x] [ ] 9.6 Logs Tab
   - Log output panel receiving logs from app via WebSocket
-  - Level filtering buttons: [All] [Debug] [Info] [Warning] [Error]
-  - Auto-scroll toggle
+  - Level filtering buttons: [TRC] [DBG] [INF] [WRN] [ERR] [CRT]
   - Clear button
-  - Search/filter input
+  - Auto-scroll and search/filter not yet implemented
 
 - [ ] [ ] 9.7 Performance Tab
   - Live FPS graph (received from app)

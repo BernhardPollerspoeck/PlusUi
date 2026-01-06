@@ -323,57 +323,79 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnClientMessageReceived(object? sender, ClientMessageReceivedEventArgs e)
     {
-        _logger.LogDebug("Message received from {ClientId}: Type={MessageType}", e.ClientId, e.Message.Type);
-
         if (!_apps.TryGetValue(e.ClientId, out var app))
         {
             _logger.LogWarning("Received message from unknown client: {ClientId}", e.ClientId);
             return;
         }
 
-        if (e.Message.Type == "ui_tree" && e.Message.Data != null)
+        switch (e.Message.Type)
         {
-            try
-            {
-                _logger.LogDebug("Processing ui_tree message from {ClientId}", e.ClientId);
-                var json = JsonSerializer.Serialize(e.Message.Data);
-                var tree = JsonSerializer.Deserialize<TreeNodeDto>(json);
-
-                if (tree != null)
+            case "ui_tree" when e.Message.Data != null:
+                try
                 {
-                    var nodeCount = CountNodes(tree);
-                    _logger.LogDebug("Tree parsed successfully: {NodeCount} nodes, Type={Type}, Id={Id}",
-                        nodeCount, tree.Type, tree.Id);
+                    var json = JsonSerializer.Serialize(e.Message.Data);
+                    var tree = JsonSerializer.Deserialize<TreeNodeDto>(json);
 
-                    _logger.LogDebug("Clearing app.RootItems (count was {Count})", app.RootItems.Count);
-                    app.RootItems.Clear();
+                    if (tree != null)
+                    {
+                        var nodeCount = CountNodes(tree);
 
-                    _logger.LogDebug("Adding tree to app.RootItems");
-                    app.RootItems.Add(tree);
-                    _logger.LogDebug("app.RootItems.Count is now {Count}", app.RootItems.Count);
+                        app.RootItems.Clear();
+                        app.RootItems.Add(tree);
 
-                    app.SelectedNode = null;
-                    app.StatusText = $"Tree received - {nodeCount} elements";
-                    app.TreeReceived = true;
-                    app.RetryTimer?.Dispose();
-                    app.RetryTimer = null;
-
-                    _logger.LogDebug("Tree processing complete for {ClientId}", e.ClientId);
+                        app.SelectedNode = null;
+                        app.StatusText = $"Tree received - {nodeCount} elements";
+                        app.TreeReceived = true;
+                        app.RetryTimer?.Dispose();
+                        app.RetryTimer = null;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Tree deserialization returned null");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _logger.LogWarning("Tree deserialization returned null");
+                    app.StatusText = $"Error parsing tree: {ex.Message}";
+                    _logger.LogError(ex, "Error parsing tree from {ClientId}", e.ClientId);
                 }
-            }
-            catch (Exception ex)
-            {
-                app.StatusText = $"Error parsing tree: {ex.Message}";
-                _logger.LogError(ex, "Error parsing tree from {ClientId}", e.ClientId);
-            }
-        }
-        else
-        {
-            _logger.LogDebug("Ignoring message type: {MessageType}", e.Message.Type);
+                break;
+
+            case "log" when e.Message.Data != null:
+                try
+                {
+                    var json = JsonSerializer.Serialize(e.Message.Data);
+                    var logMessage = JsonSerializer.Deserialize<LogMessageDto>(json);
+                    if (logMessage != null)
+                    {
+                        app.AddLog(logMessage);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error processing log message from {ClientId}", e.ClientId);
+                }
+                break;
+
+            case "log_batch" when e.Message.Data != null:
+                try
+                {
+                    var json = JsonSerializer.Serialize(e.Message.Data);
+                    var logMessages = JsonSerializer.Deserialize<List<LogMessageDto>>(json);
+                    if (logMessages != null)
+                    {
+                        foreach (var logMessage in logMessages)
+                        {
+                            app.AddLog(logMessage);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error processing log batch from {ClientId}", e.ClientId);
+                }
+                break;
         }
     }
 

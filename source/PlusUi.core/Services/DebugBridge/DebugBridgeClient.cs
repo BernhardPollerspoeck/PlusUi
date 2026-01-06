@@ -25,6 +25,8 @@ internal class DebugBridgeClient : IDisposable
     private Task? _receiveTask;
     private bool _isConnected;
     private bool _disposed;
+    private int _connectionAttempts = 0;
+    private const int MaxConnectionAttempts = 10;
 
     public DebugBridgeClient(
         string serverUrl,
@@ -44,16 +46,27 @@ internal class DebugBridgeClient : IDisposable
         if (_disposed || _isConnected)
             return;
 
+        // Stop trying after max attempts
+        if (_connectionAttempts >= MaxConnectionAttempts)
+        {
+            _logger?.LogInformation("Debug server connection abandoned after {Attempts} attempts", MaxConnectionAttempts);
+            return;
+        }
+
+        _connectionAttempts++;
+
         try
         {
             _cancellationTokenSource = new CancellationTokenSource();
             _webSocket = new ClientWebSocket();
 
-            _logger.LogInformation("Connecting to debug server at {ServerUrl}", _serverUrl);
+            _logger.LogInformation("Connecting to debug server at {ServerUrl} (attempt {Attempt}/{Max})",
+                _serverUrl, _connectionAttempts, MaxConnectionAttempts);
 
             await _webSocket.ConnectAsync(new Uri(_serverUrl), _cancellationTokenSource.Token);
 
             _isConnected = true;
+            _connectionAttempts = 0; // Reset on successful connection
             _logger?.LogInformation("Connected to debug server");
 
             // Start receiving messages
@@ -66,7 +79,8 @@ internal class DebugBridgeClient : IDisposable
             // Log connection failures gracefully without stack traces
             if (ex is WebSocketException or HttpRequestException or SocketException)
             {
-                _logger.LogInformation("Debug server not reachable at {ServerUrl}", _serverUrl);
+                _logger.LogInformation("Debug server not reachable at {ServerUrl} (attempt {Attempt}/{Max})",
+                    _serverUrl, _connectionAttempts, MaxConnectionAttempts);
             }
             else
             {
@@ -74,12 +88,15 @@ internal class DebugBridgeClient : IDisposable
                 _logger.LogWarning(ex, "Failed to connect to debug server");
             }
 
-            // Auto-reconnect after delay
-            _ = Task.Run(async () =>
+            // Auto-reconnect after delay if we haven't exceeded max attempts
+            if (_connectionAttempts < MaxConnectionAttempts)
             {
-                await Task.Delay(5000);
-                await ConnectAsync();
-            });
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(5000);
+                    await ConnectAsync();
+                });
+            }
         }
     }
 
@@ -110,6 +127,37 @@ internal class DebugBridgeClient : IDisposable
             // Trigger reconnect
             _ = ConnectAsync();
         }
+    }
+
+    /// <summary>
+    /// Sends a log message to the server.
+    /// </summary>
+    public async Task SendLogAsync(LogMessageDto logMessage)
+    {
+        var message = new DebugMessage
+        {
+            Type = "log",
+            Data = logMessage
+        };
+
+        await SendAsync(message);
+    }
+
+    /// <summary>
+    /// Sends a batch of log messages to the server.
+    /// </summary>
+    public async Task SendLogBatchAsync(List<LogMessageDto> logs)
+    {
+        if (logs.Count == 0)
+            return;
+
+        var message = new DebugMessage
+        {
+            Type = "log_batch",
+            Data = logs
+        };
+
+        await SendAsync(message);
     }
 
     /// <summary>

@@ -44,6 +44,12 @@ public static class DebugBridgeExtensions
             return client;
         });
 
+        // Register logger provider (uses ServiceProviderService to get DebugBridgeClient)
+        builder.Services.AddLogging(logging =>
+        {
+            logging.AddProvider(new DebugBridgeLoggerProvider());
+        });
+
         return builder;
     }
 }

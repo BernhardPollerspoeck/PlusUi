@@ -46,7 +46,7 @@ public class AppContentView : UserControl
                             .SetContent(CreateInspectorContent()),
                         new TabItem()
                             .SetHeader("Logs")
-                            .SetContent(CreatePlaceholder("Logs Content")),
+                            .SetContent(new LogsView(_viewModel)),
                         new TabItem()
                             .SetHeader("Performance")
                             .SetContent(CreatePlaceholder("Performance Content")),

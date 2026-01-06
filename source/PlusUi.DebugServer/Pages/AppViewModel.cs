@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
 using PlusUi.core.Services.DebugBridge.Models;
 
 namespace PlusUi.DebugServer.Pages;
@@ -20,8 +21,13 @@ public partial class AppViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _statusText = "Initializing...";
 
+    [ObservableProperty]
+    private LogLevel _logLevelFilter = LogLevel.Trace;
+
     public ObservableCollection<TreeNodeDto> RootItems { get; } = new();
     public ObservableCollection<PropertyDto> SelectedProperties { get; } = new();
+    public ObservableCollection<LogMessageDto> Logs { get; } = new();
+    public ObservableCollection<LogMessageDto> FilteredLogs { get; } = new();
 
     partial void OnSelectedNodeChanged(TreeNodeDto? value)
     {
@@ -31,6 +37,54 @@ public partial class AppViewModel : ObservableObject, IDisposable
             foreach (var prop in value.Properties)
             {
                 SelectedProperties.Add(prop);
+            }
+        }
+    }
+
+    partial void OnLogLevelFilterChanged(LogLevel value)
+    {
+        UpdateFilteredLogs();
+    }
+
+    public void AddLog(LogMessageDto log)
+    {
+        if (log == null)
+            return;
+
+        Logs.Add(log);
+
+        // Apply filter and add to filtered list if it passes
+        if (log.Level >= LogLevelFilter)
+        {
+            FilteredLogs.Add(log);
+        }
+
+        // Limit log count to prevent memory issues (keep last 1000)
+        while (Logs.Count > 1000)
+        {
+            var removed = Logs[0];
+            Logs.RemoveAt(0);
+            if (removed != null)
+            {
+                FilteredLogs.Remove(removed);
+            }
+        }
+    }
+
+    public void ClearLogs()
+    {
+        Logs.Clear();
+        FilteredLogs.Clear();
+    }
+
+    private void UpdateFilteredLogs()
+    {
+        FilteredLogs.Clear();
+        foreach (var log in Logs)
+        {
+            if (log != null && log.Level >= LogLevelFilter)
+            {
+                FilteredLogs.Add(log);
             }
         }
     }
