@@ -5,7 +5,7 @@
 - Second checkbox: Tested and verified by user
 
 ## Summary
-- **Section 1 - Tree Improvements:** 4/9 done
+- **Section 1 - Tree Improvements:** 5/9 done
 - **Section 2 - Property Grid:** 1/5 done
 - **Section 3 - Change Tracking:** 0/6 done
 - **Section 4 - Logging:** 0/4 done
@@ -15,7 +15,7 @@
 - **Section 8 - Layout Viz:** 1/2 done
 - **Section 9 - Multi-App UI:** 5/9 done
 
-**Total Progress: 14/46 tasks completed (30%)**
+**Total Progress: 15/46 tasks completed (33%)**
 
 ## High Priority
 
@@ -28,7 +28,7 @@
 - [ ] [ ] 1.6 Fix TreeView rendering bug - text disappears when scrolling in adjacent TreeView (clipping issue)
 - [x] [x] 1.7 Add selection highlight to TreeView - show colored background for selected item
 - [x] [x] 1.8 Add scrollbar visualization to TreeView - currently no visual scrollbar shown
-- [ ] [ ] 1.9 Fix TreeView expand/collapse click area - click position is registered too high up
+- [x] [x] 1.9 Fix TreeView expand/collapse click area - click position is registered too high up
 
 ### 2. Property Grid Improvements
 - [x] [ ] 2.1 Pin properties per element type (implemented with BindText/BindTextColor)

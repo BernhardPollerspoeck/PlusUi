@@ -730,25 +730,26 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         _isExpanderHit = false;
 
         // Check if point is within bounds
-        if (!(point.X >= Position.X && point.X <= Position.X + ElementSize.Width &&
-              point.Y >= Position.Y && point.Y <= Position.Y + ElementSize.Height))
+        var actualX = Position.X + VisualOffset.X;
+        var actualY = Position.Y + VisualOffset.Y;
+        if (!(point.X >= actualX && point.X <= actualX + ElementSize.Width &&
+              point.Y >= actualY && point.Y <= actualY + ElementSize.Height))
         {
             return null;
         }
 
-        // Calculate which row was hit based on Y position
-        float relativeY = (float)(point.Y - Position.Y) + _scrollOffset;
-        float relativeX = (float)(point.X - Position.X);
+        // Calculate which row was hit based on Y position (relative to TreeView, not scrolled content)
+        float relativeY = (float)(point.Y - actualY);
+        float relativeX = (float)(point.X - actualX);
 
-        // Walk the visible nodes to find the hit node
-        float currentY = 0;
+        // Find which visible node was hit based on Y position
+        var visibleNodes = GetVisibleNodes(_scrollOffset, (float)ElementSize.Height).ToList();
+        int hitIndex = (int)(relativeY / _itemHeight);
         TreeViewNode? hitNode = null;
 
-        foreach (var rootNode in _rootNodes)
+        if (hitIndex >= 0 && hitIndex < visibleNodes.Count)
         {
-            hitNode = FindNodeAtY(rootNode, relativeY, ref currentY);
-            if (hitNode != null)
-                break;
+            hitNode = visibleNodes[hitIndex];
         }
 
         if (hitNode != null)
