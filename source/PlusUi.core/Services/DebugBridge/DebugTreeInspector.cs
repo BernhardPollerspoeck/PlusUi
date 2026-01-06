@@ -13,6 +13,7 @@ internal class DebugTreeInspector
 {
     private readonly Dictionary<UiElement, string> _elementIds = new();
     private int _nextId = 1;
+    private string _currentPageName = "Unknown";
 
     /// <summary>
     /// Serializes the entire UI tree starting from root.
@@ -21,6 +22,10 @@ internal class DebugTreeInspector
     {
         _elementIds.Clear();
         _nextId = 1;
+
+        // Extract page name for ID prefix (e.g., "MainPage")
+        _currentPageName = root.GetType().Name;
+
         return SerializeElement(root);
     }
 
@@ -253,14 +258,15 @@ internal class DebugTreeInspector
     }
 
     /// <summary>
-    /// Gets or creates a unique ID for an element.
+    /// Gets or creates a unique ID for an element with page prefix.
+    /// Format: "PageName.elem_123" (e.g., "MainPage.elem_1", "SettingsPage.elem_42")
     /// </summary>
     private string GetOrCreateElementId(UiElement element)
     {
         if (_elementIds.TryGetValue(element, out var id))
             return id;
 
-        id = $"elem_{_nextId++}";
+        id = $"{_currentPageName}.elem_{_nextId++}";
         _elementIds[element] = id;
         return id;
     }
