@@ -39,9 +39,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public ObservableCollection<TabItem> AppTabs { get; } = new();
     public ObservableCollection<TreeNodeDto> RootItems { get; } = new();
     public ObservableCollection<PropertyDto> SelectedProperties { get; } = new();
+    public ObservableCollection<LogMessageDto> FilteredLogs { get; } = new();
 
     [ObservableProperty]
     private int _rootItemsCount;
+
+    [ObservableProperty]
+    private LogLevel _logLevelFilter = LogLevel.Trace;
 
     public bool HasConnectedApps => AppTabs.Count > 0;
     public PinnedPropertiesService PinnedPropertiesService => _pinnedPropertiesService;
@@ -102,6 +106,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             oldValue.PropertyChanged -= OnAppPropertyChanged;
             oldValue.RootItems.CollectionChanged -= OnAppRootItemsChanged;
             oldValue.SelectedProperties.CollectionChanged -= OnAppSelectedPropertiesChanged;
+            oldValue.FilteredLogs.CollectionChanged -= OnAppFilteredLogsChanged;
         }
 
         if (newValue != null)
@@ -111,6 +116,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             newValue.PropertyChanged += OnAppPropertyChanged;
             newValue.RootItems.CollectionChanged += OnAppRootItemsChanged;
             newValue.SelectedProperties.CollectionChanged += OnAppSelectedPropertiesChanged;
+            newValue.FilteredLogs.CollectionChanged += OnAppFilteredLogsChanged;
         }
 
         SyncCollectionsFromSelectedApp();
@@ -198,6 +204,38 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
+    private void OnAppFilteredLogsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (SelectedApp == null) return;
+
+        if (e.Action == NotifyCollectionChangedAction.Reset)
+        {
+            FilteredLogs.Clear();
+        }
+        else if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
+        {
+            foreach (var item in e.NewItems)
+            {
+                if (item is LogMessageDto log)
+                    FilteredLogs.Add(log);
+            }
+        }
+        else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
+        {
+            foreach (var item in e.OldItems)
+            {
+                if (item is LogMessageDto log)
+                    FilteredLogs.Remove(log);
+            }
+        }
+    }
+
+    partial void OnLogLevelFilterChanged(LogLevel value)
+    {
+        if (SelectedApp != null)
+            SelectedApp.LogLevelFilter = value;
+    }
+
     private void SyncCollectionsFromSelectedApp()
     {
         _logger.LogDebug("SyncCollectionsFromSelectedApp: SelectedApp={AppId}, RootItems.Count={Count}",
@@ -205,6 +243,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         RootItems.Clear();
         SelectedProperties.Clear();
+        FilteredLogs.Clear();
 
         if (SelectedApp != null)
         {
@@ -221,6 +260,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
             foreach (var prop in SelectedApp.SelectedProperties)
             {
                 SelectedProperties.Add(prop);
+            }
+
+            LogLevelFilter = SelectedApp.LogLevelFilter;
+            foreach (var log in SelectedApp.FilteredLogs)
+            {
+                if (log != null)
+                    FilteredLogs.Add(log);
             }
         }
         else

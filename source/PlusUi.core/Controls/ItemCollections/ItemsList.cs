@@ -342,7 +342,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
 
         // Update children list
         Children.Clear();
-        Children.AddRange(_realizedItems.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value));
+        Children.AddRange(_realizedItems.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).Where(v => v != null)!);
 
         _firstVisibleIndex = newFirstVisible;
         _lastVisibleIndex = newLastVisible;
@@ -403,7 +403,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         if (Orientation == Orientation.Vertical)
         {
             float maxWidth = 0;
-            foreach (var child in Children)
+            foreach (var child in Children.ToArray())
             {
                 child.Measure(availableSize, dontStretch);
                 maxWidth = Math.Max(maxWidth, child.ElementSize.Width + child.Margin.Left + child.Margin.Right);
@@ -415,7 +415,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         else
         {
             float maxHeight = 0;
-            foreach (var child in Children)
+            foreach (var child in Children.ToArray())
             {
                 child.Measure(availableSize, dontStretch);
                 maxHeight = Math.Max(maxHeight, child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom);
@@ -446,7 +446,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             var startPosition = _itemPositions.TryGetValue(_firstVisibleIndex, out var pos) ? pos : 0;
             var y = positionY - ScrollOffset + startPosition;
 
-            foreach (var child in Children)
+            foreach (var child in Children.ToArray())
             {
                 var childLeftBound = child.HorizontalAlignment switch
                 {
@@ -469,7 +469,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             var startPosition = _itemPositions.TryGetValue(_firstVisibleIndex, out var pos) ? pos : 0;
             var x = positionX - ScrollOffset + startPosition;
 
-            foreach (var child in Children)
+            foreach (var child in Children.ToArray())
             {
                 var childTopBound = child.VerticalAlignment switch
                 {
@@ -517,7 +517,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         }
 
         // Render visible children
-        foreach (var child in Children)
+        foreach (var child in Children.ToArray())
         {
             // Save the current VisualOffset
             var childOriginalOffset = child.VisualOffset;
@@ -550,7 +550,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
 
         // Check if any child was hit
         // No need to adjust the point - the child's Position was already adjusted during Arrange
-        var childHit = Children.Select(c => c.HitTest(point)).FirstOrDefault(hit => hit != null);
+        var childHit = Children.ToArray().Select(c => c?.HitTest(point)).FirstOrDefault(hit => hit != null);
 
         // If no child hit, return this ItemsList
         if (childHit == null)

@@ -133,6 +133,190 @@ public class WrongUiFixTests
             $"DataGrid height should be 250, but was {dataGrid.ElementSize.Height}");
     }
 
+    [TestMethod]
+    public void Test_FilterBar_BorderWithGrid_StarAndAutoColumn_Layout()
+    {
+        // Arrange - Recreate LogsView filter bar structure with simple, calculable sizes
+
+        // HStack in Column 0 (Star) with label and buttons
+        var label = new Label()
+            .SetText("Log Level:")
+            .SetTextSize(16)
+            .SetMargin(new Margin(0, 4, 20, 4))
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        var button1 = new Button()
+            .SetText("Trace")
+            .SetTextSize(14)
+            .SetPadding(new Margin(14, 8))
+            .SetMargin(new Margin(0, 4, 8, 4))
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        var button2 = new Button()
+            .SetText("Debug")
+            .SetTextSize(14)
+            .SetPadding(new Margin(14, 8))
+            .SetMargin(new Margin(0, 4, 8, 4))
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        var button3 = new Button()
+            .SetText("Information")
+            .SetTextSize(14)
+            .SetPadding(new Margin(14, 8))
+            .SetMargin(new Margin(0, 4, 8, 4))
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        var button4 = new Button()
+            .SetText("Warning")
+            .SetTextSize(14)
+            .SetPadding(new Margin(14, 8))
+            .SetMargin(new Margin(0, 4, 8, 4))
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        var button5 = new Button()
+            .SetText("Error")
+            .SetTextSize(14)
+            .SetPadding(new Margin(14, 8))
+            .SetMargin(new Margin(0, 4, 8, 4))
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        var button6 = new Button()
+            .SetText("Critical")
+            .SetTextSize(14)
+            .SetPadding(new Margin(14, 8))
+            .SetMargin(new Margin(0, 4, 8, 4))
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        var leftContent = new HStack(label, button1, button2, button3, button4, button5, button6)
+            .SetMargin(new Margin(16));
+
+        // Button in Column 1 (Auto) - should size to content
+        var clearButton = new Button()
+            .SetText("Clear Logs")
+            .SetTextSize(15)
+            .SetPadding(new Margin(20, 12))
+            .SetMargin(new Margin(0, 0, 10, 0))
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        // Grid with Star + Auto columns
+        var grid = new Grid()
+            .AddColumn(Column.Star)  // Should take remaining space
+            .AddColumn(Column.Auto)  // Should size to clearButton
+            .AddRow(Row.Auto)
+            .SetMargin(new Margin(4))
+            .SetVerticalAlignment(VerticalAlignment.Center)
+            .AddChild(row: 0, column: 0, child: leftContent)
+            .AddChild(row: 0, column: 1, child: clearButton);
+
+        // Border containing the grid
+        var border = new Border()
+            .SetMargin(new Margin(8))
+            .SetBackground(new Color(35, 35, 35))
+            .AddChild(grid);
+
+        var availableSize = new Size(1000, 200);
+
+        // Act
+        border.Measure(availableSize);
+        border.Arrange(new Rect(0, 0, 1000, 200));
+
+        // Assert
+        // Border should take full available width minus its margin
+        var expectedBorderWidth = 1000 - 16; // 8 left + 8 right margin
+        Assert.AreEqual(expectedBorderWidth, border.ElementSize.Width, 1.0,
+            $"Border width should be {expectedBorderWidth}, but was {border.ElementSize.Width}");
+
+        // Border position should account for margin
+        Assert.AreEqual(8, border.Position.X, 1.0,
+            $"Border X position should be 8 (margin), but was {border.Position.X}");
+
+        // Grid should take border width minus stroke thickness (2x) and grid margin (8)
+        var expectedGridWidth = expectedBorderWidth - 2 - 8; // StrokeThickness=1 default, so 1*2=2
+        Assert.AreEqual(expectedGridWidth, grid.ElementSize.Width, 1.0,
+            $"Grid width should be {expectedGridWidth}, but was {grid.ElementSize.Width}");
+
+        // Grid position: Border.X (8) + StrokeThickness (1) + Grid.Margin.Left (4) = 13
+        var expectedGridX = 8 + 1 + 4;
+        Assert.AreEqual(expectedGridX, grid.Position.X, 1.0,
+            $"Grid X position should be {expectedGridX}, but was {grid.Position.X}");
+
+        // Button width should auto-size to text + padding
+        // NOTE: Now auto-sized, not fixed at 120
+        // Assert.AreEqual(120, clearButton.ElementSize.Width, 1.0,
+        //     $"Button width should be 120, but was {clearButton.ElementSize.Width}");
+
+        // Column 0 (Star) width = Grid width - Button width (with margin)
+        var expectedColumn0Width = expectedGridWidth - (clearButton.ElementSize.Width + clearButton.Margin.Right);
+
+        // ===== OUTPUT ALL SIZES AND POSITIONS =====
+        Console.WriteLine($"=== BORDER ===");
+        Console.WriteLine($"Border Position: ({border.Position.X}, {border.Position.Y})");
+        Console.WriteLine($"Border Size: {border.ElementSize.Width} x {border.ElementSize.Height}");
+        Console.WriteLine($"Border Margin: {border.Margin.Left},{border.Margin.Top},{border.Margin.Right},{border.Margin.Bottom}");
+
+        Console.WriteLine($"\n=== GRID ===");
+        Console.WriteLine($"Grid Position: ({grid.Position.X}, {grid.Position.Y})");
+        Console.WriteLine($"Grid Size: {grid.ElementSize.Width} x {grid.ElementSize.Height}");
+        Console.WriteLine($"Grid Margin: {grid.Margin.Left},{grid.Margin.Top},{grid.Margin.Right},{grid.Margin.Bottom}");
+
+        Console.WriteLine($"\n=== LEFT CONTENT (HStack) ===");
+        Console.WriteLine($"HStack Position: ({leftContent.Position.X}, {leftContent.Position.Y})");
+        Console.WriteLine($"HStack Size: {leftContent.ElementSize.Width} x {leftContent.ElementSize.Height}");
+        Console.WriteLine($"HStack Margin: {leftContent.Margin.Left},{leftContent.Margin.Top},{leftContent.Margin.Right},{leftContent.Margin.Bottom}");
+
+        Console.WriteLine($"\n=== ELEMENTS IN HSTACK ===");
+        Console.WriteLine($"Label Position: ({label.Position.X}, {label.Position.Y})");
+        Console.WriteLine($"Label Size: {label.ElementSize.Width} x {label.ElementSize.Height}");
+
+        Console.WriteLine($"Button1 Position: ({button1.Position.X}, {button1.Position.Y})");
+        Console.WriteLine($"Button1 Size: {button1.ElementSize.Width} x {button1.ElementSize.Height}");
+
+        Console.WriteLine($"Button2 Position: ({button2.Position.X}, {button2.Position.Y})");
+        Console.WriteLine($"Button2 Size: {button2.ElementSize.Width} x {button2.ElementSize.Height}");
+
+        Console.WriteLine($"\n=== CLEAR BUTTON ===");
+        Console.WriteLine($"Clear Button Position: ({clearButton.Position.X}, {clearButton.Position.Y})");
+        Console.WriteLine($"Clear Button Size: {clearButton.ElementSize.Width} x {clearButton.ElementSize.Height}");
+
+        // ===== VERIFY VERTICAL CENTERING =====
+        Console.WriteLine($"\n=== VERTICAL CENTERING CHECK ===");
+
+        // Calculate expected Y positions for centered elements in HStack
+        var hstackY = leftContent.Position.Y;
+        var hstackHeight = leftContent.ElementSize.Height;
+
+        // Label (height 30) centered in HStack (height 48)
+        var expectedLabelY = hstackY + (hstackHeight - label.ElementSize.Height) / 2f;
+        Console.WriteLine($"Label Y: {label.Position.Y}, Expected: {expectedLabelY}, Diff: {label.Position.Y - expectedLabelY}");
+
+        // Button1 (height 40) centered in HStack (height 48)
+        var expectedButton1Y = hstackY + (hstackHeight - button1.ElementSize.Height) / 2f;
+        Console.WriteLine($"Button1 Y: {button1.Position.Y}, Expected: {expectedButton1Y}, Diff: {button1.Position.Y - expectedButton1Y}");
+
+        // Button2 (height 40) centered in HStack (height 48)
+        var expectedButton2Y = hstackY + (hstackHeight - button2.ElementSize.Height) / 2f;
+        Console.WriteLine($"Button2 Y: {button2.Position.Y}, Expected: {expectedButton2Y}, Diff: {button2.Position.Y - expectedButton2Y}");
+
+        // Check vertical centers are aligned
+        var labelCenterY = label.Position.Y + label.ElementSize.Height / 2f;
+        var button1CenterY = button1.Position.Y + button1.ElementSize.Height / 2f;
+        var button2CenterY = button2.Position.Y + button2.ElementSize.Height / 2f;
+
+        Console.WriteLine($"\nVertical Centers:");
+        Console.WriteLine($"Label Center Y: {labelCenterY}");
+        Console.WriteLine($"Button1 Center Y: {button1CenterY}");
+        Console.WriteLine($"Button2 Center Y: {button2CenterY}");
+        Console.WriteLine($"All aligned? {Math.Abs(labelCenterY - button1CenterY) < 1 && Math.Abs(button1CenterY - button2CenterY) < 1}");
+
+        // Assert vertical centering
+        Assert.AreEqual(expectedLabelY, label.Position.Y, 1.0,
+            $"Label should be centered at Y={expectedLabelY}, but was {label.Position.Y}");
+        Assert.AreEqual(expectedButton1Y, button1.Position.Y, 1.0,
+            $"Button1 should be centered at Y={expectedButton1Y}, but was {button1.Position.Y}");
+        Assert.AreEqual(expectedButton2Y, button2.Position.Y, 1.0,
+            $"Button2 should be centered at Y={expectedButton2Y}, but was {button2.Position.Y}");
+    }
+
     private class TestProperty
     {
         public string Name { get; set; } = "";

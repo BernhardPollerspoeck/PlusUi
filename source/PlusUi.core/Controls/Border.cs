@@ -202,10 +202,11 @@ public partial class Border : UiLayoutElement
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        var borderThickness = StrokeThickness * 2; // Both sides
+        // Available space for child = availableSize - Margin - StrokeThickness
+        // StrokeThickness is INSIDE the border (reduces content area)
         var availableChildSize = new Size(
-            Math.Max(0, availableSize.Width - borderThickness - Margin.Horizontal),
-            Math.Max(0, availableSize.Height - borderThickness - Margin.Vertical));
+            Math.Max(0, availableSize.Width - Margin.Horizontal - StrokeThickness * 2),
+            Math.Max(0, availableSize.Height - Margin.Vertical - StrokeThickness * 2));
 
         Size childSize = Size.Empty;
 
@@ -217,10 +218,10 @@ public partial class Border : UiLayoutElement
             childSize = child.ElementSize + child.Margin;
         }
 
-        // Return the child size plus border thickness
+        // Return child size plus stroke thickness (border is inside, adds to total size)
         return new Size(
-            childSize.Width + borderThickness,
-            childSize.Height + borderThickness);
+            childSize.Width + StrokeThickness * 2,
+            childSize.Height + StrokeThickness * 2);
     }
 
     protected override Point ArrangeInternal(Rect bounds)

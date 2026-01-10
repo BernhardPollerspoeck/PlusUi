@@ -39,54 +39,62 @@ public class LogsView : UserControl
         return new Border()
             .SetBackground(new Color(35, 35, 35))
             .SetMargin(new Margin(8))
-            .AddChild(new HStack()
-                .SetMargin(new Margin(16))
-                .SetHorizontalAlignment(HorizontalAlignment.Stretch)
-                .AddChild(new Label()
-                    .SetText("Log Level:")
-                    .SetTextColor(new Color(200, 200, 200))
-                    .SetTextSize(16)
-                    .SetVerticalAlignment(VerticalAlignment.Center)
-                    .SetMargin(new Margin(0, 0, 20, 0)))
-                .AddChild(CreateLogLevelButton(LogLevel.Trace))
-                .AddChild(CreateLogLevelButton(LogLevel.Debug))
-                .AddChild(CreateLogLevelButton(LogLevel.Information))
-                .AddChild(CreateLogLevelButton(LogLevel.Warning))
-                .AddChild(CreateLogLevelButton(LogLevel.Error))
-                .AddChild(CreateLogLevelButton(LogLevel.Critical))
-                .AddChild(new Label()
-                    .SetHorizontalAlignment(HorizontalAlignment.Stretch))
-                .AddChild(new Button()
-                    .SetText("Clear Logs")
-                    .SetBackground(new Color(60, 60, 60))
-                    .SetTextSize(15)
-                    .SetPadding(new Margin(20, 12))
-                    .SetCornerRadius(4)
-                    .SetOnClick(() =>
-                    {
-                        _viewModel.SelectedApp?.ClearLogs();
-                    })));
+            .AddChild(new Grid()
+                .AddColumn(Column.Star)
+                .AddColumn(Column.Auto)
+                .AddRow(Row.Auto)
+                .SetVerticalAlignment(VerticalAlignment.Center)
+                .SetMargin(new(4))
+                .AddChild(
+                    new HStack(
+                        new Label()
+                            .SetText("Log Level:")
+                            .SetTextColor(new Color(200, 200, 200))
+                            .SetTextSize(16)
+                            .SetVerticalAlignment(VerticalAlignment.Center)
+                            .SetMargin(new Margin(0, 4, 20, 4)),
+                        CreateLogLevelButton(LogLevel.Trace),
+                        CreateLogLevelButton(LogLevel.Debug),
+                        CreateLogLevelButton(LogLevel.Information),
+                        CreateLogLevelButton(LogLevel.Warning),
+                        CreateLogLevelButton(LogLevel.Error),
+                        CreateLogLevelButton(LogLevel.Critical))
+                    .SetMargin(new Margin(16))
+                    )
+
+                .AddChild(
+                    column: 1,
+                    child: new Button()
+                        .SetText("Clear Logs")
+                        .SetBackground(new Color(60, 60, 60))
+                        .SetTextSize(15)
+                        .SetPadding(new Margin(20, 12))
+                        .SetMargin(new(0,0,10,0))
+                        .SetCornerRadius(4)
+                        .SetVerticalAlignment(VerticalAlignment.Center)
+                        .SetOnClick(() =>
+                        {
+                            _viewModel.SelectedApp?.ClearLogs();
+                        })));
     }
 
     private UiElement CreateLogLevelButton(LogLevel level)
     {
         var button = new Button()
-            .SetText(GetLogLevelShortName(level))
+            .SetText(level.ToString())
             .SetTextSize(14)
             .SetPadding(new Margin(14, 8))
             .SetCornerRadius(4)
-            .SetMargin(new Margin(0, 0, 8, 0))
+            .SetMargin(new Margin(0, 4, 8, 4))
+            .SetVerticalAlignment(VerticalAlignment.Center)
             .SetOnClick(() =>
             {
-                if (_viewModel.SelectedApp != null)
-                {
-                    _viewModel.SelectedApp.LogLevelFilter = level;
-                }
+                _viewModel.LogLevelFilter = level;
             });
 
         button.BindBackground(
-            nameof(_viewModel.SelectedApp.LogLevelFilter),
-            () => _viewModel.SelectedApp?.LogLevelFilter == level
+            nameof(_viewModel.LogLevelFilter),
+            () => _viewModel.LogLevelFilter == level
                 ? new SolidColorBackground(GetLogLevelColor(level))
                 : new SolidColorBackground(new Color(50, 50, 50)));
 
@@ -100,8 +108,8 @@ public class LogsView : UserControl
             .SetItemTemplate((log, index) => CreateLogItem(log));
 
         list.BindItemsSource(
-            nameof(_viewModel.SelectedApp.FilteredLogs),
-            () => _viewModel.SelectedApp?.FilteredLogs);
+            nameof(_viewModel.FilteredLogs),
+            () => _viewModel.FilteredLogs);
 
         return list;
     }
@@ -140,12 +148,14 @@ public class LogsView : UserControl
                     .SetText(log.Timestamp.ToString("HH:mm:ss.fff"))
                     .SetTextColor(new Color(150, 150, 150))
                     .SetTextSize(11)
+                    .SetDesiredWidth(90)
                     .SetVerticalAlignment(VerticalAlignment.Center)
                     .SetMargin(new Margin(12, 8, 8, 8)))
                 .AddChild(new Label()
-                    .SetText(GetLogLevelShortName(log.Level))
+                    .SetText(log.Level.ToString())
                     .SetTextColor(GetLogLevelColor(log.Level))
                     .SetTextSize(11)
+                    .SetDesiredWidth(80)
                     .SetVerticalAlignment(VerticalAlignment.Center)
                     .SetMargin(new Margin(0, 8, 12, 8)))
                 .AddChild(new Label()
@@ -155,17 +165,6 @@ public class LogsView : UserControl
                     .SetVerticalAlignment(VerticalAlignment.Center)
                     .SetMargin(new Margin(0, 8, 12, 8))));
     }
-
-    private static string GetLogLevelShortName(LogLevel level) => level switch
-    {
-        LogLevel.Trace => "TRC",
-        LogLevel.Debug => "DBG",
-        LogLevel.Information => "INF",
-        LogLevel.Warning => "WRN",
-        LogLevel.Error => "ERR",
-        LogLevel.Critical => "CRT",
-        _ => "???"
-    };
 
     private static Color GetLogLevelColor(LogLevel level) => level switch
     {

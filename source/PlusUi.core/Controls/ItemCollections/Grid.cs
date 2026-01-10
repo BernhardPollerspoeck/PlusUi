@@ -68,6 +68,10 @@ public partial class Grid : UiLayoutElement
         _children.Add(new(child, row, column, rowSpan, columnSpan));
         return this;
     }
+    public new Grid AddChild(UiElement child)
+    {
+        return AddChild(child, 0, 0, 1, 1);
+    }
     public new Grid RemoveChild(UiElement child)
     {
         var item = _children.FirstOrDefault(x => x.Element == child);
@@ -159,6 +163,12 @@ public partial class Grid : UiLayoutElement
         {
             AddColumn(Column.Auto);
         }
+
+        // Reduce available size by Grid's margin
+        var availableWidthForColumns = Math.Max(0, availableSize.Width - Margin.Horizontal);
+        var availableHeightForRows = Math.Max(0, availableSize.Height - Margin.Vertical);
+        var availableSizeForChildren = new Size(availableWidthForColumns, availableHeightForRows);
+
         // Dictionary to cache child natural sizes
         var childNaturalSizes = new Dictionary<UiElement, Size>();
 
@@ -178,7 +188,7 @@ public partial class Grid : UiLayoutElement
         foreach (var child in _children)
         {
             // Get the natural size without stretch
-            var childSize = child.Element.Measure(availableSize, true);
+            var childSize = child.Element.Measure(availableSizeForChildren, true);
             childNaturalSizes[child.Element] = childSize; // Store for later use
         }
 
@@ -271,8 +281,9 @@ public partial class Grid : UiLayoutElement
         }
 
         // Calculate star sizes - first pass
+        // Use available size AFTER accounting for Grid's margin
         var totalFixedWidth = _columns.Where(c => c.Type != Column.Star).Sum(c => c.MeasuredSize);
-        var remainingWidthForStars = Math.Max(0, availableSize.Width - totalFixedWidth);
+        var remainingWidthForStars = Math.Max(0, availableWidthForColumns - totalFixedWidth);
         var totalStarWeight = _columns.Where(c => c.Type == Column.Star).Sum(c => c.FixedSize ?? 0);
 
         if (totalStarWeight > 0)
@@ -284,7 +295,7 @@ public partial class Grid : UiLayoutElement
         }
 
         var totalFixedHeight = _rows.Where(r => r.Type != Row.Star).Sum(r => r.MeasuredSize);
-        var remainingHeightForStars = Math.Max(0, availableSize.Height - totalFixedHeight);
+        var remainingHeightForStars = Math.Max(0, availableHeightForRows - totalFixedHeight);
         var totalStarHeightWeight = _rows.Where(r => r.Type == Row.Star).Sum(r => r.FixedSize ?? 0);
 
         if (totalStarHeightWeight > 0)

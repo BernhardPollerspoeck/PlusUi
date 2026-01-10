@@ -46,9 +46,9 @@
 - [ ] [ ] 3.6 Style overrides (per page and global)
 
 ### 4. Logging
-- [x] [ ] 4.1 Log output panel in debug server UI
-- [x] [ ] 4.2 Log level filtering (Debug, Info, Warning, Error)
-- [x] [ ] 4.3 Cleanup: Remove console.log, use ILogger everywhere
+- [x] [x] 4.1 Log output panel in debug server UI
+- [x] [x] 4.2 Log level filtering (Debug, Info, Warning, Error)
+- [x] [x] 4.3 Cleanup: Remove console.log, use ILogger everywhere
 - [ ] [ ] 4.4 Event tracing (button clicks, navigation, etc.)
 
 ### 5. Performance Monitor
