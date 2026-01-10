@@ -157,17 +157,15 @@ public class DataGridSliderColumn<T> : DataGridColumn<T>
         {
             var setter = ValueSetter;
             var getter = ValueGetter;
+            var itemRef = item;
 
-            slider.BindValue(
-                $"DataGridSlider_{item?.GetHashCode()}_{Header}",
-                () => getter(item),
-                value => setter(item, value));
+            slider.SetOnValueChanged(value => setter(itemRef, value));
 
             if (item is System.ComponentModel.INotifyPropertyChanged notifyItem)
             {
                 notifyItem.PropertyChanged += (_, _) =>
                 {
-                    slider.SetValue(getter(item));
+                    slider.SetValue(getter(itemRef));
                 };
             }
         }

@@ -1,4 +1,5 @@
 using PlusUi.core;
+using System.Linq.Expressions;
 
 namespace Sandbox.Pages.WrapDemo;
 
@@ -24,7 +25,7 @@ public class WrapDemoPage(WrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetText("Enable Wrap:")
                                 .SetTextColor(Colors.White),
                             new Checkbox()
-                                .BindIsChecked(nameof(vm.HStackWrapEnabled), () => vm.HStackWrapEnabled, v => vm.HStackWrapEnabled = v)
+                                .BindIsChecked(() => vm.HStackWrapEnabled, v => vm.HStackWrapEnabled = v)
                         ),
                         new Label()
                             .SetText("Items wrap to next row when exceeding container width")
@@ -42,7 +43,7 @@ public class WrapDemoPage(WrapDemoPageViewModel vm) : UiPageElement(vm)
                                     CreateTag("Tag 6", Colors.Crimson),
                                     CreateTag("Tag 7", Colors.DarkOrange),
                                     CreateTag("Tag 8", Colors.SlateBlue)
-                                ).BindWrap(nameof(vm.HStackWrapEnabled), () => vm.HStackWrapEnabled)
+                                ).BindWrap(() => vm.HStackWrapEnabled)
                                  .SetMargin(new Margin(10))
                             )
                             .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
@@ -59,7 +60,7 @@ public class WrapDemoPage(WrapDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetText("Enable Wrap:")
                                 .SetTextColor(Colors.White),
                             new Checkbox()
-                                .BindIsChecked(nameof(vm.VStackWrapEnabled), () => vm.VStackWrapEnabled, v => vm.VStackWrapEnabled = v)
+                                .BindIsChecked(() => vm.VStackWrapEnabled, v => vm.VStackWrapEnabled = v)
                         ),
                         new Label()
                             .SetText("Items wrap to next column when exceeding container height")
@@ -77,7 +78,7 @@ public class WrapDemoPage(WrapDemoPageViewModel vm) : UiPageElement(vm)
                                     CreateListItem("Item 6", Colors.Crimson),
                                     CreateListItem("Item 7", Colors.DarkOrange),
                                     CreateListItem("Item 8", Colors.SlateBlue)
-                                ).BindWrap(nameof(vm.VStackWrapEnabled), () => vm.VStackWrapEnabled)
+                                ).BindWrap(() => vm.VStackWrapEnabled)
                                  .SetMargin(new Margin(10))
                             )
                             .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))

@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace PlusUi.core;
 
 /// <summary>
@@ -116,12 +118,11 @@ public static class ContextMenuExtensions
     /// </summary>
     /// <typeparam name="T">The type of UI element.</typeparam>
     /// <param name="element">The target element.</param>
-    /// <param name="propertyName">The name of the property to bind to.</param>
-    /// <param name="propertyGetter">Function to get the property value.</param>
+    /// <param name="propertyExpression">Expression that returns the property value.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindContextMenuBackground<T>(this T element, string propertyName, Func<IBackground> propertyGetter) where T : UiElement
+    public static T BindContextMenuBackground<T>(this T element, Expression<Func<IBackground?>> propertyExpression) where T : UiElement
     {
-        EnsureContextMenu(element).BindBackground(propertyName, propertyGetter);
+        EnsureContextMenu(element).BindBackground(propertyExpression);
         return element;
     }
 
@@ -130,12 +131,11 @@ public static class ContextMenuExtensions
     /// </summary>
     /// <typeparam name="T">The type of UI element.</typeparam>
     /// <param name="element">The target element.</param>
-    /// <param name="propertyName">The name of the property to bind to.</param>
-    /// <param name="propertyGetter">Function to get the property value.</param>
+    /// <param name="propertyExpression">Expression that returns the property value.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindContextMenuBackground<T>(this T element, string propertyName, Func<Color> propertyGetter) where T : UiElement
+    public static T BindContextMenuBackgroundColor<T>(this T element, Expression<Func<Color>> propertyExpression) where T : UiElement
     {
-        EnsureContextMenu(element).BindBackground(propertyName, propertyGetter);
+        EnsureContextMenu(element).BindBackgroundColor(propertyExpression);
         return element;
     }
 
@@ -144,12 +144,11 @@ public static class ContextMenuExtensions
     /// </summary>
     /// <typeparam name="T">The type of UI element.</typeparam>
     /// <param name="element">The target element.</param>
-    /// <param name="propertyName">The name of the property to bind to.</param>
-    /// <param name="propertyGetter">Function to get the property value.</param>
+    /// <param name="propertyExpression">Expression that returns the property value.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindContextMenuHoverBackgroundColor<T>(this T element, string propertyName, Func<Color> propertyGetter) where T : UiElement
+    public static T BindContextMenuHoverBackgroundColor<T>(this T element, Expression<Func<Color>> propertyExpression) where T : UiElement
     {
-        EnsureContextMenu(element).BindHoverBackgroundColor(propertyName, propertyGetter);
+        EnsureContextMenu(element).BindHoverBackgroundColor(propertyExpression);
         return element;
     }
 
@@ -158,12 +157,11 @@ public static class ContextMenuExtensions
     /// </summary>
     /// <typeparam name="T">The type of UI element.</typeparam>
     /// <param name="element">The target element.</param>
-    /// <param name="propertyName">The name of the property to bind to.</param>
-    /// <param name="propertyGetter">Function to get the property value.</param>
+    /// <param name="propertyExpression">Expression that returns the property value.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindContextMenuTextColor<T>(this T element, string propertyName, Func<Color> propertyGetter) where T : UiElement
+    public static T BindContextMenuTextColor<T>(this T element, Expression<Func<Color>> propertyExpression) where T : UiElement
     {
-        EnsureContextMenu(element).BindTextColor(propertyName, propertyGetter);
+        EnsureContextMenu(element).BindTextColor(propertyExpression);
         return element;
     }
 }

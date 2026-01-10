@@ -20,8 +20,7 @@ public class ElementTreeView : UserControl
     protected override UiElement Build()
     {
         var treeView = new TreeView();
-        treeView.BindItemsSource(nameof(_viewModel.RootItems),
-            () => _viewModel.RootItems);
+        treeView.BindItemsSource(() => _viewModel.RootItems);
         treeView.SetChildrenSelector<TreeNodeDto>(node => node.Children);
         treeView.SetItemTemplate((item, depth) => item switch
         {
@@ -42,8 +41,7 @@ public class ElementTreeView : UserControl
         treeView.SetShowLines(true);
         treeView.SetLineColor(new Color(60, 60, 60));
         treeView.SetAutoExpandInitialLevels(true, 2);
-        treeView.BindSelectedItem(nameof(_viewModel.SelectedNode),
-            () => _viewModel.SelectedNode,
+        treeView.BindSelectedItem(() => _viewModel.SelectedNode,
             item => _viewModel.SelectedNode = item as TreeNodeDto);
         return treeView;
     }

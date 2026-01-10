@@ -9,7 +9,7 @@ public class TestControl(MainPageViewModel vm) : UserControl
     protected override UiElement Build()
     {
         return new Label()
-                    .BindText(nameof(vm.Timestamp), () => $"PlusUi: {(int)vm.Timestamp.TotalSeconds}.{vm.Timestamp.Milliseconds:000}")
+                    .BindText(() => $"PlusUi: {(int)vm.Timestamp.TotalSeconds}.{vm.Timestamp.Milliseconds:000}")
                     .SetTextSize(90)
                     .SetVerticalAlignment(VerticalAlignment.Center);
     }
@@ -27,9 +27,9 @@ public class MainPage(
                 .AddColumn(Column.Auto, 1)
                 .AddChild(new Solid()
                     .SetBackground(new SolidColorBackground(Colors.Red))
-                    .BindDesiredHeight(nameof(vm.Size), () => vm.Size)
-                    .BindDesiredWidth(nameof(vm.Size), () => vm.Size)
-                    .BindCornerRadius(nameof(vm.Size), () => vm.Size / 2)
+                    .BindDesiredHeight(() => vm.Size)
+                    .BindDesiredWidth(() => vm.Size)
+                    .BindCornerRadius(() => vm.Size / 2)
                     .SetHorizontalAlignment(HorizontalAlignment.Center)
                     .SetVerticalAlignment(VerticalAlignment.Center)
                 )

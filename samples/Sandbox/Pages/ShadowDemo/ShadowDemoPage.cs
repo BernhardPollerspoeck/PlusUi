@@ -66,7 +66,7 @@ public class ShadowDemoPage(ShadowDemoPageViewModel vm) : UiPageElement(vm)
                     .SetTextColor(Colors.White)
                     .SetDesiredWidth(120),
                 new Label()
-                    .BindText(nameof(vm.ShadowBlur), () => $"{vm.ShadowBlur:F1}")
+                    .BindText(() => $"{vm.ShadowBlur:F1}")
                     .SetTextSize(16)
                     .SetTextColor(Colors.LightGray)
             ).SetMargin(new Margin(0, 0, 0, 5)),
@@ -79,7 +79,7 @@ public class ShadowDemoPage(ShadowDemoPageViewModel vm) : UiPageElement(vm)
                     .SetTextColor(Colors.White)
                     .SetDesiredWidth(120),
                 new Label()
-                    .BindText(nameof(vm.ShadowOffsetY), () => $"{vm.ShadowOffsetY:F1}")
+                    .BindText(() => $"{vm.ShadowOffsetY:F1}")
                     .SetTextSize(16)
                     .SetTextColor(Colors.LightGray)
             ).SetMargin(new Margin(0, 0, 0, 5)),
@@ -92,7 +92,7 @@ public class ShadowDemoPage(ShadowDemoPageViewModel vm) : UiPageElement(vm)
                     .SetTextColor(Colors.White)
                     .SetDesiredWidth(120),
                 new Label()
-                    .BindText(nameof(vm.ShadowAlpha), () => $"{vm.ShadowAlpha}")
+                    .BindText(() => $"{vm.ShadowAlpha}")
                     .SetTextSize(16)
                     .SetTextColor(Colors.LightGray)
             ).SetMargin(new Margin(0, 0, 0, 5)),
@@ -105,7 +105,7 @@ public class ShadowDemoPage(ShadowDemoPageViewModel vm) : UiPageElement(vm)
                     .SetTextColor(Colors.White)
                     .SetDesiredWidth(120),
                 new Label()
-                    .BindText(nameof(vm.ShadowSpread), () => $"{vm.ShadowSpread:F1}")
+                    .BindText(() => $"{vm.ShadowSpread:F1}")
                     .SetTextSize(16)
                     .SetTextColor(Colors.LightGray)
             ).SetMargin(new Margin(0, 0, 0, 5)),
@@ -118,7 +118,7 @@ public class ShadowDemoPage(ShadowDemoPageViewModel vm) : UiPageElement(vm)
                     .SetTextColor(Colors.White)
                     .SetDesiredWidth(120),
                 new Label()
-                    .BindText(nameof(vm.CornerRadius), () => $"{vm.CornerRadius:F1}")
+                    .BindText(() => $"{vm.CornerRadius:F1}")
                     .SetTextSize(16)
                     .SetTextColor(Colors.LightGray)
             ).SetMargin(new Margin(0, 0, 0, 15)),
@@ -127,11 +127,11 @@ public class ShadowDemoPage(ShadowDemoPageViewModel vm) : UiPageElement(vm)
             new VStack(
                 new Border()
                     .SetBackground(new SolidColorBackground(Colors.White))
-                    .BindCornerRadius(nameof(vm.CornerRadius), () => vm.CornerRadius)
-                    .BindShadowColor(nameof(vm.ShadowAlpha), () => Colors.Black.WithAlpha(vm.ShadowAlpha))
-                    .BindShadowOffset(nameof(vm.ShadowOffsetY), () => new Point(vm.ShadowOffsetX, vm.ShadowOffsetY))
-                    .BindShadowBlur(nameof(vm.ShadowBlur), () => vm.ShadowBlur)
-                    .BindShadowSpread(nameof(vm.ShadowSpread), () => vm.ShadowSpread)
+                    .BindCornerRadius(() => vm.CornerRadius)
+                    .BindShadowColor(() => Colors.Black.WithAlpha(vm.ShadowAlpha))
+                    .BindShadowOffset(() => new Point(vm.ShadowOffsetX, vm.ShadowOffsetY))
+                    .BindShadowBlur(() => vm.ShadowBlur)
+                    .BindShadowSpread(() => vm.ShadowSpread)
                     .AddChild(
                         new Label()
                             .SetText("Live Preview")
@@ -252,7 +252,7 @@ public class ShadowDemoPage(ShadowDemoPageViewModel vm) : UiPageElement(vm)
                     .SetTextColor(Colors.White)
                     .SetBackground(new SolidColorBackground(new Color(244, 67, 54))),
                 new Label()
-                    .BindText(nameof(vm.Elevation), () => $"Elevation: {vm.Elevation}")
+                    .BindText(() => $"Elevation: {vm.Elevation}")
                     .SetTextSize(16)
                     .SetTextColor(Colors.White)
                     .SetMargin(new Margin(10, 0)),
@@ -270,11 +270,11 @@ public class ShadowDemoPage(ShadowDemoPageViewModel vm) : UiPageElement(vm)
                 new Border()
                     .SetBackground(new SolidColorBackground(Colors.White))
                     .SetCornerRadius(4)
-                    .BindShadowColor(nameof(vm.Elevation), () =>
+                    .BindShadowColor(() =>
                         vm.Elevation > 0 ? Colors.Black.WithAlpha((byte)(vm.Elevation * 25)) : Colors.Transparent)
-                    .BindShadowOffset(nameof(vm.Elevation), () => new Point(0, vm.Elevation * 2f))
-                    .BindShadowBlur(nameof(vm.Elevation), () => vm.Elevation * 3f)
-                    .BindShadowSpread(nameof(vm.Elevation), () => vm.Elevation * 0.5f)
+                    .BindShadowOffset(() => new Point(0, vm.Elevation * 2f))
+                    .BindShadowBlur(() => vm.Elevation * 3f)
+                    .BindShadowSpread(() => vm.Elevation * 0.5f)
                     .AddChild(
                         new VStack(
                             new Label()
@@ -315,15 +315,15 @@ public class ShadowDemoPage(ShadowDemoPageViewModel vm) : UiPageElement(vm)
                 new Border()
                     .SetBackground(new SolidColorBackground(Colors.White))
                     .SetCornerRadius(8)
-                    .BindShadowColor(nameof(vm.IsHovered), () =>
+                    .BindShadowColor(() =>
                         vm.IsHovered ? Colors.Black.WithAlpha(120) : Colors.Black.WithAlpha(70))
-                    .BindShadowBlur(nameof(vm.IsHovered), () => vm.IsHovered ? 20f : 8f)
-                    .BindShadowOffset(nameof(vm.IsHovered), () =>
+                    .BindShadowBlur(() => vm.IsHovered ? 20f : 8f)
+                    .BindShadowOffset(() =>
                         vm.IsHovered ? new Point(0, 10) : new Point(0, 4))
                     .AddChild(
                         new VStack(
                             new Label()
-                                .BindText(nameof(vm.IsHovered), () =>
+                                .BindText(() =>
                                     vm.IsHovered ? "Hovered! 🎯" : "Not Hovered")
                                 .SetTextSize(18)
                                 .SetTextColor(Colors.Black)

@@ -257,12 +257,12 @@ public class DataGridTests
         var items2 = new List<Person> { new() { Name = "Bob" }, new() { Name = "Charlie" } };
         IEnumerable<Person>? currentItems = items1;
 
-        dataGrid.BindItemsSource("Items", () => currentItems);
-        dataGrid.UpdateBindings("Items");
+        dataGrid.BindItemsSource(() => currentItems);
+        dataGrid.UpdateBindings(nameof(currentItems));
 
         // Act
         currentItems = items2;
-        dataGrid.UpdateBindings("Items");
+        dataGrid.UpdateBindings(nameof(currentItems));
 
         // Assert
         Assert.AreSame(items2, dataGrid.ItemsSource, "ItemsSource should be updated via binding");
@@ -688,13 +688,13 @@ public class DataGridTests
         Person? selectedPerson = null;
         var dataGrid = new DataGrid<Person>()
             .SetItemsSource(items)
-            .BindSelectedItem("SelectedPerson",
+            .BindSelectedItem(
                 () => selectedPerson,
                 v => selectedPerson = v);
 
         // Act - Set from binding
         selectedPerson = alice;
-        dataGrid.UpdateBindings("SelectedPerson");
+        dataGrid.UpdateBindings(nameof(selectedPerson));
 
         // Assert
         Assert.AreSame(alice, dataGrid.SelectedItem, "SelectedItem should be updated from binding");

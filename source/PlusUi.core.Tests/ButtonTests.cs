@@ -77,7 +77,7 @@ public class ButtonTests
         var button = new Button();
         var testIcon = "bound_icon.png";
         //Act
-        button.BindIcon(nameof(testIcon), () => testIcon);
+        button.BindIcon(() => testIcon);
         button.UpdateBindings();
         //Assert
         Assert.AreEqual("bound_icon.png", button.Icon);
@@ -90,7 +90,7 @@ public class ButtonTests
         var button = new Button();
         var testPosition = IconPosition.Trailing;
         //Act
-        button.BindIconPosition(nameof(testPosition), () => testPosition);
+        button.BindIconPosition(() => testPosition);
         button.UpdateBindings();
         //Assert
         Assert.AreEqual(IconPosition.Trailing, button.IconPosition);

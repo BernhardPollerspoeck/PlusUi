@@ -1,8 +1,11 @@
+using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
-public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
+[GenerateShadowMethods]
+public partial class Scrollbar : UiElement<Scrollbar>, IDraggableControl
 {
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Scrollbar;
     protected internal override bool IsFocusable => false;
@@ -19,9 +22,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindOrientation(string propertyName, Func<ScrollbarOrientation> getter)
+    public Scrollbar BindOrientation(Expression<Func<ScrollbarOrientation>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetOrientation(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetOrientation(getter()));
         return this;
     }
 
@@ -36,9 +41,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindWidth(string propertyName, Func<float> getter)
+    public Scrollbar BindWidth(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetWidth(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetWidth(getter()));
         return this;
     }
 
@@ -50,9 +57,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindMinThumbSize(string propertyName, Func<float> getter)
+    public Scrollbar BindMinThumbSize(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetMinThumbSize(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetMinThumbSize(getter()));
         return this;
     }
 
@@ -68,9 +77,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindThumbColor(string propertyName, Func<Color> getter)
+    public Scrollbar BindThumbColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetThumbColor(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetThumbColor(getter()));
         return this;
     }
 
@@ -82,9 +93,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindThumbHoverColor(string propertyName, Func<Color> getter)
+    public Scrollbar BindThumbHoverColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetThumbHoverColor(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetThumbHoverColor(getter()));
         return this;
     }
 
@@ -96,9 +109,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindThumbDragColor(string propertyName, Func<Color> getter)
+    public Scrollbar BindThumbDragColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetThumbDragColor(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetThumbDragColor(getter()));
         return this;
     }
 
@@ -110,9 +125,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindTrackColor(string propertyName, Func<Color> getter)
+    public Scrollbar BindTrackColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetTrackColor(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetTrackColor(getter()));
         return this;
     }
 
@@ -128,9 +145,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindThumbCornerRadius(string propertyName, Func<float> getter)
+    public Scrollbar BindThumbCornerRadius(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetThumbCornerRadius(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetThumbCornerRadius(getter()));
         return this;
     }
 
@@ -142,9 +161,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindTrackCornerRadius(string propertyName, Func<float> getter)
+    public Scrollbar BindTrackCornerRadius(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetTrackCornerRadius(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetTrackCornerRadius(getter()));
         return this;
     }
 
@@ -160,9 +181,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindAutoHide(string propertyName, Func<bool> getter)
+    public Scrollbar BindAutoHide(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetAutoHide(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetAutoHide(getter()));
         return this;
     }
 
@@ -174,9 +197,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindAutoHideDelay(string propertyName, Func<int> getter)
+    public Scrollbar BindAutoHideDelay(Expression<Func<int>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetAutoHideDelay(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetAutoHideDelay(getter()));
         return this;
     }
 
@@ -198,9 +223,11 @@ public class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public Scrollbar BindOnValueChanged(string propertyName, Func<Action<float>?> getter)
+    public Scrollbar BindOnValueChanged(Expression<Func<Action<float>?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => _onValueChanged = getter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => _onValueChanged = getter());
         return this;
     }
 

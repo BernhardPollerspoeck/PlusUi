@@ -45,7 +45,7 @@ public class DatePickerTests
         var date = new DateOnly(2024, 6, 15);
 
         // Act
-        datePicker.BindSelectedDate(nameof(date), () => date);
+        datePicker.BindSelectedDate(() => date);
 
         // Assert
         Assert.AreEqual(date, datePicker.SelectedDate);
@@ -59,7 +59,7 @@ public class DatePickerTests
         DateOnly? boundDate = new DateOnly(2024, 3, 20);
 
         // Act
-        datePicker.BindSelectedDate(nameof(boundDate), () => boundDate, v => boundDate = v);
+        datePicker.BindSelectedDate(() => boundDate, v => boundDate = v);
 
         // Assert
         Assert.AreEqual(new DateOnly(2024, 3, 20), datePicker.SelectedDate);

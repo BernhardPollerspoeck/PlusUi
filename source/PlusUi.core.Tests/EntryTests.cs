@@ -27,7 +27,7 @@ public class EntryTests
         var isPassword = false;
 
         // Act
-        entry.BindIsPassword(nameof(isPassword), () => isPassword);
+        entry.BindIsPassword(() => isPassword);
         entry.UpdateBindings();
 
         // Assert
@@ -72,7 +72,7 @@ public class EntryTests
         var passwordChar = '*';
 
         // Act
-        entry.BindPasswordChar(nameof(passwordChar), () => passwordChar);
+        entry.BindPasswordChar(() => passwordChar);
         entry.UpdateBindings();
 
         // Assert
@@ -117,7 +117,7 @@ public class EntryTests
         var keyboard = KeyboardType.Numeric;
 
         // Act
-        entry.BindKeyboard(nameof(keyboard), () => keyboard);
+        entry.BindKeyboard(() => keyboard);
         entry.UpdateBindings();
 
         // Assert
@@ -162,7 +162,7 @@ public class EntryTests
         var returnKey = ReturnKeyType.Go;
 
         // Act
-        entry.BindReturnKey(nameof(returnKey), () => returnKey);
+        entry.BindReturnKey(() => returnKey);
         entry.UpdateBindings();
 
         // Assert

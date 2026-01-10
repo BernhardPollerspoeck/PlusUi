@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace PlusUi.core;
 
 /// <summary>
@@ -121,12 +123,11 @@ public static class TooltipExtensions
     /// </summary>
     /// <typeparam name="T">The type of UI element.</typeparam>
     /// <param name="element">The target element.</param>
-    /// <param name="propertyName">The name of the property to bind to.</param>
-    /// <param name="propertyGetter">Function to get the property value.</param>
+    /// <param name="propertyExpression">Expression to the property to bind to.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindTooltipContent<T>(this T element, string propertyName, Func<object?> propertyGetter) where T : UiElement
+    public static T BindTooltipContent<T>(this T element, Expression<Func<object?>> propertyExpression) where T : UiElement
     {
-        EnsureTooltip(element).BindContent(propertyName, propertyGetter);
+        EnsureTooltip(element).BindContent(propertyExpression);
         return element;
     }
 
@@ -135,12 +136,11 @@ public static class TooltipExtensions
     /// </summary>
     /// <typeparam name="T">The type of UI element.</typeparam>
     /// <param name="element">The target element.</param>
-    /// <param name="propertyName">The name of the property to bind to.</param>
-    /// <param name="propertyGetter">Function to get the property value.</param>
+    /// <param name="propertyExpression">Expression to the property to bind to.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindTooltipPlacement<T>(this T element, string propertyName, Func<TooltipPlacement> propertyGetter) where T : UiElement
+    public static T BindTooltipPlacement<T>(this T element, Expression<Func<TooltipPlacement>> propertyExpression) where T : UiElement
     {
-        EnsureTooltip(element).BindPlacement(propertyName, propertyGetter);
+        EnsureTooltip(element).BindPlacement(propertyExpression);
         return element;
     }
 
@@ -149,12 +149,11 @@ public static class TooltipExtensions
     /// </summary>
     /// <typeparam name="T">The type of UI element.</typeparam>
     /// <param name="element">The target element.</param>
-    /// <param name="propertyName">The name of the property to bind to.</param>
-    /// <param name="propertyGetter">Function to get the property value.</param>
+    /// <param name="propertyExpression">Expression to the property to bind to.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindTooltipShowDelay<T>(this T element, string propertyName, Func<int> propertyGetter) where T : UiElement
+    public static T BindTooltipShowDelay<T>(this T element, Expression<Func<int>> propertyExpression) where T : UiElement
     {
-        EnsureTooltip(element).BindShowDelay(propertyName, propertyGetter);
+        EnsureTooltip(element).BindShowDelay(propertyExpression);
         return element;
     }
 
@@ -163,12 +162,11 @@ public static class TooltipExtensions
     /// </summary>
     /// <typeparam name="T">The type of UI element.</typeparam>
     /// <param name="element">The target element.</param>
-    /// <param name="propertyName">The name of the property to bind to.</param>
-    /// <param name="propertyGetter">Function to get the property value.</param>
+    /// <param name="propertyExpression">Expression to the property to bind to.</param>
     /// <returns>The element for method chaining.</returns>
-    public static T BindTooltipHideDelay<T>(this T element, string propertyName, Func<int> propertyGetter) where T : UiElement
+    public static T BindTooltipHideDelay<T>(this T element, Expression<Func<int>> propertyExpression) where T : UiElement
     {
-        EnsureTooltip(element).BindHideDelay(propertyName, propertyGetter);
+        EnsureTooltip(element).BindHideDelay(propertyExpression);
         return element;
     }
 }

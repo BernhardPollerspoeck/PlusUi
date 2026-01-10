@@ -18,9 +18,8 @@ public class MainPage(MainViewModel vm) : UiPageElement(vm)
                 row: 0,
                 column: 0,
                 child: new TabControl()
-                    .BindTabs(nameof(vm.AppTabs), () => vm.AppTabs)
-                    .BindSelectedIndex(nameof(vm.SelectedAppTabIndex),
-                        () => vm.SelectedAppTabIndex,
+                    .BindTabs(() => vm.AppTabs)
+                    .BindSelectedIndex(() => vm.SelectedAppTabIndex,
                         index => vm.SelectedAppTabIndex = index)
                     .SetHeaderBackgroundColor(new SKColor(35, 35, 35))
                     .SetActiveTabBackgroundColor(new SKColor(50, 50, 50))

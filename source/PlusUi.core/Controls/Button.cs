@@ -2,6 +2,7 @@
 using PlusUi.core.Attributes;
 using PlusUi.core.Models;
 using SkiaSharp;
+using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace PlusUi.core;
@@ -47,14 +48,16 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
 
     #region HoverBackground
     internal IBackground? HoverBackground { get; set; }
-    public Button SetHoverBackground(IBackground background)
+    public Button SetHoverBackground(IBackground? background)
     {
         HoverBackground = background;
         return this;
     }
-    public Button BindHoverBackground(string propertyName, Func<IBackground> propertyGetter)
+    public Button BindHoverBackground(Expression<Func<IBackground?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HoverBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HoverBackground = getter());
         return this;
     }
     #endregion
@@ -74,9 +77,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         Padding = padding;
         return this;
     }
-    public Button BindPadding(string propertyName, Func<Margin> propertyGetter)
+    public Button BindPadding(Expression<Func<Margin>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Padding = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Padding = getter());
         return this;
     }
     #endregion
@@ -88,9 +93,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         Command = command;
         return this;
     }
-    public Button BindCommand(string propertyName, Func<ICommand?> propertyGetter)
+    public Button BindCommand(Expression<Func<ICommand?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Command = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Command = getter());
         return this;
     }
 
@@ -100,9 +107,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         CommandParameter = parameter;
         return this;
     }
-    public Button BindCommandParameter(string propertyName, Func<object> propertyGetter)
+    public Button BindCommandParameter(Expression<Func<object>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => CommandParameter = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => CommandParameter = getter());
         return this;
     }
 
@@ -112,9 +121,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         OnClick = onClick;
         return this;
     }
-    public Button BindOnClick(string propertyName, Func<Action?> propertyGetter)
+    public Button BindOnClick(Expression<Func<Action?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OnClick = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OnClick = getter());
         return this;
     }
     #endregion
@@ -139,9 +150,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         Icon = icon;
         return this;
     }
-    public Button BindIcon(string propertyName, Func<string?> propertyGetter)
+    public Button BindIcon(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Icon = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Icon = getter());
         return this;
     }
     #endregion
@@ -161,9 +174,11 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         IconPosition = iconPosition;
         return this;
     }
-    public Button BindIconPosition(string propertyName, Func<IconPosition> propertyGetter)
+    public Button BindIconPosition(Expression<Func<IconPosition>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => IconPosition = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IconPosition = getter());
         return this;
     }
     #endregion
@@ -207,11 +222,13 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         return this;
     }
 
-    public Button BindIconTintColor(string propertyName, Func<Color?> propertyGetter)
+    public Button BindIconTintColor(Expression<Func<Color?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () =>
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () =>
         {
-            IconTintColor = propertyGetter();
+            IconTintColor = getter();
             _renderedIconSvg = null;
             InvalidateMeasure();
         });

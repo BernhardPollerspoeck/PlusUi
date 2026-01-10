@@ -1,5 +1,6 @@
 using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -49,11 +50,21 @@ public partial class ProgressBar : UiElement
         return this;
     }
 
-    public ProgressBar BindProgress(string propertyName, Func<float> propertyGetter)
+    public ProgressBar BindProgress(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Progress = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Progress = getter());
         return this;
     }
+    public ProgressBar BindProgress<T>(Expression<Func<T>> propertyExpression, Func<T, float>? toControl = null)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Progress = toControl != null ? toControl(getter()) : (float)(object)getter()!);
+        return this;
+    }
+
     #endregion
 
     #region ProgressColor
@@ -72,9 +83,11 @@ public partial class ProgressBar : UiElement
         return this;
     }
 
-    public ProgressBar BindProgressColor(string propertyName, Func<Color> propertyGetter)
+    public ProgressBar BindProgressColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ProgressColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ProgressColor = getter());
         return this;
     }
     #endregion
@@ -95,9 +108,11 @@ public partial class ProgressBar : UiElement
         return this;
     }
 
-    public ProgressBar BindTrackColor(string propertyName, Func<Color> propertyGetter)
+    public ProgressBar BindTrackColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TrackColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TrackColor = getter());
         return this;
     }
     #endregion

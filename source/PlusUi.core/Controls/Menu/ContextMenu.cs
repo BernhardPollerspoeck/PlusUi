@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -86,9 +87,11 @@ public partial class ContextMenu : UiElement, IDebugInspectable
         return this;
     }
 
-    public ContextMenu BindHoverBackgroundColor(string propertyName, Func<Color> propertyGetter)
+    public ContextMenu BindHoverBackgroundColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HoverBackgroundColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HoverBackgroundColor = getter());
         return this;
     }
 
@@ -104,9 +107,11 @@ public partial class ContextMenu : UiElement, IDebugInspectable
         return this;
     }
 
-    public ContextMenu BindTextColor(string propertyName, Func<Color> propertyGetter)
+    public ContextMenu BindTextColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextColor = getter());
         return this;
     }
     #endregion

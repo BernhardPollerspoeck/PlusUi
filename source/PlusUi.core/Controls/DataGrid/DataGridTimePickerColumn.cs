@@ -162,10 +162,7 @@ public class DataGridTimePickerColumn<T> : DataGridColumn<T>
             var setter = ValueSetter;
             var getter = ValueGetter;
 
-            timePicker.BindSelectedTime(
-                $"DataGridTimePicker_{item?.GetHashCode()}_{Header}",
-                () => getter(item),
-                value => setter(item, value));
+            timePicker.SetOnSelectedTimeChanged(value => setter(item, value));
 
             if (item is System.ComponentModel.INotifyPropertyChanged notifyItem)
             {

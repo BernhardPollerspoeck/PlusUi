@@ -6,6 +6,20 @@ TODO
 
 ## High Priority
 
+### Random stuff
+- [ ] [ ] 999.1 centralized default values for properties (e.g., default font size, color) to avoid magic numbers scattered in code
+- [ ] [ ] 999.2	complete code comments and XML documentation for all public methods and classes
+- [ ] [ ] 999.3 ensure docs for github pages are up to date with latest features and usage instructions
+- [ ] [ ] 999.4 rework text rendering to maybe use native text rendering lib for better performance and quality
+- [ ] [ ] 999.5 analyze what takes all the memory since sandbox requires about 350mb on startup
+- [ ] [ ] 999.6 think about a fully custom rendering engine that does not need skia at all.
+- [ ] [ ] 999.7 ensure all code is up to dotnet 10 standards and best practices
+- [ ] [ ] 999.8 clear out all warnings and messages.
+- [ ] [ ] 999.9 ensure all not public api surfaces are internal only
+- [ ] [ ] 999.10 return ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>() wirft Exception in UiElment beim stoppen
+
+
+
 ### 1. DebugServer Tree Improvements
 - [ ] [ ] 1.1 Update tree incrementally instead of full reload (including better navigation handling when pages change)
 - [x] [x] 1.2 Add page prefix to element IDs for uniqueness (e.g., `MainPage.Button_123`)

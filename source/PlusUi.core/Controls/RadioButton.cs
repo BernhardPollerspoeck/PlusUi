@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Services;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -122,15 +123,22 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         return this;
     }
 
-    public RadioButton BindIsSelected(string propertyName, Func<bool> propertyGetter, Action<bool>? propertySetter = null)
+    public RadioButton BindIsSelected(Expression<Func<bool>> propertyExpression, Action<bool>? propertySetter = null)
     {
-        RegisterBinding(propertyName, () => IsSelected = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsSelected = getter());
         if (propertySetter != null)
         {
-            RegisterSetter(nameof(IsSelected), propertySetter);
+            foreach (var segment in path)
+            {
+                RegisterSetter<bool>(segment, propertySetter);
+            }
+            RegisterSetter<bool>(nameof(IsSelected), propertySetter);
         }
         return this;
     }
+
     #endregion
 
     #region Group
@@ -150,9 +158,11 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         return this;
     }
 
-    public RadioButton BindGroup(string propertyName, Func<object?> propertyGetter)
+    public RadioButton BindGroup(Expression<Func<object?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Group = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Group = getter());
         return this;
     }
     #endregion
@@ -166,9 +176,11 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         return this;
     }
 
-    public RadioButton BindValue(string propertyName, Func<object?> propertyGetter)
+    public RadioButton BindValue(Expression<Func<object?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Value = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Value = getter());
         return this;
     }
     #endregion
@@ -191,9 +203,11 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         return this;
     }
 
-    public RadioButton BindText(string propertyName, Func<string?> propertyGetter)
+    public RadioButton BindText(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Text = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Text = getter());
         return this;
     }
     #endregion
@@ -217,9 +231,11 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         return this;
     }
 
-    public RadioButton BindTextSize(string propertyName, Func<float> propertyGetter)
+    public RadioButton BindTextSize(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextSize = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextSize = getter());
         return this;
     }
     #endregion
@@ -242,9 +258,11 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         return this;
     }
 
-    public RadioButton BindTextColor(string propertyName, Func<Color> propertyGetter)
+    public RadioButton BindTextColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextColor = getter());
         return this;
     }
     #endregion
@@ -262,9 +280,11 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         return this;
     }
 
-    public RadioButton BindCircleColor(string propertyName, Func<Color> propertyGetter)
+    public RadioButton BindCircleColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => CircleColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => CircleColor = getter());
         return this;
     }
     #endregion
@@ -282,9 +302,11 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         return this;
     }
 
-    public RadioButton BindSelectedColor(string propertyName, Func<Color> propertyGetter)
+    public RadioButton BindSelectedColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SelectedColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedColor = getter());
         return this;
     }
     #endregion

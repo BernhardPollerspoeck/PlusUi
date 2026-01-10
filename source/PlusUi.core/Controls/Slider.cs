@@ -1,5 +1,6 @@
 using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -32,6 +33,17 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
     public override string? GetComputedAccessibilityValue()
     {
         return AccessibilityValue ?? $"{Value:F0} ({Minimum:F0} to {Maximum:F0})";
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (IsDragging)
+        {
+            traits |= AccessibilityTrait.Selected;
+        }
+        return traits;
     }
 
     #region IFocusable
@@ -71,6 +83,7 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
 
     private void NotifyValueSetters()
     {
+        _onValueChanged?.Invoke(Value);
         if (_setter.TryGetValue(nameof(Value), out var setters))
         {
             foreach (var setter in setters)
@@ -82,6 +95,8 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
     #endregion
 
     #region Value
+    private Action<float>? _onValueChanged;
+
     internal float Value
     {
         get => field;
@@ -101,12 +116,45 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
         return this;
     }
 
-    public Slider BindValue(string propertyName, Func<float> propertyGetter, Action<float> propertySetter)
+    /// <summary>
+    /// Sets a callback that is invoked when Value changes.
+    /// </summary>
+    public Slider SetOnValueChanged(Action<float> callback)
     {
-        RegisterBinding(propertyName, () => Value = propertyGetter());
-        RegisterSetter(nameof(Value), propertySetter);
+        _onValueChanged = callback;
         return this;
     }
+
+    public Slider BindValue(Expression<Func<float>> propertyExpression, Action<float> propertySetter)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Value = getter());
+        foreach (var segment in path)
+        {
+            RegisterSetter<float>(segment, propertySetter);
+        }
+        RegisterSetter<float>(nameof(Value), propertySetter);
+        return this;
+    }
+    public Slider BindValue<T>(
+        Expression<Func<T>> propertyExpression,
+        Action<T> propertySetter,
+        Func<T, float>? toControl = null,
+        Func<float, T>? toSource = null)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Value = toControl != null ? toControl(getter()) : (float)(object)getter()!);
+        Action<float> wrappedSetter = controlValue => propertySetter(toSource != null ? toSource(controlValue) : (T)(object)controlValue);
+        foreach (var segment in path)
+        {
+            RegisterSetter<float>(segment, wrappedSetter);
+        }
+        RegisterSetter<float>(nameof(Value), wrappedSetter);
+        return this;
+    }
+
     #endregion
 
     #region Minimum
@@ -126,9 +174,11 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
         return this;
     }
 
-    public Slider BindMinimum(string propertyName, Func<float> propertyGetter)
+    public Slider BindMinimum(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Minimum = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Minimum = getter());
         return this;
     }
     #endregion
@@ -150,9 +200,11 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
         return this;
     }
 
-    public Slider BindMaximum(string propertyName, Func<float> propertyGetter)
+    public Slider BindMaximum(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Maximum = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Maximum = getter());
         return this;
     }
     #endregion
@@ -173,9 +225,11 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
         return this;
     }
 
-    public Slider BindMinimumTrackColor(string propertyName, Func<Color> propertyGetter)
+    public Slider BindMinimumTrackColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => MinimumTrackColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => MinimumTrackColor = getter());
         return this;
     }
     #endregion
@@ -196,9 +250,11 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
         return this;
     }
 
-    public Slider BindMaximumTrackColor(string propertyName, Func<Color> propertyGetter)
+    public Slider BindMaximumTrackColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => MaximumTrackColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => MaximumTrackColor = getter());
         return this;
     }
     #endregion
@@ -219,9 +275,11 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
         return this;
     }
 
-    public Slider BindThumbColor(string propertyName, Func<Color> propertyGetter)
+    public Slider BindThumbColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ThumbColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ThumbColor = getter());
         return this;
     }
     #endregion
@@ -357,7 +415,8 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
 
         Value = Math.Clamp(Value + valueDelta, Minimum, Maximum);
 
-        // Notify setters
+        // Notify callback and setters
+        _onValueChanged?.Invoke(Value);
         if (_setter.TryGetValue(nameof(Value), out var setters))
         {
             foreach (var setter in setters)

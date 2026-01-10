@@ -1,5 +1,6 @@
 using SkiaSharp;
 using System.Collections.Specialized;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -11,6 +12,36 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 {
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Tree;
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        if (AccessibilityLabel != null)
+            return AccessibilityLabel;
+
+        var nodeCount = _rootNodes.Count;
+        return $"Tree view with {nodeCount} root node{(nodeCount == 1 ? "" : "s")}";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (AccessibilityValue != null)
+            return AccessibilityValue;
+
+        return _selectedItem != null ? "Item selected" : "No selection";
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (_selectedItem != null)
+        {
+            traits |= AccessibilityTrait.Selected;
+        }
+        return traits;
+    }
 
     private readonly Dictionary<Type, Func<object, IEnumerable<object>>> _childrenSelectors = new();
     private readonly List<TreeViewNode> _rootNodes = new();
@@ -59,9 +90,11 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     /// <summary>
     /// Binds the data source to a property.
     /// </summary>
-    public TreeView BindItemsSource(string propertyName, Func<IEnumerable<object>?> getter)
+    public TreeView BindItemsSource(Expression<Func<IEnumerable<object>?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () =>
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () =>
         {
             var items = getter();
             if (items != null)
@@ -100,10 +133,12 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     /// <summary>
     /// Binds the selected item to a property with two-way binding.
     /// </summary>
-    public TreeView BindSelectedItem(string propertyName, Func<object?> getter, Action<object?> setter)
+    public TreeView BindSelectedItem(Expression<Func<object?>> propertyExpression, Action<object?> setter)
     {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
         _selectedItemSetter = setter;
-        RegisterBinding(propertyName, () => SetSelectedItem(getter()));
+        RegisterPathBinding(path, () => SetSelectedItem(getter()));
         return this;
     }
 
@@ -132,9 +167,11 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     /// <summary>
     /// Binds the item template to a property.
     /// </summary>
-    public TreeView BindItemTemplate(string propertyName, Func<Func<object, int, UiElement>> getter)
+    public TreeView BindItemTemplate(Expression<Func<Func<object, int, UiElement>>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetItemTemplate(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetItemTemplate(getter()));
         return this;
     }
 
@@ -162,9 +199,11 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     /// <summary>
     /// Binds the indentation to a property.
     /// </summary>
-    public TreeView BindIndentation(string propertyName, Func<float> getter)
+    public TreeView BindIndentation(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetIndentation(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetIndentation(getter()));
         return this;
     }
 
@@ -192,9 +231,11 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     /// <summary>
     /// Binds the item height to a property.
     /// </summary>
-    public TreeView BindItemHeight(string propertyName, Func<float> getter)
+    public TreeView BindItemHeight(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetItemHeight(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetItemHeight(getter()));
         return this;
     }
 
@@ -222,9 +263,11 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     /// <summary>
     /// Binds the expander size to a property.
     /// </summary>
-    public TreeView BindExpanderSize(string propertyName, Func<float> getter)
+    public TreeView BindExpanderSize(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetExpanderSize(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetExpanderSize(getter()));
         return this;
     }
 
@@ -247,6 +290,17 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     {
         _autoExpandInitialLevels = autoExpand;
         _autoExpandDepth = depth;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the auto-expand initial levels setting to a property.
+    /// </summary>
+    public TreeView BindAutoExpandInitialLevels(Expression<Func<bool>> propertyExpression, int depth = 2)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetAutoExpandInitialLevels(getter(), depth));
         return this;
     }
 
@@ -306,27 +360,33 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     /// <summary>
     /// Binds whether tree connection lines are shown to a property.
     /// </summary>
-    public TreeView BindShowLines(string propertyName, Func<bool> getter)
+    public TreeView BindShowLines(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetShowLines(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetShowLines(getter()));
         return this;
     }
 
     /// <summary>
     /// Binds the line color to a property.
     /// </summary>
-    public TreeView BindLineColor(string propertyName, Func<SKColor> getter)
+    public TreeView BindLineColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetLineColor(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetLineColor(getter()));
         return this;
     }
 
     /// <summary>
     /// Binds the line thickness to a property.
     /// </summary>
-    public TreeView BindLineThickness(string propertyName, Func<float> getter)
+    public TreeView BindLineThickness(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetLineThickness(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetLineThickness(getter()));
         return this;
     }
 

@@ -51,7 +51,7 @@ public class ImageExportDemoPage(ImageExportDemoPageViewModel vm) : UiPageElemen
                  .SetMargin(new Margin(0, 20)),
 
                 new Label()
-                    .BindText(nameof(vm.StatusText), () => vm.StatusText)
+                    .BindText(() => vm.StatusText)
                     .SetTextColor(Colors.Yellow)
                     .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
                     .SetMargin(new Margin(0, 10))

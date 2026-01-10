@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -92,9 +93,11 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
         return this;
     }
 
-    public Menu BindHoverBackgroundColor(string propertyName, Func<Color> propertyGetter)
+    public Menu BindHoverBackgroundColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HoverBackgroundColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HoverBackgroundColor = getter());
         return this;
     }
 
@@ -110,9 +113,11 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
         return this;
     }
 
-    public Menu BindActiveBackgroundColor(string propertyName, Func<Color> propertyGetter)
+    public Menu BindActiveBackgroundColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ActiveBackgroundColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ActiveBackgroundColor = getter());
         return this;
     }
 
@@ -133,9 +138,11 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
         return this;
     }
 
-    public Menu BindTextColor(string propertyName, Func<Color> propertyGetter)
+    public Menu BindTextColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextColor = getter());
         return this;
     }
 
@@ -156,9 +163,11 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
         return this;
     }
 
-    public Menu BindTextSize(string propertyName, Func<float> propertyGetter)
+    public Menu BindTextSize(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextSize = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextSize = getter());
         return this;
     }
     #endregion

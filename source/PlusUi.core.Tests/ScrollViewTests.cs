@@ -262,8 +262,8 @@ public class ScrollViewTests
         var propertyValue = false;
 
         // Act
-        scrollView.BindCanScrollHorizontally("TestProperty", () => propertyValue);
-        scrollView.UpdateBindings("TestProperty");
+        scrollView.BindCanScrollHorizontally(() => propertyValue);
+        scrollView.UpdateBindings(nameof(propertyValue));
 
         // Assert
         Assert.IsFalse(scrollView.CanScrollHorizontally, "CanScrollHorizontally should be bound to property value");

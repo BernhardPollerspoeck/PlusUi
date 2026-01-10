@@ -1,4 +1,5 @@
 using PlusUi.core;
+using System.Linq.Expressions;
 
 namespace Sandbox.Pages.UniformGridDemo;
 
@@ -29,7 +30,7 @@ public class UniformGridDemoPage(UniformGridDemoPageViewModel vm) : UiPageElemen
                     .SetTextSize(18)
                     .SetTextColor(Colors.LightGray),
                 new Image()
-                    .BindImageSource(nameof(vm.CurrentPlayerImage), () => vm.CurrentPlayerImage)
+                    .BindImageSource(() => vm.CurrentPlayerImage)
                     .SetDesiredSize(new Size(32, 32))
                     .SetAspect(Aspect.AspectFit)
             ).SetHorizontalAlignment(HorizontalAlignment.Center)
@@ -37,7 +38,7 @@ public class UniformGridDemoPage(UniformGridDemoPageViewModel vm) : UiPageElemen
 
             // Status
             new Label()
-                .BindText(nameof(vm.StatusText), () => vm.StatusText)
+                .BindText(() => vm.StatusText)
                 .SetTextSize(20)
                 .SetTextColor(Colors.Yellow)
                 .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)
@@ -50,15 +51,15 @@ public class UniformGridDemoPage(UniformGridDemoPageViewModel vm) : UiPageElemen
                         .SetRows(3)
                         .SetColumns(3)
                         .AddChildren(
-                            CreateCell(0, nameof(vm.Cell0Image), () => vm.Cell0Image),
-                            CreateCell(1, nameof(vm.Cell1Image), () => vm.Cell1Image),
-                            CreateCell(2, nameof(vm.Cell2Image), () => vm.Cell2Image),
-                            CreateCell(3, nameof(vm.Cell3Image), () => vm.Cell3Image),
-                            CreateCell(4, nameof(vm.Cell4Image), () => vm.Cell4Image),
-                            CreateCell(5, nameof(vm.Cell5Image), () => vm.Cell5Image),
-                            CreateCell(6, nameof(vm.Cell6Image), () => vm.Cell6Image),
-                            CreateCell(7, nameof(vm.Cell7Image), () => vm.Cell7Image),
-                            CreateCell(8, nameof(vm.Cell8Image), () => vm.Cell8Image)
+                            CreateCell(0, () => vm.Cell0Image),
+                            CreateCell(1, () => vm.Cell1Image),
+                            CreateCell(2, () => vm.Cell2Image),
+                            CreateCell(3, () => vm.Cell3Image),
+                            CreateCell(4, () => vm.Cell4Image),
+                            CreateCell(5, () => vm.Cell5Image),
+                            CreateCell(6, () => vm.Cell6Image),
+                            CreateCell(7, () => vm.Cell7Image),
+                            CreateCell(8, () => vm.Cell8Image)
                         )
                         .SetDesiredSize(new Size(300, 300))
                         .IgnoreStyling()
@@ -119,13 +120,13 @@ public class UniformGridDemoPage(UniformGridDemoPageViewModel vm) : UiPageElemen
         ).SetHorizontalAlignment(HorizontalAlignment.Stretch);
     }
 
-    private UiElement CreateCell(int index, string propertyName, Func<string?> getter)
+    private UiElement CreateCell(int index, Expression<Func<string?>> getter)
     {
         return new TapGestureDetector(
             new Border()
                 .AddChild(
                     new Image()
-                        .BindImageSource(propertyName, getter)
+                        .BindImageSource(getter)
                         .SetAspect(Aspect.AspectFit)
                         .SetDesiredSize(new Size(60, 60))
                         .SetHorizontalAlignment(HorizontalAlignment.Center)

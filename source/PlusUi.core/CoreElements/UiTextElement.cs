@@ -3,6 +3,7 @@ using PlusUi.core.Attributes;
 using PlusUi.core.Services;
 using PlusUi.core.Services.Accessibility;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -100,9 +101,18 @@ public abstract class UiTextElement : UiElement
         Text = text;
         return this;
     }
-    public UiTextElement BindText(string propertyName, Func<string?> propertyGetter)
+    public UiTextElement BindText(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Text = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Text = getter());
+        return this;
+    }
+    public UiTextElement BindText<T>(Expression<Func<T>> propertyExpression, Func<T, string?>? formatter = null)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Text = formatter != null ? formatter(getter()) : getter()?.ToString());
         return this;
     }
     #endregion
@@ -125,9 +135,11 @@ public abstract class UiTextElement : UiElement
         TextSize = fontSize;
         return this;
     }
-    public UiTextElement BindTextSize(string propertyName, Func<float> propertyGetter)
+    public UiTextElement BindTextSize(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextSize = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextSize = getter());
         return this;
     }
     #endregion
@@ -148,9 +160,11 @@ public abstract class UiTextElement : UiElement
         TextColor = color;
         return this;
     }
-    public UiTextElement BindTextColor(string propertyName, Func<Color> propertyGetter)
+    public UiTextElement BindTextColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextColor = getter());
         return this;
     }
     #endregion
@@ -173,9 +187,11 @@ public abstract class UiTextElement : UiElement
         FontFamily = fontFamily;
         return this;
     }
-    public UiTextElement BindFontFamily(string propertyName, Func<string?> propertyGetter)
+    public UiTextElement BindFontFamily(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => FontFamily = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FontFamily = getter());
         return this;
     }
     #endregion
@@ -198,9 +214,11 @@ public abstract class UiTextElement : UiElement
         FontWeight = weight;
         return this;
     }
-    public UiTextElement BindFontWeight(string propertyName, Func<FontWeight> propertyGetter)
+    public UiTextElement BindFontWeight(Expression<Func<FontWeight>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => FontWeight = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FontWeight = getter());
         return this;
     }
     #endregion
@@ -223,9 +241,11 @@ public abstract class UiTextElement : UiElement
         FontStyle = style;
         return this;
     }
-    public UiTextElement BindFontStyle(string propertyName, Func<FontStyle> propertyGetter)
+    public UiTextElement BindFontStyle(Expression<Func<FontStyle>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => FontStyle = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FontStyle = getter());
         return this;
     }
     #endregion
@@ -246,9 +266,11 @@ public abstract class UiTextElement : UiElement
         HorizontalTextAlignment = alignment;
         return this;
     }
-    public UiTextElement BindHorizontalTextAlignment(string propertyName, Func<HorizontalTextAlignment> propertyGetter)
+    public UiTextElement BindHorizontalTextAlignment(Expression<Func<HorizontalTextAlignment>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HorizontalTextAlignment = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HorizontalTextAlignment = getter());
         return this;
     }
     #endregion
@@ -270,9 +292,11 @@ public abstract class UiTextElement : UiElement
         TextWrapping = textWrapping;
         return this;
     }
-    public UiTextElement BindTextWrapping(string propertyName, Func<TextWrapping> propertyGetter)
+    public UiTextElement BindTextWrapping(Expression<Func<TextWrapping>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextWrapping = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextWrapping = getter());
         return this;
     }
     #endregion
@@ -294,9 +318,11 @@ public abstract class UiTextElement : UiElement
         MaxLines = maxLines;
         return this;
     }
-    public UiTextElement BindMaxLines(string propertyName, Func<int> propertyGetter)
+    public UiTextElement BindMaxLines(Expression<Func<int>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => MaxLines = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => MaxLines = getter());
         return this;
     }
     #endregion
@@ -318,9 +344,11 @@ public abstract class UiTextElement : UiElement
         TextTruncation = textTruncation;
         return this;
     }
-    public UiTextElement BindTextTruncation(string propertyName, Func<TextTruncation> propertyGetter)
+    public UiTextElement BindTextTruncation(Expression<Func<TextTruncation>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextTruncation = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextTruncation = getter());
         return this;
     }
     #endregion

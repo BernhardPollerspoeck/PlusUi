@@ -42,8 +42,8 @@ public class ItemsListTests
 
         // Act - Test binding
         Orientation propertyValue = Orientation.Vertical;
-        var result2 = itemsList.BindOrientation("TestProperty", () => propertyValue);
-        itemsList.UpdateBindings("TestProperty");
+        var result2 = itemsList.BindOrientation(() => propertyValue);
+        itemsList.UpdateBindings("propertyValue");
 
         // Verify binding
         Assert.AreEqual(Orientation.Vertical, itemsList.Orientation, "Orientation should be bound to the property value");
@@ -51,7 +51,7 @@ public class ItemsListTests
 
         // Change the bound property and update bindings
         propertyValue = Orientation.Horizontal;
-        itemsList.UpdateBindings("TestProperty");
+        itemsList.UpdateBindings("propertyValue");
 
         // Verify binding update took effect
         Assert.AreEqual(Orientation.Horizontal, itemsList.Orientation, "Orientation should reflect the updated bound property");
@@ -77,8 +77,8 @@ public class ItemsListTests
 
         // Act - Test binding
         IEnumerable<TestItem>? propertyValue = [new() { Text = "Item 3", Value = 3 }];
-        var result2 = itemsList.BindItemsSource("TestProperty", () => propertyValue);
-        itemsList.UpdateBindings("TestProperty");
+        var result2 = itemsList.BindItemsSource(() => propertyValue);
+        itemsList.UpdateBindings("propertyValue");
 
         // Verify binding
         Assert.AreSame(propertyValue, itemsList.ItemsSource, "ItemsSource should be bound to the property value");
@@ -103,13 +103,11 @@ public class ItemsListTests
         Assert.AreSame(itemsList, result1, "Method should return the ItemsList for chaining");
 
         // Act - Test binding
-        static UiElement propertyValue(TestItem item, int index)
-        {
-            return new Label().SetText(item.Value.ToString());
-        }
+        Func<TestItem, int, UiElement> propertyValue = (item, index) =>
+            new Label().SetText(item.Value.ToString());
 
-        var result2 = itemsList.BindItemTemplate("TestProperty", () => propertyValue);
-        itemsList.UpdateBindings("TestProperty");
+        var result2 = itemsList.BindItemTemplate(() => propertyValue);
+        itemsList.UpdateBindings("propertyValue");
 
         // Verify binding
         Assert.AreSame(propertyValue, itemsList.ItemTemplate, "ItemTemplate should be bound to the property value");
@@ -421,8 +419,8 @@ public class ItemsListTests
 
         // Act - Test binding
         float propertyValue = 25;
-        var result2 = itemsList.BindScrollOffset("TestProperty", () => propertyValue);
-        itemsList.UpdateBindings("TestProperty");
+        var result2 = itemsList.BindScrollOffset(() => propertyValue);
+        itemsList.UpdateBindings("propertyValue");
 
         // Verify binding
         Assert.IsGreaterThanOrEqualTo(0, itemsList.ScrollOffset, "ScrollOffset should be bound to the property value");

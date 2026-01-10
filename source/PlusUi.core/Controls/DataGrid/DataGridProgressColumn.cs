@@ -97,15 +97,13 @@ public class DataGridProgressColumn<T> : DataGridColumn<T>
             progressBar.SetProgress(progress);
 
             var getter = ValueGetter;
-            progressBar.BindProgress(
-                $"DataGridProgress_{item?.GetHashCode()}_{Header}",
-                () => getter(item));
+            var itemRef = item;
 
             if (item is System.ComponentModel.INotifyPropertyChanged notifyItem)
             {
                 notifyItem.PropertyChanged += (_, _) =>
                 {
-                    progressBar.SetProgress(getter(item));
+                    progressBar.SetProgress(getter(itemRef));
                 };
             }
         }

@@ -1,6 +1,7 @@
 using PlusUi.core.Attributes;
 using SkiaSharp;
 using System.Collections.Specialized;
+using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace PlusUi.core;
@@ -37,6 +38,36 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
 
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Tab;
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        if (AccessibilityLabel != null)
+            return AccessibilityLabel;
+
+        var tabCount = _tabs.Count;
+        return $"Tab control with {tabCount} tab{(tabCount == 1 ? "" : "s")}";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (AccessibilityValue != null)
+            return AccessibilityValue;
+
+        return SelectedTab != null ? $"Tab {SelectedIndex + 1}: {SelectedTab.Header}" : "No tab selected";
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (SelectedTab != null)
+        {
+            traits |= AccessibilityTrait.Selected;
+        }
+        return traits;
+    }
 
     /// <summary>
     /// Returns all tab contents for debug inspection (not just the active tab).
@@ -226,9 +257,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindTabs(string propertyName, Func<IEnumerable<TabItem>> propertyGetter)
+    public TabControl BindTabs(Expression<Func<IEnumerable<TabItem>>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetTabs(propertyGetter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetTabs(getter()));
         return this;
     }
 
@@ -290,12 +323,22 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindSelectedIndex(string propertyName, Func<int> propertyGetter, Action<int>? propertySetter = null)
+    public TabControl BindSelectedIndex(Expression<Func<int>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SelectedIndex = propertyGetter());
-        if (propertySetter != null)
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedIndex = getter());
+        return this;
+    }
+
+    public TabControl BindSelectedIndex(Expression<Func<int>> propertyExpression, Action<int> setter)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedIndex = getter());
+        foreach (var segment in path)
         {
-            RegisterSetter(nameof(SelectedIndex), propertySetter);
+            RegisterSetter<int>(segment, setter);
         }
         return this;
     }
@@ -314,11 +357,13 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindSelectedTab(string propertyName, Func<TabItem?> propertyGetter)
+    public TabControl BindSelectedTab(Expression<Func<TabItem?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () =>
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () =>
         {
-            var tab = propertyGetter();
+            var tab = getter();
             if (tab != null) SetSelectedTab(tab);
         });
         return this;
@@ -343,9 +388,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindTabPosition(string propertyName, Func<TabPosition> propertyGetter)
+    public TabControl BindTabPosition(Expression<Func<TabPosition>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TabPosition = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TabPosition = getter());
         return this;
     }
     #endregion
@@ -359,9 +406,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindOnSelectedIndexChanged(string propertyName, Func<Action<int>?> propertyGetter)
+    public TabControl BindOnSelectedIndexChanged(Expression<Func<Action<int>?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OnSelectedIndexChanged = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OnSelectedIndexChanged = getter());
         return this;
     }
 
@@ -373,9 +422,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindSelectionChangedCommand(string propertyName, Func<ICommand?> propertyGetter)
+    public TabControl BindSelectionChangedCommand(Expression<Func<ICommand?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SelectionChangedCommand = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectionChangedCommand = getter());
         return this;
     }
     #endregion
@@ -398,9 +449,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindHeaderTextSize(string propertyName, Func<float> propertyGetter)
+    public TabControl BindHeaderTextSize(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HeaderTextSize = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HeaderTextSize = getter());
         return this;
     }
 
@@ -420,9 +473,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindHeaderTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public TabControl BindHeaderTextColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HeaderTextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HeaderTextColor = getter());
         return this;
     }
 
@@ -442,9 +497,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindActiveHeaderTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public TabControl BindActiveHeaderTextColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ActiveHeaderTextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ActiveHeaderTextColor = getter());
         return this;
     }
 
@@ -464,9 +521,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindDisabledHeaderTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public TabControl BindDisabledHeaderTextColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => DisabledHeaderTextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => DisabledHeaderTextColor = getter());
         return this;
     }
 
@@ -478,9 +537,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindHeaderBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    public TabControl BindHeaderBackgroundColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HeaderBackgroundColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HeaderBackgroundColor = getter());
         return this;
     }
 
@@ -492,9 +553,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindActiveTabBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    public TabControl BindActiveTabBackgroundColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ActiveTabBackgroundColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ActiveTabBackgroundColor = getter());
         return this;
     }
 
@@ -506,9 +569,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindHoverTabBackgroundColor(string propertyName, Func<SKColor> propertyGetter)
+    public TabControl BindHoverTabBackgroundColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HoverTabBackgroundColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HoverTabBackgroundColor = getter());
         return this;
     }
 
@@ -520,9 +585,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindTabIndicatorColor(string propertyName, Func<SKColor> propertyGetter)
+    public TabControl BindTabIndicatorColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TabIndicatorColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TabIndicatorColor = getter());
         return this;
     }
 
@@ -534,9 +601,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindTabIndicatorHeight(string propertyName, Func<float> propertyGetter)
+    public TabControl BindTabIndicatorHeight(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TabIndicatorHeight = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TabIndicatorHeight = getter());
         return this;
     }
 
@@ -549,9 +618,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindTabPadding(string propertyName, Func<Margin> propertyGetter)
+    public TabControl BindTabPadding(Expression<Func<Margin>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetTabPadding(propertyGetter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetTabPadding(getter()));
         return this;
     }
 
@@ -564,9 +635,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    public TabControl BindTabSpacing(string propertyName, Func<float> propertyGetter)
+    public TabControl BindTabSpacing(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetTabSpacing(propertyGetter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetTabSpacing(getter()));
         return this;
     }
     #endregion

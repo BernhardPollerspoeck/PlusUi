@@ -1,4 +1,5 @@
 ﻿using PlusUi.core.Attributes;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -56,9 +57,11 @@ public partial class VStack : UiLayoutElement
     /// <summary>
     /// Binds the wrap property to a data source.
     /// </summary>
-    public VStack BindWrap(string propertyName, Func<bool> propertyGetter)
+    public VStack BindWrap(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetWrap(propertyGetter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetWrap(getter()));
         return this;
     }
     #endregion

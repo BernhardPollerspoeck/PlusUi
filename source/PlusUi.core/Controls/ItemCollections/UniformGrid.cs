@@ -1,4 +1,5 @@
 using PlusUi.core.Attributes;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -70,9 +71,11 @@ public partial class UniformGrid : UiLayoutElement
         return this;
     }
 
-    public UniformGrid BindRows(string propertyName, Func<int?> propertyGetter)
+    public UniformGrid BindRows(Expression<Func<int?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Rows = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Rows = getter());
         return this;
     }
     #endregion
@@ -95,9 +98,11 @@ public partial class UniformGrid : UiLayoutElement
         return this;
     }
 
-    public UniformGrid BindColumns(string propertyName, Func<int?> propertyGetter)
+    public UniformGrid BindColumns(Expression<Func<int?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Columns = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Columns = getter());
         return this;
     }
     #endregion

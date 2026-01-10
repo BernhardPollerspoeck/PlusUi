@@ -105,7 +105,7 @@ public class DataGridDemoPage(DataGridDemoPageViewModel vm) : UiPageElement(vm)
                 .SetRowHeight(40)
                 .SetHeaderHeight(40)
                 .SetSelectionMode(SelectionMode.Single)
-                .BindSelectedItem(nameof(vm.SelectedPerson),
+                .BindSelectedItem(
                     () => vm.SelectedPerson,
                     v => vm.SelectedPerson = v)
         );

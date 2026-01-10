@@ -72,6 +72,10 @@ internal static class ConcreteClassShadowBuilder
                     if (IsObsolete(methodSymbol))
                         continue;
 
+                    // Skip generic methods - they cannot be shadowed with simple wrappers
+                    if (methodSymbol.IsGenericMethod)
+                        continue;
+
                     // Check if return type matches one of the base types in the chain
                     if (IsReturningBaseType(methodSymbol, classSymbol) &&
                         methodSymbol.ReturnType.NullableAnnotation != NullableAnnotation.Annotated)

@@ -28,7 +28,9 @@ using Sandbox.Pages.SvgDemo;
 using Sandbox.Pages.UniformGridDemo;
 using Sandbox.Pages.WrapDemo;
 using Sandbox.Pages.RenderLoopDemo;
+using Sandbox.Pages.BindingDemo;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace Sandbox.Pages.Main;
 
@@ -123,9 +125,9 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     .IgnoreStyling(),
 
                 new Label()
-                    .BindText(nameof(vm.Text), () => $"The entry input is: [ {vm.Text} ]"),
+                    .BindText(() => $"The entry input is: [ {vm.Text} ]"),
                 new Entry()
-                    .BindText(nameof(vm.Text), () => vm.Text, txt => vm.Text = txt)
+                    .BindText(() => vm.Text, txt => vm.Text = txt)
                     .SetTooltip("Type some text here"),
                 new Entry()
                     .SetTooltip("Another input field"),
@@ -181,7 +183,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 
                 new Label()
                     .SetText("Hit the button below to Change my color")
-                    .BindTextColor(nameof(vm.Color), () => vm.Color),
+                    .BindTextColor(() => vm.Color),
                 new HStack(
                     new Button()
                         .SetText("Hello World!?")
@@ -189,11 +191,11 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                         .SetCommand(vm.SetColorCommand)
                         .SetTooltip("Click to change the label color above"),
                     new Checkbox()
-                        .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
+                        .BindIsChecked(() => vm.Checked, isChecked => vm.Checked = isChecked)
                         .SetColor(new Color(255, 0, 0))
                         .SetTooltip("Red checkbox - bound to same value"),
                     new Checkbox()
-                        .BindIsChecked(nameof(vm.Checked), () => vm.Checked, isChecked => vm.Checked = isChecked)
+                        .BindIsChecked(() => vm.Checked, isChecked => vm.Checked = isChecked)
                         .SetColor(new Color(0, 255, 0))
                         .SetTooltip("Green checkbox - bound to same value"),
 
@@ -422,7 +424,13 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                 .SetPadding(new(20, 5))
                 .SetBackground(new SolidColorBackground(new Color(50, 205, 50)))
                 .SetCommand(vm.NavigateCommand)
-                .SetCommandParameter(typeof(WrapDemoPage))
+                .SetCommandParameter(typeof(WrapDemoPage)),
+            new Button()
+                .SetText("Binding Demo")
+                .SetPadding(new(20, 5))
+                .SetBackground(new SolidColorBackground(new Color(255, 105, 180)))
+                .SetCommand(vm.NavigateCommand)
+                .SetCommandParameter(typeof(BindingDemoPage))
         ).SetWrap(true);
     }
 

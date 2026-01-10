@@ -1,4 +1,5 @@
 using PlusUi.core.Attributes;
+using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace PlusUi.core;
@@ -19,9 +20,11 @@ public partial class DoubleTapGestureDetector(UiElement content) : GestureDetect
         return this;
     }
 
-    public DoubleTapGestureDetector BindCommand(string propertyName, Func<ICommand> propertyGetter)
+    public DoubleTapGestureDetector BindCommand(Expression<Func<ICommand>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => DoubleTapCommand = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => DoubleTapCommand = getter());
         return this;
     }
 

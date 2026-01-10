@@ -189,7 +189,7 @@ public class ComboBoxTests
         string? selectedItem = "Item 2";
 
         // Act
-        comboBox.BindSelectedItem(nameof(selectedItem), () => selectedItem, v => selectedItem = v);
+        comboBox.BindSelectedItem(() => selectedItem, v => selectedItem = v);
         comboBox.UpdateBindings();
 
         // Assert
@@ -215,7 +215,7 @@ public class ComboBoxTests
         int selectedIndex = 1;
 
         // Act
-        comboBox.BindSelectedIndex(nameof(selectedIndex), () => selectedIndex, v => selectedIndex = v);
+        comboBox.BindSelectedIndex(() => selectedIndex, v => selectedIndex = v);
         comboBox.UpdateBindings();
 
         // Assert
@@ -239,7 +239,7 @@ public class ComboBoxTests
         var items = new[] { "Item 1", "Item 2", "Item 3" };
 
         // Act
-        comboBox.BindItemsSource(nameof(items), () => items);
+        comboBox.BindItemsSource(() => items);
         comboBox.UpdateBindings();
 
         // Assert
@@ -485,7 +485,8 @@ public class ComboBoxTests
         var items = new[] { "Item 1", "Item 2", "Item 3" };
         comboBox.SetItemsSource(items);
         string? capturedValue = null;
-        comboBox.BindSelectedItem("test", () => null, v => capturedValue = v);
+        string? testValue = null;
+        comboBox.BindSelectedItem(() => testValue, v => capturedValue = v);
         comboBox.SetSelectedItem("Item 2");
 
         // Act
@@ -503,7 +504,8 @@ public class ComboBoxTests
         var items = new[] { "Item 1", "Item 2", "Item 3" };
         comboBox.SetItemsSource(items);
         int capturedIndex = -999;
-        comboBox.BindSelectedIndex("test", () => -1, v => capturedIndex = v);
+        int testIndex = -1;
+        comboBox.BindSelectedIndex(() => testIndex, v => capturedIndex = v);
         comboBox.SetSelectedIndex(2);
 
         // Act

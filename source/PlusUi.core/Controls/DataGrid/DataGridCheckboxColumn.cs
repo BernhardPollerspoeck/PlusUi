@@ -61,17 +61,15 @@ public class DataGridCheckboxColumn<T> : DataGridColumn<T>
         {
             var setter = ValueSetter;
             var getter = ValueGetter;
+            var itemRef = item;
 
-            checkbox.BindIsChecked(
-                $"DataGridCheckbox_{item?.GetHashCode()}_{Header}",
-                () => getter(item),
-                value => setter(item, value));
+            checkbox.SetOnIsCheckedChanged(value => setter(itemRef, value));
 
             if (item is System.ComponentModel.INotifyPropertyChanged notifyItem)
             {
                 notifyItem.PropertyChanged += (_, _) =>
                 {
-                    checkbox.SetIsChecked(getter(item));
+                    checkbox.SetIsChecked(getter(itemRef));
                 };
             }
         }

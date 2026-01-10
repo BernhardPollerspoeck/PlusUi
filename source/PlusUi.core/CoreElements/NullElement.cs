@@ -2,7 +2,7 @@
 
 namespace PlusUi.core;
 
-public class NullElement : UiElement
+public partial class NullElement : UiElement
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;

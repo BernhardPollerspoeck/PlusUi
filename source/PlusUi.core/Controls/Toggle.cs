@@ -1,5 +1,6 @@
 using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -73,12 +74,36 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
         return this;
     }
 
-    public Toggle BindIsOn(string propertyName, Func<bool> propertyGetter, Action<bool> propertySetter)
+    public Toggle BindIsOn(Expression<Func<bool>> propertyExpression, Action<bool> propertySetter)
     {
-        RegisterBinding(propertyName, () => IsOn = propertyGetter());
-        RegisterSetter(nameof(IsOn), propertySetter);
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsOn = getter());
+        foreach (var segment in path)
+        {
+            RegisterSetter<bool>(segment, propertySetter);
+        }
+        RegisterSetter<bool>(nameof(IsOn), propertySetter);
         return this;
     }
+    public Toggle BindIsOn<T>(
+        Expression<Func<T>> propertyExpression,
+        Action<T> propertySetter,
+        Func<T, bool>? toControl = null,
+        Func<bool, T>? toSource = null)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsOn = toControl != null ? toControl(getter()) : (bool)(object)getter()!);
+        Action<bool> wrappedSetter = controlValue => propertySetter(toSource != null ? toSource(controlValue) : (T)(object)controlValue);
+        foreach (var segment in path)
+        {
+            RegisterSetter<bool>(segment, wrappedSetter);
+        }
+        RegisterSetter<bool>(nameof(IsOn), wrappedSetter);
+        return this;
+    }
+
     #endregion
 
     #region OnColor
@@ -97,9 +122,11 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
         return this;
     }
 
-    public Toggle BindOnColor(string propertyName, Func<Color> propertyGetter)
+    public Toggle BindOnColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OnColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OnColor = getter());
         return this;
     }
     #endregion
@@ -120,9 +147,11 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
         return this;
     }
 
-    public Toggle BindOffColor(string propertyName, Func<Color> propertyGetter)
+    public Toggle BindOffColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OffColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OffColor = getter());
         return this;
     }
     #endregion
@@ -143,9 +172,11 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
         return this;
     }
 
-    public Toggle BindThumbColor(string propertyName, Func<Color> propertyGetter)
+    public Toggle BindThumbColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ThumbColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ThumbColor = getter());
         return this;
     }
     #endregion

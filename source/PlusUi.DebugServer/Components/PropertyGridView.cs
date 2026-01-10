@@ -21,8 +21,7 @@ public class PropertyGridView : UserControl
     protected override UiElement Build()
     {
         var treeView = new TreeView();
-        treeView.BindItemsSource(nameof(_viewModel.SelectedProperties),
-            () => SortProperties(_viewModel.SelectedProperties));
+        treeView.BindItemsSource(() => SortProperties(_viewModel.SelectedProperties));
         treeView.SetChildrenSelector<PropertyDto>(prop => prop.Children);
         treeView.SetItemTemplate((item, depth) =>
         {
@@ -45,7 +44,7 @@ public class PropertyGridView : UserControl
                     .SetHorizontalAlignment(HorizontalAlignment.Stretch)
                     .SetMargin(new Margin(0, 2, 16, 2))
                     .SetPadding(new Margin(4, 2))
-                    .BindText($"Property_{prop.Path}", () => prop.Value, newValue => _viewModel.UpdatePropertyValue(prop, newValue));
+                    .BindText(() => prop.Value, newValue => _viewModel.UpdatePropertyValue(prop, newValue));
             }
             // For complex properties (with children) or writable properties: show Label + Edit button
             else if (prop.CanWrite || prop.HasChildren)
@@ -127,11 +126,9 @@ public class PropertyGridView : UserControl
         var elementType = _viewModel.SelectedNode?.Type ?? "";
 
         return new Button()
-            .BindText($"Pin_{prop.Path}",
-                () => _viewModel.PinnedPropertiesService.IsPinned(elementType, prop.Path) ? "📌" : "📍")
+            .BindText(() => _viewModel.PinnedPropertiesService.IsPinned(elementType, prop.Path) ? "📌" : "📍")
             .SetTextSize(12)
-            .BindTextColor($"PinColor_{prop.Path}",
-                () => _viewModel.PinnedPropertiesService.IsPinned(elementType, prop.Path)
+            .BindTextColor(() => _viewModel.PinnedPropertiesService.IsPinned(elementType, prop.Path)
                     ? Colors.Yellow
                     : new Color(150, 150, 150))
             .SetBackground(Colors.Transparent)

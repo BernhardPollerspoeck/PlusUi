@@ -1,5 +1,6 @@
 using PlusUi.core;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace Sandbox.Pages.ScrollViewDemo;
 
@@ -14,7 +15,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                 .SetMargin(new Margin(10)),
 
             new Label()
-                .BindText(nameof(vm.ButtonClickMessage), () => vm.ButtonClickMessage)
+                .BindText(() => vm.ButtonClickMessage)
                 .SetTextSize(14)
                 .SetTextColor(Colors.LightGreen)
                 .SetMargin(new Margin(10)),
@@ -26,8 +27,8 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                     .SetMargin(new Margin(10)),
 
                 new Checkbox()
-                    .BindIsChecked(nameof(vm.IsHorizontalScrollingEnabled),
-                        () => vm.IsHorizontalScrollingEnabled,
+                    .BindIsChecked(
+                        (Expression<Func<bool>>)(() => vm.IsHorizontalScrollingEnabled),
                         isChecked => vm.IsHorizontalScrollingEnabled = isChecked)
                     .SetMargin(new Margin(10))
             ),
@@ -39,8 +40,8 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                     .SetMargin(new Margin(10)),
 
                 new Checkbox()
-                    .BindIsChecked(nameof(vm.IsVerticalScrollingEnabled),
-                        () => vm.IsVerticalScrollingEnabled,
+                    .BindIsChecked(
+                        (Expression<Func<bool>>)(() => vm.IsVerticalScrollingEnabled),
                         isChecked => vm.IsVerticalScrollingEnabled = isChecked)
                     .SetMargin(new Margin(10))
             ),
@@ -94,7 +95,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
 
                     // Multiple labels to demonstrate vertical scrolling
                     new Label()
-                        .BindText(nameof(vm.LongText), () => vm.LongText)
+                        .BindText(() => vm.LongText)
                         .SetTextSize(18)
                         .SetMargin(new Margin(10)),
 
@@ -108,7 +109,7 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                         .SetMargin(new Margin(10)),
 
                     new Label()
-                        .BindText(nameof(vm.LongText), () => vm.LongText)
+                        .BindText(() => vm.LongText)
                         .SetTextSize(18)
                         .SetMargin(new Margin(10)),
 
@@ -122,13 +123,13 @@ internal class ScrollViewExamplePage(ScrollViewExamplePageViewModel vm) : UiPage
                         .SetMargin(new Margin(10)),
 
                     new Label()
-                        .BindText(nameof(vm.LongText), () => vm.LongText)
+                        .BindText(() => vm.LongText)
                         .SetTextSize(18)
                         .SetMargin(new Margin(10))
                 )
             )
-            .BindCanScrollHorizontally(nameof(vm.IsHorizontalScrollingEnabled), () => vm.IsHorizontalScrollingEnabled)
-            .BindCanScrollVertically(nameof(vm.IsVerticalScrollingEnabled), () => vm.IsVerticalScrollingEnabled)
+            .BindCanScrollHorizontally(() => vm.IsHorizontalScrollingEnabled)
+            .BindCanScrollVertically(() => vm.IsVerticalScrollingEnabled)
             .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
             .SetCornerRadius(10)
             .SetMargin(new Margin(10))

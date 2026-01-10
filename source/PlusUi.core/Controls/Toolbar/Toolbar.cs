@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Services;
 using SkiaSharp;
+using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace PlusUi.core;
@@ -82,9 +83,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         Title = title;
         return this;
     }
-    public Toolbar BindTitle(string propertyName, Func<string?> propertyGetter)
+    public Toolbar BindTitle(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Title = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Title = getter());
         return this;
     }
     #endregion
@@ -105,9 +108,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         TitleFontSize = size;
         return this;
     }
-    public Toolbar BindTitleFontSize(string propertyName, Func<float> propertyGetter)
+    public Toolbar BindTitleFontSize(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TitleFontSize = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TitleFontSize = getter());
         return this;
     }
     #endregion
@@ -128,9 +133,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         TitleColor = color;
         return this;
     }
-    public Toolbar BindTitleColor(string propertyName, Func<Color> propertyGetter)
+    public Toolbar BindTitleColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TitleColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TitleColor = getter());
         return this;
     }
     #endregion
@@ -150,9 +157,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         TitleAlignment = alignment;
         return this;
     }
-    public Toolbar BindTitleAlignment(string propertyName, Func<TitleAlignment> propertyGetter)
+    public Toolbar BindTitleAlignment(Expression<Func<TitleAlignment>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TitleAlignment = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TitleAlignment = getter());
         return this;
     }
     #endregion
@@ -172,9 +181,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         ItemSpacing = spacing;
         return this;
     }
-    public Toolbar BindItemSpacing(string propertyName, Func<float> propertyGetter)
+    public Toolbar BindItemSpacing(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ItemSpacing = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ItemSpacing = getter());
         return this;
     }
     #endregion
@@ -194,9 +205,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         ContentPadding = padding;
         return this;
     }
-    public Toolbar BindContentPadding(string propertyName, Func<Margin> propertyGetter)
+    public Toolbar BindContentPadding(Expression<Func<Margin>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ContentPadding = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ContentPadding = getter());
         return this;
     }
     #endregion
@@ -216,9 +229,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         OverflowBehavior = behavior;
         return this;
     }
-    public Toolbar BindOverflowBehavior(string propertyName, Func<OverflowBehavior> propertyGetter)
+    public Toolbar BindOverflowBehavior(Expression<Func<OverflowBehavior>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OverflowBehavior = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OverflowBehavior = getter());
         return this;
     }
     #endregion
@@ -238,9 +253,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         OverflowThreshold = width;
         return this;
     }
-    public Toolbar BindOverflowThreshold(string propertyName, Func<float> propertyGetter)
+    public Toolbar BindOverflowThreshold(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OverflowThreshold = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OverflowThreshold = getter());
         return this;
     }
     #endregion
@@ -263,9 +280,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         OverflowIcon = icon;
         return this;
     }
-    public Toolbar BindOverflowIcon(string propertyName, Func<string> propertyGetter)
+    public Toolbar BindOverflowIcon(Expression<Func<string>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OverflowIcon = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OverflowIcon = getter());
         return this;
     }
 
@@ -286,9 +305,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         OverflowMenuBackground = color;
         return this;
     }
-    public Toolbar BindOverflowMenuBackground(string propertyName, Func<Color> propertyGetter)
+    public Toolbar BindOverflowMenuBackground(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OverflowMenuBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OverflowMenuBackground = getter());
         return this;
     }
     #endregion
@@ -300,9 +321,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         OverflowMenuItemBackground = color;
         return this;
     }
-    public Toolbar BindOverflowMenuItemBackground(string propertyName, Func<Color> propertyGetter)
+    public Toolbar BindOverflowMenuItemBackground(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OverflowMenuItemBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OverflowMenuItemBackground = getter());
         return this;
     }
     #endregion
@@ -314,9 +337,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         OverflowMenuItemHoverBackground = color;
         return this;
     }
-    public Toolbar BindOverflowMenuItemHoverBackground(string propertyName, Func<Color> propertyGetter)
+    public Toolbar BindOverflowMenuItemHoverBackground(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OverflowMenuItemHoverBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OverflowMenuItemHoverBackground = getter());
         return this;
     }
     #endregion
@@ -328,9 +353,11 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         OverflowMenuItemTextColor = color;
         return this;
     }
-    public Toolbar BindOverflowMenuItemTextColor(string propertyName, Func<Color> propertyGetter)
+    public Toolbar BindOverflowMenuItemTextColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => OverflowMenuItemTextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OverflowMenuItemTextColor = getter());
         return this;
     }
     #endregion
@@ -381,11 +408,13 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         return this;
     }
 
-    public Toolbar BindCenterContent(string propertyName, Func<UiElement?> propertyGetter)
+    public Toolbar BindCenterContent(Expression<Func<UiElement?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () =>
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () =>
         {
-            var content = propertyGetter();
+            var content = getter();
             if (content != null) SetCenterContent(content);
             else CenterContent = null;
         });

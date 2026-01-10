@@ -1,5 +1,6 @@
 using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -37,9 +38,11 @@ public partial class Border : UiLayoutElement
         StrokeColor = color;
         return this;
     }
-    public Border BindStrokeColor(string propertyName, Func<Color> propertyGetter)
+    public Border BindStrokeColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => StrokeColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => StrokeColor = getter());
         return this;
     }
     #endregion
@@ -60,9 +63,11 @@ public partial class Border : UiLayoutElement
         StrokeThickness = Math.Max(0, thickness); // Ensure non-negative
         return this;
     }
-    public Border BindStrokeThickness(string propertyName, Func<float> propertyGetter)
+    public Border BindStrokeThickness(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => StrokeThickness = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => StrokeThickness = getter());
         return this;
     }
     #endregion
@@ -83,9 +88,11 @@ public partial class Border : UiLayoutElement
         StrokeType = strokeType;
         return this;
     }
-    public Border BindStrokeType(string propertyName, Func<StrokeType> propertyGetter)
+    public Border BindStrokeType(Expression<Func<StrokeType>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => StrokeType = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => StrokeType = getter());
         return this;
     }
     #endregion

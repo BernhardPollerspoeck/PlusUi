@@ -3,6 +3,7 @@ using PlusUi.core.Attributes;
 using PlusUi.core.Services;
 using SkiaSharp;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -32,6 +33,8 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
     private string _inputBuffer = string.Empty;
 
     #region SelectedDate
+    private Action<DateOnly?>? _onSelectedDateChanged;
+
     internal DateOnly? SelectedDate
     {
         get => field;
@@ -50,18 +53,36 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindSelectedDate(string propertyName, Func<DateOnly?> propertyGetter)
+    /// <summary>
+    /// Sets a callback that is invoked when SelectedDate changes.
+    /// </summary>
+    public DatePicker SetOnSelectedDateChanged(Action<DateOnly?> callback)
     {
-        RegisterBinding(propertyName, () => SelectedDate = propertyGetter());
+        _onSelectedDateChanged = callback;
         return this;
     }
 
-    public DatePicker BindSelectedDate(string propertyName, Func<DateOnly?> propertyGetter, Action<DateOnly?> propertySetter)
+    public DatePicker BindSelectedDate(Expression<Func<DateOnly?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SelectedDate = propertyGetter());
-        RegisterSetter(nameof(SelectedDate), propertySetter);
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedDate = getter());
         return this;
     }
+
+    public DatePicker BindSelectedDate(Expression<Func<DateOnly?>> propertyExpression, Action<DateOnly?> setter)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedDate = getter());
+        foreach (var segment in path)
+        {
+            RegisterSetter<DateOnly?>(segment, setter);
+        }
+        RegisterSetter<DateOnly?>(nameof(SelectedDate), setter);
+        return this;
+    }
+
     #endregion
 
     #region MinDate
@@ -73,9 +94,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindMinDate(string propertyName, Func<DateOnly?> propertyGetter)
+    public DatePicker BindMinDate(Expression<Func<DateOnly?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => MinDate = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => MinDate = getter());
         return this;
     }
     #endregion
@@ -89,9 +112,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindMaxDate(string propertyName, Func<DateOnly?> propertyGetter)
+    public DatePicker BindMaxDate(Expression<Func<DateOnly?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => MaxDate = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => MaxDate = getter());
         return this;
     }
     #endregion
@@ -106,9 +131,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindDisplayFormat(string propertyName, Func<string> propertyGetter)
+    public DatePicker BindDisplayFormat(Expression<Func<string>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => DisplayFormat = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => DisplayFormat = getter());
         return this;
     }
     #endregion
@@ -122,9 +149,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindPlaceholder(string propertyName, Func<string?> propertyGetter)
+    public DatePicker BindPlaceholder(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Placeholder = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Placeholder = getter());
         return this;
     }
     #endregion
@@ -138,9 +167,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindPlaceholderColor(string propertyName, Func<SKColor> propertyGetter)
+    public DatePicker BindPlaceholderColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => PlaceholderColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => PlaceholderColor = getter());
         return this;
     }
     #endregion
@@ -162,9 +193,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public DatePicker BindTextColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextColor = getter());
         return this;
     }
     #endregion
@@ -187,9 +220,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindTextSize(string propertyName, Func<float> propertyGetter)
+    public DatePicker BindTextSize(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextSize = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextSize = getter());
         return this;
     }
     #endregion
@@ -212,9 +247,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindFontFamily(string propertyName, Func<string?> propertyGetter)
+    public DatePicker BindFontFamily(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => FontFamily = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FontFamily = getter());
         return this;
     }
     #endregion
@@ -236,9 +273,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindPadding(string propertyName, Func<Margin> propertyGetter)
+    public DatePicker BindPadding(Expression<Func<Margin>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Padding = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Padding = getter());
         return this;
     }
     #endregion
@@ -252,9 +291,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindWeekStart(string propertyName, Func<DayOfWeekStart> propertyGetter)
+    public DatePicker BindWeekStart(Expression<Func<DayOfWeekStart>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => WeekStart = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => WeekStart = getter());
         return this;
     }
     #endregion
@@ -268,9 +309,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindShowTodayButton(string propertyName, Func<bool> propertyGetter)
+    public DatePicker BindShowTodayButton(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ShowTodayButton = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ShowTodayButton = getter());
         return this;
     }
     #endregion
@@ -284,9 +327,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindCalendarBackground(string propertyName, Func<SKColor> propertyGetter)
+    public DatePicker BindCalendarBackground(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => CalendarBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => CalendarBackground = getter());
         return this;
     }
     #endregion
@@ -300,9 +345,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindHoverBackground(string propertyName, Func<SKColor> propertyGetter)
+    public DatePicker BindHoverBackground(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HoverBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HoverBackground = getter());
         return this;
     }
     #endregion
@@ -316,9 +363,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindSelectedBackground(string propertyName, Func<SKColor> propertyGetter)
+    public DatePicker BindSelectedBackground(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SelectedBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedBackground = getter());
         return this;
     }
     #endregion
@@ -332,9 +381,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindTodayBorderColor(string propertyName, Func<SKColor> propertyGetter)
+    public DatePicker BindTodayBorderColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TodayBorderColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TodayBorderColor = getter());
         return this;
     }
     #endregion
@@ -367,9 +418,11 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public DatePicker BindIsOpen(string propertyName, Func<bool> propertyGetter)
+    public DatePicker BindIsOpen(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => IsOpen = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsOpen = getter());
         return this;
     }
 
@@ -701,6 +754,7 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
     /// </summary>
     internal void InvokeSetters()
     {
+        _onSelectedDateChanged?.Invoke(SelectedDate);
         if (_setter.TryGetValue(nameof(SelectedDate), out var setters))
         {
             foreach (var setter in setters)

@@ -132,10 +132,7 @@ public class DataGridDatePickerColumn<T> : DataGridColumn<T>
             var setter = ValueSetter;
             var getter = ValueGetter;
 
-            datePicker.BindSelectedDate(
-                $"DataGridDatePicker_{item?.GetHashCode()}_{Header}",
-                () => getter(item),
-                value => setter(item, value));
+            datePicker.SetOnSelectedDateChanged(value => setter(item, value));
 
             if (item is System.ComponentModel.INotifyPropertyChanged notifyItem)
             {

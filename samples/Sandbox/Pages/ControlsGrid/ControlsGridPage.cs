@@ -30,7 +30,7 @@ internal class ControlsGridPage(ControlsGridPageViewModel vm) : UiPageElement(vm
             .AddChild(row: 1, column: 1, child: new VStack(
                 new Border()
                     .AddChild(new Button()
-                        .BindText(nameof(vm.Title), () => $"Increment {vm.Title}")
+                        .BindText(() => $"Increment {vm.Title}")
                         .SetTextSize(20)
                         .SetCommand(vm.IncrementCommand)
                         .SetTextColor(Colors.Black)

@@ -2,6 +2,7 @@
 using PlusUi.core.Attributes;
 using PlusUi.core.Models;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -67,9 +68,11 @@ public partial class Image : UiElement
         ImageSource = imageSource;
         return this;
     }
-    public Image BindImageSource(string propertyName, Func<string?> propertyGetter)
+    public Image BindImageSource(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ImageSource = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ImageSource = getter());
         return this;
     }
     #endregion
@@ -88,9 +91,11 @@ public partial class Image : UiElement
         Aspect = aspect;
         return this;
     }
-    public Image BindAspect(string propertyName, Func<Aspect> propertyGetter)
+    public Image BindAspect(Expression<Func<Aspect>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Aspect = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Aspect = getter());
         return this;
     }
 
@@ -215,11 +220,13 @@ public partial class Image : UiElement
         return this;
     }
 
-    public Image BindTintColor(string propertyName, Func<Color?> propertyGetter)
+    public Image BindTintColor(Expression<Func<Color?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () =>
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () =>
         {
-            TintColor = propertyGetter();
+            TintColor = getter();
             _renderedSvgImage = null;
             InvalidateMeasure();
         });

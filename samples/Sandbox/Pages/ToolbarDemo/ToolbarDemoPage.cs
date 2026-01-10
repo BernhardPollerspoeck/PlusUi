@@ -33,7 +33,7 @@ public class ToolbarDemoPage(ToolbarDemoPageViewModel vm) : UiPageElement(vm)
                                 .SetTextSize(14)
                                 .SetTextColor(Colors.Gray),
                             new Label()
-                                .BindText(nameof(vm.LastAction), () => vm.LastAction)
+                                .BindText(() => vm.LastAction)
                                 .SetTextSize(18)
                                 .SetTextColor(Colors.LimeGreen)
                         ).SetMargin(new Margin(16, 8))

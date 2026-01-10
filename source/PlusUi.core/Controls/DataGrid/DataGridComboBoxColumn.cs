@@ -129,10 +129,8 @@ public class DataGridComboBoxColumn<T, TOption> : DataGridColumn<T>
             var setter = ValueSetter;
             var getter = ValueGetter;
 
-            comboBox.BindSelectedItem(
-                $"DataGridComboBox_{item?.GetHashCode()}_{Header}",
-                () => getter(item),
-                value => setter(item, value));
+            // Use callback for two-way binding (since property name is dynamic and runtime-dependent)
+            comboBox.SetOnSelectionChanged(value => setter(item, value));
 
             if (item is System.ComponentModel.INotifyPropertyChanged notifyItem)
             {

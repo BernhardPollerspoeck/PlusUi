@@ -544,8 +544,7 @@ public class TreeViewTests
 
         // Bind with setter
         treeView.BindSelectedItem(
-            nameof(TestViewModel.SelectedItem),
-            () => null,
+            () => (object?)null,
             value => notifiedValue = value);
 
         // Act
@@ -568,7 +567,6 @@ public class TreeViewTests
             .SetChildrenSelector<Category>(c => c.SubCategories.Cast<object>())
             .SetItemsSource(new List<object> { root1, root2 })
             .BindSelectedItem(
-                nameof(TestViewModel.SelectedItem),
                 () => vm.SelectedItem,
                 v => vm.SelectedItem = v);
         treeView.BuildNodes();

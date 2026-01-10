@@ -45,7 +45,7 @@ public class TimePickerTests
         var time = new TimeOnly(10, 15);
 
         // Act
-        timePicker.BindSelectedTime(nameof(time), () => time);
+        timePicker.BindSelectedTime(() => time);
 
         // Assert
         Assert.AreEqual(time, timePicker.SelectedTime);
@@ -59,7 +59,7 @@ public class TimePickerTests
         TimeOnly? boundTime = new TimeOnly(16, 45);
 
         // Act
-        timePicker.BindSelectedTime(nameof(boundTime), () => boundTime, v => boundTime = v);
+        timePicker.BindSelectedTime(() => boundTime, v => boundTime = v);
 
         // Assert
         Assert.AreEqual(new TimeOnly(16, 45), timePicker.SelectedTime);

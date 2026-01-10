@@ -1,4 +1,5 @@
 using PlusUi.core.Attributes;
+using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace PlusUi.core;
@@ -25,9 +26,11 @@ public partial class TapGestureDetector(UiElement content) : GestureDetector<Tap
         return this;
     }
 
-    public TapGestureDetector BindCommand(string propertyName, Func<ICommand> propertyGetter)
+    public TapGestureDetector BindCommand(Expression<Func<ICommand>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Command = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Command = getter());
         return this;
     }
 
@@ -37,9 +40,11 @@ public partial class TapGestureDetector(UiElement content) : GestureDetector<Tap
         return this;
     }
 
-    public TapGestureDetector BindCommandParameter(string propertyName, Func<object> propertyGetter)
+    public TapGestureDetector BindCommandParameter(Expression<Func<object>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => CommandParameter = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => CommandParameter = getter());
         return this;
     }
 

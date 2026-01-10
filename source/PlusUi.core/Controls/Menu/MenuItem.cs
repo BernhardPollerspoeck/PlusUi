@@ -1,3 +1,5 @@
+using PlusUi.core.Binding;
+using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace PlusUi.core;
@@ -24,6 +26,7 @@ namespace PlusUi.core;
 public class MenuItem
 {
     private readonly Dictionary<string, List<Action>> _bindings = [];
+    private readonly ExpressionPathService _expressionPathService = new();
 
     #region Text
     internal string Text { get; set; } = string.Empty;
@@ -34,9 +37,11 @@ public class MenuItem
         return this;
     }
 
-    public MenuItem BindText(string propertyName, Func<string> propertyGetter)
+    public MenuItem BindText(Expression<Func<string>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Text = propertyGetter());
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => Text = getter());
         return this;
     }
     #endregion
@@ -50,9 +55,11 @@ public class MenuItem
         return this;
     }
 
-    public MenuItem BindIcon(string propertyName, Func<string?> propertyGetter)
+    public MenuItem BindIcon(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Icon = propertyGetter());
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => Icon = getter());
         return this;
     }
     #endregion
@@ -66,9 +73,11 @@ public class MenuItem
         return this;
     }
 
-    public MenuItem BindShortcut(string propertyName, Func<string?> propertyGetter)
+    public MenuItem BindShortcut(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Shortcut = propertyGetter());
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => Shortcut = getter());
         return this;
     }
     #endregion
@@ -82,9 +91,11 @@ public class MenuItem
         return this;
     }
 
-    public MenuItem BindCommand(string propertyName, Func<ICommand?> propertyGetter)
+    public MenuItem BindCommand(Expression<Func<ICommand?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Command = propertyGetter());
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => Command = getter());
         return this;
     }
 
@@ -96,9 +107,11 @@ public class MenuItem
         return this;
     }
 
-    public MenuItem BindCommandParameter(string propertyName, Func<object?> propertyGetter)
+    public MenuItem BindCommandParameter(Expression<Func<object?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => CommandParameter = propertyGetter());
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => CommandParameter = getter());
         return this;
     }
     #endregion
@@ -112,9 +125,11 @@ public class MenuItem
         return this;
     }
 
-    public MenuItem BindIsEnabled(string propertyName, Func<bool> propertyGetter)
+    public MenuItem BindIsEnabled(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => IsEnabled = propertyGetter());
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => IsEnabled = getter());
         return this;
     }
     #endregion
@@ -128,9 +143,11 @@ public class MenuItem
         return this;
     }
 
-    public MenuItem BindIsChecked(string propertyName, Func<bool> propertyGetter)
+    public MenuItem BindIsChecked(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => IsChecked = propertyGetter());
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => IsChecked = getter());
         return this;
     }
     #endregion
@@ -172,14 +189,17 @@ public class MenuItem
     #endregion
 
     #region Bindings
-    private void RegisterBinding(string propertyName, Action updateAction)
+    private void RegisterBinding(string[] propertyNames, Action updateAction)
     {
-        if (!_bindings.TryGetValue(propertyName, out var updateActions))
+        foreach (var propertyName in propertyNames)
         {
-            updateActions = [];
-            _bindings.Add(propertyName, updateActions);
+            if (!_bindings.TryGetValue(propertyName, out var updateActions))
+            {
+                updateActions = [];
+                _bindings.Add(propertyName, updateActions);
+            }
+            updateActions.Add(updateAction);
         }
-        updateActions.Add(updateAction);
         updateAction();
     }
 

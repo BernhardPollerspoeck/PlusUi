@@ -155,7 +155,7 @@ public class TooltipTests
         var content = "Initial";
 
         // Act
-        attachment.BindContent(nameof(content), () => content);
+        attachment.BindContent(() => content);
 
         // Assert - Initial value should be set
         Assert.AreEqual("Initial", attachment.Content);
@@ -176,7 +176,7 @@ public class TooltipTests
         var placement = TooltipPlacement.Top;
 
         // Act
-        attachment.BindPlacement(nameof(placement), () => placement);
+        attachment.BindPlacement(() => placement);
 
         // Assert
         Assert.AreEqual(TooltipPlacement.Top, attachment.Placement);
@@ -197,7 +197,7 @@ public class TooltipTests
         var showDelay = 300;
 
         // Act
-        attachment.BindShowDelay(nameof(showDelay), () => showDelay);
+        attachment.BindShowDelay(() => showDelay);
 
         // Assert
         Assert.AreEqual(300, attachment.ShowDelay);
@@ -218,7 +218,7 @@ public class TooltipTests
         var hideDelay = 50;
 
         // Act
-        attachment.BindHideDelay(nameof(hideDelay), () => hideDelay);
+        attachment.BindHideDelay(() => hideDelay);
 
         // Assert
         Assert.AreEqual(50, attachment.HideDelay);
@@ -330,7 +330,7 @@ public class TooltipTests
         var tooltipText = "Dynamic tooltip";
 
         // Act
-        button.BindTooltipContent(nameof(tooltipText), () => tooltipText);
+        button.BindTooltipContent(() => tooltipText);
 
         // Assert
         Assert.AreEqual("Dynamic tooltip", button.Tooltip?.Content);
@@ -344,7 +344,7 @@ public class TooltipTests
         var placement = TooltipPlacement.Right;
 
         // Act
-        button.BindTooltipPlacement(nameof(placement), () => placement);
+        button.BindTooltipPlacement(() => placement);
 
         // Assert
         Assert.AreEqual(TooltipPlacement.Right, button.Tooltip?.Placement);
@@ -358,7 +358,7 @@ public class TooltipTests
         var showDelay = 400;
 
         // Act
-        button.BindTooltipShowDelay(nameof(showDelay), () => showDelay);
+        button.BindTooltipShowDelay(() => showDelay);
 
         // Assert
         Assert.AreEqual(400, button.Tooltip?.ShowDelay);
@@ -372,7 +372,7 @@ public class TooltipTests
         var hideDelay = 75;
 
         // Act
-        button.BindTooltipHideDelay(nameof(hideDelay), () => hideDelay);
+        button.BindTooltipHideDelay(() => hideDelay);
 
         // Assert
         Assert.AreEqual(75, button.Tooltip?.HideDelay);

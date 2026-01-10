@@ -1,5 +1,6 @@
 using PlusUi.core;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace Sandbox.Pages.NewControlsDemo;
 
@@ -80,10 +81,10 @@ public class NewControlsDemoPage(NewControlsDemoPageViewModel vm) : UiPageElemen
                                 .SetTextColor(Colors.LightGray)
                                 .SetVerticalAlignment(VerticalAlignment.Center),
                             new Toggle()
-                                .BindIsOn(nameof(vm.IsToggled), () => vm.IsToggled, value => vm.IsToggled = value)
+                                .BindIsOn(() => vm.IsToggled, value => vm.IsToggled = value)
                                 .SetMargin(new Margin(15, 0, 0, 0)),
                             new Label()
-                                .BindText(nameof(vm.IsToggled), () => vm.IsToggled ? "ON" : "OFF")
+                                .BindText(() => vm.IsToggled ? "ON" : "OFF")
                                 .SetTextColor(Colors.White)
                                 .SetMargin(new Margin(15, 0, 0, 0))
                         ).SetMargin(new Margin(0, 10)),
@@ -130,7 +131,7 @@ public class NewControlsDemoPage(NewControlsDemoPageViewModel vm) : UiPageElemen
                             .SetTextColor(Colors.LightGray)
                             .SetMargin(new Margin(0, 5)),
                         new ProgressBar()
-                            .BindProgress(nameof(vm.Progress), () => vm.Progress)
+                            .BindProgress(() => vm.Progress)
                             .SetDesiredWidth(400)
                             .SetHorizontalAlignment(HorizontalAlignment.Left)
                             .SetMargin(new Margin(0, 10)),
@@ -189,7 +190,7 @@ public class NewControlsDemoPage(NewControlsDemoPageViewModel vm) : UiPageElemen
                                     .SetTextColor(Colors.LightGray)
                                     .SetHorizontalTextAlignment(HorizontalTextAlignment.Center),
                                 new ActivityIndicator()
-                                    .BindIsRunning(nameof(vm.IsLoading), () => vm.IsLoading)
+                                    .BindIsRunning(() => vm.IsLoading)
                                     .SetMargin(new Margin(0, 10))
                             ).SetMargin(new Margin(10)),
 
@@ -258,12 +259,12 @@ public class NewControlsDemoPage(NewControlsDemoPageViewModel vm) : UiPageElemen
                                 .SetText("Value:")
                                 .SetTextColor(Colors.LightGray),
                             new Label()
-                                .BindText(nameof(vm.SliderValue), () => $"{vm.SliderValue:F1}")
+                                .BindText(() => $"{vm.SliderValue:F1}")
                                 .SetTextColor(Colors.White)
                                 .SetMargin(new Margin(10, 0, 0, 0))
                         ),
                         new Slider()
-                            .BindValue(nameof(vm.SliderValue), () => vm.SliderValue, value => vm.SliderValue = value)
+                            .BindValue(() => vm.SliderValue, value => vm.SliderValue = value)
                             .SetMinimum(0)
                             .SetMaximum(100)
                             .SetDesiredWidth(400)
@@ -306,7 +307,7 @@ public class NewControlsDemoPage(NewControlsDemoPageViewModel vm) : UiPageElemen
                             .SetTextColor(Colors.LightGray)
                             .SetMargin(new Margin(0, 5)),
                         new Entry()
-                            .BindText(nameof(vm.EntryText), () => vm.EntryText, text => vm.EntryText = text)
+                            .BindText(() => vm.EntryText, text => vm.EntryText = text)
                             .SetPlaceholder("Enter your name...")
                             .SetPadding(new Margin(10, 8))
                             .SetBackground(new SolidColorBackground(new Color(40, 40, 40)))
@@ -326,7 +327,7 @@ public class NewControlsDemoPage(NewControlsDemoPageViewModel vm) : UiPageElemen
                             .SetTextColor(Colors.LightGray)
                             .SetMargin(new Margin(0, 20, 0, 5)),
                         new Entry()
-                            .BindText(nameof(vm.MaxLengthText), () => vm.MaxLengthText, text => vm.MaxLengthText = text)
+                            .BindText(() => vm.MaxLengthText, text => vm.MaxLengthText = text)
                             .SetMaxLength(10)
                             .SetPlaceholder("Max 10 characters")
                             .SetPadding(new Margin(10, 8))
@@ -334,7 +335,7 @@ public class NewControlsDemoPage(NewControlsDemoPageViewModel vm) : UiPageElemen
                             .SetCornerRadius(8)
                             .SetMargin(new Margin(0, 10)),
                         new Label()
-                            .BindText(nameof(vm.MaxLengthText), () => $"Characters: {vm.MaxLengthText?.Length ?? 0}/10")
+                            .BindText(() => $"Characters: {(vm.MaxLengthText != null ? vm.MaxLengthText.Length : 0)}/10")
                             .SetTextColor(Colors.Gray)
                             .SetTextSize(12)
                             .SetMargin(new Margin(0, 5)),

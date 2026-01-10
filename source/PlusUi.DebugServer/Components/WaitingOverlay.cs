@@ -38,7 +38,6 @@ public class WaitingOverlay : UserControl
                         .SetText("The app will automatically connect to this debug server")
                         .SetTextColor(new Color(100, 100, 100))
                         .SetTextSize(12)))
-            .BindIsVisible(nameof(_viewModel.HasConnectedApps),
-                () => !_viewModel.HasConnectedApps);
+            .BindIsVisible(() => !_viewModel.HasConnectedApps);
     }
 }

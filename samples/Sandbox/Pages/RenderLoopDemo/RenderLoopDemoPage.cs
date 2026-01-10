@@ -43,7 +43,7 @@ public class RenderLoopDemoPage(RenderLoopDemoViewModel vm) : UiPageElement(vm)
                         new Label()
                             .SetText("Time remaining:"),
                         new Label()
-                            .BindText(nameof(vm.RemainingSeconds), () => vm.RemainingSeconds.ToString())
+                            .BindText(() => vm.RemainingSeconds.ToString())
                             .SetFontWeight(FontWeight.Bold)
                             .SetMargin(new Margin(5, 0, 5, 0)),
                         new Label()
@@ -80,12 +80,12 @@ public class RenderLoopDemoPage(RenderLoopDemoViewModel vm) : UiPageElement(vm)
 
                     new HStack(
                         new ActivityIndicator()
-                            .BindIsRunning(nameof(vm.IsActivityRunning), () => vm.IsActivityRunning)
+                            .BindIsRunning(() => vm.IsActivityRunning)
                             .SetDesiredSize(new(40, 40))
                             .SetMargin(new Margin(0, 0, 20, 0)),
                         new VStack(
                             new Label()
-                                .BindText(nameof(vm.ActivityStatusText), () => vm.ActivityStatusText)
+                                .BindText(() => vm.ActivityStatusText)
                                 .SetFontWeight(FontWeight.SemiBold),
                             new Label()
                                 .SetText("(Continuous rendering only when running)")

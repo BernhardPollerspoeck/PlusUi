@@ -20,7 +20,7 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
 
             // Vertical ItemsList
             new ItemsList<ItemsListDemoPageViewModel.ItemModel>()
-                .BindItemsSource(nameof(vm.Items), () => vm.Items)
+                .BindItemsSource(() => vm.Items)
                 .SetItemTemplate((item, index) =>
                     new HStack(
                         new Solid(50, index == 2 ? 100 : 50)
@@ -56,7 +56,7 @@ internal class ItemsListDemoPage(ItemsListDemoPageViewModel vm) : UiPageElement(
 
             // Horizontal ItemsList
             new ItemsList<ItemsListDemoPageViewModel.ItemModel>()
-                .BindItemsSource(nameof(vm.HorizontalItems), () => vm.HorizontalItems)
+                .BindItemsSource(() => vm.HorizontalItems)
                 .SetItemTemplate((item, index) =>
                     new VStack(
                         new Solid(index == 2 ? 130 : 80, 80)

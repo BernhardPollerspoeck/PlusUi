@@ -1,5 +1,6 @@
 using PlusUi.core;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace Sandbox.Pages.AccessibilityDemo;
 
@@ -30,7 +31,7 @@ public class AccessibilityDemoPage(AccessibilityDemoPageViewModel vm) : UiPageEl
                     .SetTextSize(12)
                     .SetTextColor(Colors.Gray),
                 new Label()
-                    .BindText(nameof(vm.LastAction), () => vm.LastAction)
+                    .BindText(() => vm.LastAction)
                     .SetTextSize(16)
                     .SetTextColor(Colors.LimeGreen)
                     .SetMargin(new Margin(0, 0, 0, 20)),
@@ -116,7 +117,7 @@ public class AccessibilityDemoPage(AccessibilityDemoPageViewModel vm) : UiPageEl
                 // Checkbox
                 new HStack(
                     new Checkbox()
-                        .BindIsChecked(nameof(vm.IsChecked), () => vm.IsChecked, v => vm.IsChecked = v)
+                        .BindIsChecked(() => vm.IsChecked, v => vm.IsChecked = v)
                         .SetAccessibilityLabel("Test Checkbox"),
                     new Label()
                         .SetText("Checkbox mit Accessibility Label")
@@ -142,7 +143,7 @@ public class AccessibilityDemoPage(AccessibilityDemoPageViewModel vm) : UiPageEl
                 new Slider()
                     .SetMinimum(0)
                     .SetMaximum(100)
-                    .BindValue(nameof(vm.SliderValue), () => (float)vm.SliderValue, v => vm.SliderValue = v)
+                    .BindValue(() => (float)vm.SliderValue, v => vm.SliderValue = v)
                     .SetAccessibilityLabel("Lautstaerke")
                     .SetDesiredWidth(300)
                     .SetMargin(new Margin(0, 0, 0, 10)),
@@ -180,7 +181,7 @@ public class AccessibilityDemoPage(AccessibilityDemoPageViewModel vm) : UiPageEl
                     .SetTextColor(Colors.White),
                 new Entry()
                     .SetPlaceholder("Gib hier Text ein...")
-                    .BindText(nameof(vm.EntryText), () => vm.EntryText, v => vm.EntryText = v)
+                    .BindText(() => vm.EntryText, v => vm.EntryText = v)
                     .SetAccessibilityLabel("Texteingabe Feld")
                     .SetAccessibilityHint("Gib beliebigen Text ein")
                     .SetDesiredWidth(300)

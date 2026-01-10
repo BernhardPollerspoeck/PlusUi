@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core.Binding;
 using PlusUi.core.Services;
 using PlusUi.core.Services.Accessibility;
 using PlusUi.core.Services.DebugBridge;
@@ -32,6 +33,7 @@ public static class PlusUiServiceCollectionExtensions
         services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<PlusUiNavigationService>());
 
         services.AddSingleton<IFontRegistryService, FontRegistryService>();
+        services.AddSingleton<IExpressionPathService, ExpressionPathService>();
         services.AddSingleton<IPaintRegistryService>(sp =>
         {
             var debugBridgeClient = sp.GetService<DebugBridgeClient>();

@@ -22,7 +22,7 @@ public class DebugStatusBar : UserControl
             .SetMargin(new Margin(8))
             .SetBackground(new Color(45, 45, 45))
             .AddChild(new Label()
-                .BindText(nameof(_viewModel.StatusText), () => _viewModel.StatusText)
+                .BindText(() => _viewModel.StatusText)
                 .SetTextSize(14)
                 .SetTextColor(Colors.White)
                 .SetVerticalAlignment(VerticalAlignment.Center)

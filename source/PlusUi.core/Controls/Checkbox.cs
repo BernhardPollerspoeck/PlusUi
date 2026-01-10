@@ -1,5 +1,6 @@
-﻿using PlusUi.core.Attributes;
+using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -71,6 +72,8 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
     #endregion
 
     #region IsChecked
+    private Action<bool>? _onIsCheckedChanged;
+
     internal bool IsChecked
     {
         get => field;
@@ -84,12 +87,45 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
         IsChecked = isChecked;
         return this;
     }
-    public Checkbox BindIsChecked(string propertyName, Func<bool> propertyGetter, Action<bool> propertySetter)
+
+    /// <summary>
+    /// Sets a callback that is invoked when IsChecked changes.
+    /// </summary>
+    public Checkbox SetOnIsCheckedChanged(Action<bool> callback)
     {
-        RegisterBinding(propertyName, () => IsChecked = propertyGetter());
-        RegisterSetter(nameof(IsChecked), propertySetter);
+        _onIsCheckedChanged = callback;
         return this;
     }
+    public Checkbox BindIsChecked(Expression<Func<bool>> propertyExpression, Action<bool> propertySetter)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsChecked = getter());
+        foreach (var segment in path)
+        {
+            RegisterSetter<bool>(segment, propertySetter);
+        }
+        RegisterSetter<bool>(nameof(IsChecked), propertySetter);
+        return this;
+    }
+    public Checkbox BindIsChecked<T>(
+        Expression<Func<T>> propertyExpression,
+        Action<T> propertySetter,
+        Func<T, bool>? toControl = null,
+        Func<bool, T>? toSource = null)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsChecked = toControl != null ? toControl(getter()) : (bool)(object)getter()!);
+        Action<bool> wrappedSetter = controlValue => propertySetter(toSource != null ? toSource(controlValue) : (T)(object)controlValue);
+        foreach (var segment in path)
+        {
+            RegisterSetter<bool>(segment, wrappedSetter);
+        }
+        RegisterSetter<bool>(nameof(IsChecked), wrappedSetter);
+        return this;
+    }
+
     #endregion
 
     #region Color
@@ -106,9 +142,11 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
         Color = color;
         return this;
     }
-    public Checkbox BindColor(string propertyName, Func<Color> propertyGetter)
+    public Checkbox BindColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Color = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Color = getter());
         return this;
     }
     #endregion
@@ -116,6 +154,7 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
     public void Toggle()
     {
         IsChecked = !IsChecked;
+        _onIsCheckedChanged?.Invoke(IsChecked);
         if (_setter.TryGetValue(nameof(IsChecked), out var textSetter))
         {
             foreach (var setter in textSetter)

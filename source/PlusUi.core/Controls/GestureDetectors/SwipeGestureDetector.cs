@@ -1,4 +1,5 @@
 using PlusUi.core.Attributes;
+using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace PlusUi.core;
@@ -20,9 +21,11 @@ public partial class SwipeGestureDetector(UiElement content) : GestureDetector<S
         return this;
     }
 
-    public SwipeGestureDetector BindCommand(string propertyName, Func<ICommand> propertyGetter)
+    public SwipeGestureDetector BindCommand(Expression<Func<ICommand>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SwipeCommand = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SwipeCommand = getter());
         return this;
     }
 
@@ -44,9 +47,11 @@ public partial class SwipeGestureDetector(UiElement content) : GestureDetector<S
         return this;
     }
 
-    public SwipeGestureDetector BindAllowedDirections(string propertyName, Func<SwipeDirection> propertyGetter)
+    public SwipeGestureDetector BindAllowedDirections(Expression<Func<SwipeDirection>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => AllowedDirections = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => AllowedDirections = getter());
         return this;
     }
     #endregion

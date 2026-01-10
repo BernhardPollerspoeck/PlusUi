@@ -2,6 +2,7 @@
 using PlusUi.core.Services.Focus;
 using SkiaSharp;
 using System.ComponentModel;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -70,9 +71,11 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
     /// <summary>
     /// Binds the focus scope mode.
     /// </summary>
-    public UiLayoutElement BindFocusScope(string propertyName, Func<FocusScopeMode> propertyGetter)
+    public UiLayoutElement BindFocusScope(Expression<Func<FocusScopeMode>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => FocusScope = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FocusScope = getter());
         return this;
     }
     #endregion
@@ -96,9 +99,11 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
     /// <summary>
     /// Binds the accessibility landmark.
     /// </summary>
-    public UiLayoutElement BindAccessibilityLandmark(string propertyName, Func<AccessibilityLandmark> propertyGetter)
+    public UiLayoutElement BindAccessibilityLandmark(Expression<Func<AccessibilityLandmark>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => AccessibilityLandmark = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => AccessibilityLandmark = getter());
         return this;
     }
     #endregion

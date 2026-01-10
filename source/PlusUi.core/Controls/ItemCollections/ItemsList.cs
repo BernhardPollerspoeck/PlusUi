@@ -1,7 +1,9 @@
 using PlusUi.core.Attributes;
+using PlusUi.core.Binding;
 using SkiaSharp;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -42,6 +44,33 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.List;
 
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        if (AccessibilityLabel != null)
+            return AccessibilityLabel;
+
+        var itemCount = _itemsSource?.Count() ?? 0;
+        return $"List with {itemCount} item{(itemCount == 1 ? "" : "s")}";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (AccessibilityValue != null)
+            return AccessibilityValue;
+
+        var itemCount = _itemsSource?.Count() ?? 0;
+        var visibleRange = _lastVisibleIndex - _firstVisibleIndex + 1;
+        return itemCount > 0 ? $"Showing {visibleRange} of {itemCount}" : "Empty list";
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        return base.GetComputedAccessibilityTraits();
+    }
+
     private IEnumerable<T>? _itemsSource;
     private Func<T, int, UiElement>? _itemTemplate;
     private readonly Dictionary<int, UiElement> _realizedItems = new();
@@ -68,9 +97,11 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         return this;
     }
 
-    public ItemsList<T> BindOrientation(string propertyName, Func<Orientation> propertyGetter)
+    public ItemsList<T> BindOrientation(Expression<Func<Orientation>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Orientation = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Orientation = getter());
         return this;
     }
     #endregion
@@ -107,9 +138,11 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         return this;
     }
 
-    public ItemsList<T> BindItemsSource(string propertyName, Func<IEnumerable<T>?> propertyGetter)
+    public ItemsList<T> BindItemsSource(Expression<Func<IEnumerable<T>?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ItemsSource = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ItemsSource = getter());
         return this;
     }
     #endregion
@@ -133,9 +166,11 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         return this;
     }
 
-    public ItemsList<T> BindItemTemplate(string propertyName, Func<Func<T, int, UiElement>?> propertyGetter)
+    public ItemsList<T> BindItemTemplate(Expression<Func<Func<T, int, UiElement>?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ItemTemplate = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ItemTemplate = getter());
         return this;
     }
     #endregion
@@ -153,9 +188,11 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         return this;
     }
 
-    public ItemsList<T> BindScrollFactor(string propertyName, Func<float> propertyGetter)
+    public ItemsList<T> BindScrollFactor(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ScrollFactor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ScrollFactor = getter());
         return this;
     }
     #endregion
@@ -182,9 +219,11 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         return this;
     }
 
-    public ItemsList<T> BindScrollOffset(string propertyName, Func<float> propertyGetter)
+    public ItemsList<T> BindScrollOffset(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ScrollOffset = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ScrollOffset = getter());
         return this;
     }
     #endregion

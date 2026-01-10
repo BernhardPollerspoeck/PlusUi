@@ -75,7 +75,7 @@ public class MenuDemoPage(MenuDemoPageViewModel vm) : UiPageElement(vm)
                         .SetTextSize(14)
                         .SetTextColor(Colors.White),
                     new Label()
-                        .BindText(nameof(vm.LastAction), () => vm.LastAction)
+                        .BindText(() => vm.LastAction)
                         .SetTextSize(14)
                         .SetTextColor(Colors.LightGreen)
                 ).SetMargin(new Margin(0, 20)),

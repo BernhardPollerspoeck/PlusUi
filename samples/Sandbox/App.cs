@@ -29,6 +29,7 @@ using Sandbox.Pages.SvgDemo;
 using Sandbox.Pages.UniformGridDemo;
 using Sandbox.Pages.WrapDemo;
 using Sandbox.Pages.RenderLoopDemo;
+using Sandbox.Pages.BindingDemo;
 using Sandbox.Popups;
 using Sandbox.Services;
 
@@ -87,6 +88,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<UniformGridDemoPage>().WithViewModel<UniformGridDemoPageViewModel>();
         builder.AddPage<WrapDemoPage>().WithViewModel<WrapDemoPageViewModel>();
         builder.AddPage<RenderLoopDemoPage>().WithViewModel<RenderLoopDemoViewModel>();
+        builder.AddPage<BindingDemoPage>().WithViewModel<BindingDemoPageViewModel>();
 
         builder.AddPage<BgTestPage>().WithViewModel<BgTestPageViewModel>();
 

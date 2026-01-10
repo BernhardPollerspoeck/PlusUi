@@ -211,7 +211,7 @@ public class BackgroundTests
         var testColor = Colors.Green;
 
         // Act
-        element.BindBackground(nameof(testColor), () => new SolidColorBackground(testColor));
+        element.BindBackground(() => new SolidColorBackground(testColor));
         
         // Assert
         Assert.IsNotNull(element.Background);
@@ -227,78 +227,12 @@ public class BackgroundTests
         var testColor = Colors.Purple;
 
         // Act - Use explicit SolidColorBackground to demonstrate usage
-        element.BindBackground(nameof(testColor), () => new SolidColorBackground(testColor));
+        element.BindBackground(() => new SolidColorBackground(testColor));
         
         // Assert
         Assert.IsNotNull(element.Background);
         Assert.IsInstanceOfType(element.Background, typeof(SolidColorBackground));
         Assert.AreEqual(Colors.Purple, ((SolidColorBackground)element.Background).Color);
-    }
-
-    [TestMethod]
-    public void TestBackwardCompatibility_SetBackgroundColor()
-    {
-        // Arrange
-        var element = new VStack();
-
-        // Act
-        #pragma warning disable CS0618 // Type or member is obsolete
-        element.SetBackgroundColor(Colors.Red);
-        #pragma warning restore CS0618 // Type or member is obsolete
-
-        // Assert
-        Assert.IsNotNull(element.Background);
-        Assert.IsInstanceOfType(element.Background, typeof(SolidColorBackground));
-        Assert.AreEqual(Colors.Red, ((SolidColorBackground)element.Background).Color);
-    }
-
-    [TestMethod]
-    public void TestBackwardCompatibility_BackgroundColorProperty()
-    {
-        // Arrange
-        var element = new VStack();
-
-        // Act
-        #pragma warning disable CS0618 // Type or member is obsolete
-        var initialColor = element.BackgroundColor;
-        element.BackgroundColor = Colors.Blue;
-        var updatedColor = element.BackgroundColor;
-        #pragma warning restore CS0618 // Type or member is obsolete
-
-        // Assert
-        Assert.AreEqual(Colors.Transparent, initialColor);
-        Assert.AreEqual(Colors.Blue, updatedColor);
-    }
-
-    [TestMethod]
-    public void TestBackgroundColor_ReturnsTransparent_WhenBackgroundIsNull()
-    {
-        // Arrange
-        var element = new VStack();
-
-        // Act
-        #pragma warning disable CS0618 // Type or member is obsolete
-        var color = element.BackgroundColor;
-        #pragma warning restore CS0618 // Type or member is obsolete
-
-        // Assert
-        Assert.AreEqual(Colors.Transparent, color);
-    }
-
-    [TestMethod]
-    public void TestBackgroundColor_ReturnsTransparent_WhenBackgroundIsNotSolidColor()
-    {
-        // Arrange
-        var element = new VStack();
-        element.SetBackground(new LinearGradient(Colors.Red, Colors.Blue));
-
-        // Act
-        #pragma warning disable CS0618 // Type or member is obsolete
-        var color = element.BackgroundColor;
-        #pragma warning restore CS0618 // Type or member is obsolete
-
-        // Assert
-        Assert.AreEqual(Colors.Transparent, color);
     }
 
     [TestMethod]

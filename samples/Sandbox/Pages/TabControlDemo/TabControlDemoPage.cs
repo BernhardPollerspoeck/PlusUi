@@ -50,7 +50,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                                 .SetTextSize(14)
                                 .SetTextColor(Colors.Gray),
                             new Label()
-                                .BindText(nameof(vm.SelectedTabIndex), () => vm.SelectedTabIndex.ToString())
+                                .BindText(() => vm.SelectedTabIndex.ToString())
                                 .SetTextSize(14)
                                 .SetTextColor(Colors.LimeGreen)
                         ).SetMargin(new Margin(0, 0, 0, 10)),
@@ -64,7 +64,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                             .AddTab(new TabItem()
                                 .SetHeader("Tab 3")
                                 .SetContent(CreateTabContent("Third Tab", "Content for the third tab.")))
-                            .BindSelectedIndex(nameof(vm.SelectedTabIndex), () => vm.SelectedTabIndex, i => vm.SelectedTabIndex = i)
+                            .BindSelectedIndex(() => vm.SelectedTabIndex, i => vm.SelectedTabIndex = i)
                             .SetDesiredSize(new Size(500, 180))
                             .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                             .SetCornerRadius(8)
@@ -102,7 +102,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                             .SetHeader("Settings")
                             .SetContent(CreateTabContent("Settings", "Application settings.")))
                         .SetTabPosition(TabPosition.Left)
-                        .BindSelectedIndex(nameof(vm.VerticalTabIndex), () => vm.VerticalTabIndex, i => vm.VerticalTabIndex = i)
+                        .BindSelectedIndex(() => vm.VerticalTabIndex, i => vm.VerticalTabIndex = i)
                         .SetDesiredSize(new Size(500, 200))
                         .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                         .SetCornerRadius(8)
@@ -179,7 +179,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                                 .SetTextSize(14)
                                 .SetTextColor(Colors.Gray),
                             new Label()
-                                .BindText(nameof(vm.DynamicTabPosition), () => vm.DynamicTabPosition.ToString())
+                                .BindText(() => vm.DynamicTabPosition.ToString())
                                 .SetTextSize(14)
                                 .SetTextColor(Colors.Orange),
                             new Button()
@@ -201,7 +201,7 @@ public class TabControlDemoPage(TabControlDemoPageViewModel vm) : UiPageElement(
                             .AddTab(new TabItem()
                                 .SetHeader("Gamma")
                                 .SetContent(CreateTabContent("Gamma", "Third dynamic tab.")))
-                            .BindTabPosition(nameof(vm.DynamicTabPosition), () => vm.DynamicTabPosition)
+                            .BindTabPosition(() => vm.DynamicTabPosition)
                             .SetDesiredSize(new Size(500, 200))
                             .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
                             .SetCornerRadius(8)

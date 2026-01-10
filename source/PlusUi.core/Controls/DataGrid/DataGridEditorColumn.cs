@@ -62,11 +62,8 @@ public class DataGridEditorColumn<T> : DataGridColumn<T>
             var getter = ValueGetter;
             var setter = ValueSetter;
 
-            // Two-way binding using BindText
-            entry.BindText(
-                $"DataGridEditor_{item?.GetHashCode()}_{Header}_{rowIndex}",
-                () => getter(item),
-                value => setter(item, value));
+            entry.SetText(getter(item));
+            entry.SetOnTextChanged(value => setter(item, value ?? string.Empty));
 
             if (item is System.ComponentModel.INotifyPropertyChanged notifyItem)
             {

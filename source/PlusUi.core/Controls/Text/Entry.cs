@@ -1,5 +1,6 @@
-﻿using PlusUi.core.Attributes;
+using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -80,9 +81,11 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         Padding = padding;
         return this;
     }
-    public Entry BindPadding(string propertyName, Func<Margin> propertyGetter)
+    public Entry BindPadding(Expression<Func<Margin>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Padding = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Padding = getter());
         return this;
     }
     #endregion
@@ -94,9 +97,11 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         IsPassword = isPassword;
         return this;
     }
-    public Entry BindIsPassword(string propertyName, Func<bool> propertyGetter)
+    public Entry BindIsPassword(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => IsPassword = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsPassword = getter());
         return this;
     }
     #endregion
@@ -108,9 +113,11 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         PasswordChar = passwordChar;
         return this;
     }
-    public Entry BindPasswordChar(string propertyName, Func<char> propertyGetter)
+    public Entry BindPasswordChar(Expression<Func<char>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => PasswordChar = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => PasswordChar = getter());
         return this;
     }
     #endregion
@@ -122,9 +129,11 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         Placeholder = placeholder;
         return this;
     }
-    public Entry BindPlaceholder(string propertyName, Func<string?> propertyGetter)
+    public Entry BindPlaceholder(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Placeholder = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Placeholder = getter());
         return this;
     }
     #endregion
@@ -136,9 +145,11 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         PlaceholderColor = color;
         return this;
     }
-    public Entry BindPlaceholderColor(string propertyName, Func<Color> propertyGetter)
+    public Entry BindPlaceholderColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => PlaceholderColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => PlaceholderColor = getter());
         return this;
     }
     #endregion
@@ -150,9 +161,11 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         MaxLength = maxLength;
         return this;
     }
-    public Entry BindMaxLength(string propertyName, Func<int> propertyGetter)
+    public Entry BindMaxLength(Expression<Func<int>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => MaxLength = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => MaxLength = getter());
         return this;
     }
     #endregion
@@ -164,9 +177,11 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         Keyboard = keyboard;
         return this;
     }
-    public Entry BindKeyboard(string propertyName, Func<KeyboardType> propertyGetter)
+    public Entry BindKeyboard(Expression<Func<KeyboardType>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Keyboard = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Keyboard = getter());
         return this;
     }
     #endregion
@@ -178,17 +193,53 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         ReturnKey = returnKey;
         return this;
     }
-    public Entry BindReturnKey(string propertyName, Func<ReturnKeyType> propertyGetter)
+    public Entry BindReturnKey(Expression<Func<ReturnKeyType>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ReturnKey = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ReturnKey = getter());
         return this;
     }
     #endregion
 
-    public Entry BindText(string propertyName, Func<string?> propertyGetter, Action<string> propertySetter)
+    private Action<string?>? _onTextChanged;
+
+    /// <summary>
+    /// Sets a callback that is invoked when Text changes.
+    /// </summary>
+    public Entry SetOnTextChanged(Action<string?> callback)
     {
-        base.BindText(propertyName, propertyGetter);
-        RegisterSetter(nameof(Text), propertySetter);
+        _onTextChanged = callback;
+        return this;
+    }
+
+    public Entry BindText(Expression<Func<string?>> propertyExpression, Action<string> propertySetter)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Text = getter());
+        foreach (var segment in path)
+        {
+            RegisterSetter<string>(segment, propertySetter);
+        }
+        RegisterSetter<string>(nameof(Text), propertySetter);
+        return this;
+    }
+    public Entry BindText<T>(
+        Expression<Func<T>> propertyExpression,
+        Action<T> propertySetter,
+        Func<T, string?>? toControl = null,
+        Func<string, T>? toSource = null)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Text = toControl != null ? toControl(getter()) : getter()?.ToString());
+        Action<string> wrappedSetter = controlValue => propertySetter(toSource != null ? toSource(controlValue) : (T)(object)controlValue);
+        foreach (var segment in path)
+        {
+            RegisterSetter<string>(segment, wrappedSetter);
+        }
+        RegisterSetter<string>(nameof(Text), wrappedSetter);
         return this;
     }
 
@@ -287,6 +338,7 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
             if (Text?.Length > 0)
             {
                 Text = Text[..^1];
+                _onTextChanged?.Invoke(Text);
                 if (_setter.TryGetValue(nameof(Text), out var textSetter))
                 {
                     foreach (var setter in textSetter)
@@ -306,6 +358,7 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         }
 
         Text += chr;
+        _onTextChanged?.Invoke(Text);
         if (_setter.TryGetValue(nameof(Text), out var textSetter))
         {
             foreach (var setter in textSetter)

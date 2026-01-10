@@ -1,3 +1,6 @@
+using PlusUi.core.Binding;
+using System.Linq.Expressions;
+
 namespace PlusUi.core;
 
 /// <summary>
@@ -6,6 +9,7 @@ namespace PlusUi.core;
 public class TooltipAttachment
 {
     private readonly Dictionary<string, List<Action>> _bindings = [];
+    private readonly ExpressionPathService _expressionPathService = new();
 
     #region Content
     /// <summary>
@@ -34,9 +38,11 @@ public class TooltipAttachment
     /// <summary>
     /// Binds the tooltip content to a property.
     /// </summary>
-    public TooltipAttachment BindContent(string propertyName, Func<object?> propertyGetter)
+    public TooltipAttachment BindContent(Expression<Func<object?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Content = propertyGetter());
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => Content = getter());
         return this;
     }
     #endregion
@@ -59,9 +65,11 @@ public class TooltipAttachment
     /// <summary>
     /// Binds the tooltip placement to a property.
     /// </summary>
-    public TooltipAttachment BindPlacement(string propertyName, Func<TooltipPlacement> propertyGetter)
+    public TooltipAttachment BindPlacement(Expression<Func<TooltipPlacement>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Placement = propertyGetter());
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => Placement = getter());
         return this;
     }
     #endregion
@@ -84,9 +92,11 @@ public class TooltipAttachment
     /// <summary>
     /// Binds the show delay to a property.
     /// </summary>
-    public TooltipAttachment BindShowDelay(string propertyName, Func<int> propertyGetter)
+    public TooltipAttachment BindShowDelay(Expression<Func<int>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ShowDelay = Math.Max(0, propertyGetter()));
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => ShowDelay = Math.Max(0, getter()));
         return this;
     }
     #endregion
@@ -109,22 +119,27 @@ public class TooltipAttachment
     /// <summary>
     /// Binds the hide delay to a property.
     /// </summary>
-    public TooltipAttachment BindHideDelay(string propertyName, Func<int> propertyGetter)
+    public TooltipAttachment BindHideDelay(Expression<Func<int>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HideDelay = Math.Max(0, propertyGetter()));
+        var path = _expressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterBinding(path, () => HideDelay = Math.Max(0, getter()));
         return this;
     }
     #endregion
 
     #region Bindings
-    private void RegisterBinding(string propertyName, Action updateAction)
+    private void RegisterBinding(string[] propertyNames, Action updateAction)
     {
-        if (!_bindings.TryGetValue(propertyName, out var updateActions))
+        foreach (var propertyName in propertyNames)
         {
-            updateActions = [];
-            _bindings.Add(propertyName, updateActions);
+            if (!_bindings.TryGetValue(propertyName, out var updateActions))
+            {
+                updateActions = [];
+                _bindings.Add(propertyName, updateActions);
+            }
+            updateActions.Add(updateAction);
         }
-        updateActions.Add(updateAction);
         updateAction();
     }
 

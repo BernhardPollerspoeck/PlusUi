@@ -107,7 +107,7 @@ public class ShadowTests
         var isElevated = false;
 
         // Act
-        element.BindShadowColor("IsElevated", () => 
+        element.BindShadowColor(() =>
             isElevated ? Colors.Black.WithAlpha(100) : Colors.Transparent);
 
         // Initial state
@@ -115,7 +115,7 @@ public class ShadowTests
 
         // Update state
         isElevated = true;
-        element.UpdateBindings("IsElevated");
+        element.UpdateBindings("isElevated");
 
         // Assert
         Assert.AreEqual(Colors.Black.WithAlpha(100), element.ShadowColor);
@@ -129,14 +129,14 @@ public class ShadowTests
         var isHovered = false;
 
         // Act
-        element.BindShadowBlur("IsHovered", () => isHovered ? 16f : 4f);
+        element.BindShadowBlur(() => isHovered ? 16f : 4f);
 
         // Initial state
         Assert.AreEqual(4f, element.ShadowBlur);
 
         // Update state
         isHovered = true;
-        element.UpdateBindings("IsHovered");
+        element.UpdateBindings("isHovered");
 
         // Assert
         Assert.AreEqual(16f, element.ShadowBlur);
@@ -150,7 +150,7 @@ public class ShadowTests
         var isHovered = false;
 
         // Act
-        element.BindShadowOffset("IsHovered", () => 
+        element.BindShadowOffset(() =>
             isHovered ? new Point(0, 8) : new Point(0, 2));
 
         // Initial state
@@ -159,7 +159,7 @@ public class ShadowTests
 
         // Update state
         isHovered = true;
-        element.UpdateBindings("IsHovered");
+        element.UpdateBindings("isHovered");
 
         // Assert
         Assert.AreEqual(0f, element.ShadowOffset.X);
@@ -174,14 +174,14 @@ public class ShadowTests
         var elevation = 2f;
 
         // Act
-        element.BindShadowSpread("Elevation", () => elevation);
+        element.BindShadowSpread(() => elevation);
 
         // Initial state
         Assert.AreEqual(2f, element.ShadowSpread);
 
         // Update state
         elevation = 4f;
-        element.UpdateBindings("Elevation");
+        element.UpdateBindings("elevation");
 
         // Assert
         Assert.AreEqual(4f, element.ShadowSpread);
@@ -256,11 +256,11 @@ public class ShadowTests
         var elevation = 2;
 
         // Act - Bind multiple shadow properties to elevation level
-        element.BindShadowColor("Elevation", () => 
+        element.BindShadowColor(() =>
                 elevation > 0 ? Colors.Black.WithAlpha((byte)(elevation * 10)) : Colors.Transparent)
-               .BindShadowOffset("Elevation", () => new Point(0, elevation))
-               .BindShadowBlur("Elevation", () => elevation * 2f)
-               .BindShadowSpread("Elevation", () => elevation * 0.5f);
+               .BindShadowOffset(() => new Point(0, elevation))
+               .BindShadowBlur(() => elevation * 2f)
+               .BindShadowSpread(() => elevation * 0.5f);
 
         // Initial state
         Assert.AreEqual(Colors.Black.WithAlpha(20), element.ShadowColor);
@@ -270,7 +270,7 @@ public class ShadowTests
 
         // Update elevation
         elevation = 6;
-        element.UpdateBindings("Elevation");
+        element.UpdateBindings("elevation");
 
         // Assert - All shadow properties should update
         Assert.AreEqual(Colors.Black.WithAlpha(60), element.ShadowColor);

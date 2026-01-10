@@ -1,5 +1,6 @@
 using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -47,9 +48,11 @@ public partial class ScrollView : UiLayoutElement, IScrollableControl
         return this;
     }
 
-    public ScrollView BindCanScrollHorizontally(string propertyName, Func<bool> propertyGetter)
+    public ScrollView BindCanScrollHorizontally(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => CanScrollHorizontally = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => CanScrollHorizontally = getter());
         return this;
     }
     #endregion
@@ -67,9 +70,11 @@ public partial class ScrollView : UiLayoutElement, IScrollableControl
         return this;
     }
 
-    public ScrollView BindCanScrollVertically(string propertyName, Func<bool> propertyGetter)
+    public ScrollView BindCanScrollVertically(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => CanScrollVertically = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => CanScrollVertically = getter());
         return this;
     }
     #endregion
@@ -87,9 +92,11 @@ public partial class ScrollView : UiLayoutElement, IScrollableControl
         return this;
     }
 
-    public ScrollView BindScrollFactor(string propertyName, Func<float> propertyGetter)
+    public ScrollView BindScrollFactor(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ScrollFactor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ScrollFactor = getter());
         return this;
     }
     #endregion
@@ -112,9 +119,11 @@ public partial class ScrollView : UiLayoutElement, IScrollableControl
         return this;
     }
 
-    public ScrollView BindHorizontalOffset(string propertyName, Func<float> propertyGetter)
+    public ScrollView BindHorizontalOffset(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HorizontalOffset = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HorizontalOffset = getter());
         return this;
     }
     #endregion
@@ -137,9 +146,11 @@ public partial class ScrollView : UiLayoutElement, IScrollableControl
         return this;
     }
 
-    public ScrollView BindVerticalOffset(string propertyName, Func<float> propertyGetter)
+    public ScrollView BindVerticalOffset(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => VerticalOffset = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => VerticalOffset = getter());
         return this;
     }
     #endregion

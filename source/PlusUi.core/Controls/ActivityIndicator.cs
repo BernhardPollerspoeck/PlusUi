@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -67,9 +68,11 @@ public partial class ActivityIndicator : UiElement
         return this;
     }
 
-    public ActivityIndicator BindIsRunning(string propertyName, Func<bool> propertyGetter)
+    public ActivityIndicator BindIsRunning(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => IsRunning = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsRunning = getter());
         return this;
     }
     #endregion
@@ -90,9 +93,11 @@ public partial class ActivityIndicator : UiElement
         return this;
     }
 
-    public ActivityIndicator BindColor(string propertyName, Func<Color> propertyGetter)
+    public ActivityIndicator BindColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Color = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Color = getter());
         return this;
     }
     #endregion
@@ -113,9 +118,11 @@ public partial class ActivityIndicator : UiElement
         return this;
     }
 
-    public ActivityIndicator BindSpeed(string propertyName, Func<float> propertyGetter)
+    public ActivityIndicator BindSpeed(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Speed = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Speed = getter());
         return this;
     }
     #endregion
@@ -127,9 +134,11 @@ public partial class ActivityIndicator : UiElement
         StrokeThickness = thickness;
         return this;
     }
-    public ActivityIndicator BindStrokeThickness(string propertyName, Func<float> propertyGetter)
+    public ActivityIndicator BindStrokeThickness(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => StrokeThickness = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => StrokeThickness = getter());
         return this;
     }
 

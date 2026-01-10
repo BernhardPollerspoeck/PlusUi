@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Services;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -65,9 +66,11 @@ public partial class Link : UiTextElement, IInputControl, IFocusable
         Url = url;
         return this;
     }
-    public Link BindUrl(string propertyName, Func<string?> propertyGetter)
+    public Link BindUrl(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Url = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Url = getter());
         return this;
     }
     #endregion
@@ -79,9 +82,11 @@ public partial class Link : UiTextElement, IInputControl, IFocusable
         UnderlineThickness = thickness;
         return this;
     }
-    public Link BindUnderlineThickness(string propertyName, Func<float> propertyGetter)
+    public Link BindUnderlineThickness(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => UnderlineThickness = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => UnderlineThickness = getter());
         return this;
     }
     #endregion

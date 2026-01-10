@@ -1,6 +1,7 @@
 using PlusUi.core.Attributes;
 using SkiaSharp;
 using System.Collections.Specialized;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -13,6 +14,37 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
 {
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Grid;
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityLabel()
+    {
+        if (AccessibilityLabel != null)
+            return AccessibilityLabel;
+
+        var itemCount = _itemsSource?.Count() ?? 0;
+        return $"Data grid with {itemCount} row{(itemCount == 1 ? "" : "s")}";
+    }
+
+    /// <inheritdoc />
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (AccessibilityValue != null)
+            return AccessibilityValue;
+
+        var selectedCount = SelectedItems.Count;
+        return selectedCount > 0 ? $"{selectedCount} selected" : "No selection";
+    }
+
+    /// <inheritdoc />
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (SelectedItems.Count > 0)
+        {
+            traits |= AccessibilityTrait.Selected;
+        }
+        return traits;
+    }
 
     /// <summary>
     /// Returns Children plus the two scrollbars for debug inspection.
@@ -50,9 +82,11 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
-    public DataGrid<T> BindCellPadding(string propertyName, Func<Margin> getter)
+    public DataGrid<T> BindCellPadding(Expression<Func<Margin>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetCellPadding(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetCellPadding(getter()));
         return this;
     }
 
@@ -68,9 +102,11 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
-    public DataGrid<T> BindShowRowSeparators(string propertyName, Func<bool> getter)
+    public DataGrid<T> BindShowRowSeparators(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetShowRowSeparators(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetShowRowSeparators(getter()));
         return this;
     }
 
@@ -82,9 +118,11 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
-    public DataGrid<T> BindShowColumnSeparators(string propertyName, Func<bool> getter)
+    public DataGrid<T> BindShowColumnSeparators(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetShowColumnSeparators(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetShowColumnSeparators(getter()));
         return this;
     }
 
@@ -96,9 +134,11 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
-    public DataGrid<T> BindSeparatorColor(string propertyName, Func<SKColor> getter)
+    public DataGrid<T> BindSeparatorColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetSeparatorColor(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetSeparatorColor(getter()));
         return this;
     }
 
@@ -110,9 +150,11 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
-    public DataGrid<T> BindSeparatorThickness(string propertyName, Func<float> getter)
+    public DataGrid<T> BindSeparatorThickness(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetSeparatorThickness(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetSeparatorThickness(getter()));
         return this;
     }
 
@@ -124,9 +166,11 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
-    public DataGrid<T> BindHeaderSeparatorColor(string propertyName, Func<SKColor> getter)
+    public DataGrid<T> BindHeaderSeparatorColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SetHeaderSeparatorColor(getter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetHeaderSeparatorColor(getter()));
         return this;
     }
 
@@ -217,9 +261,11 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     /// <param name="propertyName">The property name to bind to.</param>
     /// <param name="propertyGetter">A function that gets the items collection.</param>
     /// <returns>This grid for method chaining.</returns>
-    public DataGrid<T> BindItemsSource(string propertyName, Func<IEnumerable<T>?> propertyGetter)
+    public DataGrid<T> BindItemsSource(Expression<Func<IEnumerable<T>?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ItemsSource = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ItemsSource = getter());
         return this;
     }
 
@@ -244,6 +290,14 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
+    public DataGrid<T> BindHeaderHeight(Expression<Func<float>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetHeaderHeight(getter()));
+        return this;
+    }
+
     #endregion
 
     #region RowHeight
@@ -262,6 +316,14 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     {
         RowHeight = height;
         InvalidateMeasure();
+        return this;
+    }
+
+    public DataGrid<T> BindRowHeight(Expression<Func<float>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetRowHeight(getter()));
         return this;
     }
 
@@ -285,6 +347,14 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
+    public DataGrid<T> BindSelectionMode(Expression<Func<SelectionMode>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetSelectionMode(getter()));
+        return this;
+    }
+
     #endregion
 
     #region Selection
@@ -298,8 +368,6 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     /// Gets the collection of selected items.
     /// </summary>
     public List<T> SelectedItems { get; } = [];
-
-    private Action<T?>? _selectedItemSetter;
 
     /// <summary>
     /// Sets the selected item.
@@ -332,7 +400,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
             SelectedItem = item;
         }
 
-        _selectedItemSetter?.Invoke(item);
+        InvokeSelectedItemSetters(item);
         InvalidateMeasure();
         return this;
     }
@@ -340,15 +408,32 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     /// <summary>
     /// Binds the selected item to a property with two-way binding.
     /// </summary>
-    /// <param name="propertyName">The property name to bind to.</param>
-    /// <param name="propertyGetter">A function that gets the selected item.</param>
+    /// <param name="propertyExpression">The expression to the property to bind to.</param>
     /// <param name="propertySetter">An action that sets the selected item.</param>
     /// <returns>This grid for method chaining.</returns>
-    public DataGrid<T> BindSelectedItem(string propertyName, Func<T?> propertyGetter, Action<T?> propertySetter)
+    public DataGrid<T> BindSelectedItem(Expression<Func<T?>> propertyExpression, Action<T?> propertySetter)
     {
-        _selectedItemSetter = propertySetter;
-        RegisterBinding(propertyName, () => SetSelectedItem(propertyGetter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetSelectedItem(getter()));
+        foreach (var segment in path)
+        {
+            RegisterSetter<T?>(segment, propertySetter);
+        }
+        // Also register under SelectedItem so InvokeSelectedItemSetters can find it
+        RegisterSetter<T?>(nameof(SelectedItem), propertySetter);
         return this;
+    }
+
+    private void InvokeSelectedItemSetters(T? item)
+    {
+        if (_setter.TryGetValue(nameof(SelectedItem), out var setters))
+        {
+            foreach (var setter in setters)
+            {
+                setter(item);
+            }
+        }
     }
 
     /// <summary>
@@ -373,7 +458,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         }
 
         SelectedItem = item;
-        _selectedItemSetter?.Invoke(item);
+        InvokeSelectedItemSetters(item);
         InvalidateMeasure();
     }
 
@@ -388,7 +473,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         if (EqualityComparer<T>.Default.Equals(SelectedItem, item))
         {
             SelectedItem = SelectedItems.FirstOrDefault();
-            _selectedItemSetter?.Invoke(SelectedItem);
+            InvokeSelectedItemSetters(SelectedItem);
         }
 
         InvalidateMeasure();
@@ -401,7 +486,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     {
         SelectedItems.Clear();
         SelectedItem = default;
-        _selectedItemSetter?.Invoke(default);
+        InvokeSelectedItemSetters(default);
         InvalidateMeasure();
     }
 
@@ -426,6 +511,14 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
+    public DataGrid<T> BindAlternatingRowStyles(Expression<Func<bool>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetAlternatingRowStyles(getter()));
+        return this;
+    }
+
     /// <summary>
     /// Gets the style for even-indexed rows.
     /// </summary>
@@ -440,6 +533,14 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     public DataGrid<T> SetEvenRowStyle(IBackground? background, Color? foreground = null)
     {
         EvenRowStyle = new DataGridRowStyle(background, foreground);
+        return this;
+    }
+
+    public DataGrid<T> BindEvenRowStyle(Expression<Func<DataGridRowStyle?>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => EvenRowStyle = getter());
         return this;
     }
 
@@ -460,6 +561,14 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
+    public DataGrid<T> BindOddRowStyle(Expression<Func<DataGridRowStyle?>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => OddRowStyle = getter());
+        return this;
+    }
+
     /// <summary>
     /// Gets the custom row style callback.
     /// </summary>
@@ -473,6 +582,14 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     public DataGrid<T> SetRowStyleCallback(Func<T, int, DataGridRowStyle> callback)
     {
         RowStyleCallback = callback;
+        return this;
+    }
+
+    public DataGrid<T> BindRowStyleCallback(Expression<Func<Func<T, int, DataGridRowStyle>?>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => RowStyleCallback = getter());
         return this;
     }
 
@@ -494,12 +611,28 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
+    public DataGrid<T> BindScrollOffset(Expression<Func<float>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetScrollOffset(getter()));
+        return this;
+    }
+
     public DataGrid<T> SetHorizontalScrollOffset(float offset)
     {
         var maxOffset = CalculateMaxHorizontalScrollOffset();
         HorizontalScrollOffset = Math.Clamp(offset, 0, maxOffset);
         UpdateScrollbarStates();
         InvalidateMeasure();
+        return this;
+    }
+
+    public DataGrid<T> BindHorizontalScrollOffset(Expression<Func<float>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetHorizontalScrollOffset(getter()));
         return this;
     }
 
@@ -544,12 +677,28 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         return this;
     }
 
+    public DataGrid<T> BindShowVerticalScrollbar(Expression<Func<bool>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetShowVerticalScrollbar(getter()));
+        return this;
+    }
+
     public bool ShowHorizontalScrollbar { get; private set; } = true;
 
     public DataGrid<T> SetShowHorizontalScrollbar(bool show)
     {
         ShowHorizontalScrollbar = show;
         InvalidateMeasure();
+        return this;
+    }
+
+    public DataGrid<T> BindShowHorizontalScrollbar(Expression<Func<bool>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SetShowHorizontalScrollbar(getter()));
         return this;
     }
 

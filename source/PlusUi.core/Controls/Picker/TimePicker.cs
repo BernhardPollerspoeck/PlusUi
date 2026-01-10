@@ -3,6 +3,7 @@ using PlusUi.core.Attributes;
 using PlusUi.core.Services;
 using SkiaSharp;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -31,6 +32,8 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     private string _inputBuffer = string.Empty;
 
     #region SelectedTime
+    private Action<TimeOnly?>? _onSelectedTimeChanged;
+
     internal TimeOnly? SelectedTime
     {
         get => field;
@@ -57,18 +60,36 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindSelectedTime(string propertyName, Func<TimeOnly?> propertyGetter)
+    /// <summary>
+    /// Sets a callback that is invoked when SelectedTime changes.
+    /// </summary>
+    public TimePicker SetOnSelectedTimeChanged(Action<TimeOnly?> callback)
     {
-        RegisterBinding(propertyName, () => SelectedTime = propertyGetter());
+        _onSelectedTimeChanged = callback;
         return this;
     }
 
-    public TimePicker BindSelectedTime(string propertyName, Func<TimeOnly?> propertyGetter, Action<TimeOnly?> propertySetter)
+    public TimePicker BindSelectedTime(Expression<Func<TimeOnly?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SelectedTime = propertyGetter());
-        RegisterSetter(nameof(SelectedTime), propertySetter);
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedTime = getter());
         return this;
     }
+
+    public TimePicker BindSelectedTime(Expression<Func<TimeOnly?>> propertyExpression, Action<TimeOnly?> setter)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedTime = getter());
+        foreach (var segment in path)
+        {
+            RegisterSetter<TimeOnly?>(segment, setter);
+        }
+        RegisterSetter<TimeOnly?>(nameof(SelectedTime), setter);
+        return this;
+    }
+
     #endregion
 
     #region MinTime
@@ -80,9 +101,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindMinTime(string propertyName, Func<TimeOnly?> propertyGetter)
+    public TimePicker BindMinTime(Expression<Func<TimeOnly?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => MinTime = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => MinTime = getter());
         return this;
     }
     #endregion
@@ -96,9 +119,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindMaxTime(string propertyName, Func<TimeOnly?> propertyGetter)
+    public TimePicker BindMaxTime(Expression<Func<TimeOnly?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => MaxTime = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => MaxTime = getter());
         return this;
     }
     #endregion
@@ -113,9 +138,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindDisplayFormat(string propertyName, Func<string> propertyGetter)
+    public TimePicker BindDisplayFormat(Expression<Func<string>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => DisplayFormat = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => DisplayFormat = getter());
         return this;
     }
     #endregion
@@ -141,9 +168,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindMinuteIncrement(string propertyName, Func<int> propertyGetter)
+    public TimePicker BindMinuteIncrement(Expression<Func<int>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => MinuteIncrement = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => MinuteIncrement = getter());
         return this;
     }
     #endregion
@@ -165,9 +194,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker Bind24HourFormat(string propertyName, Func<bool> propertyGetter)
+    public TimePicker Bind24HourFormat(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Is24HourFormat = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Is24HourFormat = getter());
         return this;
     }
     #endregion
@@ -181,9 +212,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindPlaceholder(string propertyName, Func<string?> propertyGetter)
+    public TimePicker BindPlaceholder(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Placeholder = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Placeholder = getter());
         return this;
     }
     #endregion
@@ -197,9 +230,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindPlaceholderColor(string propertyName, Func<SKColor> propertyGetter)
+    public TimePicker BindPlaceholderColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => PlaceholderColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => PlaceholderColor = getter());
         return this;
     }
     #endregion
@@ -221,9 +256,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public TimePicker BindTextColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextColor = getter());
         return this;
     }
     #endregion
@@ -246,9 +283,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindTextSize(string propertyName, Func<float> propertyGetter)
+    public TimePicker BindTextSize(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextSize = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextSize = getter());
         return this;
     }
     #endregion
@@ -271,9 +310,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindFontFamily(string propertyName, Func<string?> propertyGetter)
+    public TimePicker BindFontFamily(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => FontFamily = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FontFamily = getter());
         return this;
     }
     #endregion
@@ -295,9 +336,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindPadding(string propertyName, Func<Margin> propertyGetter)
+    public TimePicker BindPadding(Expression<Func<Margin>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Padding = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Padding = getter());
         return this;
     }
     #endregion
@@ -311,9 +354,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindSelectorBackground(string propertyName, Func<SKColor> propertyGetter)
+    public TimePicker BindSelectorBackground(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SelectorBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectorBackground = getter());
         return this;
     }
     #endregion
@@ -327,9 +372,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindHoverBackground(string propertyName, Func<SKColor> propertyGetter)
+    public TimePicker BindHoverBackground(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HoverBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HoverBackground = getter());
         return this;
     }
     #endregion
@@ -343,9 +390,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindSelectedBackground(string propertyName, Func<SKColor> propertyGetter)
+    public TimePicker BindSelectedBackground(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SelectedBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedBackground = getter());
         return this;
     }
     #endregion
@@ -378,9 +427,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         return this;
     }
 
-    public TimePicker BindIsOpen(string propertyName, Func<bool> propertyGetter)
+    public TimePicker BindIsOpen(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => IsOpen = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsOpen = getter());
         return this;
     }
 
@@ -656,6 +707,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     /// </summary>
     internal void InvokeSetters()
     {
+        _onSelectedTimeChanged?.Invoke(SelectedTime);
         if (_setter.TryGetValue(nameof(SelectedTime), out var setters))
         {
             foreach (var setter in setters)

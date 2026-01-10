@@ -31,18 +31,18 @@ public class RadioButtonDemoPage(RadioButtonDemoPageViewModel vm) : UiPageElemen
                             .SetText("Option A")
                             .SetGroup("basicGroup")
                             .SetValue("A")
-                            .BindIsSelected(nameof(vm.IsOptionASelected), () => vm.IsOptionASelected, v => vm.IsOptionASelected = v),
+                            .BindIsSelected(() => vm.IsOptionASelected, v => vm.IsOptionASelected = v),
                         new RadioButton()
                             .SetText("Option B")
                             .SetGroup("basicGroup")
                             .SetValue("B")
-                            .BindIsSelected(nameof(vm.IsOptionBSelected), () => vm.IsOptionBSelected, v => vm.IsOptionBSelected = v)
+                            .BindIsSelected(() => vm.IsOptionBSelected, v => vm.IsOptionBSelected = v)
                             .SetMargin(new Margin(0, 8, 0, 0)),
                         new RadioButton()
                             .SetText("Option C")
                             .SetGroup("basicGroup")
                             .SetValue("C")
-                            .BindIsSelected(nameof(vm.IsOptionCSelected), () => vm.IsOptionCSelected, v => vm.IsOptionCSelected = v)
+                            .BindIsSelected(() => vm.IsOptionCSelected, v => vm.IsOptionCSelected = v)
                             .SetMargin(new Margin(0, 8, 0, 0))
                     )
                 ),
@@ -54,18 +54,18 @@ public class RadioButtonDemoPage(RadioButtonDemoPageViewModel vm) : UiPageElemen
                             .SetText("Small")
                             .SetGroup(SizeGroup.Size)
                             .SetValue("S")
-                            .BindIsSelected(nameof(vm.IsSizeSmall), () => vm.IsSizeSmall, v => vm.IsSizeSmall = v),
+                            .BindIsSelected(() => vm.IsSizeSmall, v => vm.IsSizeSmall = v),
                         new RadioButton()
                             .SetText("Medium")
                             .SetGroup(SizeGroup.Size)
                             .SetValue("M")
-                            .BindIsSelected(nameof(vm.IsSizeMedium), () => vm.IsSizeMedium, v => vm.IsSizeMedium = v)
+                            .BindIsSelected(() => vm.IsSizeMedium, v => vm.IsSizeMedium = v)
                             .SetMargin(new Margin(20, 0, 0, 0)),
                         new RadioButton()
                             .SetText("Large")
                             .SetGroup(SizeGroup.Size)
                             .SetValue("L")
-                            .BindIsSelected(nameof(vm.IsSizeLarge), () => vm.IsSizeLarge, v => vm.IsSizeLarge = v)
+                            .BindIsSelected(() => vm.IsSizeLarge, v => vm.IsSizeLarge = v)
                             .SetMargin(new Margin(20, 0, 0, 0))
                     )
                 ),
@@ -80,7 +80,7 @@ public class RadioButtonDemoPage(RadioButtonDemoPageViewModel vm) : UiPageElemen
                             .SetTextColor(Colors.LightGreen)
                             .SetCircleColor(Colors.LightGreen)
                             .SetSelectedColor(Colors.Green)
-                            .BindIsSelected(nameof(vm.IsCreditCard), () => vm.IsCreditCard, v => vm.IsCreditCard = v),
+                            .BindIsSelected(() => vm.IsCreditCard, v => vm.IsCreditCard = v),
                         new RadioButton()
                             .SetText("PayPal")
                             .SetGroup(PaymentGroup.Payment)
@@ -88,7 +88,7 @@ public class RadioButtonDemoPage(RadioButtonDemoPageViewModel vm) : UiPageElemen
                             .SetTextColor(Colors.LightBlue)
                             .SetCircleColor(Colors.LightBlue)
                             .SetSelectedColor(Colors.DodgerBlue)
-                            .BindIsSelected(nameof(vm.IsPayPal), () => vm.IsPayPal, v => vm.IsPayPal = v)
+                            .BindIsSelected(() => vm.IsPayPal, v => vm.IsPayPal = v)
                             .SetMargin(new Margin(0, 12, 0, 0)),
                         new RadioButton()
                             .SetText("Bank Transfer")
@@ -97,7 +97,7 @@ public class RadioButtonDemoPage(RadioButtonDemoPageViewModel vm) : UiPageElemen
                             .SetTextColor(Colors.Orange)
                             .SetCircleColor(Colors.Orange)
                             .SetSelectedColor(Colors.OrangeRed)
-                            .BindIsSelected(nameof(vm.IsBankTransfer), () => vm.IsBankTransfer, v => vm.IsBankTransfer = v)
+                            .BindIsSelected(() => vm.IsBankTransfer, v => vm.IsBankTransfer = v)
                             .SetMargin(new Margin(0, 12, 0, 0))
                     )
                 ),

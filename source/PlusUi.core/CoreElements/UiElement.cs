@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.Binding;
 using PlusUi.core.Services;
 using SkiaSharp;
 using System.ComponentModel;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -10,6 +12,7 @@ namespace PlusUi.core;
 public abstract class UiElement : IDisposable
 {
     private readonly Dictionary<string, List<Action>> _bindings = [];
+    private readonly List<PathBindingTracker> _pathBindings = [];
     protected readonly Dictionary<string, List<Action<object>>> _setter = [];
     protected bool _ignoreStyling;
 
@@ -35,9 +38,11 @@ public abstract class UiElement : IDisposable
         return this;
     }
 
-    public UiElement BindIsVisible(string propertyName, Func<bool> propertyGetter)
+    public UiElement BindIsVisible(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => IsVisible = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsVisible = getter());
         return this;
     }
     #endregion
@@ -49,9 +54,11 @@ public abstract class UiElement : IDisposable
         VisualOffset = offset;
         return this;
     }
-    public UiElement BindVisualOffset(string propertyName, Func<Point> propertyGetter)
+    public UiElement BindVisualOffset(Expression<Func<Point>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => VisualOffset = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => VisualOffset = getter());
         return this;
     }
     #endregion
@@ -63,9 +70,11 @@ public abstract class UiElement : IDisposable
         Opacity = Math.Clamp(opacity, 0f, 1f);
         return this;
     }
-    public UiElement BindOpacity(string propertyName, Func<float> propertyGetter)
+    public UiElement BindOpacity(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Opacity = Math.Clamp(propertyGetter(), 0f, 1f));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Opacity = Math.Clamp(getter(), 0f, 1f));
         return this;
     }
     #endregion
@@ -93,9 +102,11 @@ public abstract class UiElement : IDisposable
         return this;
     }
 
-    public UiElement BindBackground(string propertyName, Func<IBackground?> propertyGetter)
+    public UiElement BindBackground(Expression<Func<IBackground?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Background = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Background = getter());
         return this;
     }
 
@@ -103,47 +114,17 @@ public abstract class UiElement : IDisposable
     /// Binds a solid color background to a property.
     /// This is a convenience overload that internally creates a SolidColorBackground.
     /// </summary>
-    /// <param name="propertyName">The name of the property to bind to</param>
-    /// <param name="propertyGetter">Function that returns the color from the property</param>
-    public UiElement BindBackground(string propertyName, Func<Color> propertyGetter)
+    /// <param name="propertyExpression">Expression that returns the color from the property</param>
+    public UiElement BindBackgroundColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Background = new SolidColorBackground(propertyGetter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Background = new SolidColorBackground(getter()));
         return this;
     }
     #endregion
 
-    #region BackgroundColor (Deprecated - for backward compatibility)
-    /// <summary>
-    /// [Obsolete] Use SetBackground() instead. Background color of the element.
-    /// </summary>
-    [Obsolete("Use SetBackground() instead")]
-    internal Color BackgroundColor
-    {
-        get => (Background as SolidColorBackground)?.Color ?? Colors.Transparent;
-        set
-        {
-            Background = new SolidColorBackground(value);
-        }
-    }
-
-    /// <summary>
-    /// [Obsolete] Use SetBackground() instead.
-    /// </summary>
-    [Obsolete("Use SetBackground() instead")]
-    public UiElement SetBackgroundColor(Color color)
-    {
-        return SetBackground(new SolidColorBackground(color));
-    }
-
-    /// <summary>
-    /// [Obsolete] Use BindBackground() instead.
-    /// </summary>
-    [Obsolete("Use BindBackground() instead")]
-    public UiElement BindBackgroundColor(string propertyName, Func<Color> propertyGetter)
-    {
-        return BindBackground(propertyName, () => new SolidColorBackground(propertyGetter()));
-    }
-    #endregion
+    
 
     #region Margin
     internal Margin Margin
@@ -161,9 +142,11 @@ public abstract class UiElement : IDisposable
         Margin = margin;
         return this;
     }
-    public UiElement BindMargin(string propertyName, Func<Margin> propertyGetter)
+    public UiElement BindMargin(Expression<Func<Margin>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Margin = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Margin = getter());
         return this;
     }
     #endregion
@@ -184,9 +167,11 @@ public abstract class UiElement : IDisposable
         HorizontalAlignment = alignment;
         return this;
     }
-    public UiElement BindHorizontalAlignment(string propertyName, Func<HorizontalAlignment> propertyGetter)
+    public UiElement BindHorizontalAlignment(Expression<Func<HorizontalAlignment>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HorizontalAlignment = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HorizontalAlignment = getter());
         return this;
     }
     #endregion
@@ -207,9 +192,11 @@ public abstract class UiElement : IDisposable
         VerticalAlignment = alignment;
         return this;
     }
-    public UiElement BindVerticalAlignment(string propertyName, Func<VerticalAlignment> propertyGetter)
+    public UiElement BindVerticalAlignment(Expression<Func<VerticalAlignment>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => VerticalAlignment = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => VerticalAlignment = getter());
         return this;
     }
     #endregion
@@ -228,9 +215,11 @@ public abstract class UiElement : IDisposable
         CornerRadius = radius;
         return this;
     }
-    public UiElement BindCornerRadius(string propertyName, Func<float> propertyGetter)
+    public UiElement BindCornerRadius(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => CornerRadius = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => CornerRadius = getter());
         return this;
     }
     #endregion
@@ -250,9 +239,11 @@ public abstract class UiElement : IDisposable
         ShadowColor = color;
         return this;
     }
-    public UiElement BindShadowColor(string propertyName, Func<Color> propertyGetter)
+    public UiElement BindShadowColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ShadowColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ShadowColor = getter());
         return this;
     }
     #endregion
@@ -272,9 +263,11 @@ public abstract class UiElement : IDisposable
         ShadowOffset = offset;
         return this;
     }
-    public UiElement BindShadowOffset(string propertyName, Func<Point> propertyGetter)
+    public UiElement BindShadowOffset(Expression<Func<Point>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ShadowOffset = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ShadowOffset = getter());
         return this;
     }
     #endregion
@@ -294,9 +287,11 @@ public abstract class UiElement : IDisposable
         ShadowBlur = blur;
         return this;
     }
-    public UiElement BindShadowBlur(string propertyName, Func<float> propertyGetter)
+    public UiElement BindShadowBlur(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ShadowBlur = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ShadowBlur = getter());
         return this;
     }
     #endregion
@@ -308,9 +303,11 @@ public abstract class UiElement : IDisposable
         ShadowSpread = spread;
         return this;
     }
-    public UiElement BindShadowSpread(string propertyName, Func<float> propertyGetter)
+    public UiElement BindShadowSpread(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ShadowSpread = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ShadowSpread = getter());
         return this;
     }
     #endregion
@@ -331,9 +328,11 @@ public abstract class UiElement : IDisposable
         DesiredSize = size;
         return this;
     }
-    public UiElement BindDesiredSize(string propertyName, Func<Size> propertyGetter)
+    public UiElement BindDesiredSize(Expression<Func<Size>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => DesiredSize = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => DesiredSize = getter());
         return this;
     }
     public UiElement SetDesiredWidth(float width)
@@ -346,14 +345,18 @@ public abstract class UiElement : IDisposable
         DesiredSize = new Size(DesiredSize?.Width ?? -1, height);
         return this;
     }
-    public UiElement BindDesiredWidth(string propertyName, Func<float> propertyGetter)
+    public UiElement BindDesiredWidth(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => DesiredSize = new Size(propertyGetter(), DesiredSize?.Height ?? -1));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => DesiredSize = new Size(getter(), DesiredSize?.Height ?? -1));
         return this;
     }
-    public UiElement BindDesiredHeight(string propertyName, Func<float> propertyGetter)
+    public UiElement BindDesiredHeight(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => DesiredSize = new Size(DesiredSize?.Width ?? -1, propertyGetter()));
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => DesiredSize = new Size(DesiredSize?.Width ?? -1, getter()));
         return this;
     }
     #endregion
@@ -470,9 +473,11 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Binds the TabIndex property.
     /// </summary>
-    public UiElement BindTabIndex(string propertyName, Func<int?> propertyGetter)
+    public UiElement BindTabIndex(Expression<Func<int?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TabIndex = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TabIndex = getter());
         return this;
     }
 
@@ -488,9 +493,11 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Binds the TabStop property.
     /// </summary>
-    public UiElement BindTabStop(string propertyName, Func<bool> propertyGetter)
+    public UiElement BindTabStop(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TabStop = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TabStop = getter());
         return this;
     }
 
@@ -696,36 +703,44 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Binds the accessibility label.
     /// </summary>
-    public UiElement BindAccessibilityLabel(string propertyName, Func<string?> propertyGetter)
+    public UiElement BindAccessibilityLabel(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => AccessibilityLabel = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => AccessibilityLabel = getter());
         return this;
     }
 
     /// <summary>
     /// Binds the accessibility hint.
     /// </summary>
-    public UiElement BindAccessibilityHint(string propertyName, Func<string?> propertyGetter)
+    public UiElement BindAccessibilityHint(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => AccessibilityHint = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => AccessibilityHint = getter());
         return this;
     }
 
     /// <summary>
     /// Binds the accessibility value.
     /// </summary>
-    public UiElement BindAccessibilityValue(string propertyName, Func<string?> propertyGetter)
+    public UiElement BindAccessibilityValue(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => AccessibilityValue = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => AccessibilityValue = getter());
         return this;
     }
 
     /// <summary>
     /// Binds the accessibility traits.
     /// </summary>
-    public UiElement BindAccessibilityTraits(string propertyName, Func<AccessibilityTrait> propertyGetter)
+    public UiElement BindAccessibilityTraits(Expression<Func<AccessibilityTrait>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => AccessibilityTraits = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => AccessibilityTraits = getter());
         return this;
     }
 
@@ -921,6 +936,12 @@ public abstract class UiElement : IDisposable
                 field.PropertyChanged += OnContextPropertyChanged;
             }
 
+            // Update path bindings with new context
+            foreach (var tracker in _pathBindings)
+            {
+                tracker.SetContext(field);
+            }
+
             // Update all bindings with new context
             UpdateBindings();
         }
@@ -1105,6 +1126,20 @@ public abstract class UiElement : IDisposable
 
         UpdateBindings(propertyName);
     }
+
+    protected void RegisterPathBinding(string[] pathSegments, Action updateAction)
+    {
+        var tracker = new PathBindingTracker(pathSegments, updateAction);
+        tracker.SetContext(Context);
+        _pathBindings.Add(tracker);
+
+        // Also register with the old binding system for manual UpdateBindings() calls
+        // This ensures backward compatibility with tests and scenarios not using INotifyPropertyChanged
+        foreach (var segment in pathSegments)
+        {
+            RegisterBinding(segment, updateAction);
+        }
+    }
     protected void RegisterSetter<TValue>(string propertyName, Action<TValue> setter)
     {
         if (!_setter.TryGetValue(propertyName, out var setterActions))
@@ -1158,6 +1193,26 @@ public abstract class UiElement : IDisposable
             {
                 // ServiceProvider already disposed during shutdown - return null gracefully
                 return null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Helper property for accessing ExpressionPathService for binding path extraction.
+    /// Returns a fallback instance if ServiceProvider is not available (e.g., during tests).
+    /// </summary>
+    protected IExpressionPathService ExpressionPathService
+    {
+        get
+        {
+            try
+            {
+                return ServiceProviderService.ServiceProvider?.GetService<IExpressionPathService>()
+                    ?? new Binding.ExpressionPathService();
+            }
+            catch (ObjectDisposedException)
+            {
+                return new Binding.ExpressionPathService();
             }
         }
     }
@@ -1324,6 +1379,13 @@ public abstract class UiElement : IDisposable
             {
                 // Dispose managed resources
                 InvalidateShadowCache();
+
+                // Dispose path binding trackers
+                foreach (var tracker in _pathBindings)
+                {
+                    tracker.Dispose();
+                }
+                _pathBindings.Clear();
             }
 
             _disposed = true;

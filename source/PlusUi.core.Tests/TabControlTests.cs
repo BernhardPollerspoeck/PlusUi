@@ -13,7 +13,7 @@ public class TabControlTests
         tabControl.AddTab(new TabItem().SetHeader("Tab1").SetContent(new Label().SetText("Content1")));
 
         var position = TabPosition.Top;
-        tabControl.BindTabPosition("TestPosition", () => position);
+        tabControl.BindTabPosition(() => position);
 
         // Initial measure
         tabControl.Measure(new Size(500, 300));
@@ -21,7 +21,7 @@ public class TabControlTests
 
         // Act - change position and call UpdateBindings
         position = TabPosition.Right;
-        tabControl.UpdateBindings("TestPosition");
+        tabControl.UpdateBindings(nameof(position));
 
         // Assert - TabPosition should be updated
         Assert.AreEqual(TabPosition.Right, tabControl.TabPosition, "TabPosition should be updated via binding");
@@ -35,7 +35,7 @@ public class TabControlTests
         tabControl.AddTab(new TabItem().SetHeader("Tab1").SetContent(new Label().SetText("Content1")));
 
         var position = TabPosition.Top;
-        tabControl.BindTabPosition("TestPosition", () => position);
+        tabControl.BindTabPosition(() => position);
 
         // Initial measure
         tabControl.Measure(new Size(500, 300));
@@ -44,7 +44,7 @@ public class TabControlTests
 
         // Act - change position and call UpdateBindings, then Measure again
         position = TabPosition.Right;
-        tabControl.UpdateBindings("TestPosition");
+        tabControl.UpdateBindings(nameof(position));
         tabControl.Measure(new Size(500, 300));
 
         // Assert - MeasureInternal should have been called
@@ -63,7 +63,7 @@ public class TabControlTests
         var scrollView = new ScrollView(vstack).SetCanScrollHorizontally(false);
 
         var position = TabPosition.Top;
-        tabControl.BindTabPosition("TestPosition", () => position);
+        tabControl.BindTabPosition(() => position);
 
         // Initial measure with dontStretch (like ScrollView does)
         scrollView.Measure(new Size(500, 300));
@@ -72,7 +72,7 @@ public class TabControlTests
 
         // Act - change position and call UpdateBindings
         position = TabPosition.Right;
-        tabControl.UpdateBindings("TestPosition");
+        tabControl.UpdateBindings(nameof(position));
 
         // Measure again (simulating next frame)
         scrollView.Measure(new Size(500, 300));
@@ -94,7 +94,7 @@ public class TabControlTests
         var scrollView = new ScrollView(vstack).SetCanScrollHorizontally(false);
 
         var position = TabPosition.Top;
-        tabControl.BindTabPosition("TestPosition", () => position);
+        tabControl.BindTabPosition(() => position);
 
         // Initial measure
         scrollView.Measure(new Size(500, 300));
@@ -105,7 +105,7 @@ public class TabControlTests
 
         // Act - change position and call UpdateBindings
         position = TabPosition.Right;
-        tabControl.UpdateBindings("TestPosition");
+        tabControl.UpdateBindings(nameof(position));
 
         // Measure again (simulating next frame)
         scrollView.Measure(new Size(500, 300));

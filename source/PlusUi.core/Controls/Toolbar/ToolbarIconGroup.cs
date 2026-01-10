@@ -1,5 +1,6 @@
 using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -33,9 +34,11 @@ public partial class ToolbarIconGroup : UiLayoutElement<ToolbarIconGroup>
         ShowSeparator = show;
         return this;
     }
-    public ToolbarIconGroup BindSeparator(string propertyName, Func<bool> propertyGetter)
+    public ToolbarIconGroup BindSeparator(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ShowSeparator = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ShowSeparator = getter());
         return this;
     }
     #endregion
@@ -55,9 +58,11 @@ public partial class ToolbarIconGroup : UiLayoutElement<ToolbarIconGroup>
         Spacing = spacing;
         return this;
     }
-    public ToolbarIconGroup BindSpacing(string propertyName, Func<float> propertyGetter)
+    public ToolbarIconGroup BindSpacing(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Spacing = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Spacing = getter());
         return this;
     }
     #endregion
@@ -76,9 +81,11 @@ public partial class ToolbarIconGroup : UiLayoutElement<ToolbarIconGroup>
         Priority = priority;
         return this;
     }
-    public ToolbarIconGroup BindPriority(string propertyName, Func<int> propertyGetter)
+    public ToolbarIconGroup BindPriority(Expression<Func<int>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Priority = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Priority = getter());
         return this;
     }
     #endregion
@@ -98,9 +105,11 @@ public partial class ToolbarIconGroup : UiLayoutElement<ToolbarIconGroup>
         SeparatorColor = color;
         return this;
     }
-    public ToolbarIconGroup BindSeparatorColor(string propertyName, Func<SKColor> propertyGetter)
+    public ToolbarIconGroup BindSeparatorColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SeparatorColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SeparatorColor = getter());
         return this;
     }
     #endregion
@@ -120,9 +129,11 @@ public partial class ToolbarIconGroup : UiLayoutElement<ToolbarIconGroup>
         SeparatorWidth = width;
         return this;
     }
-    public ToolbarIconGroup BindSeparatorWidth(string propertyName, Func<float> propertyGetter)
+    public ToolbarIconGroup BindSeparatorWidth(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SeparatorWidth = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SeparatorWidth = getter());
         return this;
     }
     #endregion
@@ -142,9 +153,11 @@ public partial class ToolbarIconGroup : UiLayoutElement<ToolbarIconGroup>
         SeparatorMargin = margin;
         return this;
     }
-    public ToolbarIconGroup BindSeparatorMargin(string propertyName, Func<float> propertyGetter)
+    public ToolbarIconGroup BindSeparatorMargin(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => SeparatorMargin = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SeparatorMargin = getter());
         return this;
     }
     #endregion

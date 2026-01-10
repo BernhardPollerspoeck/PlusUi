@@ -4,6 +4,7 @@ using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -75,9 +76,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindItemsSource(string propertyName, Func<IEnumerable<T>?> propertyGetter)
+    public ComboBox<T> BindItemsSource(Expression<Func<IEnumerable<T>?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => ItemsSource = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ItemsSource = getter());
         return this;
     }
     #endregion
@@ -119,10 +122,16 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindSelectedItem(string propertyName, Func<T?> propertyGetter, Action<T?> propertySetter)
+    public ComboBox<T> BindSelectedItem(Expression<Func<T?>> propertyExpression, Action<T?> propertySetter)
     {
-        RegisterBinding(propertyName, () => SelectedItem = propertyGetter());
-        RegisterSetter(nameof(SelectedItem), propertySetter);
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedItem = getter());
+        foreach (var segment in path)
+        {
+            RegisterSetter<T?>(segment, propertySetter);
+        }
+        RegisterSetter<T?>(nameof(SelectedItem), propertySetter);
         return this;
     }
     #endregion
@@ -160,10 +169,16 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindSelectedIndex(string propertyName, Func<int> propertyGetter, Action<int> propertySetter)
+    public ComboBox<T> BindSelectedIndex(Expression<Func<int>> propertyExpression, Action<int> propertySetter)
     {
-        RegisterBinding(propertyName, () => SelectedIndex = propertyGetter());
-        RegisterSetter(nameof(SelectedIndex), propertySetter);
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedIndex = getter());
+        foreach (var segment in path)
+        {
+            RegisterSetter<int>(segment, propertySetter);
+        }
+        RegisterSetter<int>(nameof(SelectedIndex), propertySetter);
         return this;
     }
     #endregion
@@ -198,9 +213,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindIsOpen(string propertyName, Func<bool> propertyGetter)
+    public ComboBox<T> BindIsOpen(Expression<Func<bool>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => IsOpen = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsOpen = getter());
         return this;
     }
 
@@ -233,9 +250,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindPlaceholder(string propertyName, Func<string?> propertyGetter)
+    public ComboBox<T> BindPlaceholder(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Placeholder = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Placeholder = getter());
         return this;
     }
     #endregion
@@ -249,9 +268,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindPlaceholderColor(string propertyName, Func<SKColor> propertyGetter)
+    public ComboBox<T> BindPlaceholderColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => PlaceholderColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => PlaceholderColor = getter());
         return this;
     }
     #endregion
@@ -273,9 +294,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindTextColor(string propertyName, Func<SKColor> propertyGetter)
+    public ComboBox<T> BindTextColor(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextColor = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextColor = getter());
         return this;
     }
     #endregion
@@ -298,9 +321,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindTextSize(string propertyName, Func<float> propertyGetter)
+    public ComboBox<T> BindTextSize(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => TextSize = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextSize = getter());
         return this;
     }
     #endregion
@@ -315,9 +340,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindDisplayFunc(string propertyName, Func<Func<T, string>> propertyGetter)
+    public ComboBox<T> BindDisplayFunc(Expression<Func<Func<T, string>>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => DisplayFunc = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => DisplayFunc = getter());
         return this;
     }
     #endregion
@@ -339,9 +366,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindPadding(string propertyName, Func<Margin> propertyGetter)
+    public ComboBox<T> BindPadding(Expression<Func<Margin>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Padding = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Padding = getter());
         return this;
     }
     #endregion
@@ -355,9 +384,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindDropdownBackground(string propertyName, Func<SKColor> propertyGetter)
+    public ComboBox<T> BindDropdownBackground(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => DropdownBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => DropdownBackground = getter());
         return this;
     }
     #endregion
@@ -371,9 +402,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindHoverBackground(string propertyName, Func<SKColor> propertyGetter)
+    public ComboBox<T> BindHoverBackground(Expression<Func<SKColor>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => HoverBackground = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HoverBackground = getter());
         return this;
     }
     #endregion
@@ -396,11 +429,28 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         return this;
     }
 
-    public ComboBox<T> BindFontFamily(string propertyName, Func<string?> propertyGetter)
+    public ComboBox<T> BindFontFamily(Expression<Func<string?>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => FontFamily = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FontFamily = getter());
         return this;
     }
+    #endregion
+
+    #region OnSelectionChanged
+
+    private Action<T?>? _onSelectionChanged;
+
+    /// <summary>
+    /// Sets a callback that is invoked when the selection changes.
+    /// </summary>
+    public ComboBox<T> SetOnSelectionChanged(Action<T?> callback)
+    {
+        _onSelectionChanged = callback;
+        return this;
+    }
+
     #endregion
 
     private SKFont _font;
@@ -566,6 +616,9 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
 
         _selectedIndex = index;
         SelectedItem = _cachedItems[index];
+
+        // Invoke selection changed callback
+        _onSelectionChanged?.Invoke(SelectedItem);
 
         // Notify setters
         if (_setter.TryGetValue(nameof(SelectedItem), out var itemSetters))

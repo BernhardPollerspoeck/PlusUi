@@ -1,5 +1,6 @@
 using PlusUi.core.Attributes;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
@@ -33,9 +34,11 @@ public partial class Separator : UiElement
         return this;
     }
 
-    public Separator BindColor(string propertyName, Func<Color> propertyGetter)
+    public Separator BindColor(Expression<Func<Color>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Color = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Color = getter());
         return this;
     }
     #endregion
@@ -58,9 +61,11 @@ public partial class Separator : UiElement
         return this;
     }
 
-    public Separator BindThickness(string propertyName, Func<float> propertyGetter)
+    public Separator BindThickness(Expression<Func<float>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Thickness = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Thickness = getter());
         return this;
     }
     #endregion
@@ -82,9 +87,11 @@ public partial class Separator : UiElement
         return this;
     }
 
-    public Separator BindOrientation(string propertyName, Func<Orientation> propertyGetter)
+    public Separator BindOrientation(Expression<Func<Orientation>> propertyExpression)
     {
-        RegisterBinding(propertyName, () => Orientation = propertyGetter());
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Orientation = getter());
         return this;
     }
     #endregion

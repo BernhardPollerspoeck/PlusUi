@@ -93,7 +93,6 @@ public class LogsView : UserControl
             });
 
         button.BindBackground(
-            nameof(_viewModel.LogLevelFilter),
             () => _viewModel.LogLevelFilter == level
                 ? new SolidColorBackground(GetLogLevelColor(level))
                 : new SolidColorBackground(new Color(50, 50, 50)));
@@ -107,9 +106,7 @@ public class LogsView : UserControl
             .SetOrientation(Orientation.Vertical)
             .SetItemTemplate((log, index) => CreateLogItem(log));
 
-        list.BindItemsSource(
-            nameof(_viewModel.FilteredLogs),
-            () => _viewModel.FilteredLogs);
+        list.BindItemsSource(() => _viewModel.FilteredLogs);
 
         return list;
     }

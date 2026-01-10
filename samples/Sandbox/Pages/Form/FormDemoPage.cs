@@ -1,5 +1,6 @@
 ﻿using PlusUi.core;
 using SkiaSharp;
+using System.Linq.Expressions;
 
 namespace Sandbox.Pages.Form;
 
@@ -47,9 +48,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                                         .SetTextColor(Colors.White)
                                         .SetVerticalAlignment(VerticalAlignment.Center),
                                     new Checkbox()
-                                        .BindIsChecked(nameof(vm.ReceiveNotifications),
-                                            () => vm.ReceiveNotifications,
-                                            (v) => vm.ReceiveNotifications = v)
+                                        .BindIsChecked(() => vm.ReceiveNotifications, v => vm.ReceiveNotifications = v)
                                         .SetMargin(new Margin(5, 0, 0, 0))
                                 ).SetMargin(new Margin(0, 5)),
                                 new HStack(
@@ -58,9 +57,7 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
                                         .SetTextColor(Colors.White)
                                         .SetVerticalAlignment(VerticalAlignment.Center),
                                     new Checkbox()
-                                        .BindIsChecked(nameof(vm.DarkMode),
-                                            () => vm.DarkMode,
-                                            (v) => vm.DarkMode = v)
+                                        .BindIsChecked(() => vm.DarkMode, v => vm.DarkMode = v)
                                         .SetMargin(new Margin(5, 0, 0, 0))
                                 ).SetMargin(new Margin(0, 5))
                             )
@@ -122,7 +119,8 @@ public class FormDemoPage(FormDemoPageViewModel vm) : UiPageElement(vm)
     private static UiElement CreateFormField(string label, string bindingValue, Action<string> setter, KeyboardType keyboardType = KeyboardType.Default, bool isPassword = false)
     {
         var entry = new Entry()
-            .BindText(label, () => bindingValue, setter)
+            .SetText(bindingValue)
+            .SetOnTextChanged(value => setter(value ?? string.Empty))
             .SetPadding(new Margin(10, 8))
             .SetTextColor(Colors.White)
             .SetCornerRadius(10)
