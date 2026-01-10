@@ -1,25 +1,12 @@
-# Debug Server TODO
+TODO
 
 **Checkbox Legend:** `[Done] [Verified]`
 - First checkbox: Implementation completed by Claude
 - Second checkbox: Tested and verified by user
 
-## Summary
-- **Section 1 - Tree Improvements:** 6/9 done
-- **Section 2 - Property Grid:** 1/5 done
-- **Section 3 - Change Tracking:** 0/6 done
-- **Section 4 - Logging:** 3/4 done
-- **Section 5 - Performance:** 0/6 done
-- **Section 6 - Screenshot:** 0/3 done
-- **Section 7 - Logging Cleanup:** 3/3 done ✅
-- **Section 8 - Layout Viz:** 1/2 done
-- **Section 9 - Multi-App UI:** 6/9 done
-
-**Total Progress: 20/46 tasks completed (43%)**
-
 ## High Priority
 
-### 1. Tree Improvements
+### 1. DebugServer Tree Improvements
 - [ ] [ ] 1.1 Update tree incrementally instead of full reload (including better navigation handling when pages change)
 - [x] [x] 1.2 Add page prefix to element IDs for uniqueness (e.g., `MainPage.Button_123`)
 - [ ] [ ] 1.3 Maintain expansion state during updates
@@ -30,14 +17,14 @@
 - [x] [x] 1.8 Add scrollbar visualization to TreeView - currently no visual scrollbar shown
 - [x] [x] 1.9 Fix TreeView expand/collapse click area - click position is registered too high up
 
-### 2. Property Grid Improvements
+### 2. DebugServer Property Grid Improvements
 - [x] [ ] 2.1 Pin properties per element type (implemented with BindText/BindTextColor)
 - [ ] [ ] 2.2 Pinned properties appear at top of property list (BUG: shows pinned properties at top for ALL elements, not filtered by element type)
 - [ ] [ ] 2.3 Fix property display bugs - colors not displayed correctly
 - [ ] [ ] 2.4 Fix property offset display - selection feels incorrect
 - [ ] [ ] 2.5 Fix color property update - color values cannot be updated
 
-### 3. Change Tracking & Reset
+### 3. DebugServer Change Tracking & Reset
 - [ ] [ ] 3.1 Track all property changes made in debug session
 - [ ] [ ] 3.2 Persist changes across navigation (re-apply when navigating back to page)
 - [ ] [ ] 3.3 Generate change list: which element, which values changed
@@ -45,13 +32,13 @@
 - [ ] [ ] 3.5 Show modified indicator on changed properties
 - [ ] [ ] 3.6 Style overrides (per page and global)
 
-### 4. Logging
+### 4. DebugServer Logging
 - [x] [x] 4.1 Log output panel in debug server UI
 - [x] [x] 4.2 Log level filtering (Debug, Info, Warning, Error)
 - [x] [x] 4.3 Cleanup: Remove console.log, use ILogger everywhere
 - [ ] [ ] 4.4 Event tracing (button clicks, navigation, etc.)
 
-### 5. Performance Monitor
+### 5. DebugServer Performance Monitor
 - [ ] [ ] 5.1 FPS counter
 - [ ] [ ] 5.2 Memory usage
 - [ ] [ ] 5.3 Render time per frame
@@ -61,23 +48,23 @@
 
 ## Medium Priority
 
-### 6. Screenshot
+### 6. DebugServer Screenshot
 - [ ] [ ] 6.1 Capture current UI state as image
 - [ ] [ ] 6.2 Save to file or clipboard
 - [ ] [ ] 6.3 Capture specific element or full page
 
-### 7. Logging Cleanup
+### 7. DebugServer Logging Cleanup
 - [x] [x] 7.1 Audit codebase for Console.WriteLine/Debug.WriteLine
 - [x] [x] 7.2 Replace with ILogger calls
 - [x] [x] 7.3 Ensure proper log levels
 
 ## Low Priority / Future
 
-### 8. Layout Visualization
+### 8. DebugServer Layout Visualization
 - [ ] [ ] 8.1 Wireframe overlay showing element bounds (server-side feature to toggle debug visualization remotely)
 - [x] [x] 8.2 Margin/padding visualization (PlusUi.core - implemented with IsDebug property)
 
-### 9. UI Layout & Multi-App Support
+### 9. DebugServer UI Layout & Multi-App Support
 **Target Layout:**
 ```
 ┌──────────────────────────────────────────────────────────┐
