@@ -10,6 +10,26 @@ public partial class Scrollbar : UiElement<Scrollbar>, IDraggableControl
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Scrollbar;
     protected internal override bool IsFocusable => false;
 
+    public override string? GetComputedAccessibilityLabel()
+    {
+        if (AccessibilityLabel != null) return AccessibilityLabel;
+        return Orientation == ScrollbarOrientation.Vertical ? "Vertical scrollbar" : "Horizontal scrollbar";
+    }
+
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (AccessibilityValue != null) return AccessibilityValue;
+        var percentage = (int)(Value * 100);
+        return $"{percentage}%";
+    }
+
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (IsDragging) traits |= AccessibilityTrait.Pressed;
+        return traits;
+    }
+
     private float _maxScrollOffset;
     private Action<float>? _onValueChanged;
 

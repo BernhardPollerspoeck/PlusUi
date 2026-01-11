@@ -22,6 +22,18 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Border : UiLayoutElement
 {
+    public override string? GetComputedAccessibilityLabel()
+    {
+        if (AccessibilityLabel != null) return AccessibilityLabel;
+        return Children.Count > 0 ? "Border container" : null;
+    }
+
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (AccessibilityValue != null) return AccessibilityValue;
+        return Children.Count > 0 ? $"{Children.Count} child element{(Children.Count == 1 ? "" : "s")}" : null;
+    }
+
     #region StrokeColor
     internal Color StrokeColor
     {

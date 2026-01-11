@@ -27,6 +27,18 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class HStack : UiLayoutElement
 {
+    public override string? GetComputedAccessibilityLabel()
+    {
+        if (AccessibilityLabel != null) return AccessibilityLabel;
+        return Children.Count > 0 ? "Horizontal stack" : null;
+    }
+
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (AccessibilityValue != null) return AccessibilityValue;
+        return Children.Count > 0 ? $"{Children.Count} item{(Children.Count == 1 ? "" : "s")}" : null;
+    }
+
     public HStack(params UiElement[] elements)
     {
         foreach (var element in elements)

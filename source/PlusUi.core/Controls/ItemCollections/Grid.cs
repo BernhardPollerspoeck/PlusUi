@@ -29,6 +29,18 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Grid : UiLayoutElement
 {
+    public override string? GetComputedAccessibilityLabel()
+    {
+        if (AccessibilityLabel != null) return AccessibilityLabel;
+        return Children.Count > 0 ? $"Grid layout ({_rows.Count} rows, {_columns.Count} columns)" : null;
+    }
+
+    public override string? GetComputedAccessibilityValue()
+    {
+        if (AccessibilityValue != null) return AccessibilityValue;
+        return Children.Count > 0 ? $"{Children.Count} item{(Children.Count == 1 ? "" : "s")}" : null;
+    }
+
     public override INotifyPropertyChanged? Context
     {
         get => base.Context;

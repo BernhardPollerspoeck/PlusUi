@@ -27,6 +27,13 @@ public abstract class UiElement : IDisposable
         Debug = debug;
         return this;
     }
+    public UiElement BindDebug(Expression<Func<bool>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Debug = getter());
+        return this;
+    }
     #endregion
 
     #region IsVisible
@@ -511,6 +518,17 @@ public abstract class UiElement : IDisposable
     }
 
     /// <summary>
+    /// Binds the focus ring color.
+    /// </summary>
+    public UiElement BindFocusRingColor(Expression<Func<Color>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FocusRingColor = getter());
+        return this;
+    }
+
+    /// <summary>
     /// Sets the focus ring width.
     /// </summary>
     public UiElement SetFocusRingWidth(float width)
@@ -520,11 +538,33 @@ public abstract class UiElement : IDisposable
     }
 
     /// <summary>
+    /// Binds the focus ring width.
+    /// </summary>
+    public UiElement BindFocusRingWidth(Expression<Func<float>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FocusRingWidth = getter());
+        return this;
+    }
+
+    /// <summary>
     /// Sets the focus ring offset from element bounds.
     /// </summary>
     public UiElement SetFocusRingOffset(float offset)
     {
         FocusRingOffset = offset;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the focus ring offset.
+    /// </summary>
+    public UiElement BindFocusRingOffset(Expression<Func<float>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FocusRingOffset = getter());
         return this;
     }
 
@@ -547,11 +587,44 @@ public abstract class UiElement : IDisposable
     }
 
     /// <summary>
+    /// Binds the focused background.
+    /// </summary>
+    public UiElement BindFocusedBackground(Expression<Func<IBackground?>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FocusedBackground = getter());
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the focused background as a solid color.
+    /// </summary>
+    public UiElement BindFocusedBackgroundColor(Expression<Func<Color>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FocusedBackground = new SolidColorBackground(getter()));
+        return this;
+    }
+
+    /// <summary>
     /// Sets the border color to use when the element has focus.
     /// </summary>
     public UiElement SetFocusedBorderColor(Color? color)
     {
         FocusedBorderColor = color;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the focused border color.
+    /// </summary>
+    public UiElement BindFocusedBorderColor(Expression<Func<Color?>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FocusedBorderColor = getter());
         return this;
     }
 
@@ -701,6 +774,17 @@ public abstract class UiElement : IDisposable
     }
 
     /// <summary>
+    /// Binds whether this element should be exposed to assistive technologies.
+    /// </summary>
+    public UiElement BindIsAccessibilityElement(Expression<Func<bool>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsAccessibilityElement = getter());
+        return this;
+    }
+
+    /// <summary>
     /// Binds the accessibility label.
     /// </summary>
     public UiElement BindAccessibilityLabel(Expression<Func<string?>> propertyExpression)
@@ -817,11 +901,44 @@ public abstract class UiElement : IDisposable
     }
 
     /// <summary>
+    /// Binds the high contrast background.
+    /// </summary>
+    public UiElement BindHighContrastBackground(Expression<Func<IBackground?>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HighContrastBackground = getter());
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the high contrast background as a solid color.
+    /// </summary>
+    public UiElement BindHighContrastBackgroundColor(Expression<Func<Color>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HighContrastBackground = new SolidColorBackground(getter()));
+        return this;
+    }
+
+    /// <summary>
     /// Sets the high contrast foreground color.
     /// </summary>
     public UiElement SetHighContrastForeground(Color color)
     {
         HighContrastForeground = color;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the high contrast foreground color.
+    /// </summary>
+    public UiElement BindHighContrastForeground(Expression<Func<Color>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HighContrastForeground = getter());
         return this;
     }
 
@@ -891,6 +1008,17 @@ public abstract class UiElement : IDisposable
     public UiElement SetEnforceMinimumTouchTarget(bool enforce)
     {
         _enforceMinimumTouchTarget = enforce;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds whether to enforce minimum touch target size for accessibility.
+    /// </summary>
+    public UiElement BindEnforceMinimumTouchTarget(Expression<Func<bool>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => _enforceMinimumTouchTarget = getter());
         return this;
     }
 
