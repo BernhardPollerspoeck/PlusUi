@@ -409,51 +409,52 @@ internal class DebugTreeInspector
 
     /// <summary>
     /// Creates a new struct instance with one property modified.
-    /// Used for readonly structs with primary constructors like Point, Size, etc.
+    /// Used for readonly structs with primary constructors like Point, Size, Color, etc.
     /// </summary>
     private object CreateStructWithModifiedProperty(object structInstance, string propertyName, object? newValue)
     {
         var structType = structInstance.GetType();
 
-        // Get all public properties
+        // Get all public properties as a dictionary for fast lookup
         var properties = structType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .OrderBy(p => p.MetadataToken) // Preserve declaration order
-            .ToArray();
+            .ToDictionary(p => p.Name, p => p, StringComparer.OrdinalIgnoreCase);
 
-        // Try to find a constructor that matches the properties
-        var constructors = structType.GetConstructors();
+        // Try to find a constructor where all parameters can be matched to properties by name
+        var constructors = structType.GetConstructors()
+            .OrderByDescending(c => c.GetParameters().Length); // Prefer constructors with more parameters
 
-        // Look for primary constructor (matches property count and types)
         foreach (var ctor in constructors)
         {
             var parameters = ctor.GetParameters();
-            if (parameters.Length != properties.Length)
+            if (parameters.Length == 0)
                 continue;
 
-            // Check if parameter types match property types
-            bool matches = true;
-            for (int i = 0; i < parameters.Length; i++)
+            // Check if all parameters can be matched to properties by name
+            bool allParametersMatch = true;
+            foreach (var param in parameters)
             {
-                if (parameters[i].ParameterType != properties[i].PropertyType)
+                if (!properties.TryGetValue(param.Name!, out var prop) ||
+                    prop.PropertyType != param.ParameterType)
                 {
-                    matches = false;
+                    allParametersMatch = false;
                     break;
                 }
             }
 
-            if (matches)
+            if (allParametersMatch)
             {
-                // Build arguments for constructor
+                // Build arguments for constructor by matching parameter names to properties
                 var args = new object?[parameters.Length];
-                for (int i = 0; i < properties.Length; i++)
+                for (int i = 0; i < parameters.Length; i++)
                 {
-                    if (string.Equals(properties[i].Name, propertyName, StringComparison.OrdinalIgnoreCase))
+                    var paramName = parameters[i].Name!;
+                    if (string.Equals(paramName, propertyName, StringComparison.OrdinalIgnoreCase))
                     {
                         args[i] = newValue;
                     }
-                    else
+                    else if (properties.TryGetValue(paramName, out var prop))
                     {
-                        args[i] = properties[i].GetValue(structInstance);
+                        args[i] = prop.GetValue(structInstance);
                     }
                 }
 

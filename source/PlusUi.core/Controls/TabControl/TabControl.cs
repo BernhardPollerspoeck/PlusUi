@@ -709,7 +709,8 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
             ? new Size(availableSize.Width, availableSize.Height - _headerHeight)
             : new Size(availableSize.Width - _headerWidth, availableSize.Height);
 
-        foreach (var tab in _tabs)
+        // Use snapshot to avoid collection modified exception during shutdown
+        foreach (var tab in _tabs.ToList())
         {
             tab.Content?.Measure(contentAvailable, dontStretch);
         }
@@ -724,7 +725,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
 
         if (_headerFont == null) return;
 
-        foreach (var tab in _tabs)
+        foreach (var tab in _tabs.ToList())
         {
             var textWidth = _headerFont.MeasureText(tab.Header);
             var tabWidth = textWidth + TabPadding.Left + TabPadding.Right;
@@ -747,7 +748,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
 
         if (_headerFont == null) return;
 
-        foreach (var tab in _tabs)
+        foreach (var tab in _tabs.ToList())
         {
             var textWidth = _headerFont.MeasureText(tab.Header);
             var tabWidth = textWidth + TabPadding.Left + TabPadding.Right + TabIndicatorHeight;
@@ -768,7 +769,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         var contentBounds = GetContentBounds(bounds);
 
         // Arrange all tab contents so they have correct positions when scrolling
-        foreach (var tab in _tabs)
+        foreach (var tab in _tabs.ToList())
         {
             tab.Content?.Arrange(contentBounds);
         }
@@ -1024,7 +1025,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     public override void BuildContent()
     {
         base.BuildContent();
-        foreach (var tab in _tabs)
+        foreach (var tab in _tabs.ToList())
         {
             tab.Content?.BuildContent();
         }
@@ -1036,7 +1037,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     {
         ForceInvalidateMeasureToRoot();
 
-        foreach (var tab in _tabs)
+        foreach (var tab in _tabs.ToList())
         {
             tab.Content?.InvalidateMeasure();
         }
@@ -1047,7 +1048,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     protected override void UpdateBindingsInternal()
     {
         base.UpdateBindingsInternal();
-        foreach (var tab in _tabs)
+        foreach (var tab in _tabs.ToList())
         {
             tab.Content?.UpdateBindings();
         }
@@ -1056,7 +1057,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     protected override void UpdateBindingsInternal(string propertyName)
     {
         base.UpdateBindingsInternal(propertyName);
-        foreach (var tab in _tabs)
+        foreach (var tab in _tabs.ToList())
         {
             tab.Content?.UpdateBindings(propertyName);
         }
@@ -1067,7 +1068,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
     public override void ApplyStyles()
     {
         base.ApplyStyles();
-        foreach (var tab in _tabs)
+        foreach (var tab in _tabs.ToList())
         {
             tab.Content?.ApplyStyles();
         }
@@ -1094,7 +1095,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
                 PaintRegistry.Release(_disabledHeaderPaint, _headerFont);
             }
 
-            foreach (var tab in _tabs)
+            foreach (var tab in _tabs.ToList())
             {
                 tab.Content?.Dispose();
             }

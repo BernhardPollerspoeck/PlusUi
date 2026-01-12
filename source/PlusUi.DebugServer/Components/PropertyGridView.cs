@@ -21,7 +21,7 @@ internal class PropertyGridView : UserControl
     protected override UiElement Build()
     {
         var treeView = new TreeView();
-        treeView.BindItemsSource(() => SortProperties(_viewModel.SelectedProperties));
+        treeView.BindItemsSource(() => _viewModel.SortedProperties);
         treeView.SetChildrenSelector<PropertyDto>(prop => prop.Children);
         treeView.SetItemTemplate((item, depth) =>
         {
@@ -59,12 +59,11 @@ internal class PropertyGridView : UserControl
                         .SetVerticalAlignment(VerticalAlignment.Center)
                         .SetHorizontalAlignment(HorizontalAlignment.Left))
                     .AddChild(new Button()
-                        .SetText("✏")
-                        .SetTextSize(12)
-                        .SetTextColor(Colors.LightBlue)
+                        .SetIcon("pencil.svg")
+                        .SetIconTintColor(Colors.LightBlue)
                         .SetBackground(new Color(50, 50, 50))
                         .SetHoverBackground(new SolidColorBackground(new Color(70, 70, 70)))
-                        .SetPadding(new Margin(6, 2))
+                        .SetPadding(new Margin(6, 4))
                         .SetMargin(new Margin(8, 0, 0, 0))
                         .SetCornerRadius(3)
                         .SetCommand(_viewModel.EditPropertyCommand)
@@ -108,37 +107,23 @@ internal class PropertyGridView : UserControl
         return treeView;
     }
 
-    private IEnumerable<object> SortProperties(IEnumerable<PropertyDto> properties)
-    {
-        if (_viewModel.SelectedNode == null)
-            return properties;
-
-        var elementType = _viewModel.SelectedNode.Type;
-        var pinnedProps = _viewModel.PinnedPropertiesService.GetPinnedProperties(elementType);
-
-        return properties
-            .OrderByDescending(p => pinnedProps.Contains(p.Path))
-            .ThenBy(p => p.Name);
-    }
-
     private Button CreatePinButton(PropertyDto prop)
     {
-        var elementType = _viewModel.SelectedNode?.Type ?? "";
-
         return new Button()
-            .BindText(() => _viewModel.PinnedPropertiesService.IsPinned(elementType, prop.Path) ? "📌" : "📍")
-            .SetTextSize(12)
-            .BindTextColor(() => _viewModel.PinnedPropertiesService.IsPinned(elementType, prop.Path)
+            .BindIcon(() => _viewModel.PinnedPropertiesService.IsPinned(_viewModel.CurrentElementType, prop.Path)
+                ? "pin.svg"
+                : "pin-outline.svg")
+            .BindIconTintColor(() => _viewModel.PinnedPropertiesService.IsPinned(_viewModel.CurrentElementType, prop.Path)
                     ? Colors.Yellow
                     : new Color(150, 150, 150))
             .SetBackground(Colors.Transparent)
             .SetHoverBackground(new SolidColorBackground(new Color(50, 50, 50)))
-            .SetPadding(new Margin(4, 2))
+            .SetPadding(new Margin(4, 4))
             .SetMargin(new Margin(4, 0, 0, 0))
             .SetCornerRadius(3)
             .SetCommand(new RelayCommand(() =>
             {
-                _viewModel.PinnedPropertiesService.TogglePin(elementType, prop.Path);
+                _viewModel.PinnedPropertiesService.TogglePin(_viewModel.CurrentElementType, prop.Path);
                 _viewModel.RefreshProperties();
             }));
     }

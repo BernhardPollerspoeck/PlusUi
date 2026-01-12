@@ -49,6 +49,28 @@ internal partial class MainViewModel : ObservableObject, IDisposable
 
     public bool HasConnectedApps => AppTabs.Count > 0;
     public PinnedPropertiesService PinnedPropertiesService => _pinnedPropertiesService;
+    public string CurrentElementType => SelectedNode?.Type ?? "";
+
+    /// <summary>
+    /// Properties sorted with pinned items first, then alphabetically.
+    /// </summary>
+    public ObservableCollection<PropertyDto> SortedProperties { get; } = [];
+
+    private void UpdateSortedProperties()
+    {
+        SortedProperties.Clear();
+
+        IEnumerable<PropertyDto> sorted = SelectedNode == null
+            ? SelectedProperties
+            : SelectedProperties
+                .OrderByDescending(p => _pinnedPropertiesService.GetPinnedProperties(SelectedNode.Type).Contains(p.Path))
+                .ThenBy(p => p.Name);
+
+        foreach (var prop in sorted)
+        {
+            SortedProperties.Add(prop);
+        }
+    }
 
     public MainViewModel(DebugBridgeServer server, IPopupService popupService, ILogger<MainViewModel> logger, PinnedPropertiesService pinnedPropertiesService)
     {
@@ -128,6 +150,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
         {
             SelectedApp.SelectedNode = value;
         }
+        UpdateSortedProperties();
     }
 
     private void OnAppPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -202,6 +225,8 @@ internal partial class MainViewModel : ObservableObject, IDisposable
                 SelectedProperties.Remove(item);
             }
         }
+
+        UpdateSortedProperties();
     }
 
     private void OnAppFilteredLogsChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -310,7 +335,8 @@ internal partial class MainViewModel : ObservableObject, IDisposable
         _apps[clientId] = app;
 
         var tabItem = new TabItem()
-            .SetHeader($"● {clientId}")
+            .SetIcon("circle-filled.svg")
+            .SetHeader(clientId)
             .SetTag(clientId)  // Store clientId in Tag
             .SetContent(new AppContentView(this));
 
@@ -528,7 +554,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
 
     public void RefreshProperties()
     {
-        OnPropertyChanged(nameof(SelectedProperties));
+        UpdateSortedProperties();
     }
 
     public void CloseApp(string appId)
@@ -541,7 +567,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
             _apps.Remove(appId);
         }
 
-        var tabToRemove = AppTabs.FirstOrDefault(t => t.Header == $"● {appId}");
+        var tabToRemove = AppTabs.FirstOrDefault(t => t.Tag as string == appId);
         if (tabToRemove != null)
         {
             var index = AppTabs.IndexOf(tabToRemove);

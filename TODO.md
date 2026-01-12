@@ -6,7 +6,7 @@ TODO
 |---------|-------------|------|-------|----------|-----------|
 | 0 | Random stuff | 8 | 11 | 🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 73% | ~3 weeks |
 | 1 | DebugServer: Tree | 6 | 9 | 🟩🟩🟩🟩🟩🟩⬜⬜⬜ 67% | ~1.5 days |
-| 2 | DebugServer: Property Grid | 1 | 5 | 🟩⬜⬜⬜⬜ 20% | ~5 hrs |
+| 2 | DebugServer: Property Grid | 5 | 5 | 🟩🟩🟩🟩🟩 100% | ✅ Done |
 | 3 | DebugServer: Change Tracking | 0 | 6 | ⬜⬜⬜⬜⬜⬜ 0% | ~2 days |
 | 4 | DebugServer: Logging | 3 | 4 | 🟩🟩🟩⬜ 75% | ~4 hrs |
 | 5 | DebugServer: Performance | 0 | 6 | ⬜⬜⬜⬜⬜⬜ 0% | ~2.5 days |
@@ -14,7 +14,7 @@ TODO
 | 7 | DebugServer: Logging Cleanup | 3 | 3 | 🟩🟩🟩 100% | ✅ Done |
 | 8 | DebugServer: Layout Vis | 1 | 2 | 🟩⬜ 50% | ~2 hrs |
 | 9 | DebugServer: Multi-App | 5 | 9 | 🟩🟩🟩🟩🟩⬜⬜⬜⬜ 56% | ~4 days |
-| **Total** | | **27** | **58** | **47%** | **~5 weeks** |
+| **Total** | | **31** | **58** | **53%** | **~4.5 weeks** |
 
 ---
 
@@ -66,11 +66,11 @@ TODO
 - [x] [x] 1.9 Fix TreeView expand/collapse click area - click position is registered too high up
 
 ### 2. DebugServer Property Grid Improvements
-- [x] [ ] 2.1 Pin properties per element type (implemented with BindText/BindTextColor)
-- [ ] [ ] 2.2 3️⃣ Pinned properties appear at top of property list (BUG: shows pinned properties at top for ALL elements, not filtered by element type)
-- [ ] [ ] 2.3 3️⃣ Fix property display bugs - colors not displayed correctly
-- [ ] [ ] 2.4 2️⃣ Fix property offset display - selection feels incorrect
-- [ ] [ ] 2.5 4️⃣ Fix color property update - color values cannot be updated
+- [x] [x] 2.1 Pin properties per element type (implemented with BindText/BindTextColor)
+- [x] [x] 2.2 3️⃣ Pinned properties appear at top of property list (BUG: shows pinned properties at top for ALL elements, not filtered by element type)
+- [x] [x] 2.3 3️⃣ Fix property display bugs - colors not displayed correctly
+- [x] [x] 2.4 2️⃣ Fix property offset display - selection feels incorrect
+- [x] [x] 2.5 4️⃣ Fix color property update - color values cannot be updated
 
 ### 3. DebugServer Change Tracking & Reset
 - [ ] [ ] 3.1 5️⃣ Track all property changes made in debug session
