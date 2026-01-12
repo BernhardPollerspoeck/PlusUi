@@ -5,7 +5,7 @@ namespace PlusUi.core.Binding;
 
 internal class PathBindingTracker(string[] pathSegments, Action updateAction) : IDisposable
 {
-    private readonly List<(INotifyPropertyChanged obj, PropertyChangedEventHandler handler)> _subscriptions = new();
+    private readonly List<(INotifyPropertyChanged obj, PropertyChangedEventHandler handler)> _subscriptions = [];
     private object? _rootContext;
     private bool _disposed;
 

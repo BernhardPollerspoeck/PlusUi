@@ -10,7 +10,7 @@ public class NavigationStackTests
     // Test ViewModels
     private class TestViewModel : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged { add { } remove { } }
     }
 
     // Test Pages

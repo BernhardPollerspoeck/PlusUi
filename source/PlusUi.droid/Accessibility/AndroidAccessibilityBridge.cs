@@ -66,7 +66,7 @@ public sealed class AndroidAccessibilityBridge : IAccessibilityBridge
         try
         {
             // Use AccessibilityEvent.TYPE_ANNOUNCEMENT for TalkBack announcements
-            var announcement = AccessibilityEvent.Obtain(EventTypes.Announcement);
+            var announcement = CreateAccessibilityEvent(EventTypes.Announcement);
             if (announcement != null)
             {
                 announcement.Text?.Add(new Java.Lang.String(message));
@@ -119,7 +119,7 @@ public sealed class AndroidAccessibilityBridge : IAccessibilityBridge
             var virtualViewId = GetVirtualViewId(element);
 
             // Send content changed event
-            var evt = AccessibilityEvent.Obtain(EventTypes.WindowContentChanged);
+            var evt = CreateAccessibilityEvent(EventTypes.WindowContentChanged);
             if (evt != null)
             {
                 evt.ContentChangeTypes = ContentChangeTypes.Text;
@@ -146,7 +146,7 @@ public sealed class AndroidAccessibilityBridge : IAccessibilityBridge
             // Invalidate the virtual view hierarchy
             _nodeProvider?.InvalidateVirtualView();
 
-            var evt = AccessibilityEvent.Obtain(EventTypes.WindowContentChanged);
+            var evt = CreateAccessibilityEvent(EventTypes.WindowContentChanged);
             if (evt != null)
             {
                 evt.ContentChangeTypes = ContentChangeTypes.Subtree;
@@ -172,7 +172,7 @@ public sealed class AndroidAccessibilityBridge : IAccessibilityBridge
         {
             var virtualViewId = GetVirtualViewId(element);
 
-            var evt = AccessibilityEvent.Obtain(EventTypes.WindowContentChanged);
+            var evt = CreateAccessibilityEvent(EventTypes.WindowContentChanged);
             if (evt != null)
             {
                 evt.ContentChangeTypes = ContentChangeTypes.ContentDescription;
@@ -207,5 +207,15 @@ public sealed class AndroidAccessibilityBridge : IAccessibilityBridge
         // Use element's hash code as virtual view ID
         // In a full implementation, you'd maintain a mapping
         return element.GetHashCode();
+    }
+
+    private static AccessibilityEvent? CreateAccessibilityEvent(EventTypes eventType)
+    {
+        if (OperatingSystem.IsAndroidVersionAtLeast(33))
+        {
+            return new AccessibilityEvent((int)eventType);
+        }
+
+        return AccessibilityEvent.Obtain(eventType);
     }
 }

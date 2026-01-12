@@ -26,7 +26,7 @@ public sealed class ToolbarTests
         // Assert
         Assert.AreEqual(0, toolbar.Position.X);
         Assert.AreEqual(0, toolbar.Position.Y);
-        Assert.IsTrue(toolbar.ElementSize.Height <= 56);
+        Assert.IsLessThanOrEqualTo(56, toolbar.ElementSize.Height);
     }
 
     [TestMethod]
@@ -87,7 +87,7 @@ public sealed class ToolbarTests
         toolbar.Arrange(new Rect(0, 0, 800, 56));
 
         // Assert
-        Assert.AreEqual(1, toolbar.LeftItems.Count);
+        Assert.HasCount(1, toolbar.LeftItems);
         Assert.AreEqual(menuButton, toolbar.LeftItems[0]);
     }
 
@@ -111,7 +111,7 @@ public sealed class ToolbarTests
         toolbar.Arrange(new Rect(0, 0, 800, 56));
 
         // Assert
-        Assert.AreEqual(1, toolbar.RightItems.Count);
+        Assert.HasCount(1, toolbar.RightItems);
         Assert.AreEqual(searchButton, toolbar.RightItems[0]);
     }
 
@@ -140,8 +140,8 @@ public sealed class ToolbarTests
         toolbar.Arrange(new Rect(0, 0, 800, 56));
 
         // Assert
-        Assert.AreEqual(1, toolbar.LeftItems.Count);
-        Assert.AreEqual(1, toolbar.RightItems.Count);
+        Assert.HasCount(1, toolbar.LeftItems);
+        Assert.HasCount(1, toolbar.RightItems);
     }
 
     #endregion
@@ -161,7 +161,7 @@ public sealed class ToolbarTests
             .SetPriority(10);
 
         // Assert
-        Assert.AreEqual(2, group.Children.Count);
+        Assert.HasCount(2, group.Children);
         Assert.IsTrue(group.ShowSeparator);
         Assert.AreEqual(10, group.Priority);
     }
@@ -177,7 +177,7 @@ public sealed class ToolbarTests
         group.AddIcon(icon);
 
         // Assert
-        Assert.AreEqual(1, group.Children.Count);
+        Assert.HasCount(1, group.Children);
         Assert.AreEqual(icon, group.Children[0]);
     }
 
@@ -197,7 +197,7 @@ public sealed class ToolbarTests
         // Assert
         Assert.AreEqual(8, group.Spacing);
         // Size should include spacing between icons
-        Assert.IsTrue(size.Width > icon1.ElementSize.Width + icon2.ElementSize.Width);
+        Assert.IsGreaterThan(icon1.ElementSize.Width + icon2.ElementSize.Width, size.Width);
     }
 
     [TestMethod]
@@ -215,8 +215,8 @@ public sealed class ToolbarTests
         group.Arrange(new Rect(0, 0, 200, 56));
 
         // Assert
-        Assert.IsTrue(group.ElementSize.Width > 0);
-        Assert.IsTrue(group.ElementSize.Height > 0);
+        Assert.IsGreaterThan(0, group.ElementSize.Width);
+        Assert.IsGreaterThan(0, group.ElementSize.Height);
     }
 
     #endregion
@@ -243,7 +243,7 @@ public sealed class ToolbarTests
         toolbar.Arrange(new Rect(0, 0, 800, 56));
 
         // Assert
-        Assert.AreEqual(1, toolbar.LeftItems.Count);
+        Assert.HasCount(1, toolbar.LeftItems);
         Assert.AreEqual(group, toolbar.LeftItems[0]);
     }
 
@@ -266,7 +266,7 @@ public sealed class ToolbarTests
         toolbar.Arrange(new Rect(0, 0, 800, 56));
 
         // Assert
-        Assert.AreEqual(1, toolbar.RightItems.Count);
+        Assert.HasCount(1, toolbar.RightItems);
         Assert.AreEqual(group, toolbar.RightItems[0]);
     }
 
@@ -299,7 +299,7 @@ public sealed class ToolbarTests
         toolbar.Arrange(new Rect(0, 0, 800, 56));
 
         // Assert
-        Assert.AreEqual(2, toolbar.LeftItems.Count);
+        Assert.HasCount(2, toolbar.LeftItems);
     }
 
     #endregion
@@ -388,7 +388,7 @@ public sealed class ToolbarTests
 
         // Assert - Some items should be hidden (in overflow)
         var visibleCount = new[] { icon1, icon2, icon3, icon4, icon5 }.Count(i => i.IsVisible);
-        Assert.IsTrue(visibleCount < 5, "Some items should be in overflow menu");
+        Assert.IsLessThan(5, visibleCount, "Some items should be in overflow menu");
     }
 
     [TestMethod]
@@ -462,9 +462,9 @@ public sealed class ToolbarTests
             .Select(i => i.Position.X).DefaultIfEmpty(550).Min();
 
         // Assert no overlap with title
-        Assert.IsTrue(rightmostLeft <= titleX,
+        Assert.IsLessThanOrEqualTo(titleX, rightmostLeft,
             $"Left items overlap with title: {rightmostLeft} > {titleX}");
-        Assert.IsTrue(leftmostRight >= titleRight,
+        Assert.IsGreaterThanOrEqualTo(titleRight, leftmostRight,
             $"Right items overlap with title: {leftmostRight} < {titleRight}");
     }
 

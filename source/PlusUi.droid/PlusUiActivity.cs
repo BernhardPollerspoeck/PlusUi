@@ -26,15 +26,9 @@ public abstract class PlusUiActivity : Activity
 
         base.OnCreate(savedInstanceState);
 
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+        if (OperatingSystem.IsAndroidVersionAtLeast(21) && !OperatingSystem.IsAndroidVersionAtLeast(35))
         {
-#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-#pragma warning disable CA1422 // Validate platform compatibility
-            Window.SetStatusBarColor(Android.Graphics.Color.ParseColor("#FF5722"));
-#pragma warning restore CA1422 // Validate platform compatibility
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore IDE0079 // Remove unnecessary suppression
+            Window?.SetStatusBarColor(Android.Graphics.Color.ParseColor("#FF5722"));
         }
 
         _glSurfaceView = new GLSurfaceView(this);

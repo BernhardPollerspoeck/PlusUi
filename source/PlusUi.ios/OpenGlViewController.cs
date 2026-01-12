@@ -67,6 +67,20 @@ public class OpenGlViewController(
         // Initialize accessibility with root provider that returns current page
         accessibilityService.Initialize(() => navigationContainer.CurrentPage);
 
+        // Note: iOS 17+ has RegisterForTraitChanges, but .NET bindings differ
+        // TraitCollectionDidChange still works and handles backward compatibility
+    }
+
+    private void OnTraitChanged()
+    {
+        logger.LogDebug("Trait collection changed");
+
+        var newScale = (float)UIScreen.MainScreen.Scale;
+        if (Math.Abs(renderService.DisplayDensity - newScale) > 0.01f)
+        {
+            renderService.DisplayDensity = newScale;
+            navigationContainer.CurrentPage.InvalidateMeasure();
+        }
     }
 
     private void OnCanvasPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
@@ -91,18 +105,12 @@ public class OpenGlViewController(
 
     public override void TraitCollectionDidChange(UITraitCollection? previousTraitCollection)
     {
+        // iOS 17+ has RegisterForTraitChanges, but .NET bindings differ
+        // TODO: Update when .NET iOS bindings properly support UITraitChangeObservable
+#pragma warning disable CA1422 // .NET bindings for iOS 17 RegisterForTraitChanges not yet available
         base.TraitCollectionDidChange(previousTraitCollection);
-
-        // Trait collection changed (DPI scale, size class, dark mode, etc.)
-        logger.LogDebug("Trait collection changed");
-
-        // Update display density if scale changed
-        var newScale = (float)UIScreen.MainScreen.Scale;
-        if (Math.Abs(renderService.DisplayDensity - newScale) > 0.01f)
-        {
-            renderService.DisplayDensity = newScale;
-            navigationContainer.CurrentPage.InvalidateMeasure();
-        }
+#pragma warning restore CA1422
+        OnTraitChanged();
     }
 
     public void Invalidate()

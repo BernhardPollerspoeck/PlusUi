@@ -431,21 +431,11 @@ public class TooltipTests
     #region TooltipPlacement Enum Tests
 
     [TestMethod]
-    public void TooltipPlacement_Auto_ShouldHaveValueZero()
+    public void TooltipPlacement_ShouldHaveFiveValues()
     {
         // Assert
-        Assert.AreEqual(0, (int)TooltipPlacement.Auto);
-    }
-
-    [TestMethod]
-    public void TooltipPlacement_AllValues_ShouldBeDefined()
-    {
-        // Assert
-        Assert.IsTrue(Enum.IsDefined(typeof(TooltipPlacement), TooltipPlacement.Auto));
-        Assert.IsTrue(Enum.IsDefined(typeof(TooltipPlacement), TooltipPlacement.Top));
-        Assert.IsTrue(Enum.IsDefined(typeof(TooltipPlacement), TooltipPlacement.Bottom));
-        Assert.IsTrue(Enum.IsDefined(typeof(TooltipPlacement), TooltipPlacement.Left));
-        Assert.IsTrue(Enum.IsDefined(typeof(TooltipPlacement), TooltipPlacement.Right));
+        var values = Enum.GetValues<TooltipPlacement>();
+        Assert.HasCount(5, values);
     }
 
     #endregion

@@ -9,6 +9,8 @@
     <PackageTags>PlusUi;UiFramework;Silk.net;Skiasharp;Video;H264;FFmpeg</PackageTags>
     <PackageIcon>plusui.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <!-- NU5100/NU5118: FFmpeg DLLs are native binaries, not .NET assemblies - intentionally in content folder -->
+    <NoWarn>$(NoWarn);NU5100;NU5118</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -212,7 +212,7 @@ public class RadioButtonTests
         radioButton.Measure(availableSize);
 
         // Assert
-        Assert.IsTrue(radioButton.ElementSize.Width > 20f); // Should be more than just circle
+        Assert.IsGreaterThan(20f, radioButton.ElementSize.Width); // Should be more than just circle
     }
 
     #endregion
@@ -345,11 +345,8 @@ public class RadioButtonTests
         var radioButton = new RadioButton().SetGroup("test");
         manager.Register(radioButton);
 
-        // Act
+        // Act & Assert - No exception means success
         manager.Unregister(radioButton);
-
-        // Assert - No exception means success
-        Assert.IsTrue(true);
     }
 
     #endregion

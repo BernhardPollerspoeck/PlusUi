@@ -12,7 +12,7 @@ namespace PlusUi.DebugServer.Pages;
 /// </summary>
 internal class PropertyEditorResult
 {
-    public List<PropertyFieldResult> Fields { get; set; } = new();
+    public List<PropertyFieldResult> Fields { get; set; } = [];
 }
 
 internal class PropertyFieldResult
@@ -24,7 +24,7 @@ internal class PropertyFieldResult
 
 internal partial class PropertyEditorPopupViewModel(IPopupService popupService) : ObservableObject
 {
-    public ObservableCollection<PropertyFieldViewModel> Fields { get; } = new();
+    public ObservableCollection<PropertyFieldViewModel> Fields { get; } = [];
 
     [RelayCommand]
     private void Save()

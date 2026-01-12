@@ -131,7 +131,7 @@ public partial class HStack : UiLayoutElement
             {
                 // Start new row
                 rows.Add(currentRow);
-                currentRow = new List<UiElement> { child };
+                currentRow = [child];
                 currentRowWidth = childWidth;
             }
             else

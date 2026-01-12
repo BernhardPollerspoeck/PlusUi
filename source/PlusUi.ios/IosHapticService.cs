@@ -42,9 +42,13 @@ public class IosHapticService : IHapticService
 
     private static void EmitImpact(UIImpactFeedbackStyle style)
     {
+        // iOS 17.5+ has GetFeedbackGenerator, but .NET bindings not yet available
+        // TODO: Update when .NET iOS bindings support iOS 17.5 APIs
+#pragma warning disable CA1422 // .NET bindings for iOS 17.5 GetFeedbackGenerator not yet available
         var generator = new UIImpactFeedbackGenerator(style);
         generator.Prepare();
         generator.ImpactOccurred();
+#pragma warning restore CA1422
     }
 
     private static void EmitNotification(UINotificationFeedbackType type)

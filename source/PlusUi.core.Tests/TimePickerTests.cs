@@ -143,7 +143,7 @@ public class TimePickerTests
         var minutes = timePicker.GetAvailableMinutes().ToList();
 
         // Assert
-        Assert.AreEqual(4, minutes.Count);
+        Assert.HasCount(4, minutes);
         CollectionAssert.AreEqual(new[] { 0, 15, 30, 45 }, minutes);
     }
 
@@ -158,7 +158,7 @@ public class TimePickerTests
         var minutes = timePicker.GetAvailableMinutes().ToList();
 
         // Assert
-        Assert.AreEqual(2, minutes.Count);
+        Assert.HasCount(2, minutes);
         CollectionAssert.AreEqual(new[] { 0, 30 }, minutes);
     }
 
@@ -213,7 +213,7 @@ public class TimePickerTests
         var hours = timePicker.GetAvailableHours().ToList();
 
         // Assert
-        Assert.AreEqual(24, hours.Count);
+        Assert.HasCount(24, hours);
         Assert.AreEqual(0, hours[0]);
         Assert.AreEqual(23, hours[23]);
     }
@@ -229,7 +229,7 @@ public class TimePickerTests
         var hours = timePicker.GetAvailableHours().ToList();
 
         // Assert
-        Assert.AreEqual(12, hours.Count);
+        Assert.HasCount(12, hours);
         Assert.AreEqual(1, hours[0]);
         Assert.AreEqual(12, hours[11]);
     }

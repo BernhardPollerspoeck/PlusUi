@@ -16,77 +16,77 @@ public partial class TreeViewDemoPageViewModel : ObservableObject
         GoBackCommand = new RelayCommand(() => _navigationService.GoBack());
 
         // Create file system tree
-        RootItems = new ObservableCollection<object>
-        {
+        RootItems =
+        [
             new Drive
             {
                 Name = "C:",
-                Folders = new List<Folder>
-                {
+                Folders =
+                [
                     new Folder
                     {
                         Name = "Program Files",
-                        SubFolders = new List<Folder>
-                        {
-                            new Folder { Name = "Microsoft", SubFolders = new List<Folder>(), Files = new List<FileItem> { new FileItem { Name = "readme.txt" } } },
-                            new Folder { Name = "Common Files", SubFolders = new List<Folder>(), Files = new List<FileItem>() }
-                        },
-                        Files = new List<FileItem>()
+                        SubFolders =
+                        [
+                            new Folder { Name = "Microsoft", SubFolders = [], Files = [new FileItem { Name = "readme.txt" }] },
+                            new Folder { Name = "Common Files", SubFolders = [], Files = [] }
+                        ],
+                        Files = []
                     },
                     new Folder
                     {
                         Name = "Users",
-                        SubFolders = new List<Folder>
-                        {
+                        SubFolders =
+                        [
                             new Folder
                             {
                                 Name = "Admin",
-                                SubFolders = new List<Folder>
-                                {
-                                    new Folder { Name = "Documents", SubFolders = new List<Folder>(), Files = new List<FileItem> { new FileItem { Name = "report.docx" }, new FileItem { Name = "notes.txt" } } },
-                                    new Folder { Name = "Downloads", SubFolders = new List<Folder>(), Files = new List<FileItem> { new FileItem { Name = "setup.exe" } } }
-                                },
-                                Files = new List<FileItem>()
+                                SubFolders =
+                                [
+                                    new Folder { Name = "Documents", SubFolders = [], Files = [new FileItem { Name = "report.docx" }, new FileItem { Name = "notes.txt" }] },
+                                    new Folder { Name = "Downloads", SubFolders = [], Files = [new FileItem { Name = "setup.exe" }] }
+                                ],
+                                Files = []
                             }
-                        },
-                        Files = new List<FileItem>()
+                        ],
+                        Files = []
                     },
                     new Folder
                     {
                         Name = "Windows",
-                        SubFolders = new List<Folder>
-                        {
-                            new Folder { Name = "System32", SubFolders = new List<Folder>(), Files = new List<FileItem> { new FileItem { Name = "cmd.exe" }, new FileItem { Name = "notepad.exe" } } },
-                            new Folder { Name = "Fonts", SubFolders = new List<Folder>(), Files = new List<FileItem>() }
-                        },
-                        Files = new List<FileItem> { new FileItem { Name = "explorer.exe" } }
+                        SubFolders =
+                        [
+                            new Folder { Name = "System32", SubFolders = [], Files = [new FileItem { Name = "cmd.exe" }, new FileItem { Name = "notepad.exe" }] },
+                            new Folder { Name = "Fonts", SubFolders = [], Files = [] }
+                        ],
+                        Files = [new FileItem { Name = "explorer.exe" }]
                     }
-                }
+                ]
             },
             new Drive
             {
                 Name = "D:",
-                Folders = new List<Folder>
-                {
+                Folders =
+                [
                     new Folder
                     {
                         Name = "Projects",
-                        SubFolders = new List<Folder>
-                        {
-                            new Folder { Name = "PlusUi", SubFolders = new List<Folder>(), Files = new List<FileItem> { new FileItem { Name = "PlusUi.sln" }, new FileItem { Name = "README.md" } } },
-                            new Folder { Name = "OtherProject", SubFolders = new List<Folder>(), Files = new List<FileItem>() }
-                        },
-                        Files = new List<FileItem>()
+                        SubFolders =
+                        [
+                            new Folder { Name = "PlusUi", SubFolders = [], Files = [new FileItem { Name = "PlusUi.sln" }, new FileItem { Name = "README.md" }] },
+                            new Folder { Name = "OtherProject", SubFolders = [], Files = [] }
+                        ],
+                        Files = []
                     },
                     new Folder
                     {
                         Name = "Backups",
-                        SubFolders = new List<Folder>(),
-                        Files = new List<FileItem> { new FileItem { Name = "backup_2024.zip" } }
+                        SubFolders = [],
+                        Files = [new FileItem { Name = "backup_2024.zip" }]
                     }
-                }
+                ]
             }
-        };
+        ];
     }
 
     public ICommand GoBackCommand { get; }

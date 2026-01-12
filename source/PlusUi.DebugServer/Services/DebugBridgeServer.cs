@@ -17,7 +17,7 @@ internal class DebugBridgeServer : IDisposable
     private readonly ILogger<DebugBridgeServer> _logger;
     private HttpListener? _httpListener;
     private CancellationTokenSource? _cancellationTokenSource;
-    private readonly Dictionary<string, ClientConnection> _clients = new();
+    private readonly Dictionary<string, ClientConnection> _clients = [];
     private readonly SemaphoreSlim _clientsLock = new(1, 1);
     private bool _isRunning;
     private bool _disposed;

@@ -9,7 +9,7 @@ namespace PlusUi.Web;
 /// </summary>
 public class WebPlatformService(RenderService renderService, IJSRuntime jsRuntime) : IPlatformService
 {
-    private Size _windowSize = new Size(0, 0);
+    private Size _windowSize = new(0, 0);
 
     /// <summary>
     /// Updates the window size (called when browser window is resized)

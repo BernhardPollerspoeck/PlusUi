@@ -8,7 +8,7 @@ namespace PlusUi.ios.Accessibility;
 /// </summary>
 public sealed class PlusUiAccessibilityContainer(UIView hostView, Func<UiElement?> rootProvider)
 {
-    private readonly Dictionary<int, PlusUiAccessibilityElement> _elementCache = new();
+    private readonly Dictionary<int, PlusUiAccessibilityElement> _elementCache = [];
     private List<UIAccessibilityElement>? _cachedElements;
 
     public void InvalidateAccessibilityElements()

@@ -7,7 +7,7 @@ namespace PlusUi.core;
 /// </summary>
 public class OverlayService : IOverlayService
 {
-    private readonly List<UiElement> _overlays = new();
+    private readonly List<UiElement> _overlays = [];
 
     internal IReadOnlyList<UiElement> Overlays => _overlays;
 

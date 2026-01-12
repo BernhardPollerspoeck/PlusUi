@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Services;
 using PlusUi.core.Services.Accessibility;
@@ -458,17 +459,14 @@ public abstract class UiTextElement : UiElement
         return TextColor;
     }
 
+    [MemberNotNull(nameof(Paint), nameof(Font))]
     private void UpdatePaintFromRegistry()
     {
         // Ensure we're subscribed to accessibility changes
         EnsureAccessibilitySubscription();
 
-        // Skip if PaintRegistry not available (during shutdown)
-        if (PaintRegistry == null)
-            return;
-
         // Release old paint if exists (for property changes)
-        if (Paint != null)
+        if (Paint is not null && Font is not null)
         {
             PaintRegistry.Release(Paint, Font);
         }
@@ -576,7 +574,7 @@ public abstract class UiTextElement : UiElement
             }
         }
 
-        var result = lines.Count > 0 ? lines : new List<string> { text };
+        var result = lines.Count > 0 ? lines : [text];
         _cachedWrapText = text;
         _cachedWrapMaxWidth = maxWidth;
         _cachedWrapResult = result;

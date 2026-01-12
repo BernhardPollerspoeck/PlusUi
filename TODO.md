@@ -46,10 +46,11 @@ TODO
 - [ ] [ ] 999.4 9️⃣ rework text rendering to maybe use native text rendering lib for better performance and quality
 - [ ] [ ] 999.5 7️⃣ analyze what takes all the memory since sandbox requires about 350mb on startup
 - [ ] [ ] 999.6 🔟 think about a fully custom rendering engine that does not need skia at all.
-- [ ] [ ] 999.7 4️⃣ ensure all code is up to dotnet 10 standards and best practices
-- [ ] [ ] 999.8 3️⃣ clear out all warnings and messages.
+- [x] [x] 999.7 4️⃣ ensure all code is up to dotnet 10 standards and best practices
+- [x] [x] 999.8 3️⃣ clear out all warnings and messages.
 - [x] [x] 999.9 4️⃣ ensure all not public api surfaces are internal only
-- [ ] [ ] 999.10 5️⃣ return ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>() wirft Exception in UiElment beim stoppen
+- [x] [x] 999.10 5️⃣ return ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>() wirft Exception in UiElment beim stoppen
+- [ ] [ ] 999.11 6️⃣ Remove remaining on-demand service resolves (ServiceProvider?.GetService<T>()) - cache in constructor instead
 
 
 

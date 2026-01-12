@@ -25,7 +25,7 @@ public sealed class PlusUiAccessibilityNodeProvider(Android.Views.View hostView,
         if (virtualViewId == Android.Views.View.NoId)
         {
             // Return info for the host view itself
-            var rootInfo = AccessibilityNodeInfo.Obtain(hostView);
+            var rootInfo = CreateAccessibilityNodeInfo(hostView);
             if (rootInfo != null)
             {
                 hostView.OnInitializeAccessibilityNodeInfo(rootInfo);
@@ -53,7 +53,7 @@ public sealed class PlusUiAccessibilityNodeProvider(Android.Views.View hostView,
 
     public AccessibilityNodeInfo? CreateAccessibilityNodeInfo(UiElement element)
     {
-        var info = AccessibilityNodeInfo.Obtain(hostView, element.GetHashCode());
+        var info = CreateAccessibilityNodeInfo(hostView, element.GetHashCode());
         if (info == null)
         {
             return null;
@@ -71,7 +71,7 @@ public sealed class PlusUiAccessibilityNodeProvider(Android.Views.View hostView,
             (int)element.Position.Y,
             (int)(element.Position.X + element.ElementSize.Width),
             (int)(element.Position.Y + element.ElementSize.Height));
-        info.SetBoundsInParent(rect);
+        SetBoundsCompat(info, rect);
 
         // Set enabled/focusable state
         var traits = element.GetComputedAccessibilityTraits();
@@ -81,7 +81,7 @@ public sealed class PlusUiAccessibilityNodeProvider(Android.Views.View hostView,
         info.Checkable = element.AccessibilityRole == AccessibilityRole.Checkbox ||
                         element.AccessibilityRole == AccessibilityRole.RadioButton ||
                         element.AccessibilityRole == AccessibilityRole.Toggle;
-        info.Checked = traits.HasFlag(AccessibilityTrait.Checked);
+        SetCheckedCompat(info, traits.HasFlag(AccessibilityTrait.Checked));
         info.Clickable = element.AccessibilityRole == AccessibilityRole.Button ||
                         element.AccessibilityRole == AccessibilityRole.Link;
         info.Scrollable = element.AccessibilityRole == AccessibilityRole.ScrollView;
@@ -93,8 +93,8 @@ public sealed class PlusUiAccessibilityNodeProvider(Android.Views.View hostView,
             info.Text = value;
         }
 
-        // Set hint
-        if (!string.IsNullOrEmpty(element.AccessibilityHint))
+        // Set hint (TooltipText requires Android 28+)
+        if (!string.IsNullOrEmpty(element.AccessibilityHint) && OperatingSystem.IsAndroidVersionAtLeast(28))
         {
             info.TooltipText = element.AccessibilityHint;
         }
@@ -220,5 +220,46 @@ public sealed class PlusUiAccessibilityNodeProvider(Android.Views.View hostView,
             AccessibilityRole.Tooltip => "android.widget.Toast",
             _ => "android.view.View"
         };
+    }
+
+    private static AccessibilityNodeInfo? CreateAccessibilityNodeInfo(Android.Views.View view)
+    {
+        if (OperatingSystem.IsAndroidVersionAtLeast(33))
+        {
+            return new AccessibilityNodeInfo(view);
+        }
+
+        return AccessibilityNodeInfo.Obtain(view);
+    }
+
+    private static AccessibilityNodeInfo? CreateAccessibilityNodeInfo(Android.Views.View view, int virtualDescendantId)
+    {
+        if (OperatingSystem.IsAndroidVersionAtLeast(33))
+        {
+            return new AccessibilityNodeInfo(view, virtualDescendantId);
+        }
+
+        return AccessibilityNodeInfo.Obtain(view, virtualDescendantId);
+    }
+
+    private static void SetBoundsCompat(AccessibilityNodeInfo info, Android.Graphics.Rect rect)
+    {
+        if (OperatingSystem.IsAndroidVersionAtLeast(29))
+        {
+            info.SetBoundsInScreen(rect);
+        }
+        else
+        {
+            info.SetBoundsInParent(rect);
+        }
+    }
+
+    private static void SetCheckedCompat(AccessibilityNodeInfo info, bool isChecked)
+    {
+        // Android 36+ has SetChecked(int) with tri-state support, but .NET bindings not yet available
+        // TODO: Update when .NET Android bindings support Android 36 APIs
+#pragma warning disable CA1422 // .NET bindings for Android 36 SetChecked(int) not yet available
+        info.Checked = isChecked;
+#pragma warning restore CA1422
     }
 }

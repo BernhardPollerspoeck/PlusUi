@@ -73,9 +73,9 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
 
     private IEnumerable<T>? _itemsSource;
     private Func<T, int, UiElement>? _itemTemplate;
-    private readonly Dictionary<int, UiElement> _realizedItems = new();
-    private readonly Dictionary<int, float> _itemSizes = new(); // Track individual item sizes
-    private readonly Dictionary<int, float> _itemPositions = new(); // Track individual item positions
+    private readonly Dictionary<int, UiElement> _realizedItems = [];
+    private readonly Dictionary<int, float> _itemSizes = []; // Track individual item sizes
+    private readonly Dictionary<int, float> _itemPositions = []; // Track individual item positions
     private int _firstVisibleIndex;
     private int _lastVisibleIndex;
     private float _estimatedItemSize; // For items we haven't measured yet

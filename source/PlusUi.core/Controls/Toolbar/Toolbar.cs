@@ -52,12 +52,12 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
 
     private Label? _titleLabel;
     internal Button? _overflowButton;
-    private List<UiElement> _overflowItems = new();
+    private List<UiElement> _overflowItems = [];
     private IImageLoaderService? _imageLoaderService;
     private SKImage? _overflowIconImage;
     internal bool _isOverflowMenuOpen;
     internal VStack? _overflowMenuContent;
-    private List<Button> _overflowMenuButtons = new();
+    private List<Button> _overflowMenuButtons = [];
     private IOverlayService? _overlayService;
     private ToolbarOverflowMenuOverlay? _overflowMenuOverlay;
     private IPlatformService? _platformService;
@@ -363,9 +363,9 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     #endregion
 
     #region Sections
-    internal List<UiElement> LeftItems { get; } = new();
+    internal List<UiElement> LeftItems { get; } = [];
     internal UiElement? CenterContent { get; set; }
-    internal List<UiElement> RightItems { get; } = new();
+    internal List<UiElement> RightItems { get; } = [];
     #endregion
 
     public Toolbar()

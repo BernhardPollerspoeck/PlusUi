@@ -20,13 +20,29 @@ public abstract class PlusUiAppDelegate : UIApplicationDelegate
     {
         _host = CreateAndStartHost();
 
-
-        Window = new UIWindow(UIScreen.MainScreen.Bounds)
-        {
-            RootViewController = _host.Services.GetRequiredService<OpenGlViewController>()
-        };
+        Window = CreateWindow();
+        Window.RootViewController = _host.Services.GetRequiredService<OpenGlViewController>();
         Window.MakeKeyAndVisible();
         return true;
+    }
+
+    private static UIWindow CreateWindow()
+    {
+        if (OperatingSystem.IsIOSVersionAtLeast(26))
+        {
+            var windowScene = UIApplication.SharedApplication.ConnectedScenes
+                .OfType<UIWindowScene>()
+                .FirstOrDefault();
+
+            if (windowScene != null)
+            {
+                return new UIWindow(windowScene);
+            }
+        }
+
+#pragma warning disable CA1422 // Required for iOS < 26 backward compatibility
+        return new UIWindow(UIScreen.MainScreen.Bounds);
+#pragma warning restore CA1422
     }
 
     private IHost CreateAndStartHost()

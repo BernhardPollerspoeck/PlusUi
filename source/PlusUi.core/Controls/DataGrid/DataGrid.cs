@@ -55,8 +55,8 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
     private int _hoveredRowIndex = -1;
 
     private IEnumerable<T>? _itemsSource;
-    private readonly Dictionary<int, List<UiElement>> _realizedRows = new();
-    private readonly Dictionary<int, float> _rowPositions = new();
+    private readonly Dictionary<int, List<UiElement>> _realizedRows = [];
+    private readonly Dictionary<int, float> _rowPositions = [];
     private int _firstVisibleIndex;
     private int _lastVisibleIndex;
     private List<UiElement>? _headerCells;

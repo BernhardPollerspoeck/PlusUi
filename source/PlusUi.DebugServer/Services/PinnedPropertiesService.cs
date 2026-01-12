@@ -5,7 +5,7 @@ namespace PlusUi.DebugServer.Services;
 public class PinnedPropertiesService
 {
     private readonly string _settingsPath;
-    private Dictionary<string, HashSet<string>> _pinnedProperties = new();
+    private Dictionary<string, HashSet<string>> _pinnedProperties = [];
 
     public PinnedPropertiesService()
     {
@@ -25,7 +25,7 @@ public class PinnedPropertiesService
     {
         if (!_pinnedProperties.ContainsKey(elementType))
         {
-            _pinnedProperties[elementType] = new HashSet<string>();
+            _pinnedProperties[elementType] = [];
         }
 
         var props = _pinnedProperties[elementType];
@@ -45,7 +45,7 @@ public class PinnedPropertiesService
     {
         return _pinnedProperties.TryGetValue(elementType, out var props)
             ? props
-            : new HashSet<string>();
+            : [];
     }
 
     private void Load()
@@ -64,7 +64,7 @@ public class PinnedPropertiesService
         }
         catch
         {
-            _pinnedProperties = new Dictionary<string, HashSet<string>>();
+            _pinnedProperties = [];
         }
     }
 

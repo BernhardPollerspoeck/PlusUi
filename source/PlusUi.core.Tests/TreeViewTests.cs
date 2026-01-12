@@ -13,20 +13,20 @@ public class TreeViewTests
     private class Category
     {
         public string Name { get; set; } = string.Empty;
-        public List<Category> SubCategories { get; set; } = new();
+        public List<Category> SubCategories { get; set; } = [];
     }
 
     private class Drive
     {
         public string Name { get; set; } = string.Empty;
-        public List<Folder> Folders { get; set; } = new();
+        public List<Folder> Folders { get; set; } = [];
     }
 
     private class Folder
     {
         public string Name { get; set; } = string.Empty;
-        public List<Folder> SubFolders { get; set; } = new();
-        public List<File> Files { get; set; } = new();
+        public List<Folder> SubFolders { get; set; } = [];
+        public List<File> Files { get; set; } = [];
     }
 
     private class File
@@ -273,11 +273,11 @@ public class TreeViewTests
         var root = new Category
         {
             Name = "Root",
-            SubCategories = new List<Category>
-            {
+            SubCategories =
+            [
                 new Category { Name = "Child1" },
                 new Category { Name = "Child2" }
-            }
+            ]
         };
         treeView
             .SetItemHeight(32f)
@@ -300,11 +300,11 @@ public class TreeViewTests
         var root = new Category
         {
             Name = "Root",
-            SubCategories = new List<Category>
-            {
+            SubCategories =
+            [
                 new Category { Name = "Child1" },
                 new Category { Name = "Child2" }
-            }
+            ]
         };
         treeView
             .SetItemHeight(32f)
@@ -330,7 +330,7 @@ public class TreeViewTests
         var root = new Category
         {
             Name = "Root",
-            SubCategories = new List<Category> { child1, child2 }
+            SubCategories = [child1, child2]
         };
         treeView
             .SetChildrenSelector<Category>(c => c.SubCategories.Cast<object>())
@@ -354,11 +354,11 @@ public class TreeViewTests
         var root = new Category
         {
             Name = "Root",
-            SubCategories = new List<Category>
-            {
+            SubCategories =
+            [
                 new Category { Name = "Child1" },
                 new Category { Name = "Child2" }
-            }
+            ]
         };
         treeView
             .SetItemHeight(32f)
@@ -384,7 +384,7 @@ public class TreeViewTests
         var root = new Category
         {
             Name = "Root",
-            SubCategories = new List<Category> { new Category { Name = "Child" } }
+            SubCategories = [new Category { Name = "Child" }]
         };
         treeView
             .SetChildrenSelector<Category>(c => c.SubCategories.Cast<object>())
@@ -409,11 +409,11 @@ public class TreeViewTests
         var root1 = new Category
         {
             Name = "Root1",
-            SubCategories = new List<Category>
-            {
+            SubCategories =
+            [
                 new Category { Name = "Child1" },
                 new Category { Name = "Child2" }
-            }
+            ]
         };
         var root2 = new Category { Name = "Root2" };
         treeView
@@ -438,12 +438,12 @@ public class TreeViewTests
         var child = new Category
         {
             Name = "Child",
-            SubCategories = new List<Category> { grandchild }
+            SubCategories = [grandchild]
         };
         var root = new Category
         {
             Name = "Root",
-            SubCategories = new List<Category> { child }
+            SubCategories = [child]
         };
         var treeView = new TreeView();
         treeView
@@ -475,13 +475,13 @@ public class TreeViewTests
         var folder = new Folder
         {
             Name = "Folder",
-            SubFolders = new List<Folder>(),
-            Files = new List<File> { file1, file2 }
+            SubFolders = [],
+            Files = [file1, file2]
         };
         var drive = new Drive
         {
             Name = "C:",
-            Folders = new List<Folder> { folder }
+            Folders = [folder]
         };
 
         var treeView = new TreeView();
@@ -656,8 +656,8 @@ public class TreeViewTests
     {
         // Arrange
         var grandchild = new Category { Name = "Grandchild" };
-        var child = new Category { Name = "Child", SubCategories = new List<Category> { grandchild } };
-        var root = new Category { Name = "Root", SubCategories = new List<Category> { child } };
+        var child = new Category { Name = "Child", SubCategories = [grandchild] };
+        var root = new Category { Name = "Root", SubCategories = [child] };
 
         var treeView = new TreeView();
         treeView
@@ -752,7 +752,7 @@ public class TreeViewTests
         treeView.HandleScroll(0, 1000);
 
         // Assert - should clamp to max
-        Assert.IsTrue(treeView.ScrollOffset <= treeView.TotalHeight, "ScrollOffset should be clamped to TotalHeight");
+        Assert.IsLessThanOrEqualTo(treeView.ScrollOffset, treeView.TotalHeight, "ScrollOffset should be clamped to TotalHeight");
 
         // Act - try to scroll before start
         treeView.HandleScroll(0, -2000);
@@ -791,7 +791,7 @@ public class TreeViewTests
         // Arrange
         var child1 = new Category { Name = "Child1" };
         var child2 = new Category { Name = "Child2" };
-        var root1 = new Category { Name = "Root1", SubCategories = new List<Category> { child1, child2 } };
+        var root1 = new Category { Name = "Root1", SubCategories = [child1, child2] };
         var root2 = new Category { Name = "Root2" };
 
         var treeView = new TreeView();
@@ -805,7 +805,7 @@ public class TreeViewTests
         var visibleNodes = treeView.GetVisibleNodes(0, 200).ToList();
 
         // Assert - only 2 nodes visible (children hidden)
-        Assert.AreEqual(2, visibleNodes.Count, "Should only see root nodes when collapsed");
+        Assert.HasCount(2, visibleNodes, "Should only see root nodes when collapsed");
         Assert.IsTrue(visibleNodes.Any(n => n.Item == root1), "Root1 should be visible");
         Assert.IsTrue(visibleNodes.Any(n => n.Item == root2), "Root2 should be visible");
         Assert.IsFalse(visibleNodes.Any(n => n.Item == child1), "Child1 should NOT be visible when collapsed");
@@ -817,7 +817,7 @@ public class TreeViewTests
         // Arrange
         var child1 = new Category { Name = "Child1" };
         var child2 = new Category { Name = "Child2" };
-        var root1 = new Category { Name = "Root1", SubCategories = new List<Category> { child1, child2 } };
+        var root1 = new Category { Name = "Root1", SubCategories = [child1, child2] };
         var root2 = new Category { Name = "Root2" };
 
         var treeView = new TreeView();
@@ -832,7 +832,7 @@ public class TreeViewTests
         var visibleNodes = treeView.GetVisibleNodes(0, 200).ToList();
 
         // Assert - 4 nodes visible (root1 + 2 children + root2)
-        Assert.AreEqual(4, visibleNodes.Count, "Should see root1 + 2 children + root2 when expanded");
+        Assert.HasCount(4, visibleNodes, "Should see root1 + 2 children + root2 when expanded");
         Assert.IsTrue(visibleNodes.Any(n => n.Item == child1), "Child1 should be visible when parent expanded");
         Assert.IsTrue(visibleNodes.Any(n => n.Item == child2), "Child2 should be visible when parent expanded");
     }
@@ -857,7 +857,7 @@ public class TreeViewTests
         var visibleNodes = treeView.GetVisibleNodes(64, 64).ToList();
 
         // Assert - should see items 2 and 3
-        Assert.AreEqual(2, visibleNodes.Count, "Should see 2 items in 64px viewport");
+        Assert.HasCount(2, visibleNodes, "Should see 2 items in 64px viewport");
         Assert.AreEqual("Item2", ((Category)visibleNodes[0].Item).Name, "First visible should be Item2");
         Assert.AreEqual("Item3", ((Category)visibleNodes[1].Item).Name, "Second visible should be Item3");
     }
@@ -868,7 +868,7 @@ public class TreeViewTests
         // Arrange
         var child1 = new Category { Name = "Child1" };
         var child2 = new Category { Name = "Child2" };
-        var root = new Category { Name = "Root", SubCategories = new List<Category> { child1, child2 } };
+        var root = new Category { Name = "Root", SubCategories = [child1, child2] };
 
         var treeView = new TreeView();
         treeView
@@ -993,7 +993,7 @@ public class TreeViewTests
     {
         // Arrange
         var child = new Category { Name = "Child" };
-        var root = new Category { Name = "Root", SubCategories = new List<Category> { child } };
+        var root = new Category { Name = "Root", SubCategories = [child] };
         var treeView = new TreeView();
         treeView
             .SetItemHeight(32f)
@@ -1019,7 +1019,7 @@ public class TreeViewTests
     {
         // Arrange
         var child = new Category { Name = "Child" };
-        var root = new Category { Name = "Root", SubCategories = new List<Category> { child } };
+        var root = new Category { Name = "Root", SubCategories = [child] };
         var treeView = new TreeView();
         treeView
             .SetItemHeight(32f)

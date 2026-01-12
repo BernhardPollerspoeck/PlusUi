@@ -11,7 +11,7 @@ namespace PlusUi.core.Services.DebugBridge;
 /// </summary>
 internal class DebugTreeInspector
 {
-    private readonly Dictionary<UiElement, string> _elementIds = new();
+    private readonly Dictionary<UiElement, string> _elementIds = [];
     private int _nextId = 1;
     private string _currentPageName = "Unknown";
 

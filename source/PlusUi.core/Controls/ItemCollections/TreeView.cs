@@ -43,9 +43,9 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         return traits;
     }
 
-    private readonly Dictionary<Type, Func<object, IEnumerable<object>>> _childrenSelectors = new();
-    private readonly List<TreeViewNode> _rootNodes = new();
-    private readonly Dictionary<object, TreeViewNode> _nodesByItem = new();
+    private readonly Dictionary<Type, Func<object, IEnumerable<object>>> _childrenSelectors = [];
+    private readonly List<TreeViewNode> _rootNodes = [];
+    private readonly Dictionary<object, TreeViewNode> _nodesByItem = [];
 
     #region ItemsSource
 
@@ -309,7 +309,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
     #region Tree Lines
 
     private bool _showLines = false;
-    private SKColor _lineColor = new SKColor(80, 80, 80);
+    private SKColor _lineColor = new(80, 80, 80);
     private float _lineThickness = 1f;
 
     /// <summary>
@@ -581,7 +581,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
             if (selector != null)
             {
                 var childItems = selector(item);
-                node.Children = new List<TreeViewNode>();
+                node.Children = [];
 
                 foreach (var childItem in childItems)
                 {
@@ -872,7 +872,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
     #region Layout
 
-    private readonly List<UiElement> _visibleItemElements = new();
+    private readonly List<UiElement> _visibleItemElements = [];
 
     /// <inheritdoc />
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)

@@ -137,7 +137,7 @@ public class ComboBoxTests
     {
         // Arrange
         var comboBox = new ComboBox<int>();
-        Func<int, string> displayFunc = i => $"Number {i}";
+        static string displayFunc(int i) => $"Number {i}";
 
         // Act
         comboBox.SetDisplayFunc(displayFunc);
@@ -363,8 +363,8 @@ public class ComboBoxTests
         comboBox.Measure(new Size(300, 300));
 
         // Assert
-        Assert.IsTrue(comboBox.ElementSize.Width > 0);
-        Assert.IsTrue(comboBox.ElementSize.Height > 0);
+        Assert.IsGreaterThan(0, comboBox.ElementSize.Width);
+        Assert.IsGreaterThan(0, comboBox.ElementSize.Height);
     }
 
     [TestMethod]

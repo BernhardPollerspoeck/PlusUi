@@ -17,7 +17,7 @@ public abstract class UiElement : IDisposable
 {
     private readonly Dictionary<string, List<Action>> _bindings = [];
     private readonly List<PathBindingTracker> _pathBindings = [];
-    protected readonly Dictionary<string, List<Action<object>>> _setter = [];
+    protected readonly Dictionary<string, List<Action<object?>>> _setter = [];
     protected bool _ignoreStyling;
 
 
@@ -1030,7 +1030,7 @@ public abstract class UiElement : IDisposable
     /// Gets the minimum touch target size from accessibility settings.
     /// Returns 44 by default (Apple/Google recommendation).
     /// </summary>
-    protected float GetMinimumTouchTargetSize()
+    protected static float GetMinimumTouchTargetSize()
     {
         var settings = ServiceProviderService.ServiceProvider?.GetService<Services.Accessibility.IAccessibilitySettingsService>();
         return settings?.MinimumTouchTargetSize ?? 44f;
@@ -1279,7 +1279,7 @@ public abstract class UiElement : IDisposable
             setterActions = [];
             _setter.Add(propertyName, setterActions);
         }
-        setterActions.Add(value => setter((TValue)value));
+        setterActions.Add(value => setter((TValue)value!));
     }
     public void UpdateBindings()
     {
@@ -1310,43 +1310,24 @@ public abstract class UiElement : IDisposable
 
     #region Services
     /// <summary>
-    /// Helper property for accessing PaintRegistry service without local caching.
-    /// Returns null during shutdown when ServiceProvider is disposed.
+    /// Paint registry service for managing shared paint/font resources.
+    /// Resolved once in constructor - required for UI rendering.
     /// </summary>
-    protected IPaintRegistryService? PaintRegistry
-    {
-        get
-        {
-            try
-            {
-                return ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>();
-            }
-            catch (ObjectDisposedException)
-            {
-                // ServiceProvider already disposed during shutdown - return null gracefully
-                return null;
-            }
-        }
-    }
+    protected IPaintRegistryService PaintRegistry { get; }
 
     /// <summary>
-    /// Helper property for accessing ExpressionPathService for binding path extraction.
-    /// Returns a fallback instance if ServiceProvider is not available (e.g., during tests).
+    /// Expression path service for binding path extraction.
+    /// Resolved once in constructor, falls back to default instance for tests.
     /// </summary>
-    private protected IExpressionPathService ExpressionPathService
+    private protected IExpressionPathService ExpressionPathService { get; }
+
+    protected UiElement()
     {
-        get
-        {
-            try
-            {
-                return ServiceProviderService.ServiceProvider?.GetService<IExpressionPathService>()
-                    ?? new Binding.ExpressionPathService();
-            }
-            catch (ObjectDisposedException)
-            {
-                return new Binding.ExpressionPathService();
-            }
-        }
+        PaintRegistry = ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>()
+            ?? throw new InvalidOperationException("PaintRegistry service not available. Ensure the application is properly initialized.");
+
+        ExpressionPathService = ServiceProviderService.ServiceProvider?.GetService<IExpressionPathService>()
+            ?? new Binding.ExpressionPathService();
     }
 
     #endregion

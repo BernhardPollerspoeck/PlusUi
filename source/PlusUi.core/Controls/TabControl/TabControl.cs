@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using PlusUi.core.Attributes;
 using SkiaSharp;
 using System.Collections.Specialized;
@@ -80,14 +81,11 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         UpdatePaints();
     }
 
+    [MemberNotNull(nameof(_headerFont), nameof(_headerPaint), nameof(_activeHeaderPaint), nameof(_disabledHeaderPaint))]
     private void UpdatePaints()
     {
-        // Skip if PaintRegistry not available (during shutdown)
-        if (PaintRegistry == null)
-            return;
-
         // Release old paints if exists (for property changes)
-        if (_headerPaint != null)
+        if (_headerPaint is not null && _headerFont is not null && _activeHeaderPaint is not null && _disabledHeaderPaint is not null)
         {
             PaintRegistry.Release(_headerPaint, _headerFont);
             PaintRegistry.Release(_activeHeaderPaint, _headerFont);
@@ -1088,12 +1086,12 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
                 _boundCollection = null;
             }
 
-            // Release paints from registry (safe even if ClearAll already called or during shutdown)
-            if (_headerPaint != null)
+            // Release paints from registry
+            if (_headerPaint is not null && _headerFont is not null && _activeHeaderPaint is not null && _disabledHeaderPaint is not null)
             {
-                PaintRegistry?.Release(_headerPaint, _headerFont);
-                PaintRegistry?.Release(_activeHeaderPaint, _headerFont);
-                PaintRegistry?.Release(_disabledHeaderPaint, _headerFont);
+                PaintRegistry.Release(_headerPaint, _headerFont);
+                PaintRegistry.Release(_activeHeaderPaint, _headerFont);
+                PaintRegistry.Release(_disabledHeaderPaint, _headerFont);
             }
 
             foreach (var tab in _tabs)

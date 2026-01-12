@@ -143,7 +143,7 @@ public partial class VStack : UiLayoutElement
             {
                 // Start new column
                 columns.Add(currentColumn);
-                currentColumn = new List<UiElement> { child };
+                currentColumn = [child];
                 currentColumnHeight = childHeight;
             }
             else

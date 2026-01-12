@@ -55,7 +55,7 @@ public sealed class MenuTests
 
         // Assert
         Assert.IsTrue(menuItem.HasSubItems);
-        Assert.AreEqual(4, menuItem.Items.Count);
+        Assert.HasCount(4, menuItem.Items);
         Assert.IsInstanceOfType(menuItem.Items[2], typeof(MenuSeparator));
     }
 
@@ -68,7 +68,7 @@ public sealed class MenuTests
 
         // Assert
         Assert.IsFalse(menuItem.HasSubItems);
-        Assert.AreEqual(0, menuItem.Items.Count);
+        Assert.IsEmpty(menuItem.Items);
     }
 
     [TestMethod]
@@ -237,7 +237,7 @@ public sealed class MenuTests
             .AddItem(new MenuItem().SetText("Paste"));
 
         // Assert
-        Assert.AreEqual(4, contextMenu.Items.Count);
+        Assert.HasCount(4, contextMenu.Items);
         Assert.IsInstanceOfType(contextMenu.Items[2], typeof(MenuSeparator));
     }
 
@@ -302,7 +302,7 @@ public sealed class MenuTests
 
         // Assert
         Assert.IsNotNull(button.ContextMenu);
-        Assert.AreEqual(2, button.ContextMenu.Items.Count);
+        Assert.HasCount(2, button.ContextMenu.Items);
     }
 
     [TestMethod]
@@ -352,7 +352,7 @@ public sealed class MenuTests
         menuItem.AddItem(new MenuItem().SetText("Copy"));
 
         // Assert
-        Assert.AreEqual(3, menuItem.Items.Count);
+        Assert.HasCount(3, menuItem.Items);
         Assert.IsInstanceOfType(menuItem.Items[1], typeof(MenuSeparator));
     }
 
@@ -373,11 +373,11 @@ public sealed class MenuTests
             .AddItem(new MenuItem().SetText("Exit"));
 
         // Assert
-        Assert.AreEqual(2, fileMenu.Items.Count);
+        Assert.HasCount(2, fileMenu.Items);
         var recentMenu = fileMenu.Items[0] as MenuItem;
         Assert.IsNotNull(recentMenu);
         Assert.IsTrue(recentMenu.HasSubItems);
-        Assert.AreEqual(2, recentMenu.Items.Count);
+        Assert.HasCount(2, recentMenu.Items);
     }
 
     #endregion
@@ -399,7 +399,7 @@ public sealed class MenuTests
             _executeWithParam = executeWithParam;
         }
 
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged { add { } remove { } }
 
         public bool CanExecute(object? parameter) => true;
 

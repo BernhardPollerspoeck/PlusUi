@@ -102,7 +102,7 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
     }
 
     internal object? CommandParameter { get; set; }
-    public Button SetCommandParameter(object parameter)
+    public Button SetCommandParameter(object? parameter)
     {
         CommandParameter = parameter;
         return this;

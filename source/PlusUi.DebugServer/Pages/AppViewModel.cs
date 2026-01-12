@@ -24,10 +24,10 @@ internal partial class AppViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private LogLevel _logLevelFilter = LogLevel.Trace;
 
-    public ObservableCollection<TreeNodeDto> RootItems { get; } = new();
-    public ObservableCollection<PropertyDto> SelectedProperties { get; } = new();
-    public ObservableCollection<LogMessageDto> Logs { get; } = new();
-    public ObservableCollection<LogMessageDto> FilteredLogs { get; } = new();
+    public ObservableCollection<TreeNodeDto> RootItems { get; } = [];
+    public ObservableCollection<PropertyDto> SelectedProperties { get; } = [];
+    public ObservableCollection<LogMessageDto> Logs { get; } = [];
+    public ObservableCollection<LogMessageDto> FilteredLogs { get; } = [];
 
     partial void OnSelectedNodeChanged(TreeNodeDto? value)
     {

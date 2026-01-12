@@ -9,7 +9,7 @@ namespace PlusUi.droid;
 /// </summary>
 public class AndroidPlatformService(RenderService renderService, Context context) : IPlatformService
 {
-    private Size _windowSize = new Size(0, 0);
+    private Size _windowSize = new(0, 0);
 
     /// <summary>
     /// Updates the window size (called by SilkRenderer when surface changes)

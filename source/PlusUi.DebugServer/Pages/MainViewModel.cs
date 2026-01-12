@@ -19,7 +19,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
     private readonly IPopupService _popupService;
     private readonly ILogger<MainViewModel> _logger;
     private readonly PinnedPropertiesService _pinnedPropertiesService;
-    private readonly Dictionary<string, AppViewModel> _apps = new();
+    private readonly Dictionary<string, AppViewModel> _apps = [];
 
     [ObservableProperty]
     private string? _selectedAppId;
@@ -36,10 +36,10 @@ internal partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private int _selectedAppTabIndex = -1;
 
-    public ObservableCollection<TabItem> AppTabs { get; } = new();
-    public ObservableCollection<TreeNodeDto> RootItems { get; } = new();
-    public ObservableCollection<PropertyDto> SelectedProperties { get; } = new();
-    public ObservableCollection<LogMessageDto> FilteredLogs { get; } = new();
+    public ObservableCollection<TabItem> AppTabs { get; } = [];
+    public ObservableCollection<TreeNodeDto> RootItems { get; } = [];
+    public ObservableCollection<PropertyDto> SelectedProperties { get; } = [];
+    public ObservableCollection<LogMessageDto> FilteredLogs { get; } = [];
 
     [ObservableProperty]
     private int _rootItemsCount;

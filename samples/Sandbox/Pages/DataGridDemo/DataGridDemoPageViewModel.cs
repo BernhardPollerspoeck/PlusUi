@@ -31,7 +31,7 @@ public partial class DataGridDemoPageViewModel : ObservableObject
         });
 
         var random = new Random(42);
-        Persons = new ObservableCollection<Person>();
+        Persons = [];
         for (int i = 0; i < 50; i++) // Reduced for demo
         {
             var firstName = FirstNames[random.Next(FirstNames.Length)];

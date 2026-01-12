@@ -12,7 +12,6 @@ namespace PlusUi.Headless.Services;
 internal class PlusUiHeadlessService(
     RenderService renderService,
     InputService inputService,
-    HeadlessPlatformService platformService,
     HeadlessKeyboardHandler keyboardHandler,
     PlusUiNavigationService navigationService)
 {

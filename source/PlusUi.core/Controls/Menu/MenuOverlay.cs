@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Services;
 using PlusUi.core.Services.DebugBridge;
@@ -11,7 +12,7 @@ namespace PlusUi.core;
 /// </summary>
 internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKeyboardInputHandler, IDebugInspectable
 {
-    private static readonly Color DefaultBackgroundColor = new Color(45, 45, 45);
+    private static readonly Color DefaultBackgroundColor = new(45, 45, 45);
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -91,14 +92,11 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         UpdatePaint();
     }
 
+    [MemberNotNull(nameof(_font), nameof(_textPaint))]
     private void UpdatePaint()
     {
-        // Skip if PaintRegistry not available (during shutdown)
-        if (PaintRegistry == null)
-            return;
-
         // Release old paint if exists (for property changes)
-        if (_textPaint != null)
+        if (_textPaint is not null && _font is not null)
         {
             PaintRegistry.Release(_textPaint, _font);
         }
@@ -597,10 +595,10 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
     {
         if (disposing)
         {
-            // Release paint from registry (safe even if ClearAll already called or during shutdown)
-            if (_textPaint != null)
+            // Release paint from registry
+            if (_textPaint is not null && _font is not null)
             {
-                PaintRegistry?.Release(_textPaint, _font);
+                PaintRegistry.Release(_textPaint, _font);
             }
         }
         base.Dispose(disposing);

@@ -133,7 +133,7 @@ public class DataGridColumnTests
     {
         // Arrange
         var column = new DataGridTextColumn<Person>();
-        Func<Person, string> binding = p => p.Name;
+        static string binding(Person p) => p.Name;
 
         // Act
         var result = column.SetBinding(binding);
@@ -211,8 +211,8 @@ public class DataGridColumnTests
     {
         // Arrange
         var column = new DataGridCheckboxColumn<Person>();
-        Func<Person, bool> getter = p => p.IsActive;
-        Action<Person, bool> setter = (p, v) => p.IsActive = v;
+        static bool getter(Person p) => p.IsActive;
+        static void setter(Person p, bool v) => p.IsActive = v;
 
         // Act
         var result = column.SetBinding(getter, setter);
@@ -270,7 +270,7 @@ public class DataGridColumnTests
         // Arrange
         var column = new DataGridButtonColumn<Person>();
         var command = new TestCommand();
-        Func<Person, object?> parameterGetter = p => p.Name;
+        static object? parameterGetter(Person p) => p.Name;
 
         // Act
         var result = column.SetCommand(command, parameterGetter);
@@ -300,7 +300,7 @@ public class DataGridColumnTests
     {
         // Arrange
         var column = new DataGridButtonColumn<Person>();
-        Func<Person, string> textGetter = p => $"Edit {p.Name}";
+        static string textGetter(Person p) => $"Edit {p.Name}";
 
         // Act
         var result = column.SetButtonTextGetter(textGetter);
@@ -323,7 +323,7 @@ public class DataGridColumnTests
     {
         // Arrange
         var column = new DataGridTemplateColumn<Person>();
-        Func<Person, int, UiElement> template = (person, index) => new Label().SetText(person.Name);
+        static UiElement template(Person person, int index) => new Label().SetText(person.Name);
 
         // Act
         var result = column.SetCellTemplate(template);
@@ -403,7 +403,7 @@ public class DataGridColumnTests
 
     private class TestCommand : ICommand
     {
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged { add { } remove { } }
         public bool CanExecute(object? parameter) => true;
         public void Execute(object? parameter) { }
     }
@@ -429,8 +429,8 @@ public class DataGridColumnTests
     {
         // Arrange
         var column = new DataGridComboBoxColumn<Person, string>();
-        Func<Person, string?> getter = p => p.Name;
-        Action<Person, string?> setter = (p, v) => p.Name = v ?? "";
+        static string? getter(Person p) => p.Name;
+        static void setter(Person p, string? v) => p.Name = v ?? "";
 
         // Act
         var result = column.SetBinding(getter, setter);

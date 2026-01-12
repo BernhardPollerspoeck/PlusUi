@@ -153,7 +153,7 @@ public class MenuItem
     #endregion
 
     #region Items (Submenu)
-    internal List<object> Items { get; } = new();
+    internal List<object> Items { get; } = [];
 
     /// <summary>
     /// Gets whether this menu item has sub-items (is a submenu).

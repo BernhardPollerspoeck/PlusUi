@@ -110,6 +110,6 @@ public class RenderLoopDemoViewModel : INotifyPropertyChanged
 
         public void Execute(object? parameter) => _execute();
 
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged { add { } remove { } }
     }
 }

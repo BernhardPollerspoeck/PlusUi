@@ -48,7 +48,7 @@ public class TabControlTests
         tabControl.Measure(new Size(500, 300));
 
         // Assert - MeasureInternal should have been called
-        Assert.IsTrue(tabControl.MeasureInternalCallCount > 0,
+        Assert.IsGreaterThan(0, tabControl.MeasureInternalCallCount,
             "MeasureInternal should be called after TabPosition change and Measure");
     }
 
@@ -79,7 +79,7 @@ public class TabControlTests
         scrollView.Arrange(new Rect(0, 0, 500, 300));
 
         // Assert - TabControl's MeasureInternal should have been called
-        Assert.IsTrue(tabControl.MeasureInternalCallCount > 0,
+        Assert.IsGreaterThan(0, tabControl.MeasureInternalCallCount,
             $"MeasureInternal should be called. TabPosition is {tabControl.TabPosition}");
     }
 

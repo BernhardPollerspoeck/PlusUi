@@ -20,13 +20,13 @@ internal partial class ItemsListDemoPageViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private ObservableCollection<ItemModel> _items = new ObservableCollection<ItemModel>();
+    private ObservableCollection<ItemModel> _items = [];
 
     [ObservableProperty]
-    private ObservableCollection<ItemModel> _horizontalItems = new ObservableCollection<ItemModel>();
+    private ObservableCollection<ItemModel> _horizontalItems = [];
 
     private int _itemCounter = 0;
-    private readonly Random _random = new Random();
+    private readonly Random _random = new();
 
     public ItemsListDemoPageViewModel(INavigationService navigationService)
     {

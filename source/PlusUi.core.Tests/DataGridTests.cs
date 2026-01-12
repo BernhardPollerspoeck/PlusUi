@@ -23,7 +23,7 @@ public class DataGridTests
 
         // Assert
         Assert.IsNotNull(dataGrid.Columns, "Columns should not be null");
-        Assert.AreEqual(0, dataGrid.Columns.Count, "Columns should be empty by default");
+        Assert.IsEmpty(dataGrid.Columns, "Columns should be empty by default");
     }
 
     [TestMethod]
@@ -127,7 +127,7 @@ public class DataGridTests
     {
         // Arrange
         var dataGrid = new DataGrid<Person>();
-        Func<Person, int, DataGridRowStyle> callback = (person, index) => new DataGridRowStyle(
+        static DataGridRowStyle callback(Person person, int index) => new(
             Background: new SolidColorBackground(Colors.Red),
             Foreground: Colors.White
         );
@@ -188,7 +188,7 @@ public class DataGridTests
         var result = dataGrid.AddColumn(column);
 
         // Assert
-        Assert.AreEqual(1, dataGrid.Columns.Count, "Column should be added");
+        Assert.HasCount(1, dataGrid.Columns, "Column should be added");
         Assert.AreSame(column, dataGrid.Columns[0], "Added column should match");
         Assert.AreSame(dataGrid, result, "Method should return DataGrid for chaining");
     }
@@ -206,7 +206,7 @@ public class DataGridTests
         dataGrid.AddColumn(column1).AddColumn(column2).AddColumn(column3);
 
         // Assert
-        Assert.AreEqual(3, dataGrid.Columns.Count, "All columns should be added");
+        Assert.HasCount(3, dataGrid.Columns, "All columns should be added");
     }
 
     [TestMethod]
@@ -221,7 +221,7 @@ public class DataGridTests
         var result = dataGrid.RemoveColumn(column);
 
         // Assert
-        Assert.AreEqual(0, dataGrid.Columns.Count, "Column should be removed");
+        Assert.IsEmpty(dataGrid.Columns, "Column should be removed");
         Assert.AreSame(dataGrid, result, "Method should return DataGrid for chaining");
     }
 
@@ -544,7 +544,7 @@ public class DataGridTests
         dataGrid.SetSelectedItem(person);
 
         // Assert
-        Assert.IsTrue(dataGrid.SelectedItems.Contains(person), "SelectedItem should be in SelectedItems");
+        Assert.Contains(person, dataGrid.SelectedItems, "SelectedItem should be in SelectedItems");
     }
 
     [TestMethod]
@@ -565,8 +565,8 @@ public class DataGridTests
 
         // Assert
         Assert.AreSame(bob, dataGrid.SelectedItem, "SelectedItem should be replaced");
-        Assert.AreEqual(1, dataGrid.SelectedItems.Count, "Only one item should be selected");
-        Assert.IsTrue(dataGrid.SelectedItems.Contains(bob), "Bob should be selected");
+        Assert.HasCount(1, dataGrid.SelectedItems, "Only one item should be selected");
+        Assert.Contains(bob, dataGrid.SelectedItems, "Bob should be selected");
     }
 
     [TestMethod]
@@ -585,7 +585,7 @@ public class DataGridTests
 
         // Assert
         Assert.IsNull(dataGrid.SelectedItem, "SelectedItem should be null");
-        Assert.AreEqual(0, dataGrid.SelectedItems.Count, "SelectedItems should be empty");
+        Assert.IsEmpty(dataGrid.SelectedItems, "SelectedItems should be empty");
     }
 
     [TestMethod]
@@ -606,9 +606,9 @@ public class DataGridTests
         dataGrid.SelectItem(bob);
 
         // Assert
-        Assert.AreEqual(2, dataGrid.SelectedItems.Count, "Two items should be selected");
-        Assert.IsTrue(dataGrid.SelectedItems.Contains(alice), "Alice should be selected");
-        Assert.IsTrue(dataGrid.SelectedItems.Contains(bob), "Bob should be selected");
+        Assert.HasCount(2, dataGrid.SelectedItems, "Two items should be selected");
+        Assert.Contains(alice, dataGrid.SelectedItems, "Alice should be selected");
+        Assert.Contains(bob, dataGrid.SelectedItems, "Bob should be selected");
     }
 
     [TestMethod]
@@ -630,9 +630,9 @@ public class DataGridTests
         dataGrid.DeselectItem(alice);
 
         // Assert
-        Assert.AreEqual(1, dataGrid.SelectedItems.Count, "One item should remain selected");
-        Assert.IsFalse(dataGrid.SelectedItems.Contains(alice), "Alice should be deselected");
-        Assert.IsTrue(dataGrid.SelectedItems.Contains(bob), "Bob should still be selected");
+        Assert.HasCount(1, dataGrid.SelectedItems, "One item should remain selected");
+        Assert.DoesNotContain(alice, dataGrid.SelectedItems, "Alice should be deselected");
+        Assert.Contains(bob, dataGrid.SelectedItems, "Bob should still be selected");
     }
 
     [TestMethod]
@@ -655,7 +655,7 @@ public class DataGridTests
 
         // Assert
         Assert.IsNull(dataGrid.SelectedItem, "SelectedItem should be null");
-        Assert.AreEqual(0, dataGrid.SelectedItems.Count, "SelectedItems should be empty");
+        Assert.IsEmpty(dataGrid.SelectedItems, "SelectedItems should be empty");
     }
 
     [TestMethod]
@@ -674,7 +674,7 @@ public class DataGridTests
 
         // Assert
         Assert.IsNull(dataGrid.SelectedItem, "SelectedItem should remain null");
-        Assert.AreEqual(0, dataGrid.SelectedItems.Count, "No items should be selected");
+        Assert.IsEmpty(dataGrid.SelectedItems, "No items should be selected");
     }
 
     [TestMethod]
@@ -1208,10 +1208,10 @@ public class DataGridTests
         // Assert - Children should be positioned relative to DataGrid position
         foreach (var child in dataGrid.Children)
         {
-            Assert.IsTrue(child.Position.X >= 10f, $"Child X ({child.Position.X}) should be >= DataGrid X (10)");
-            Assert.IsTrue(child.Position.Y >= 20f, $"Child Y ({child.Position.Y}) should be >= DataGrid Y (20)");
-            Assert.IsTrue(child.Position.X <= 810f, $"Child X ({child.Position.X}) should be <= DataGrid right edge (810)");
-            Assert.IsTrue(child.Position.Y <= 420f, $"Child Y ({child.Position.Y}) should be <= DataGrid bottom edge (420)");
+            Assert.IsGreaterThanOrEqualTo(10f, child.Position.X, $"Child X ({child.Position.X}) should be >= DataGrid X (10)");
+            Assert.IsGreaterThanOrEqualTo(20f, child.Position.Y, $"Child Y ({child.Position.Y}) should be >= DataGrid Y (20)");
+            Assert.IsLessThanOrEqualTo(810f, child.Position.X, $"Child X ({child.Position.X}) should be <= DataGrid right edge (810)");
+            Assert.IsLessThanOrEqualTo(420f, child.Position.Y, $"Child Y ({child.Position.Y}) should be <= DataGrid bottom edge (420)");
         }
     }
 

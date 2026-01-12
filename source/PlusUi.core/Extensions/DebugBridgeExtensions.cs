@@ -38,7 +38,7 @@ public static class DebugBridgeExtensions
         builder.Services.AddSingleton(sp =>
         {
             var navigationContainer = sp.GetRequiredService<NavigationContainer>();
-            var logger = sp.GetService<ILogger<DebugBridgeClient>>();
+            var logger = sp.GetRequiredService<ILogger<DebugBridgeClient>>();
             var client = new DebugBridgeClient(serverUrl, navigationContainer, logger);
             _ = client.ConnectAsync();
             return client;

@@ -13,7 +13,7 @@ public class H264PlatformService(RenderService renderService, IOptions<VideoConf
 
     public PlatformType Platform => PlatformType.Desktop; // H.264 is typically used for desktop video rendering
 
-    public Size WindowSize => new Size(_videoConfiguration.Width, _videoConfiguration.Height);
+    public Size WindowSize => new(_videoConfiguration.Width, _videoConfiguration.Height);
 
     public float DisplayDensity => renderService.DisplayDensity;
 

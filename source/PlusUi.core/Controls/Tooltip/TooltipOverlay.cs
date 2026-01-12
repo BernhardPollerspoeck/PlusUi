@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Services;
 using PlusUi.core.Services.DebugBridge;
@@ -53,14 +54,11 @@ internal class TooltipOverlay : UiElement, IDebugInspectable
         StartFadeIn();
     }
 
+    [MemberNotNull(nameof(_font), nameof(_textPaint))]
     private void UpdatePaint()
     {
-        // Skip if PaintRegistry not available (during shutdown)
-        if (PaintRegistry == null)
-            return;
-
         // Release old paint if exists (for property changes)
-        if (_textPaint != null)
+        if (_textPaint is not null && _font is not null)
         {
             PaintRegistry.Release(_textPaint, _font);
         }
@@ -265,10 +263,10 @@ internal class TooltipOverlay : UiElement, IDebugInspectable
     {
         if (disposing)
         {
-            // Release paint from registry (safe even if ClearAll already called or during shutdown)
-            if (_textPaint != null)
+            // Release paint from registry
+            if (_textPaint is not null && _font is not null)
             {
-                PaintRegistry?.Release(_textPaint, _font);
+                PaintRegistry.Release(_textPaint, _font);
             }
 
             // Note: _contentElement is not disposed here because we don't own it.

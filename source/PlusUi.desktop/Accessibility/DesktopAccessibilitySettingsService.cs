@@ -49,22 +49,25 @@ public class DesktopAccessibilitySettingsService : AccessibilitySettingsService
             }
 
             // Check Windows text scale factor from registry
-            try
+            if (OperatingSystem.IsWindows())
             {
-                using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
-                    @"SOFTWARE\Microsoft\Accessibility");
-                if (key != null)
+                try
                 {
-                    var textScaleFactor = key.GetValue("TextScaleFactor");
-                    if (textScaleFactor is int scaleFactor)
+                    using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
+                        @"SOFTWARE\Microsoft\Accessibility");
+                    if (key != null)
                     {
-                        SetFontScaleFactor(scaleFactor / 100f);
+                        var textScaleFactor = key.GetValue("TextScaleFactor");
+                        if (textScaleFactor is int scaleFactor)
+                        {
+                            SetFontScaleFactor(scaleFactor / 100f);
+                        }
                     }
                 }
-            }
-            catch
-            {
-                // Registry access failed - use default
+                catch
+                {
+                    // Registry access failed - use default
+                }
             }
 
             // Check reduce animations setting

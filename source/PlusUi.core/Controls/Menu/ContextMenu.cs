@@ -44,7 +44,7 @@ public partial class ContextMenu : UiElement, IDebugInspectable
     }
 
     #region Items
-    internal List<object> Items { get; } = new();
+    internal List<object> Items { get; } = [];
 
     /// <summary>
     /// Adds a menu item to the context menu.

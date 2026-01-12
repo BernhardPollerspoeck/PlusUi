@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Services.DebugBridge;
@@ -29,7 +30,7 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
 {
-    private static readonly Color DefaultBackgroundColor = new Color(35, 35, 35);
+    private static readonly Color DefaultBackgroundColor = new(35, 35, 35);
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => true;
@@ -49,14 +50,11 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
         UpdatePaints();
     }
 
+    [MemberNotNull(nameof(_font), nameof(_textPaint), nameof(_disabledTextPaint))]
     private void UpdatePaints()
     {
-        // Skip if PaintRegistry not available (during shutdown)
-        if (PaintRegistry == null)
-            return;
-
         // Release old paints if exists (for property changes)
-        if (_textPaint != null)
+        if (_textPaint is not null && _font is not null && _disabledTextPaint is not null)
         {
             PaintRegistry.Release(_textPaint, _font);
             PaintRegistry.Release(_disabledTextPaint, _font);
@@ -173,7 +171,7 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     #endregion
 
     #region Items
-    private readonly List<MenuItem> _items = new();
+    private readonly List<MenuItem> _items = [];
 
     public Menu AddItem(MenuItem item)
     {
@@ -189,7 +187,7 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     private int _hitIndex = -1;
     private MenuOverlay? _activeOverlay;
     private IOverlayService? _overlayService;
-    private readonly List<SKRect> _itemRects = new();
+    private readonly List<SKRect> _itemRects = [];
     #endregion
 
     #region IHoverableControl
@@ -294,7 +292,6 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
                 if (point.X >= rect.Left && point.X <= rect.Right)
                 {
                     _hitIndex = i;
-                    var previousHovered = _hoveredIndex;
                     _hoveredIndex = i;
 
                     // If a menu is already open and we hover a different item, switch menus
@@ -388,11 +385,11 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
         {
             CloseMenu();
 
-            // Release paints from registry (safe even if ClearAll already called or during shutdown)
-            if (_textPaint != null)
+            // Release paints from registry
+            if (_textPaint is not null && _font is not null && _disabledTextPaint is not null)
             {
-                PaintRegistry?.Release(_textPaint, _font);
-                PaintRegistry?.Release(_disabledTextPaint, _font);
+                PaintRegistry.Release(_textPaint, _font);
+                PaintRegistry.Release(_disabledTextPaint, _font);
             }
         }
         base.Dispose(disposing);

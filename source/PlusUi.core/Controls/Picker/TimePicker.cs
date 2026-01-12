@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
 using PlusUi.core.Services;
@@ -477,14 +478,11 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         UpdatePaint();
     }
 
+    [MemberNotNull(nameof(_font), nameof(_paint))]
     private void UpdatePaint()
     {
-        // Skip if PaintRegistry not available (during shutdown)
-        if (PaintRegistry == null)
-            return;
-
         // Release old paint if exists (for property changes)
-        if (_paint != null)
+        if (_paint is not null && _font is not null)
         {
             PaintRegistry.Release(_paint, _font);
         }
@@ -934,10 +932,10 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         {
             UnregisterSelectorOverlay();
 
-            // Release paint from registry (safe even if ClearAll already called or during shutdown)
-            if (_paint != null)
+            // Release paint from registry
+            if (_paint is not null && _font is not null)
             {
-                PaintRegistry?.Release(_paint, _font);
+                PaintRegistry.Release(_paint, _font);
             }
         }
         base.Dispose(disposing);
