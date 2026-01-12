@@ -4,7 +4,7 @@ TODO
 
 | Section | Description | Done | Total | Progress | Remaining |
 |---------|-------------|------|-------|----------|-----------|
-| 0 | Random stuff | 0 | 10 | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0% | ~4 weeks |
+| 0 | Random stuff | 3 | 10 | 🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜ 30% | ~3 weeks |
 | 1 | DebugServer: Tree | 6 | 9 | 🟩🟩🟩🟩🟩🟩⬜⬜⬜ 67% | ~1.5 days |
 | 2 | DebugServer: Property Grid | 1 | 5 | 🟩⬜⬜⬜⬜ 20% | ~5 hrs |
 | 3 | DebugServer: Change Tracking | 0 | 6 | ⬜⬜⬜⬜⬜⬜ 0% | ~2 days |
@@ -14,7 +14,7 @@ TODO
 | 7 | DebugServer: Logging Cleanup | 3 | 3 | 🟩🟩🟩 100% | ✅ Done |
 | 8 | DebugServer: Layout Vis | 1 | 2 | 🟩⬜ 50% | ~2 hrs |
 | 9 | DebugServer: Multi-App | 5 | 9 | 🟩🟩🟩🟩🟩⬜⬜⬜⬜ 56% | ~4 days |
-| **Total** | | **19** | **57** | **33%** | **~6 weeks** |
+| **Total** | | **22** | **57** | **39%** | **~5 weeks** |
 
 ---
 
@@ -41,14 +41,14 @@ TODO
 
 ### 0. Random stuff
 - [ ] [ ] 999.1 5️⃣ centralized default values for properties (e.g., default font size, color) to avoid magic numbers scattered in code
-- [ ] [ ] 999.2 3️⃣ complete code comments and XML documentation for all public methods and classes
-- [ ] [ ] 999.3 2️⃣ ensure docs for github pages are up to date with latest features and usage instructions
+- [x] [x] 999.2 3️⃣ complete code comments and XML documentation for all public methods and classes
+- [x] [x] 999.3 2️⃣ ensure docs for github pages are up to date with latest features and usage instructions
 - [ ] [ ] 999.4 9️⃣ rework text rendering to maybe use native text rendering lib for better performance and quality
 - [ ] [ ] 999.5 7️⃣ analyze what takes all the memory since sandbox requires about 350mb on startup
 - [ ] [ ] 999.6 🔟 think about a fully custom rendering engine that does not need skia at all.
 - [ ] [ ] 999.7 4️⃣ ensure all code is up to dotnet 10 standards and best practices
 - [ ] [ ] 999.8 3️⃣ clear out all warnings and messages.
-- [ ] [ ] 999.9 4️⃣ ensure all not public api surfaces are internal only
+- [x] [x] 999.9 4️⃣ ensure all not public api surfaces are internal only
 - [ ] [ ] 999.10 5️⃣ return ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>() wirft Exception in UiElment beim stoppen
 
 

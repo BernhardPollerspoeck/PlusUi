@@ -34,6 +34,7 @@ PlusUi provides a comprehensive set of UI controls for building cross-platform a
 - [Grid](grid.html) - Row/column grid layout
 - [UniformGrid](uniformgrid.html) - Equal-sized cell grid
 - [ScrollView](scrollview.html) - Scrollable container
+- [Scrollbar](scrollbar.html) - Scrollbar for custom scroll implementations
 - [Border](border.html) - Container with border stroke
 - [TabControl](tabcontrol.html) - Tabbed content container
 - [Toolbar](toolbar.html) - Application toolbar
@@ -49,6 +50,10 @@ PlusUi provides a comprehensive set of UI controls for building cross-platform a
 - [ItemsList](itemslist.html) - Virtualized list for large datasets
 - [DataGrid](datagrid.html) - Tabular data with columns
 - [TreeView](treeview.html) - Hierarchical tree structure
+
+### Menu Controls
+- [Menu](menu.html) - Horizontal menu bar with dropdowns
+- [ContextMenu](contextmenu.html) - Right-click context menus
 
 ### Other Controls
 - [UserControl](usercontrol.html) - Creating custom reusable components

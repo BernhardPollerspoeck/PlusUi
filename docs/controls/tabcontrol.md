@@ -125,7 +125,9 @@ TabItem represents a single tab with header text and content.
 |:-------|:------------|
 | `SetHeader(string)` | Sets tab header text |
 | `SetContent(UiElement)` | Sets tab content |
-| `SetIsEnabled(bool)` | Enables/disables the tab |
+| `SetIcon(string)` | Sets optional icon for the tab header |
+| `SetIsEnabled(bool)` | Enables/disables the tab (default: true) |
+| `SetTag(object)` | Sets custom data associated with this tab |
 
 ---
 
