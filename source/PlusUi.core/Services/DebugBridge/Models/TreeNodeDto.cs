@@ -3,7 +3,7 @@ namespace PlusUi.core.Services.DebugBridge.Models;
 /// <summary>
 /// Represents a node in the UI tree for debug inspection.
 /// </summary>
-public class TreeNodeDto
+internal class TreeNodeDto
 {
     /// <summary>
     /// Unique element ID for reference.

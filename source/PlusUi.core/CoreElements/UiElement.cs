@@ -8,6 +8,10 @@ using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// Base class for all UI elements in PlusUi.
+/// Provides layout, rendering, data binding, styling, accessibility, and input handling.
+/// </summary>
 [GenerateGenericWrapper]
 public abstract class UiElement : IDisposable
 {
@@ -1329,7 +1333,7 @@ public abstract class UiElement : IDisposable
     /// Helper property for accessing ExpressionPathService for binding path extraction.
     /// Returns a fallback instance if ServiceProvider is not available (e.g., during tests).
     /// </summary>
-    protected IExpressionPathService ExpressionPathService
+    private protected IExpressionPathService ExpressionPathService
     {
         get
         {

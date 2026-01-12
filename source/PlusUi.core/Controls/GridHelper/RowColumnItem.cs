@@ -1,6 +1,9 @@
 ﻿namespace PlusUi.core.Controls.GridHelper;
 
-public class RowColumnItem<TType>(string? propertyName, TType type, float? fixedSize = null, Func<float>? boundSize = null)
+/// <summary>
+/// Internal helper class representing a row or column size configuration in a Grid layout.
+/// </summary>
+internal class RowColumnItem<TType>(string? propertyName, TType type, float? fixedSize = null, Func<float>? boundSize = null)
     where TType : struct
 {
     public TType Type { get; } = type;

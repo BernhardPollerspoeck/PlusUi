@@ -1,6 +1,9 @@
 namespace PlusUi.core.Services.DebugBridge.Models;
 
-public class PropertyDto
+/// <summary>
+/// Represents a property of a UI element for debug inspection.
+/// </summary>
+internal class PropertyDto
 {
     public required string Name { get; set; }
     public required string Type { get; set; }

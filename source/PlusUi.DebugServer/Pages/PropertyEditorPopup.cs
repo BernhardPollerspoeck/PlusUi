@@ -10,19 +10,19 @@ namespace PlusUi.DebugServer.Pages;
 /// <summary>
 /// Result returned from PropertyEditorPopup containing the edited field values.
 /// </summary>
-public class PropertyEditorResult
+internal class PropertyEditorResult
 {
     public List<PropertyFieldResult> Fields { get; set; } = new();
 }
 
-public class PropertyFieldResult
+internal class PropertyFieldResult
 {
     public string ElementId { get; set; } = "";
     public string Path { get; set; } = "";
     public string Value { get; set; } = "";
 }
 
-public partial class PropertyEditorPopupViewModel(IPopupService popupService) : ObservableObject
+internal partial class PropertyEditorPopupViewModel(IPopupService popupService) : ObservableObject
 {
     public ObservableCollection<PropertyFieldViewModel> Fields { get; } = new();
 
@@ -90,7 +90,7 @@ public partial class PropertyEditorPopupViewModel(IPopupService popupService) : 
     }
 }
 
-public partial class PropertyFieldViewModel : ObservableObject
+internal partial class PropertyFieldViewModel : ObservableObject
 {
     [ObservableProperty]
     private string _name = "";
@@ -113,7 +113,7 @@ public partial class PropertyFieldViewModel : ObservableObject
     public bool IsModified => Value != OriginalValue;
 }
 
-public class PropertyEditorPopup(PropertyEditorPopupViewModel vm) : UiPopupElement<PropertyDto, PropertyEditorResult>(vm)
+internal class PropertyEditorPopup(PropertyEditorPopupViewModel vm) : UiPopupElement<PropertyDto, PropertyEditorResult>(vm)
 {
     public override void Close(bool success)
     {

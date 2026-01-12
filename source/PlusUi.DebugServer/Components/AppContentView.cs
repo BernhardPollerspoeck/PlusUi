@@ -5,7 +5,7 @@ using PlusUi.DebugServer.Pages;
 
 namespace PlusUi.DebugServer.Components;
 
-public class AppContentView : UserControl
+internal class AppContentView : UserControl
 {
     private readonly MainViewModel _viewModel;
 

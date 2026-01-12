@@ -5,6 +5,10 @@ using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A loading indicator that displays a spinning animation to indicate ongoing activity.
+/// Use <see cref="SetIsRunning"/> to control whether the animation is active.
+/// </summary>
 [GenerateShadowMethods]
 public partial class ActivityIndicator : UiElement
 {

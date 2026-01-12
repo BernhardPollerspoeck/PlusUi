@@ -5,7 +5,7 @@ using PlusUi.DebugServer.Pages;
 
 namespace PlusUi.DebugServer.Components;
 
-public class LogsView : UserControl
+internal class LogsView : UserControl
 {
     private readonly MainViewModel _viewModel;
 

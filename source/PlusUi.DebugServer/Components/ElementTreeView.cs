@@ -8,7 +8,7 @@ namespace PlusUi.DebugServer.Components;
 /// <summary>
 /// Displays UI element hierarchy as a tree.
 /// </summary>
-public class ElementTreeView : UserControl
+internal class ElementTreeView : UserControl
 {
     private readonly MainViewModel _viewModel;
 

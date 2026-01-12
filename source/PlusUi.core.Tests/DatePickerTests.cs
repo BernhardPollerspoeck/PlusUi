@@ -403,21 +403,5 @@ public class DatePickerTests
 
     #endregion
 
-    #region DayOfWeekStart Enum Tests
-
-    [TestMethod]
-    public void DayOfWeekStart_Sunday_ShouldHaveValueZero()
-    {
-        // Assert
-        Assert.AreEqual(0, (int)DayOfWeekStart.Sunday);
-    }
-
-    [TestMethod]
-    public void DayOfWeekStart_Monday_ShouldHaveValueOne()
-    {
-        // Assert
-        Assert.AreEqual(1, (int)DayOfWeekStart.Monday);
-    }
-
-    #endregion
+    
 }

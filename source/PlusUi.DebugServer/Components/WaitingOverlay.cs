@@ -3,7 +3,7 @@ using PlusUi.DebugServer.Pages;
 
 namespace PlusUi.DebugServer.Components;
 
-public class WaitingOverlay : UserControl
+internal class WaitingOverlay : UserControl
 {
     private readonly MainViewModel _viewModel;
 

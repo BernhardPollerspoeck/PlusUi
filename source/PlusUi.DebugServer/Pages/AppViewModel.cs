@@ -5,7 +5,7 @@ using PlusUi.core.Services.DebugBridge.Models;
 
 namespace PlusUi.DebugServer.Pages;
 
-public partial class AppViewModel : ObservableObject, IDisposable
+internal partial class AppViewModel : ObservableObject, IDisposable
 {
     public string ClientId { get; }
 

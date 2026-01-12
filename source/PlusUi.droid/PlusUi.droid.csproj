@@ -1,27 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net10.0-android</TargetFramework>
-    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
-    <IsTrimmable>true</IsTrimmable>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>PlusUi.droid</PackageId>
-    <Product>PlusUi.droid</Product>
-    <Description>The Android PlusUi Package</Description>
-    <PackageTags>PlusUi;UiFramework;Android;Skiasharp</PackageTags>
-    <PackageIcon>plusui.png</PackageIcon>
-    <PackageReadmeFile>readme.md</PackageReadmeFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0-android</TargetFramework>
+		<SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+		<IsTrimmable>true</IsTrimmable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>PlusUi.droid</PackageId>
+		<Product>PlusUi.droid</Product>
+		<Description>The Android PlusUi Package</Description>
+		<PackageTags>PlusUi;UiFramework;Android;Skiasharp</PackageTags>
+		<PackageIcon>plusui.png</PackageIcon>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\..\gfx\plusui.png" Link="plusui.png" Pack="true" PackagePath="plusui.png" />
-    <None Include="..\..\README.md" Link="readme.md" Pack="true" PackagePath="readme.md" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\gfx\plusui.png" Link="plusui.png" Pack="true" PackagePath="plusui.png" />
+		<None Include="..\..\README.md" Link="readme.md" Pack="true" PackagePath="readme.md" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Silk.NET.OpenGL" Version="$(SilkNetVersion)" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Silk.NET.OpenGL" Version="$(SilkNetVersion)" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />
+	</ItemGroup>
 </Project>

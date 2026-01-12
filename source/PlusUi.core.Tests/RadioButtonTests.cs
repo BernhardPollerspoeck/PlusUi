@@ -280,7 +280,6 @@ public class RadioButtonTests
         manager.Register(radioButton);
 
         // Assert - No exception means success
-        Assert.IsTrue(true);
     }
 
     [TestMethod]
@@ -295,7 +294,6 @@ public class RadioButtonTests
         manager.Register(radioButton);
 
         // Assert - No exception means success
-        Assert.IsTrue(true);
     }
 
     [TestMethod]

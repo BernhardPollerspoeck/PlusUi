@@ -7,6 +7,10 @@ using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// Base class for UI elements that display text content.
+/// Provides text rendering, font management, text alignment, wrapping, and truncation.
+/// </summary>
 public abstract class UiTextElement : UiElement
 {
     #region Accessibility Settings Subscription

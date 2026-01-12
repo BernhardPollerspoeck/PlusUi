@@ -102,7 +102,7 @@ public partial class Grid : UiLayoutElement
 
     #region Columns
     private readonly List<RowColumnItem<Column>> _columns = [];
-    public IReadOnlyList<RowColumnItem<Column>> Columns => _columns;
+    internal IReadOnlyList<RowColumnItem<Column>> Columns => _columns;
     public Grid AddColumn(Column column, float size = 1)
     {
         var columnItem = new RowColumnItem<Column>(null, column, size);
@@ -129,7 +129,7 @@ public partial class Grid : UiLayoutElement
 
     #region Rows
     private readonly List<RowColumnItem<Row>> _rows = [];
-    public IReadOnlyList<RowColumnItem<Row>> Rows => _rows;
+    internal IReadOnlyList<RowColumnItem<Row>> Rows => _rows;
     public Grid AddRow(Row row, int size = 1)
     {
         var rowItem = new RowColumnItem<Row>(null, row, size);

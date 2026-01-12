@@ -9,7 +9,7 @@ namespace PlusUi.DebugServer.Components;
 /// <summary>
 /// Displays and edits properties of selected UI element.
 /// </summary>
-public class PropertyGridView : UserControl
+internal class PropertyGridView : UserControl
 {
     private readonly MainViewModel _viewModel;
 

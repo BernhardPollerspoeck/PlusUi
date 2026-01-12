@@ -5,7 +5,7 @@ namespace PlusUi.core.Services.DebugBridge.Models;
 /// <summary>
 /// Represents a log message sent from the debugged app to the debug server.
 /// </summary>
-public class LogMessageDto
+internal class LogMessageDto
 {
     /// <summary>
     /// Log level (Debug, Info, Warning, Error, Critical).

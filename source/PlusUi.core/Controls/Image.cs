@@ -6,6 +6,10 @@ using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// Displays an image from various sources including files, URLs, embedded resources, and SVG.
+/// Supports static images, animated GIFs/WebP, and vector SVG graphics.
+/// </summary>
 [GenerateShadowMethods]
 public partial class Image : UiElement
 {

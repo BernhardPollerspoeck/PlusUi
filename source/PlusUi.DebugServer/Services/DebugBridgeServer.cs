@@ -11,7 +11,7 @@ namespace PlusUi.DebugServer.Services;
 /// WebSocket server for receiving debug data from debugged applications.
 /// Listens on a specified port and manages multiple connected clients.
 /// </summary>
-public class DebugBridgeServer : IDisposable
+internal class DebugBridgeServer : IDisposable
 {
     private readonly int _port;
     private readonly ILogger<DebugBridgeServer> _logger;
@@ -327,7 +327,7 @@ public class DebugBridgeServer : IDisposable
     private record ClientConnection(string Id, WebSocket WebSocket);
 }
 
-public class ClientMessageReceivedEventArgs(string clientId, DebugMessage message) : EventArgs
+internal class ClientMessageReceivedEventArgs(string clientId, DebugMessage message) : EventArgs
 {
     public string ClientId { get; } = clientId;
     public DebugMessage Message { get; } = message;

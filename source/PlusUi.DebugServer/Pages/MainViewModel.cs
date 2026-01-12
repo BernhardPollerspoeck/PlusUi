@@ -13,7 +13,7 @@ using PlusUi.DebugServer.Services;
 
 namespace PlusUi.DebugServer.Pages;
 
-public partial class MainViewModel : ObservableObject, IDisposable
+internal partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly DebugBridgeServer _server;
     private readonly IPopupService _popupService;
@@ -465,7 +465,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         await _server.SendToClientAsync(SelectedAppId, new DebugMessage { Type = "get_tree" });
     }
 
-    public async void UpdatePropertyValue(PropertyDto property, string newValue)
+    internal async void UpdatePropertyValue(PropertyDto property, string newValue)
     {
         if (SelectedAppId == null || string.IsNullOrEmpty(property.ElementId))
             return;

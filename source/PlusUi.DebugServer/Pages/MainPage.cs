@@ -4,7 +4,7 @@ using SkiaSharp;
 
 namespace PlusUi.DebugServer.Pages;
 
-public class MainPage(MainViewModel vm) : UiPageElement(vm)
+internal class MainPage(MainViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {

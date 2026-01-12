@@ -4,6 +4,10 @@ using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
+/// <summary>
+/// A scrollbar control that displays scroll position and allows dragging to scroll content.
+/// Typically used internally by <see cref="ScrollView"/> but can also be used standalone.
+/// </summary>
 [GenerateShadowMethods]
 public partial class Scrollbar : UiElement<Scrollbar>, IDraggableControl
 {

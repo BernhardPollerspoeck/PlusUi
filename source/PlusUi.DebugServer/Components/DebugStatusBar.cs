@@ -7,7 +7,7 @@ namespace PlusUi.DebugServer.Components;
 /// <summary>
 /// Displays debug server status with refresh button.
 /// </summary>
-public class DebugStatusBar : UserControl
+internal class DebugStatusBar : UserControl
 {
     private readonly MainViewModel _viewModel;
 
