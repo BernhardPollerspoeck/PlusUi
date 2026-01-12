@@ -18,7 +18,7 @@ public partial class ProgressBar : UiElement
 
     public ProgressBar()
     {
-        SetDesiredHeight(8);
+        SetDesiredHeight(PlusUiDefaults.ProgressBarHeight);
         HorizontalAlignment = HorizontalAlignment.Stretch;
     }
 
@@ -75,7 +75,7 @@ public partial class ProgressBar : UiElement
         {
             field = value;
         }
-    } = new Color(0, 122, 255); // iOS blue
+    } = PlusUiDefaults.AccentPrimary;
 
     public ProgressBar SetProgressColor(Color color)
     {
@@ -100,7 +100,7 @@ public partial class ProgressBar : UiElement
         {
             field = value;
         }
-    } = new Color(230, 230, 230);
+    } = PlusUiDefaults.TrackColor;
 
     public ProgressBar SetTrackColor(Color color)
     {

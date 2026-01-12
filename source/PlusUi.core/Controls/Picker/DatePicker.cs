@@ -160,7 +160,7 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region PlaceholderColor
-    internal SKColor PlaceholderColor { get; set; } = new SKColor(180, 180, 180);
+    internal SKColor PlaceholderColor { get; set; } = PlusUiDefaults.TextPlaceholder;
 
     public DatePicker SetPlaceholderColor(SKColor color)
     {
@@ -186,7 +186,7 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
             field = value;
             UpdatePaint();
         }
-    } = SKColors.White;
+    } = PlusUiDefaults.TextPrimary;
 
     public DatePicker SetTextColor(SKColor color)
     {
@@ -213,7 +213,7 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
             UpdatePaint();
             InvalidateMeasure();
         }
-    } = 14f;
+    } = PlusUiDefaults.FontSize;
 
     public DatePicker SetTextSize(float size)
     {
@@ -266,7 +266,7 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
             field = value;
             InvalidateMeasure();
         }
-    } = new Margin(12, 8);
+    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
 
     public DatePicker SetPadding(Margin padding)
     {
@@ -320,7 +320,7 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region CalendarBackground
-    internal SKColor CalendarBackground { get; set; } = new SKColor(40, 40, 40);
+    internal SKColor CalendarBackground { get; set; } = PlusUiDefaults.BackgroundPrimary;
 
     public DatePicker SetCalendarBackground(SKColor color)
     {
@@ -338,7 +338,7 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region HoverBackground
-    internal SKColor HoverBackground { get; set; } = new SKColor(60, 60, 60);
+    internal SKColor HoverBackground { get; set; } = PlusUiDefaults.BackgroundHover;
 
     public DatePicker SetHoverBackground(SKColor color)
     {
@@ -356,7 +356,7 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region SelectedBackground
-    internal SKColor SelectedBackground { get; set; } = new SKColor(0, 120, 215);
+    internal SKColor SelectedBackground { get; set; } = PlusUiDefaults.BackgroundSelected;
 
     public DatePicker SetSelectedBackground(SKColor color)
     {
@@ -374,7 +374,7 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region TodayBorderColor
-    internal SKColor TodayBorderColor { get; set; } = new SKColor(0, 120, 215);
+    internal SKColor TodayBorderColor { get; set; } = PlusUiDefaults.AccentPrimary;
 
     public DatePicker SetTodayBorderColor(SKColor color)
     {
@@ -466,6 +466,8 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
     public DatePicker()
     {
         SetDesiredSize(new Size(200, 40));
+        SetHighContrastBackground(PlusUiDefaults.HcInputBackground);
+        SetHighContrastForeground(PlusUiDefaults.HcForeground);
         UpdatePaint();
     }
 

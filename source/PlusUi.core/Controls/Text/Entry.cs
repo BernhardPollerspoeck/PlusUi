@@ -32,6 +32,16 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
     private bool _isSelected;
     private DateTime _selectionTime;
 
+    public Entry()
+    {
+        SetBackground(new SolidColorBackground(PlusUiDefaults.BackgroundInput));
+        SetCornerRadius(PlusUiDefaults.CornerRadius);
+        Padding = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
+        SetDesiredWidth(200);
+        SetHighContrastBackground(PlusUiDefaults.HcInputBackground);
+        SetHighContrastForeground(PlusUiDefaults.HcForeground);
+    }
+
     /// <inheritdoc />
     protected internal override bool IsFocusable => true;
 
@@ -139,7 +149,7 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
     #endregion
 
     #region PlaceholderColor
-    internal Color PlaceholderColor { get; set; } = new Color(180, 180, 180);
+    internal Color PlaceholderColor { get; set; } = PlusUiDefaults.TextPlaceholder;
     public Entry SetPlaceholderColor(Color color)
     {
         PlaceholderColor = color;

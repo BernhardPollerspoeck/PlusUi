@@ -223,7 +223,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region PlaceholderColor
-    internal SKColor PlaceholderColor { get; set; } = new SKColor(180, 180, 180);
+    internal SKColor PlaceholderColor { get; set; } = PlusUiDefaults.TextPlaceholder;
 
     public TimePicker SetPlaceholderColor(SKColor color)
     {
@@ -249,7 +249,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
             field = value;
             UpdatePaint();
         }
-    } = SKColors.White;
+    } = PlusUiDefaults.TextPrimary;
 
     public TimePicker SetTextColor(SKColor color)
     {
@@ -276,7 +276,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
             UpdatePaint();
             InvalidateMeasure();
         }
-    } = 14f;
+    } = PlusUiDefaults.FontSize;
 
     public TimePicker SetTextSize(float size)
     {
@@ -329,7 +329,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
             field = value;
             InvalidateMeasure();
         }
-    } = new Margin(12, 8);
+    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
 
     public TimePicker SetPadding(Margin padding)
     {
@@ -347,7 +347,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region SelectorBackground
-    internal SKColor SelectorBackground { get; set; } = new SKColor(40, 40, 40);
+    internal SKColor SelectorBackground { get; set; } = PlusUiDefaults.BackgroundPrimary;
 
     public TimePicker SetSelectorBackground(SKColor color)
     {
@@ -365,7 +365,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region HoverBackground
-    internal SKColor HoverBackground { get; set; } = new SKColor(60, 60, 60);
+    internal SKColor HoverBackground { get; set; } = PlusUiDefaults.BackgroundHover;
 
     public TimePicker SetHoverBackground(SKColor color)
     {
@@ -383,7 +383,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     #endregion
 
     #region SelectedBackground
-    internal SKColor SelectedBackground { get; set; } = new SKColor(0, 120, 215);
+    internal SKColor SelectedBackground { get; set; } = PlusUiDefaults.BackgroundSelected;
 
     public TimePicker SetSelectedBackground(SKColor color)
     {
@@ -475,6 +475,8 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
     public TimePicker()
     {
         SetDesiredSize(new Size(150, 40));
+        SetHighContrastBackground(PlusUiDefaults.HcInputBackground);
+        SetHighContrastForeground(PlusUiDefaults.HcForeground);
         UpdatePaint();
     }
 

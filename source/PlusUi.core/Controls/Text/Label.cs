@@ -25,6 +25,11 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Label : UiTextElement
 {
+    public Label()
+    {
+        SetHighContrastForeground(PlusUiDefaults.HcForeground);
+    }
+
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
 

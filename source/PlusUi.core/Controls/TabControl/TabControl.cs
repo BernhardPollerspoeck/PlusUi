@@ -439,7 +439,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
             UpdatePaints();
             InvalidateMeasure();
         }
-    } = 14f;
+    } = PlusUiDefaults.FontSize;
 
     public TabControl SetHeaderTextSize(float size)
     {
@@ -463,7 +463,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
             field = value;
             UpdatePaints();
         }
-    } = SKColors.White;
+    } = PlusUiDefaults.TextPrimary;
 
     public TabControl SetHeaderTextColor(SKColor color)
     {
@@ -487,7 +487,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
             field = value;
             UpdatePaints();
         }
-    } = new SKColor(52, 199, 89); // Green
+    } = PlusUiDefaults.AccentSuccess;
 
     public TabControl SetActiveHeaderTextColor(SKColor color)
     {
@@ -511,7 +511,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
             field = value;
             UpdatePaints();
         }
-    } = new SKColor(100, 100, 100);
+    } = PlusUiDefaults.BorderColor;
 
     public TabControl SetDisabledHeaderTextColor(SKColor color)
     {
@@ -527,7 +527,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    internal SKColor HeaderBackgroundColor { get; set; } = new SKColor(40, 40, 40);
+    internal SKColor HeaderBackgroundColor { get; set; } = PlusUiDefaults.BackgroundPrimary;
 
     public TabControl SetHeaderBackgroundColor(SKColor color)
     {
@@ -543,7 +543,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    internal SKColor ActiveTabBackgroundColor { get; set; } = new SKColor(60, 60, 60);
+    internal SKColor ActiveTabBackgroundColor { get; set; } = PlusUiDefaults.BackgroundHover;
 
     public TabControl SetActiveTabBackgroundColor(SKColor color)
     {
@@ -559,7 +559,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    internal SKColor HoverTabBackgroundColor { get; set; } = new SKColor(50, 50, 50);
+    internal SKColor HoverTabBackgroundColor { get; set; } = PlusUiDefaults.BackgroundSecondary;
 
     public TabControl SetHoverTabBackgroundColor(SKColor color)
     {
@@ -575,7 +575,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         return this;
     }
 
-    internal SKColor TabIndicatorColor { get; set; } = new SKColor(52, 199, 89);
+    internal SKColor TabIndicatorColor { get; set; } = PlusUiDefaults.AccentSuccess;
 
     public TabControl SetTabIndicatorColor(SKColor color)
     {

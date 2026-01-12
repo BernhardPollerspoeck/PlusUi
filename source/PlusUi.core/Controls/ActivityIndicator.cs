@@ -89,7 +89,7 @@ public partial class ActivityIndicator : UiElement
         {
             field = value;
         }
-    } = new Color(0, 122, 255); // iOS blue
+    } = PlusUiDefaults.AccentPrimary;
 
     public ActivityIndicator SetColor(Color color)
     {

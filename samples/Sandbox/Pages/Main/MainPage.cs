@@ -240,12 +240,6 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                     );
     }
 
-    protected override void ConfigurePageStyles(Style pageStyle)
-    {
-        pageStyle.AddStyle<UiPageElement>(element
-            => element.SetBackground(new SolidColorBackground(Colors.White)));
-    }
-
     private UiElement[] BuildLabelTest()
     {
         var count = 25;

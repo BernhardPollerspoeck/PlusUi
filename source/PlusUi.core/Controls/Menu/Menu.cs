@@ -30,7 +30,7 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
 {
-    private static readonly Color DefaultBackgroundColor = new(35, 35, 35);
+    private static readonly Color DefaultBackgroundColor = PlusUiDefaults.BackgroundPrimary;
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => true;
@@ -73,9 +73,8 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     }
 
     #region Constants
-    private const float ItemPaddingHorizontal = 12f;
-    private const float ItemPaddingVertical = 8f;
-    private const float MenuHeight = 32f;
+    private static readonly float ItemPaddingHorizontal = PlusUiDefaults.PaddingHorizontal;
+    private static readonly float MenuHeight = PlusUiDefaults.ItemHeight;
     #endregion
 
     #region Colors
@@ -83,7 +82,7 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     {
         get => field;
         set { field = value; InvalidateMeasure(); }
-    } = new Color(55, 55, 55);
+    } = PlusUiDefaults.BackgroundSecondary;
 
     public Menu SetHoverBackgroundColor(Color color)
     {
@@ -103,7 +102,7 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     {
         get => field;
         set { field = value; InvalidateMeasure(); }
-    } = new Color(65, 65, 65);
+    } = PlusUiDefaults.BackgroundHover;
 
     public Menu SetActiveBackgroundColor(Color color)
     {
@@ -128,7 +127,7 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
             UpdatePaints();
             InvalidateMeasure();
         }
-    } = Colors.White;
+    } = PlusUiDefaults.TextPrimary;
 
     public Menu SetTextColor(Color color)
     {
@@ -153,7 +152,7 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
             UpdatePaints();
             InvalidateMeasure();
         }
-    } = 14f;
+    } = PlusUiDefaults.FontSize;
 
     public Menu SetTextSize(float size)
     {

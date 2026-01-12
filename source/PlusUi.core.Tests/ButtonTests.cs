@@ -108,9 +108,9 @@ public class ButtonTests
         //Assert - Button should have non-zero size matching text dimensions
         Assert.IsGreaterThan(0f, button.ElementSize.Width);
         Assert.IsGreaterThan(0f, button.ElementSize.Height);
-        // Inter font "Test" at size 12: width ~25, height ~15
-        Assert.AreEqual(25.0f, button.ElementSize.Width, 1.0f);
-        Assert.AreEqual(15.0f, button.ElementSize.Height, 1.0f);
+        // Inter font "Test" at PlusUiDefaults.FontSize (14): width ~29, height ~17
+        Assert.AreEqual(29.0f, button.ElementSize.Width, 1.0f);
+        Assert.AreEqual(17.0f, button.ElementSize.Height, 1.0f);
     }
 
     [TestMethod]

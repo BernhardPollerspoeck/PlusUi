@@ -127,7 +127,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
             _titleLabel?.SetTextColor(value);
             InvalidateMeasure();
         }
-    } = Colors.Black;
+    } = PlusUiDefaults.TextPrimary;
     public Toolbar SetTitleColor(Color color)
     {
         TitleColor = color;
@@ -175,7 +175,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
             field = value;
             InvalidateMeasure();
         }
-    } = 8;
+    } = PlusUiDefaults.Spacing;
     public Toolbar SetItemSpacing(float spacing)
     {
         ItemSpacing = spacing;
@@ -299,7 +299,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     #endregion
 
     #region OverflowMenuBackground
-    internal Color OverflowMenuBackground { get; set; } = new Color(40, 40, 40);
+    internal Color OverflowMenuBackground { get; set; } = PlusUiDefaults.BackgroundPrimary;
     public Toolbar SetOverflowMenuBackground(Color color)
     {
         OverflowMenuBackground = color;
@@ -315,7 +315,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     #endregion
 
     #region OverflowMenuItemBackground
-    internal Color OverflowMenuItemBackground { get; set; } = new Color(50, 50, 50);
+    internal Color OverflowMenuItemBackground { get; set; } = PlusUiDefaults.BackgroundSecondary;
     public Toolbar SetOverflowMenuItemBackground(Color color)
     {
         OverflowMenuItemBackground = color;
@@ -347,7 +347,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     #endregion
 
     #region OverflowMenuItemTextColor
-    internal Color OverflowMenuItemTextColor { get; set; } = Colors.White;
+    internal Color OverflowMenuItemTextColor { get; set; } = PlusUiDefaults.TextPrimary;
     public Toolbar SetOverflowMenuItemTextColor(Color color)
     {
         OverflowMenuItemTextColor = color;

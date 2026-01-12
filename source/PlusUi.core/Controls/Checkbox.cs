@@ -31,8 +31,9 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
 
     public Checkbox()
     {
-        SetDesiredSize(new(22, 22));
-        SetColor(Colors.White);
+        SetDesiredSize(new(PlusUiDefaults.CheckboxSize + 2, PlusUiDefaults.CheckboxSize + 2));
+        SetColor(PlusUiDefaults.TextPrimary);
+        SetHighContrastForeground(PlusUiDefaults.HcForeground);
     }
 
     /// <inheritdoc />

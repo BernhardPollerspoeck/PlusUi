@@ -24,8 +24,8 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class RadioButton : UiElement, IInputControl, IFocusable
 {
-    private const float CircleSize = 20f;
-    private const float CircleTextSpacing = 8f;
+    private static readonly float CircleSize = PlusUiDefaults.CheckboxSize;
+    private static readonly float CircleTextSpacing = PlusUiDefaults.Spacing;
 
     private IRadioButtonManager? _manager;
     private SKFont _font;
@@ -43,6 +43,7 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
     public RadioButton()
     {
         UpdatePaint();
+        SetHighContrastForeground(PlusUiDefaults.HcForeground);
     }
 
     [MemberNotNull(nameof(_font), nameof(_textPaint))]
@@ -221,7 +222,7 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
             UpdatePaint();
             InvalidateMeasure();
         }
-    } = 14f;
+    } = PlusUiDefaults.FontSize;
 
     public RadioButton SetTextSize(float size)
     {
@@ -248,7 +249,7 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
             field = value;
             UpdatePaint();
         }
-    } = Colors.White;
+    } = PlusUiDefaults.TextPrimary;
 
     public RadioButton SetTextColor(Color color)
     {
@@ -270,7 +271,7 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
     {
         get => field;
         set => field = value;
-    } = Colors.White;
+    } = PlusUiDefaults.TextPrimary;
 
     public RadioButton SetCircleColor(Color color)
     {
@@ -292,7 +293,7 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
     {
         get => field;
         set => field = value;
-    } = new Color(52, 199, 89); // iOS green
+    } = PlusUiDefaults.AccentSuccess;
 
     public RadioButton SetSelectedColor(Color color)
     {

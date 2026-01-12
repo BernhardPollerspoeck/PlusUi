@@ -27,6 +27,11 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class Link : UiTextElement, IInputControl, IFocusable
 {
+    public Link()
+    {
+        SetHighContrastForeground(PlusUiDefaults.HcLinkColor);
+    }
+
     /// <inheritdoc />
     protected internal override bool IsFocusable => true;
 

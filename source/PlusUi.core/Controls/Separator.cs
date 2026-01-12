@@ -26,7 +26,7 @@ public partial class Separator : UiElement
             field = value;
             LinePaint = CreateLinePaint();
         }
-    } = new Color(200, 200, 200);
+    } = PlusUiDefaults.BorderColor;
 
     public Separator SetColor(Color color)
     {

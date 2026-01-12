@@ -18,7 +18,7 @@ internal class TimePickerSelectorOverlay : UiElement, IInputControl, IDismissabl
     // Layout constants
     private const float ColumnWidth = 60f;
     private const float AmPmColumnWidth = 50f;
-    private const float ItemHeight = 32f;
+    private static readonly float ItemHeight = PlusUiDefaults.ItemHeight;
     private const float MaxVisibleItems = 6;
     private const float SelectorPadding = 8f;
     private const float HeaderHeight = 28f;
@@ -126,7 +126,7 @@ internal class TimePickerSelectorOverlay : UiElement, IInputControl, IDismissabl
     {
         using var headerPaint = new SKPaint
         {
-            Color = new SKColor(180, 180, 180),
+            Color = PlusUiDefaults.TextPlaceholder,
             IsAntialias = true
         };
 

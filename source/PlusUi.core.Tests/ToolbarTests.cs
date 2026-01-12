@@ -521,8 +521,8 @@ public sealed class ToolbarTests
         // Assert - Check default values
         Assert.AreEqual(TitleAlignment.Center, toolbar.TitleAlignment);
         Assert.AreEqual(20, toolbar.TitleFontSize);
-        Assert.AreEqual(Colors.Black, toolbar.TitleColor);
-        Assert.AreEqual(8, toolbar.ItemSpacing);
+        Assert.AreEqual(PlusUiDefaults.TextPrimary, toolbar.TitleColor);
+        Assert.AreEqual(PlusUiDefaults.Spacing, toolbar.ItemSpacing);
         Assert.AreEqual(OverflowBehavior.None, toolbar.OverflowBehavior);
         Assert.AreEqual(600, toolbar.OverflowThreshold);
     }

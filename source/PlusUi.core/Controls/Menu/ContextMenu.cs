@@ -24,7 +24,7 @@ namespace PlusUi.core;
 [GenerateShadowMethods]
 public partial class ContextMenu : UiElement, IDebugInspectable
 {
-    private static readonly IBackground DefaultBackground = new SolidColorBackground(new Color(45, 45, 45));
+    private static readonly IBackground DefaultBackground = new SolidColorBackground(PlusUiDefaults.BackgroundPrimary);
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -79,7 +79,7 @@ public partial class ContextMenu : UiElement, IDebugInspectable
     {
         get => field;
         set { field = value; }
-    } = new Color(65, 65, 65);
+    } = PlusUiDefaults.BackgroundHover;
 
     public ContextMenu SetHoverBackgroundColor(Color color)
     {
@@ -99,7 +99,7 @@ public partial class ContextMenu : UiElement, IDebugInspectable
     {
         get => field;
         set { field = value; }
-    } = Colors.White;
+    } = PlusUiDefaults.TextPrimary;
 
     public ContextMenu SetTextColor(Color color)
     {

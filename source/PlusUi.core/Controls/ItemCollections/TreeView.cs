@@ -179,7 +179,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
     #region Indentation
 
-    private float _indentation = 20f;
+    private float _indentation = PlusUiDefaults.TreeViewIndent;
 
     /// <summary>
     /// Gets the horizontal indentation per tree level.
@@ -211,7 +211,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
     #region ItemHeight
 
-    private float _itemHeight = 32f;
+    private float _itemHeight = PlusUiDefaults.ItemHeight;
 
     /// <summary>
     /// Gets the height of each tree item row.
@@ -243,7 +243,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
     #region ExpanderSize
 
-    private float _expanderSize = 16f;
+    private float _expanderSize = PlusUiDefaults.IconSize;
 
     /// <summary>
     /// Gets the size of the expand/collapse icon.
@@ -1117,10 +1117,10 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
             using var trackPaint = new SKPaint
             {
-                Color = new SKColor(40, 40, 40),
+                Color = PlusUiDefaults.BackgroundPrimary,
                 Style = SKPaintStyle.Fill
             };
-            canvas.DrawRoundRect(trackRect, 4, 4, trackPaint);
+            canvas.DrawRoundRect(trackRect, PlusUiDefaults.CornerRadius, PlusUiDefaults.CornerRadius, trackPaint);
 
             // Scrollbar thumb
             var viewportRatio = (float)(ElementSize.Height / TotalHeight);
@@ -1138,10 +1138,10 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
             using var thumbPaint = new SKPaint
             {
-                Color = new SKColor(100, 100, 100),
+                Color = PlusUiDefaults.BorderColor,
                 Style = SKPaintStyle.Fill
             };
-            canvas.DrawRoundRect(thumbRect, 4, 4, thumbPaint);
+            canvas.DrawRoundRect(thumbRect, PlusUiDefaults.CornerRadius, PlusUiDefaults.CornerRadius, thumbPaint);
         }
 
         canvas.Restore();

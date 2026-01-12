@@ -11,9 +11,9 @@ internal class TooltipOverlay : UiElement, IDebugInspectable
     protected internal override bool IsFocusable => false;
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Tooltip;
 
-    private const float Padding = 8f;
-    private const float Spacing = 4f;
-    private const float DefaultFontSize = 14f;
+    private static readonly float Padding = PlusUiDefaults.Spacing;
+    private static readonly float Spacing = PlusUiDefaults.SpacingSmall;
+    private static readonly float DefaultFontSize = PlusUiDefaults.FontSize;
     private const int FadeInDuration = 200;
 
     private readonly UiElement _targetElement;
@@ -40,7 +40,7 @@ internal class TooltipOverlay : UiElement, IDebugInspectable
         _timeProvider = ServiceProviderService.ServiceProvider?.GetService<TimeProvider>() ?? TimeProvider.System;
 
         Background = new SolidColorBackground(new Color(30, 30, 30, 230));
-        CornerRadius = 4f;
+        CornerRadius = PlusUiDefaults.CornerRadius;
         ShadowColor = new Color(0, 0, 0, 60);
         ShadowBlur = 8f;
         ShadowOffset = new Point(0, 2);

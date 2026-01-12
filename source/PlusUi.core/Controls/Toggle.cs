@@ -20,6 +20,7 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
     public Toggle()
     {
         SetDesiredSize(new(50, 28));
+        SetHighContrastForeground(PlusUiDefaults.HcForeground);
     }
 
     /// <inheritdoc />
@@ -114,7 +115,7 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
         {
             field = value;
         }
-    } = new Color(52, 199, 89); // iOS green
+    } = PlusUiDefaults.AccentSuccess;
 
     public Toggle SetOnColor(Color color)
     {
@@ -164,7 +165,7 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
         {
             field = value;
         }
-    } = Colors.White;
+    } = PlusUiDefaults.TextPrimary;
 
     public Toggle SetThumbColor(Color color)
     {

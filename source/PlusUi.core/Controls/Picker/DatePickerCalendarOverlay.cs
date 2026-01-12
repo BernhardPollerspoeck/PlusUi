@@ -17,7 +17,7 @@ internal class DatePickerCalendarOverlay(DatePicker datePicker) : UiElement, IIn
     // Layout constants
     private const float HeaderHeight = 40f;
     private const float DayHeaderHeight = 28f;
-    private const float DayCellSize = 32f;
+    private static readonly float DayCellSize = PlusUiDefaults.ItemHeight;
     private const float TodayButtonHeight = 36f;
     private const float CalendarPadding = 8f;
     private const int DaysInWeek = 7;
@@ -154,7 +154,7 @@ internal class DatePickerCalendarOverlay(DatePicker datePicker) : UiElement, IIn
 
         using var headerPaint = new SKPaint
         {
-            Color = new SKColor(180, 180, 180),
+            Color = PlusUiDefaults.TextPlaceholder,
             IsAntialias = true
         };
 
@@ -213,7 +213,7 @@ internal class DatePickerCalendarOverlay(DatePicker datePicker) : UiElement, IIn
 
         using var disabledPaint = new SKPaint
         {
-            Color = new SKColor(100, 100, 100),
+            Color = PlusUiDefaults.BorderColor,
             IsAntialias = true
         };
 

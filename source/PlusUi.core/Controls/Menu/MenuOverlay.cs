@@ -12,7 +12,7 @@ namespace PlusUi.core;
 /// </summary>
 internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKeyboardInputHandler, IDebugInspectable
 {
-    private static readonly Color DefaultBackgroundColor = new(45, 45, 45);
+    private static readonly Color DefaultBackgroundColor = PlusUiDefaults.BackgroundPrimary;
 
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
@@ -27,27 +27,26 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         _activeSubmenu != null ? [_activeSubmenu] : [];
 
     #region Constants
-    private const float ItemHeight = 32f;
+    private static readonly float ItemHeight = PlusUiDefaults.ItemHeight;
     private const float SeparatorHeight = 9f;
-    private const float IconSize = 16f;
-    private const float CheckmarkWidth = 20f;
-    private const float IconAreaWidth = 24f;
+    private static readonly float CheckmarkWidth = PlusUiDefaults.CheckboxSize;
+    private static readonly float IconAreaWidth = PlusUiDefaults.IconSizeLarge;
     private const float ShortcutMinWidth = 60f;
-    private const float SubmenuArrowWidth = 16f;
-    private const float HorizontalPadding = 8f;
+    private static readonly float SubmenuArrowWidth = PlusUiDefaults.IconSize;
+    private static readonly float HorizontalPadding = PlusUiDefaults.Spacing;
     private const float MinMenuWidth = 150f;
-    private const float MenuCornerRadius = 4f;
+    private static readonly float MenuCornerRadius = PlusUiDefaults.CornerRadius;
     private const float MenuShadowOffset = 2f;
     private const float MenuShadowBlur = 4f;
     #endregion
 
     #region Colors
-    internal Color HoverBackgroundColor { get; set; } = new Color(65, 65, 65);
-    internal Color TextColor { get; set; } = Colors.White;
-    internal Color DisabledTextColor { get; set; } = new Color(128, 128, 128);
-    internal Color ShortcutColor { get; set; } = new Color(160, 160, 160);
-    internal Color SeparatorColor { get; set; } = new Color(80, 80, 80);
-    internal Color CheckmarkColor { get; set; } = new Color(100, 180, 255);
+    internal Color HoverBackgroundColor { get; set; } = PlusUiDefaults.BackgroundHover;
+    internal Color TextColor { get; set; } = PlusUiDefaults.TextPrimary;
+    internal Color DisabledTextColor { get; set; } = PlusUiDefaults.TextPlaceholder;
+    internal Color ShortcutColor { get; set; } = PlusUiDefaults.TextSecondary;
+    internal Color SeparatorColor { get; set; } = PlusUiDefaults.BorderColor;
+    internal Color CheckmarkColor { get; set; } = PlusUiDefaults.AccentPrimary;
     #endregion
 
     private readonly List<object> _items;
@@ -104,7 +103,7 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         // Get or create paint from registry
         (_textPaint, _font) = PaintRegistry.GetOrCreate(
             color: TextColor,
-            size: 14f
+            size: PlusUiDefaults.FontSize
         );
     }
 

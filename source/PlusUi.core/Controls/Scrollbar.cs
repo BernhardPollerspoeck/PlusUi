@@ -56,7 +56,7 @@ public partial class Scrollbar : UiElement<Scrollbar>, IDraggableControl
 
     #region Sizing
 
-    public float Width { get; private set; } = 12f;
+    public float Width { get; private set; } = PlusUiDefaults.ScrollbarWidth;
 
     public Scrollbar SetWidth(float width)
     {
@@ -73,7 +73,7 @@ public partial class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public float MinThumbSize { get; private set; } = 20f;
+    public float MinThumbSize { get; private set; } = PlusUiDefaults.ScrollbarMinThumbSize;
 
     public Scrollbar SetMinThumbSize(float size)
     {
@@ -93,7 +93,7 @@ public partial class Scrollbar : UiElement<Scrollbar>, IDraggableControl
 
     #region Colors
 
-    public Color ThumbColor { get; private set; } = new Color(100, 100, 100);
+    public Color ThumbColor { get; private set; } = PlusUiDefaults.BorderColor;
 
     public Scrollbar SetThumbColor(Color color)
     {
@@ -161,7 +161,7 @@ public partial class Scrollbar : UiElement<Scrollbar>, IDraggableControl
 
     #region Corner Radius
 
-    public float ThumbCornerRadius { get; private set; } = 4f;
+    public float ThumbCornerRadius { get; private set; } = PlusUiDefaults.CornerRadius;
 
     public Scrollbar SetThumbCornerRadius(float radius)
     {
@@ -177,7 +177,7 @@ public partial class Scrollbar : UiElement<Scrollbar>, IDraggableControl
         return this;
     }
 
-    public float TrackCornerRadius { get; private set; } = 4f;
+    public float TrackCornerRadius { get; private set; } = PlusUiDefaults.CornerRadius;
 
     public Scrollbar SetTrackCornerRadius(float radius)
     {

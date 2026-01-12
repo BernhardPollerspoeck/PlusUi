@@ -4,7 +4,7 @@ TODO
 
 | Section | Description | Done | Total | Progress | Remaining |
 |---------|-------------|------|-------|----------|-----------|
-| 0 | Random stuff | 3 | 10 | 🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜ 30% | ~3 weeks |
+| 0 | Random stuff | 4 | 10 | 🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜ 40% | ~3 weeks |
 | 1 | DebugServer: Tree | 6 | 9 | 🟩🟩🟩🟩🟩🟩⬜⬜⬜ 67% | ~1.5 days |
 | 2 | DebugServer: Property Grid | 1 | 5 | 🟩⬜⬜⬜⬜ 20% | ~5 hrs |
 | 3 | DebugServer: Change Tracking | 0 | 6 | ⬜⬜⬜⬜⬜⬜ 0% | ~2 days |
@@ -14,7 +14,7 @@ TODO
 | 7 | DebugServer: Logging Cleanup | 3 | 3 | 🟩🟩🟩 100% | ✅ Done |
 | 8 | DebugServer: Layout Vis | 1 | 2 | 🟩⬜ 50% | ~2 hrs |
 | 9 | DebugServer: Multi-App | 5 | 9 | 🟩🟩🟩🟩🟩⬜⬜⬜⬜ 56% | ~4 days |
-| **Total** | | **22** | **57** | **39%** | **~5 weeks** |
+| **Total** | | **23** | **57** | **40%** | **~5 weeks** |
 
 ---
 
@@ -40,7 +40,7 @@ TODO
 ## High Priority
 
 ### 0. Random stuff
-- [ ] [ ] 999.1 5️⃣ centralized default values for properties (e.g., default font size, color) to avoid magic numbers scattered in code
+- [x] [x] 999.1 5️⃣ centralized default values for properties (e.g., default font size, color) to avoid magic numbers scattered in code
 - [x] [x] 999.2 3️⃣ complete code comments and XML documentation for all public methods and classes
 - [x] [x] 999.3 2️⃣ ensure docs for github pages are up to date with latest features and usage instructions
 - [ ] [ ] 999.4 9️⃣ rework text rendering to maybe use native text rendering lib for better performance and quality

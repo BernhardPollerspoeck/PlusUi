@@ -39,7 +39,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     private IEnumerable<T>? _itemsSource;
     internal readonly List<T> _cachedItems = [];
     internal const float DropdownMaxHeight = 200f;
-    internal const float ItemHeight = 32f;
+    internal static readonly float ItemHeight = PlusUiDefaults.ItemHeight;
     private const float ArrowSize = 8f;
     private IOverlayService? _overlayService;
     private ComboBoxDropdownOverlay<T>? _dropdownOverlay;
@@ -261,7 +261,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     #endregion
 
     #region PlaceholderColor
-    internal SKColor PlaceholderColor { get; set; } = new SKColor(180, 180, 180);
+    internal SKColor PlaceholderColor { get; set; } = PlusUiDefaults.TextPlaceholder;
 
     public ComboBox<T> SetPlaceholderColor(SKColor color)
     {
@@ -287,7 +287,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
             field = value;
             UpdatePaint();
         }
-    } = SKColors.White;
+    } = PlusUiDefaults.TextPrimary;
 
     public ComboBox<T> SetTextColor(SKColor color)
     {
@@ -314,7 +314,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
             UpdatePaint();
             InvalidateMeasure();
         }
-    } = 14f;
+    } = PlusUiDefaults.FontSize;
 
     public ComboBox<T> SetTextSize(float size)
     {
@@ -359,7 +359,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
             field = value;
             InvalidateMeasure();
         }
-    } = new Margin(12, 8);
+    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
 
     public ComboBox<T> SetPadding(Margin padding)
     {
@@ -377,7 +377,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     #endregion
 
     #region DropdownBackground
-    internal SKColor DropdownBackground { get; set; } = new SKColor(40, 40, 40);
+    internal SKColor DropdownBackground { get; set; } = PlusUiDefaults.BackgroundPrimary;
 
     public ComboBox<T> SetDropdownBackground(SKColor color)
     {
@@ -395,7 +395,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     #endregion
 
     #region HoverBackground
-    internal SKColor HoverBackground { get; set; } = new SKColor(60, 60, 60);
+    internal SKColor HoverBackground { get; set; } = PlusUiDefaults.BackgroundHover;
 
     public ComboBox<T> SetHoverBackground(SKColor color)
     {
@@ -469,6 +469,10 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     public ComboBox()
     {
         SetDesiredSize(new Size(200, 40));
+        SetBackground(new SolidColorBackground(PlusUiDefaults.BackgroundInput));
+        SetCornerRadius(PlusUiDefaults.CornerRadius);
+        SetHighContrastBackground(PlusUiDefaults.HcInputBackground);
+        SetHighContrastForeground(PlusUiDefaults.HcForeground);
         UpdatePaint();
     }
 

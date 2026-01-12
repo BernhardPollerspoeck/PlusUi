@@ -248,6 +248,12 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
     public Button()
     {
         HorizontalTextAlignment = HorizontalTextAlignment.Center;
+        SetBackground(new SolidColorBackground(PlusUiDefaults.BackgroundControl));
+        SetHoverBackground(new SolidColorBackground(PlusUiDefaults.BackgroundHover));
+        SetCornerRadius(PlusUiDefaults.CornerRadius);
+        Padding = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
+        SetHighContrastBackground(PlusUiDefaults.HcButtonBackground);
+        SetHighContrastForeground(PlusUiDefaults.HcForeground);
     }
 
     /// <inheritdoc />
@@ -314,7 +320,7 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         var hasLeadingIcon = hasIcon && IconPosition.HasFlag(IconPosition.Leading);
         var hasTrailingIcon = hasIcon && IconPosition.HasFlag(IconPosition.Trailing);
         var iconSize = TextSize; // Icon size matches text size
-        var iconSpacing = hasText ? 8f : 0f; // Spacing between icon and text
+        var iconSpacing = hasText ? PlusUiDefaults.Spacing : 0f; // Spacing between icon and text
 
         // Render SVG icon at correct size if needed
         SKImage? iconToRender = _iconImage;
@@ -394,7 +400,7 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
 
         // Icon size matches text size
         var iconSize = TextSize;
-        var iconSpacing = hasText ? 8f : 0f; // Spacing between icon and text
+        var iconSpacing = hasText ? PlusUiDefaults.Spacing : 0f; // Spacing between icon and text
 
         // Calculate total width
         var leadingIconWidth = hasLeadingIcon ? iconSize + iconSpacing : 0f;

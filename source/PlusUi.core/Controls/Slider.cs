@@ -21,6 +21,7 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
     {
         SetDesiredHeight(30);
         HorizontalAlignment = HorizontalAlignment.Stretch;
+        SetHighContrastBackground(PlusUiDefaults.HcBackground);
     }
 
     /// <inheritdoc />
@@ -217,7 +218,7 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
         {
             field = value;
         }
-    } = new Color(0, 122, 255); // iOS blue
+    } = PlusUiDefaults.AccentPrimary;
 
     public Slider SetMinimumTrackColor(Color color)
     {
@@ -242,7 +243,7 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
         {
             field = value;
         }
-    } = new Color(230, 230, 230);
+    } = PlusUiDefaults.TrackColor;
 
     public Slider SetMaximumTrackColor(Color color)
     {
@@ -267,7 +268,7 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
         {
             field = value;
         }
-    } = Colors.White;
+    } = PlusUiDefaults.TextPrimary;
 
     public Slider SetThumbColor(Color color)
     {
@@ -302,7 +303,7 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
         }
 
         var trackHeight = 4f;
-        var thumbRadius = 14f;
+        var thumbRadius = PlusUiDefaults.SliderThumbRadius;
         var centerY = Position.Y + VisualOffset.Y + (ElementSize.Height / 2);
 
         // Calculate thumb position based on value
@@ -379,7 +380,7 @@ public partial class Slider : UiElement, IDraggableControl, IFocusable, IKeyboar
             return null;
         }
 
-        var thumbRadius = 14f;
+        var thumbRadius = PlusUiDefaults.SliderThumbRadius;
         var centerY = Position.Y + VisualOffset.Y + (ElementSize.Height / 2);
 
         // Calculate thumb position based on value

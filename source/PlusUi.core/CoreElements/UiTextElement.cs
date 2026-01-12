@@ -134,7 +134,7 @@ public abstract class UiTextElement : UiElement
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
-    } = 12;
+    } = PlusUiDefaults.FontSize;
     public UiTextElement SetTextSize(float fontSize)
     {
         TextSize = fontSize;
@@ -159,7 +159,7 @@ public abstract class UiTextElement : UiElement
             field = value;
             UpdatePaintFromRegistry();
         }
-    } = Colors.White;
+    } = PlusUiDefaults.TextPrimary;
     public UiTextElement SetTextColor(Color color)
     {
         TextColor = color;
