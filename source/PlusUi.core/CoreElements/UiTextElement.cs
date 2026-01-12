@@ -14,8 +14,15 @@ namespace PlusUi.core;
 /// </summary>
 public abstract class UiTextElement : UiElement
 {
+    #region Services
+    /// <summary>
+    /// Font registry service for typeface management.
+    /// Resolved once in constructor.
+    /// </summary>
+    protected IFontRegistryService? FontRegistry { get; }
+    #endregion
+
     #region Accessibility Settings Subscription
-    private IAccessibilitySettingsService? _accessibilitySettings;
     private bool _subscribedToAccessibilityChanges;
 
     private void EnsureAccessibilitySubscription()
@@ -25,10 +32,9 @@ public abstract class UiTextElement : UiElement
             return;
         }
 
-        _accessibilitySettings = ServiceProviderService.ServiceProvider?.GetService<IAccessibilitySettingsService>();
-        if (_accessibilitySettings != null)
+        if (AccessibilitySettings != null)
         {
-            _accessibilitySettings.SettingsChanged += OnAccessibilitySettingsChanged;
+            AccessibilitySettings.SettingsChanged += OnAccessibilitySettingsChanged;
             _subscribedToAccessibilityChanges = true;
         }
     }
@@ -68,9 +74,8 @@ public abstract class UiTextElement : UiElement
                 return _supportsSystemFontScaling.Value;
             }
 
-            // Otherwise, use global configuration
-            var config = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
-            return config?.EnableFontScaling ?? false;
+            // Otherwise, use global configuration (cached in base class)
+            return Configuration?.EnableFontScaling ?? false;
         }
         set => _supportsSystemFontScaling = value;
     }
@@ -358,8 +363,11 @@ public abstract class UiTextElement : UiElement
     }
     #endregion
 
-    public UiTextElement()
+    protected UiTextElement()
     {
+        // Cache services
+        FontRegistry = ServiceProviderService.ServiceProvider?.GetService<IFontRegistryService>();
+
         // Initialize Paint/Font from registry
         UpdatePaintFromRegistry();
     }
@@ -441,17 +449,15 @@ public abstract class UiTextElement : UiElement
     /// </summary>
     protected SKColor GetEffectiveTextColor()
     {
-        var config = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
-        if (config?.EnableHighContrastSupport == true && HighContrastForeground.HasValue)
+        if (Configuration?.EnableHighContrastSupport == true && HighContrastForeground.HasValue)
         {
             // ForceHighContrast bypasses system detection
-            if (config.ForceHighContrast)
+            if (Configuration.ForceHighContrast)
             {
                 return HighContrastForeground.Value;
             }
 
-            var settings = ServiceProviderService.ServiceProvider?.GetService<IAccessibilitySettingsService>();
-            if (settings?.IsHighContrastEnabled == true)
+            if (AccessibilitySettings?.IsHighContrastEnabled == true)
             {
                 return HighContrastForeground.Value;
             }
@@ -471,12 +477,11 @@ public abstract class UiTextElement : UiElement
             PaintRegistry.Release(Paint, Font);
         }
 
-        // Get typeface from FontRegistry
+        // Get typeface from FontRegistry (cached in constructor)
         SKTypeface? typeface = null;
         try
         {
-            var fontRegistry = ServiceProviderService.ServiceProvider?.GetService<IFontRegistryService>();
-            typeface = fontRegistry?.GetTypeface(FontFamily, FontWeight, FontStyle);
+            typeface = FontRegistry?.GetTypeface(FontFamily, FontWeight, FontStyle);
         }
         catch
         {
@@ -487,8 +492,7 @@ public abstract class UiTextElement : UiElement
         var effectiveSize = TextSize;
         if (SupportsSystemFontScaling)
         {
-            var accessibilitySettings = ServiceProviderService.ServiceProvider?.GetService<IAccessibilitySettingsService>();
-            effectiveSize *= accessibilitySettings?.FontScaleFactor ?? 1.0f;
+            effectiveSize *= AccessibilitySettings?.FontScaleFactor ?? 1.0f;
         }
 
         // Get or create from registry (uses inherited PaintRegistry property)
@@ -715,11 +719,10 @@ public abstract class UiTextElement : UiElement
         if (disposing)
         {
             // Unsubscribe from accessibility changes
-            if (_subscribedToAccessibilityChanges && _accessibilitySettings != null)
+            if (_subscribedToAccessibilityChanges && AccessibilitySettings != null)
             {
-                _accessibilitySettings.SettingsChanged -= OnAccessibilitySettingsChanged;
+                AccessibilitySettings.SettingsChanged -= OnAccessibilitySettingsChanged;
                 _subscribedToAccessibilityChanges = false;
-                _accessibilitySettings = null;
             }
         }
         base.Dispose(disposing);

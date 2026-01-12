@@ -97,6 +97,8 @@ public partial class Link : UiTextElement, IInputControl, IFocusable
     #endregion
 
     #region IInputControl
+    private IPlatformService? _platformService;
+
     public void InvokeCommand()
     {
         if (!string.IsNullOrEmpty(Url))
@@ -105,15 +107,10 @@ public partial class Link : UiTextElement, IInputControl, IFocusable
         }
     }
 
-    private static void OpenUrl(string url)
+    private void OpenUrl(string url)
     {
-        // Try to get the platform service from DI
-        var platformService = ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
-
-        if (platformService != null)
-        {
-            platformService.OpenUrl(url);
-        }
+        _platformService ??= ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
+        _platformService?.OpenUrl(url);
     }
     #endregion
 

@@ -24,6 +24,7 @@ internal class ToolbarOverflowMenuOverlay(Toolbar toolbar) : UiElement, IDismiss
 
     private SKRect _menuRect;
     private bool _measured;
+    private IPlatformService? _platformService;
 
     public override void Render(SKCanvas canvas)
     {
@@ -55,8 +56,8 @@ internal class ToolbarOverflowMenuOverlay(Toolbar toolbar) : UiElement, IDismiss
         var actualMenuWidth = menuContent.ElementSize.Width;
 
         // Get window size to check available space
-        var platformService = ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
-        var windowHeight = platformService?.WindowSize.Height ?? 800f;
+        _platformService ??= ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
+        var windowHeight = _platformService?.WindowSize.Height ?? 800f;
 
         // Check if menu fits below
         var spaceBelow = windowHeight - buttonBottom - 4;

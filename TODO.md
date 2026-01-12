@@ -4,7 +4,7 @@ TODO
 
 | Section | Description | Done | Total | Progress | Remaining |
 |---------|-------------|------|-------|----------|-----------|
-| 0 | Random stuff | 4 | 10 | 🟩🟩🟩🟩⬜⬜⬜⬜⬜⬜ 40% | ~3 weeks |
+| 0 | Random stuff | 8 | 11 | 🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 73% | ~3 weeks |
 | 1 | DebugServer: Tree | 6 | 9 | 🟩🟩🟩🟩🟩🟩⬜⬜⬜ 67% | ~1.5 days |
 | 2 | DebugServer: Property Grid | 1 | 5 | 🟩⬜⬜⬜⬜ 20% | ~5 hrs |
 | 3 | DebugServer: Change Tracking | 0 | 6 | ⬜⬜⬜⬜⬜⬜ 0% | ~2 days |
@@ -14,7 +14,7 @@ TODO
 | 7 | DebugServer: Logging Cleanup | 3 | 3 | 🟩🟩🟩 100% | ✅ Done |
 | 8 | DebugServer: Layout Vis | 1 | 2 | 🟩⬜ 50% | ~2 hrs |
 | 9 | DebugServer: Multi-App | 5 | 9 | 🟩🟩🟩🟩🟩⬜⬜⬜⬜ 56% | ~4 days |
-| **Total** | | **23** | **57** | **40%** | **~5 weeks** |
+| **Total** | | **27** | **58** | **47%** | **~5 weeks** |
 
 ---
 
@@ -50,7 +50,7 @@ TODO
 - [x] [x] 999.8 3️⃣ clear out all warnings and messages.
 - [x] [x] 999.9 4️⃣ ensure all not public api surfaces are internal only
 - [x] [x] 999.10 5️⃣ return ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>() wirft Exception in UiElment beim stoppen
-- [ ] [ ] 999.11 6️⃣ Remove remaining on-demand service resolves (ServiceProvider?.GetService<T>()) - cache in constructor instead
+- [x] [x] 999.11 6️⃣ Remove remaining on-demand service resolves (ServiceProvider?.GetService<T>()) - cache in constructor instead
 
 
 

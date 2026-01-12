@@ -60,6 +60,7 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
     private int _hitIndex = -1;
     private MenuOverlay? _activeSubmenu;
     private IOverlayService? _overlayService;
+    private IPlatformService? _platformService;
     private float _calculatedWidth;
     private float _calculatedHeight;
     private bool _measured;
@@ -163,9 +164,9 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         EnsureMeasured();
 
         // Get window bounds for positioning
-        var platformService = ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
-        var windowWidth = platformService?.WindowSize.Width ?? 800f;
-        var windowHeight = platformService?.WindowSize.Height ?? 600f;
+        _platformService ??= ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
+        var windowWidth = _platformService?.WindowSize.Width ?? 800f;
+        var windowHeight = _platformService?.WindowSize.Height ?? 600f;
 
         // Calculate position with boundary checking
         var menuX = _anchorPosition.X;

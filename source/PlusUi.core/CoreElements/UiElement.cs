@@ -2,6 +2,8 @@
 using PlusUi.core.Attributes;
 using PlusUi.core.Binding;
 using PlusUi.core.Services;
+using PlusUi.core.Services.Accessibility;
+using PlusUi.core.Services.Focus;
 using SkiaSharp;
 using System.ComponentModel;
 using System.Linq.Expressions;
@@ -457,15 +459,14 @@ public abstract class UiElement : IDisposable
             return false;
         }
 
-        var focusManager = ServiceProviderService.ServiceProvider?.GetService<Services.Focus.IFocusManager>();
-        if (focusManager == null)
+        if (FocusManager == null)
         {
             return false;
         }
 
         if (this is IFocusable focusable)
         {
-            focusManager.SetFocus(focusable);
+            FocusManager.SetFocus(focusable);
             return true;
         }
 
@@ -952,19 +953,16 @@ public abstract class UiElement : IDisposable
     /// </summary>
     protected IBackground? GetEffectiveBackground()
     {
-        var config = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
-
         // High contrast takes priority (only if enabled in config)
-        if (config?.EnableHighContrastSupport == true && HighContrastBackground != null)
+        if (Configuration?.EnableHighContrastSupport == true && HighContrastBackground != null)
         {
             // ForceHighContrast bypasses system detection
-            if (config.ForceHighContrast)
+            if (Configuration.ForceHighContrast)
             {
                 return HighContrastBackground;
             }
 
-            var settings = ServiceProviderService.ServiceProvider?.GetService<Services.Accessibility.IAccessibilitySettingsService>();
-            if (settings?.IsHighContrastEnabled == true)
+            if (AccessibilitySettings?.IsHighContrastEnabled == true)
             {
                 return HighContrastBackground;
             }
@@ -999,8 +997,7 @@ public abstract class UiElement : IDisposable
             }
 
             // Otherwise, use global configuration
-            var config = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
-            return config?.EnforceMinimumTouchTargets ?? false;
+            return Configuration?.EnforceMinimumTouchTargets ?? false;
         }
         set => _enforceMinimumTouchTarget = value;
     }
@@ -1030,10 +1027,9 @@ public abstract class UiElement : IDisposable
     /// Gets the minimum touch target size from accessibility settings.
     /// Returns 44 by default (Apple/Google recommendation).
     /// </summary>
-    protected static float GetMinimumTouchTargetSize()
+    protected float GetMinimumTouchTargetSize()
     {
-        var settings = ServiceProviderService.ServiceProvider?.GetService<Services.Accessibility.IAccessibilitySettingsService>();
-        return settings?.MinimumTouchTargetSize ?? 44f;
+        return AccessibilitySettings?.MinimumTouchTargetSize ?? 44f;
     }
     #endregion
 
@@ -1321,6 +1317,24 @@ public abstract class UiElement : IDisposable
     /// </summary>
     private protected IExpressionPathService ExpressionPathService { get; }
 
+    /// <summary>
+    /// Configuration for the PlusUi application.
+    /// Resolved once in constructor for High Contrast and accessibility settings.
+    /// </summary>
+    protected PlusUiConfiguration? Configuration { get; }
+
+    /// <summary>
+    /// Accessibility settings service for High Contrast detection and touch target sizes.
+    /// Resolved once in constructor.
+    /// </summary>
+    protected IAccessibilitySettingsService? AccessibilitySettings { get; }
+
+    /// <summary>
+    /// Focus manager for handling focus changes.
+    /// Resolved once in constructor.
+    /// </summary>
+    private IFocusManager? FocusManager { get; }
+
     protected UiElement()
     {
         PaintRegistry = ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>()
@@ -1328,6 +1342,10 @@ public abstract class UiElement : IDisposable
 
         ExpressionPathService = ServiceProviderService.ServiceProvider?.GetService<IExpressionPathService>()
             ?? new Binding.ExpressionPathService();
+
+        Configuration = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
+        AccessibilitySettings = ServiceProviderService.ServiceProvider?.GetService<IAccessibilitySettingsService>();
+        FocusManager = ServiceProviderService.ServiceProvider?.GetService<IFocusManager>();
     }
 
     #endregion
