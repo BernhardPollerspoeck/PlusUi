@@ -49,6 +49,41 @@ public partial class VStack : UiLayoutElement
         Children.AddRange(elements);
     }
 
+    #region Spacing
+    /// <summary>
+    /// Gets or sets the spacing between child elements.
+    /// </summary>
+    internal float Spacing
+    {
+        get => field;
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    }
+
+    /// <summary>
+    /// Sets the spacing between child elements.
+    /// </summary>
+    public VStack SetSpacing(float spacing)
+    {
+        Spacing = spacing;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the spacing property to a data source.
+    /// </summary>
+    public VStack BindSpacing(Expression<Func<float>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Spacing = getter());
+        return this;
+    }
+    #endregion
+
     #region Wrap
     /// <summary>
     /// Gets whether elements wrap to the next column when they exceed the available height.
@@ -88,8 +123,8 @@ public partial class VStack : UiLayoutElement
 
         var childAvailableSize = new Size(availableSize.Width, availableSize.Height);
 
-        //first measure all not stretching children
-        foreach (var child in Children.Where(c => c.VerticalAlignment is not VerticalAlignment.Stretch))
+        // First measure all non-stretching children
+        foreach (var child in Children.Where(c => c.VerticalAlignment is not VerticalAlignment.Stretch).ToList())
         {
             var result = child.Measure(childAvailableSize, dontStretch);
             childAvailableSize = new Size(
@@ -97,17 +132,23 @@ public partial class VStack : UiLayoutElement
                 Math.Max(0, childAvailableSize.Height - (result.Height + child.Margin.Vertical)));
         }
 
-        //split available space for stretching children
+        // Measure stretching children - they share the remaining space
         var stretchingChildren = Children.Where(c => c.VerticalAlignment is VerticalAlignment.Stretch).ToList();
-        var stretchHeight = stretchingChildren.Count > 0
-            ? childAvailableSize.Height / stretchingChildren.Count
-            : 0;
-        stretchingChildren.ForEach(child => child.Measure(new Size(childAvailableSize.Width, stretchHeight), dontStretch));
+        if (stretchingChildren.Count > 0)
+        {
+            var stretchHeight = childAvailableSize.Height / stretchingChildren.Count;
+            stretchingChildren.ForEach(child => child.Measure(new Size(childAvailableSize.Width, stretchHeight), false));
+        }
 
         var width = Children.Count > 0
             ? Children.Max(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right)
             : 0;
         var height = Children.Sum(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom);
+        // Add spacing between children
+        if (Children.Count > 1)
+        {
+            height += (Children.Count - 1) * Spacing;
+        }
 
         // Respect DesiredSize if set
         if (DesiredSize?.Width > 0)
@@ -125,7 +166,7 @@ public partial class VStack : UiLayoutElement
     private Size MeasureWrapped(Size availableSize, bool dontStretch)
     {
         // Measure all children first to get their natural sizes
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             child.Measure(availableSize, true);
         }
@@ -135,11 +176,12 @@ public partial class VStack : UiLayoutElement
         var currentColumn = new List<UiElement>();
         var currentColumnHeight = 0f;
 
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var childHeight = child.ElementSize.Height + child.Margin.Vertical;
+            var spacingToAdd = currentColumn.Count > 0 ? Spacing : 0;
 
-            if (currentColumn.Count > 0 && currentColumnHeight + childHeight > availableSize.Height)
+            if (currentColumn.Count > 0 && currentColumnHeight + spacingToAdd + childHeight > availableSize.Height)
             {
                 // Start new column
                 columns.Add(currentColumn);
@@ -149,7 +191,7 @@ public partial class VStack : UiLayoutElement
             else
             {
                 currentColumn.Add(child);
-                currentColumnHeight += childHeight;
+                currentColumnHeight += spacingToAdd + childHeight;
             }
         }
 
@@ -168,6 +210,10 @@ public partial class VStack : UiLayoutElement
                 ? column.Max(c => c.ElementSize.Width + c.Margin.Horizontal)
                 : 0f;
             var columnHeight = column.Sum(c => c.ElementSize.Height + c.Margin.Vertical);
+            if (column.Count > 1)
+            {
+                columnHeight += (column.Count - 1) * Spacing;
+            }
 
             totalWidth += columnWidth;
             maxHeight = Math.Max(maxHeight, columnHeight);
@@ -212,9 +258,16 @@ public partial class VStack : UiLayoutElement
 
         var y = positionY;
         var x = positionX;
+        var isFirst = true;
 
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
+            if (!isFirst)
+            {
+                y += Spacing;
+            }
+            isFirst = false;
+
             var childLeftBound = child.HorizontalAlignment switch
             {
                 HorizontalAlignment.Center => x + ((ElementSize.Width - child.ElementSize.Width) / 2),
@@ -236,18 +289,24 @@ public partial class VStack : UiLayoutElement
         var x = startX;
         var y = startY;
         var columnWidth = 0f;
+        var isFirstInColumn = true;
 
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var childHeight = child.ElementSize.Height + child.Margin.Vertical;
+            var spacingToAdd = isFirstInColumn ? 0 : Spacing;
 
             // Check if we need to wrap to next column
-            if (y > startY && y - startY + childHeight > availableHeight)
+            if (!isFirstInColumn && y - startY + spacingToAdd + childHeight > availableHeight)
             {
                 x += columnWidth;
                 y = startY;
                 columnWidth = 0f;
+                isFirstInColumn = true;
+                spacingToAdd = 0;
             }
+
+            y += spacingToAdd;
 
             // Don't add margins here - UiElement.Arrange handles them internally
             child.Arrange(new Rect(
@@ -258,6 +317,7 @@ public partial class VStack : UiLayoutElement
 
             y += childHeight;
             columnWidth = Math.Max(columnWidth, child.ElementSize.Width + child.Margin.Horizontal);
+            isFirstInColumn = false;
         }
     }
     #endregion
@@ -265,7 +325,7 @@ public partial class VStack : UiLayoutElement
 
     public override UiElement? HitTest(Point point)
     {
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var result = child.HitTest(point);
             if (result is not null)

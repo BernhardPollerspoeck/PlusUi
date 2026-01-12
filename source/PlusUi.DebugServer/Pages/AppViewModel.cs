@@ -24,6 +24,34 @@ internal partial class AppViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private LogLevel _logLevelFilter = LogLevel.Trace;
 
+    // Performance metrics
+    [ObservableProperty]
+    private double _fps;
+
+    [ObservableProperty]
+    private double _utilizationPercent;
+
+    [ObservableProperty]
+    private long _memoryBytes;
+
+    [ObservableProperty]
+    private double _frameTimeMs;
+
+    [ObservableProperty]
+    private double _measureTimeMs;
+
+    [ObservableProperty]
+    private double _arrangeTimeMs;
+
+    [ObservableProperty]
+    private double _renderTimeMs;
+
+    [ObservableProperty]
+    private bool _didRender;
+
+    [ObservableProperty]
+    private PerformanceFrameDto? _latestPerformanceData;
+
     public ObservableCollection<TreeNodeDto> RootItems { get; } = [];
     public ObservableCollection<PropertyDto> SelectedProperties { get; } = [];
     public ObservableCollection<LogMessageDto> Logs { get; } = [];
@@ -75,6 +103,19 @@ internal partial class AppViewModel : ObservableObject, IDisposable
     {
         Logs.Clear();
         FilteredLogs.Clear();
+    }
+
+    public void UpdatePerformance(PerformanceFrameDto data)
+    {
+        LatestPerformanceData = data;
+        Fps = data.Fps;
+        UtilizationPercent = data.UtilizationPercent;
+        MemoryBytes = data.MemoryBytes;
+        FrameTimeMs = data.FrameTimeMs;
+        MeasureTimeMs = data.MeasureTimeMs;
+        ArrangeTimeMs = data.ArrangeTimeMs;
+        RenderTimeMs = data.RenderTimeMs;
+        DidRender = data.DidRender;
     }
 
     private void UpdateFilteredLogs()

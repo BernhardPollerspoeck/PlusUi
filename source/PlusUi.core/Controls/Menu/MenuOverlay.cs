@@ -119,7 +119,7 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         bool hasSubmenus = false;
         bool hasCheckmarks = false;
 
-        foreach (var item in _items)
+        foreach (var item in _items.ToList())
         {
             if (item is MenuItem menuItem)
             {
@@ -151,7 +151,7 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
 
         // Calculate total height
         _calculatedHeight = 0;
-        foreach (var item in _items)
+        foreach (var item in _items.ToList())
         {
             _calculatedHeight += item is MenuSeparator ? SeparatorHeight : ItemHeight;
         }
@@ -218,7 +218,7 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         float currentY = menuY;
         int index = 0;
 
-        foreach (var item in _items)
+        foreach (var item in _items.ToList())
         {
             if (item is MenuSeparator)
             {
@@ -322,7 +322,7 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
             float currentY = 0;
             int index = 0;
 
-            foreach (var item in _items)
+            foreach (var item in _items.ToList())
             {
                 float itemHeight = item is MenuSeparator ? SeparatorHeight : ItemHeight;
 
@@ -370,7 +370,7 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         if (index >= 0 && index < _items.Count)
         {
             int actualIndex = 0;
-            foreach (var item in _items)
+            foreach (var item in _items.ToList())
             {
                 if (actualIndex == index && item is MenuItem menuItem && menuItem.HasSubItems)
                 {
@@ -390,7 +390,7 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         // Calculate submenu position (to the right of this item)
         float itemY = _menuRect.Top;
         int idx = 0;
-        foreach (var item in _items)
+        foreach (var item in _items.ToList())
         {
             if (idx == itemIndex) break;
             itemY += item is MenuSeparator ? SeparatorHeight : ItemHeight;
@@ -425,7 +425,7 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
         if (_hitIndex < 0) return;
 
         int actualIndex = 0;
-        foreach (var item in _items)
+        foreach (var item in _items.ToList())
         {
             if (actualIndex == _hitIndex)
             {
@@ -465,7 +465,7 @@ internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKey
                 if (_hoveredIndex >= 0)
                 {
                     int idx = 0;
-                    foreach (var item in _items)
+                    foreach (var item in _items.ToList())
                     {
                         if (idx == _hoveredIndex && item is MenuItem menuItem && menuItem.HasSubItems)
                         {

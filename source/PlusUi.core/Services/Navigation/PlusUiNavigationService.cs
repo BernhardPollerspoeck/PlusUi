@@ -68,7 +68,7 @@ public class PlusUiNavigationService(
             outgoingPage.ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
         }
 
-        _logger?.LogDebug("Navigating back from page: {PageType}", outgoingPage.GetType().Name);
+        _logger?.LogInformation("[Event] GoBack: from {PageType}", outgoingPage.GetType().Name);
 
         // Pop the current page
         var previousItem = _navigationContainer.Pop();
@@ -109,7 +109,7 @@ public class PlusUiNavigationService(
         previousPage.OnNavigatedTo(previousItem.Parameter);
         previousPage.Appearing();
 
-        _logger?.LogDebug("Navigated back to page: {PageType}", previousPage.GetType().Name);
+        _logger?.LogInformation("[Event] GoBack: to {PageType}", previousPage.GetType().Name);
     }
 
     /// <inheritdoc/>
@@ -150,7 +150,7 @@ public class PlusUiNavigationService(
             currentPage.ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
         }
 
-        _logger?.LogDebug("Popping to root from page: {PageType}, Stack depth: {Depth}",
+        _logger?.LogInformation("[Event] PopToRoot: from {PageType}, depth {Depth}",
             currentPage.GetType().Name, _navigationContainer.StackDepth);
 
         // Pop to root
@@ -180,7 +180,7 @@ public class PlusUiNavigationService(
         rootPage.OnNavigatedTo(rootItem.Parameter);
         rootPage.Appearing();
 
-        _logger?.LogDebug("Popped to root page: {PageType}", rootPage.GetType().Name);
+        _logger?.LogInformation("[Event] PopToRoot: to {PageType}", rootPage.GetType().Name);
     }
 
     private void NavigateToInternal(Type pageType, object? parameter, bool isInitCall)
@@ -279,8 +279,8 @@ public class PlusUiNavigationService(
             // Call navigation lifecycle method
             page.OnNavigatedTo(parameter);
 
-            _logger?.LogDebug("Navigated to page: {PageType}, Parameter: {HasParameter}, Stack depth: {Depth}",
-                pageType.Name, parameter is not null, _navigationContainer.StackDepth);
+            _logger?.LogInformation("[Event] Navigate: to {PageType}, depth {Depth}",
+                pageType.Name, _navigationContainer.StackDepth);
         }
         catch (InvalidOperationException)
         {

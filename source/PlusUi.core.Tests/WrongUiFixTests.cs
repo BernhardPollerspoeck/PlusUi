@@ -322,4 +322,99 @@ public class WrongUiFixTests
         public string Name { get; set; } = "";
         public string Value { get; set; } = "";
     }
+
+    [TestMethod]
+    public void Test_BorderWithLeftAlignment_SizesToContent()
+    {
+        // Demonstrates how to prevent a Border from stretching to fill available space:
+        // Use SetHorizontalAlignment(Left) on the Border to size it to its content
+
+        var breakdownRow1 = new HStack()
+            .SetSpacing(16)
+            .AddChild(new Label()
+                .SetText("Measure")
+                .SetTextSize(12))
+            .AddChild(new Label()
+                .SetText("0.00 ms")
+                .SetTextSize(12));
+
+        var breakdownRow2 = new HStack()
+            .SetSpacing(16)
+            .AddChild(new Label()
+                .SetText("Arrange")
+                .SetTextSize(12))
+            .AddChild(new Label()
+                .SetText("0.00 ms")
+                .SetTextSize(12));
+
+        var frameBreakdown = new Border()
+            .SetBackground(new Color(45, 45, 45))
+            .SetCornerRadius(8)
+            .SetHorizontalAlignment(HorizontalAlignment.Left) // KEY: This sizes Border to content
+            .AddChild(new VStack()
+                .SetMargin(new Margin(16))
+                .SetSpacing(12)
+                .AddChild(new Label()
+                    .SetText("Frame Breakdown")
+                    .SetTextSize(14))
+                .AddChild(breakdownRow1)
+                .AddChild(breakdownRow2));
+
+        var container = new VStack()
+            .SetMargin(new Margin(16))
+            .AddChild(frameBreakdown);
+
+        var availableSize = new Size(1000, 600);
+
+        // Act
+        container.Measure(availableSize);
+        container.Arrange(new Rect(0, 0, 1000, 600));
+
+        // Assert - The Border should size to content because it has Left alignment
+        Console.WriteLine($"Container Size: {container.ElementSize.Width} x {container.ElementSize.Height}");
+        Console.WriteLine($"Frame Breakdown Border Size: {frameBreakdown.ElementSize.Width} x {frameBreakdown.ElementSize.Height}");
+
+        // The border width should be much less than the available width
+        Assert.IsTrue(frameBreakdown.ElementSize.Width < 300,
+            $"Border should size to content (~200px), but was {frameBreakdown.ElementSize.Width}px. " +
+            "Use SetHorizontalAlignment(Left) to prevent stretching.");
+
+        // Container also sizes to content
+        Assert.IsTrue(container.ElementSize.Width < 350,
+            $"Container should size to content, but was {container.ElementSize.Width}px");
+    }
+
+    [TestMethod]
+    public void Test_StretchChild_In_HStack_WithParentStretch_ShouldFillSpace()
+    {
+        // Arrange - When parent HAS Stretch, then children with Stretch should fill
+        var breakdownRow = new HStack()
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch) // Parent has Stretch
+            .AddChild(new Label()
+                .SetText("Measure")
+                .SetTextSize(12)
+                .SetHorizontalAlignment(HorizontalAlignment.Stretch))
+            .AddChild(new Label()
+                .SetText("0.00 ms")
+                .SetTextSize(12));
+
+        var container = new VStack()
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch) // Also stretch
+            .AddChild(breakdownRow);
+
+        var availableSize = new Size(500, 100);
+
+        // Act
+        container.Measure(availableSize);
+        container.Arrange(new Rect(0, 0, 500, 100));
+
+        // Assert - Now it SHOULD stretch to fill available space
+        Console.WriteLine($"Container Size: {container.ElementSize.Width} x {container.ElementSize.Height}");
+        Console.WriteLine($"Breakdown Row Size: {breakdownRow.ElementSize.Width} x {breakdownRow.ElementSize.Height}");
+
+        Assert.AreEqual(500, container.ElementSize.Width, 1.0,
+            $"Container with Stretch should fill available width, but was {container.ElementSize.Width}");
+        Assert.AreEqual(500, breakdownRow.ElementSize.Width, 1.0,
+            $"HStack with Stretch should fill available width, but was {breakdownRow.ElementSize.Width}");
+    }
 }

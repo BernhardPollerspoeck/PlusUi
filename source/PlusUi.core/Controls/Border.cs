@@ -213,7 +213,7 @@ public partial class Border : UiLayoutElement
         }
 
         // Render children
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             child.Render(canvas);
         }
@@ -265,7 +265,7 @@ public partial class Border : UiLayoutElement
 
     public override UiElement? HitTest(Point point)
     {
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var result = child.HitTest(point);
             if (result is not null)

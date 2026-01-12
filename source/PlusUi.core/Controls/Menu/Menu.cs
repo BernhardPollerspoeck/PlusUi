@@ -201,7 +201,7 @@ public partial class Menu : UiLayoutElement, IInputControl, IHoverableControl
     {
         float totalWidth = 0;
 
-        foreach (var item in _items)
+        foreach (var item in _items.ToList())
         {
             var textWidth = _font.MeasureText(item.Text);
             totalWidth += textWidth + ItemPaddingHorizontal * 2;

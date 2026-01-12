@@ -464,7 +464,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         if (_itemsSource == null)
             return;
 
-        foreach (var item in _itemsSource)
+        foreach (var item in _itemsSource.ToList())
         {
             var node = new TreeViewNode(item, 0);
             node.HasChildren = HasChildrenFor(item);
@@ -830,7 +830,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         }
 
         // SECOND: Test if any child element (buttons, entries, etc.) was hit
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var result = child.HitTest(point);
             if (result?.InterceptsClicks == true)
@@ -1092,7 +1092,7 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         }
 
         // Render children (the item elements)
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var childOriginalOffset = child.VisualOffset;
             child.SetVisualOffset(new Point(

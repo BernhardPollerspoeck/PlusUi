@@ -47,6 +47,51 @@ internal partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private LogLevel _logLevelFilter = LogLevel.Trace;
 
+    // Performance metrics (from selected app)
+    [ObservableProperty]
+    private double _fps;
+
+    [ObservableProperty]
+    private double _utilizationPercent;
+
+    [ObservableProperty]
+    private long _memoryBytes;
+
+    [ObservableProperty]
+    private double _frameTimeMs;
+
+    [ObservableProperty]
+    private double _measureTimeMs;
+
+    [ObservableProperty]
+    private double _arrangeTimeMs;
+
+    [ObservableProperty]
+    private double _renderTimeMs;
+
+    [ObservableProperty]
+    private bool _didRender;
+
+    // Performance history for graphs (last 120 samples at 1Hz = 2 minutes)
+    private const int MaxHistorySize = 120;
+
+    [ObservableProperty]
+    private List<float> _frameTimeHistory = [];
+
+    [ObservableProperty]
+    private List<float> _fpsHistory = [];
+
+    [ObservableProperty]
+    private List<float> _memoryHistory = []; // in MB
+
+    [ObservableProperty]
+    private List<float> _renderActivityHistory = []; // 1.0 = rendered, 0.0 = skipped
+
+    public string MemoryDisplay => MemoryBytes > 0 ? $"{MemoryBytes / 1024.0 / 1024.0:F1} MB" : "-- MB";
+    public string FpsDisplay => Fps > 0 ? $"{Fps:F0} FPS" : "-- FPS";
+    public string UtilizationDisplay => UtilizationPercent > 0 ? $"{UtilizationPercent:F1}%" : "--%";
+    public string FrameTimeDisplay => FrameTimeMs > 0 ? $"{FrameTimeMs:F2} ms" : "-- ms";
+
     public bool HasConnectedApps => AppTabs.Count > 0;
     public PinnedPropertiesService PinnedPropertiesService => _pinnedPropertiesService;
     public string CurrentElementType => SelectedNode?.Type ?? "";
@@ -261,6 +306,52 @@ internal partial class MainViewModel : ObservableObject, IDisposable
             SelectedApp.LogLevelFilter = value;
     }
 
+    partial void OnFpsChanged(double value) => OnPropertyChanged(nameof(FpsDisplay));
+    partial void OnMemoryBytesChanged(long value) => OnPropertyChanged(nameof(MemoryDisplay));
+    partial void OnUtilizationPercentChanged(double value) => OnPropertyChanged(nameof(UtilizationDisplay));
+    partial void OnFrameTimeMsChanged(double value) => OnPropertyChanged(nameof(FrameTimeDisplay));
+
+    private void UpdatePerformanceFromApp()
+    {
+        if (SelectedApp == null)
+        {
+            Fps = 0;
+            UtilizationPercent = 0;
+            MemoryBytes = 0;
+            FrameTimeMs = 0;
+            MeasureTimeMs = 0;
+            ArrangeTimeMs = 0;
+            RenderTimeMs = 0;
+            DidRender = false;
+            return;
+        }
+
+        Fps = SelectedApp.Fps;
+        UtilizationPercent = SelectedApp.UtilizationPercent;
+        MemoryBytes = SelectedApp.MemoryBytes;
+        FrameTimeMs = SelectedApp.FrameTimeMs;
+        MeasureTimeMs = SelectedApp.MeasureTimeMs;
+        ArrangeTimeMs = SelectedApp.ArrangeTimeMs;
+        RenderTimeMs = SelectedApp.RenderTimeMs;
+        DidRender = SelectedApp.DidRender;
+
+        // Update history for graphs
+        FrameTimeHistory = AddToHistory(FrameTimeHistory, (float)FrameTimeMs);
+        FpsHistory = AddToHistory(FpsHistory, (float)Fps);
+        MemoryHistory = AddToHistory(MemoryHistory, MemoryBytes / 1024f / 1024f); // Convert to MB
+        RenderActivityHistory = AddToHistory(RenderActivityHistory, DidRender ? 1f : 0f);
+    }
+
+    private static List<float> AddToHistory(List<float> history, float newValue)
+    {
+        var newHistory = new List<float>(history) { newValue };
+        if (newHistory.Count > MaxHistorySize)
+        {
+            newHistory.RemoveAt(0);
+        }
+        return newHistory;
+    }
+
     private void SyncCollectionsFromSelectedApp()
     {
         _logger.LogDebug("SyncCollectionsFromSelectedApp: SelectedApp={AppId}, RootItems.Count={Count}",
@@ -304,6 +395,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
         _logger.LogDebug("Updated RootItemsCount to {Count} after sync", RootItemsCount);
 
         UpdateStatusText();
+        UpdatePerformanceFromApp();
     }
 
     private void UpdateStatusText()
@@ -466,6 +558,26 @@ internal partial class MainViewModel : ObservableObject, IDisposable
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error processing log batch from {ClientId}", e.ClientId);
+                }
+                break;
+
+            case "performance" when e.Message.Data != null:
+                try
+                {
+                    var json = JsonSerializer.Serialize(e.Message.Data);
+                    var perfData = JsonSerializer.Deserialize<PerformanceFrameDto>(json);
+                    if (perfData != null)
+                    {
+                        app.UpdatePerformance(perfData);
+                        if (SelectedApp == app)
+                        {
+                            UpdatePerformanceFromApp();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error processing performance data from {ClientId}", e.ClientId);
                 }
                 break;
         }

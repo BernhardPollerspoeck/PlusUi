@@ -183,7 +183,7 @@ public partial class ToolbarIconGroup : UiLayoutElement<ToolbarIconGroup>
         var childAvailableSize = new Size(availableSize.Width, availableSize.Height);
 
         // First measure all non-stretching children
-        foreach (var child in Children.Where(c => c.HorizontalAlignment is not HorizontalAlignment.Stretch))
+        foreach (var child in Children.Where(c => c.HorizontalAlignment is not HorizontalAlignment.Stretch).ToList())
         {
             var result = child.Measure(childAvailableSize, dontStretch);
             childAvailableSize = new Size(
@@ -240,7 +240,7 @@ public partial class ToolbarIconGroup : UiLayoutElement<ToolbarIconGroup>
         var y = positionY;
         var x = positionX;
 
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var childTopBound = child.VerticalAlignment switch
             {
@@ -288,7 +288,7 @@ public partial class ToolbarIconGroup : UiLayoutElement<ToolbarIconGroup>
 
     public override UiElement? HitTest(Point point)
     {
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var result = child.HitTest(point);
             if (result is not null)

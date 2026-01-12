@@ -3,7 +3,7 @@ namespace PlusUi.core.Services.DebugBridge.Models;
 /// <summary>
 /// Represents performance metrics for a single frame.
 /// </summary>
-internal class PerformanceFrameDto
+public class PerformanceFrameDto
 {
     /// <summary>
     /// Timestamp when the frame was captured.
@@ -49,4 +49,20 @@ internal class PerformanceFrameDto
     /// Number of property changes that were skipped.
     /// </summary>
     public int PropertySkipped { get; set; }
+
+    /// <summary>
+    /// Render utilization percentage (FrameTime / 16.67ms * 100).
+    /// 100% means using full 60fps budget.
+    /// </summary>
+    public double UtilizationPercent { get; set; }
+
+    /// <summary>
+    /// Memory usage in bytes.
+    /// </summary>
+    public long MemoryBytes { get; set; }
+
+    /// <summary>
+    /// Whether a render actually occurred this frame.
+    /// </summary>
+    public bool DidRender { get; set; }
 }

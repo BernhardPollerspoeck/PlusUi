@@ -114,7 +114,7 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
         internal set
         {
             base.Context = value;
-            foreach (var child in Children)
+            foreach (var child in Children.ToList())
             {
                 child.Context = value;
             }
@@ -160,7 +160,7 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
     /// </summary>
     protected void InvalidateArrangeChildren()
     {
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             child.NeedsArrange = true;
             if (child is UiLayoutElement layoutChild)
@@ -174,7 +174,7 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
     public override void BuildContent()
     {
         base.BuildContent();
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             child.BuildContent();
         }
@@ -187,7 +187,7 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
 
         if (IsVisible)
         {
-            foreach (var child in Children)
+            foreach (var child in Children.ToList())
             {
                 // Save the current VisualOffset
                 var childOriginalOffset = child.VisualOffset;
@@ -210,14 +210,14 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
     #region bindings
     protected override void UpdateBindingsInternal()
     {
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             child.UpdateBindings();
         }
     }
     protected override void UpdateBindingsInternal(string propertyName)
     {
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             child.UpdateBindings(propertyName);
         }
@@ -227,7 +227,7 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
     public override void InvalidateMeasure()
     {
         base.InvalidateMeasure();
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             child.InvalidateMeasure();
         }
@@ -236,7 +236,7 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
     public override void ApplyStyles()
     {
         base.ApplyStyles();
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             child.ApplyStyles();
         }
@@ -247,7 +247,7 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
         if (disposing)
         {
             // Dispose all children
-            foreach (var child in Children)
+            foreach (var child in Children.ToList())
             {
                 child.Dispose();
             }

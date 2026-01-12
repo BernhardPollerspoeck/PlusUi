@@ -8,13 +8,13 @@ TODO
 | 1 | DebugServer: Tree | 6 | 9 | 🟩🟩🟩🟩🟩🟩⬜⬜⬜ 67% | ~1.5 days |
 | 2 | DebugServer: Property Grid | 5 | 5 | 🟩🟩🟩🟩🟩 100% | ✅ Done |
 | 3 | DebugServer: Change Tracking | 0 | 6 | ⬜⬜⬜⬜⬜⬜ 0% | ~2 days |
-| 4 | DebugServer: Logging | 3 | 4 | 🟩🟩🟩⬜ 75% | ~4 hrs |
-| 5 | DebugServer: Performance | 0 | 6 | ⬜⬜⬜⬜⬜⬜ 0% | ~2.5 days |
+| 4 | DebugServer: Logging | 4 | 4 | 🟩🟩🟩🟩 100% | ✅ Done |
+| 5 | DebugServer: Performance | 6 | 6 | 🟩🟩🟩🟩🟩🟩 100% | ✅ Done |
 | 6 | DebugServer: Screenshot | 0 | 3 | ⬜⬜⬜ 0% | ~5 hrs |
 | 7 | DebugServer: Logging Cleanup | 3 | 3 | 🟩🟩🟩 100% | ✅ Done |
 | 8 | DebugServer: Layout Vis | 1 | 2 | 🟩⬜ 50% | ~2 hrs |
-| 9 | DebugServer: Multi-App | 5 | 9 | 🟩🟩🟩🟩🟩⬜⬜⬜⬜ 56% | ~4 days |
-| **Total** | | **31** | **58** | **53%** | **~4.5 weeks** |
+| 9 | DebugServer: Multi-App | 6 | 9 | 🟩🟩🟩🟩🟩🟩⬜⬜⬜ 67% | ~3 days |
+| **Total** | | **39** | **58** | **67%** | **~3 weeks** |
 
 ---
 
@@ -65,12 +65,7 @@ TODO
 - [x] [x] 1.8 Add scrollbar visualization to TreeView - currently no visual scrollbar shown
 - [x] [x] 1.9 Fix TreeView expand/collapse click area - click position is registered too high up
 
-### 2. DebugServer Property Grid Improvements
-- [x] [x] 2.1 Pin properties per element type (implemented with BindText/BindTextColor)
-- [x] [x] 2.2 3️⃣ Pinned properties appear at top of property list (BUG: shows pinned properties at top for ALL elements, not filtered by element type)
-- [x] [x] 2.3 3️⃣ Fix property display bugs - colors not displayed correctly
-- [x] [x] 2.4 2️⃣ Fix property offset display - selection feels incorrect
-- [x] [x] 2.5 4️⃣ Fix color property update - color values cannot be updated
+### ✅ 2. DebugServer Property Grid Improvements
 
 ### 3. DebugServer Change Tracking & Reset
 - [ ] [ ] 3.1 5️⃣ Track all property changes made in debug session
@@ -80,19 +75,15 @@ TODO
 - [ ] [ ] 3.5 2️⃣ Show modified indicator on changed properties
 - [ ] [ ] 3.6 6️⃣ Style overrides (per page and global)
 
-### 4. DebugServer Logging
-- [x] [x] 4.1 Log output panel in debug server UI
-- [x] [x] 4.2 Log level filtering (Debug, Info, Warning, Error)
-- [x] [x] 4.3 Cleanup: Remove console.log, use ILogger everywhere
-- [ ] [ ] 4.4 5️⃣ Event tracing (button clicks, navigation, etc.)
+### ✅ 4. DebugServer Logging
 
-### 5. DebugServer Performance Monitor
-- [ ] [ ] 5.1 4️⃣ FPS counter
-- [ ] [ ] 5.2 4️⃣ Memory usage
-- [ ] [ ] 5.3 4️⃣ Render time per frame
-- [ ] [ ] 5.4 5️⃣ Frame time graph
-- [ ] [ ] 5.5 6️⃣ Render event graph (when renders actually happen - for on-demand rendering)
-- [ ] [ ] 5.6 2️⃣ Render utilization % (how much of 60fps is actually used)
+### ✅ 5. DebugServer Performance Monitor
+- [x] [x] 5.1 4️⃣ FPS counter
+- [x] [x] 5.2 4️⃣ Memory usage
+- [x] [x] 5.3 4️⃣ Render time per frame (Measure/Arrange/Render breakdown)
+- [x] [x] 5.4 5️⃣ Frame time graph (LineGraph control + 120s history)
+- [x] [x] 5.5 6️⃣ Render event graph (shows when renders actually happen for on-demand rendering)
+- [x] [x] 5.6 2️⃣ Render utilization % (how much of 60fps is actually used)
 
 ## Medium Priority
 
@@ -101,10 +92,7 @@ TODO
 - [ ] [ ] 6.2 3️⃣ Save to file or clipboard
 - [ ] [ ] 6.3 4️⃣ Capture specific element or full page
 
-### 7. DebugServer Logging Cleanup
-- [x] [x] 7.1 Audit codebase for Console.WriteLine/Debug.WriteLine
-- [x] [x] 7.2 Replace with ILogger calls
-- [x] [x] 7.3 Ensure proper log levels
+### ✅ 7. DebugServer Logging Cleanup
 
 ## Low Priority / Future
 
@@ -140,13 +128,13 @@ TODO
   - Selected tab determines active app in ViewModel
   - TabControl automatically handles dynamic tab addition/removal via bindings
 
-- [~] 9.3 Global Status Bar Component (Placeholder layout done, real data pending)
-  - [x] [x] Placeholder layout with static text
-  - [ ] [ ] 4️⃣ FPS counter with utilization % (received from app via WebSocket)
-  - [ ] [ ] 4️⃣ Memory usage (received from app)
-  - [ ] [ ] 3️⃣ Last render time in ms (received from app)
+- [~] 9.3 Global Status Bar Component (Removed - data moved to Performance Tab)
+  - [x] [x] ~~Placeholder layout with static text~~ (removed, data now in Performance Tab)
+  - [x] [x] 4️⃣ FPS counter with utilization % (now in Performance Tab)
+  - [x] [x] 4️⃣ Memory usage (now in Performance Tab)
+  - [x] [x] 3️⃣ Last render time in ms (now in Performance Tab as Measure/Arrange/Render breakdown)
   - [ ] [ ] 2️⃣ Modified indicator (shows if current app has unsaved changes)
-  - [x] [x] Always visible regardless of selected feature tab
+  - ~~[x] [x] Always visible regardless of selected feature tab~~ (status bar removed)
 
 - [~] 9.4 Feature TabView Component (Placeholder tabs done, content pending)
   - [x] [x] TabView with 5 tabs: Inspector, Logs, Performance, Changes, Screenshot
@@ -165,12 +153,13 @@ TODO
   - Clear button
   - Auto-scroll and search/filter not yet implemented
 
-- [ ] [ ] 9.7 7️⃣ Performance Tab
-  - Live FPS graph (received from app)
-  - Render event graph showing when frames are rendered
-  - Memory usage over time
-  - Frame time breakdown
-  - Render utilization chart
+- [x] [x] 9.7 7️⃣ Performance Tab (Complete with LineGraph control)
+  - [x] [x] Live FPS graph (120s history)
+  - [x] [x] Render activity graph showing when frames are rendered vs skipped
+  - [x] [x] Frame time graph
+  - [x] [x] Frame time breakdown (Measure/Arrange/Render)
+  - [x] [x] Live stats: FPS, Utilization %, Memory, Frame Time
+  - [x] [x] Y-axis labels on graphs
 
 - [ ] [ ] 9.8 5️⃣ Changes Tab
   - List of all property changes made during debug session

@@ -197,7 +197,7 @@ public partial class Grid : UiLayoutElement
 
         // First pass: Measure children to determine Auto column/row sizes
         // Use dontStretch=true to get natural sizes without stretching
-        foreach (var child in _children)
+        foreach (var child in _children.ToList())
         {
             // Get the natural size without stretch
             var childSize = child.Element.Measure(availableSizeForChildren, true);
@@ -205,7 +205,7 @@ public partial class Grid : UiLayoutElement
         }
 
         // Determine Auto sizes based on children's natural sizes
-        foreach (var child in _children)
+        foreach (var child in _children.ToList())
         {
             var columnCount = Math.Min(child.ColumnSpan, _columns.Count - child.Column);
             var rowCount = Math.Min(child.RowSpan, _rows.Count - child.Row);
@@ -320,7 +320,7 @@ public partial class Grid : UiLayoutElement
 
         // Second pass: Measure children with final column/row sizes
         // This time use the actual size constraints and respect stretch alignment
-        foreach (var child in _children)
+        foreach (var child in _children.ToList())
         {
             // Calculate the available size for this child based on the grid columns/rows it spans
             float availableWidth = 0;
@@ -373,7 +373,7 @@ public partial class Grid : UiLayoutElement
         var rowHeights = _rows.Select(r => r.MeasuredSize).ToArray();
 
         // Arrange children
-        foreach (var child in _children)
+        foreach (var child in _children.ToList())
         {
             var x = gridPosition.X + columnWidths.Take(child.Column).Sum();
             var y = gridPosition.Y + rowHeights.Take(child.Row).Sum();
@@ -387,7 +387,7 @@ public partial class Grid : UiLayoutElement
 
     public override UiElement? HitTest(Point point)
     {
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var result = child.HitTest(point);
             if (result is not null)

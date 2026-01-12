@@ -235,7 +235,7 @@ public partial class UniformGrid : UiLayoutElement
 
     public override UiElement? HitTest(Point point)
     {
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var result = child.HitTest(point);
             if (result is not null)

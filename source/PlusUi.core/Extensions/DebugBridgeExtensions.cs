@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PlusUi.core.Services;
 using PlusUi.core.Services.DebugBridge;
 
 namespace PlusUi.core;
@@ -42,6 +43,13 @@ public static class DebugBridgeExtensions
             var client = new DebugBridgeClient(serverUrl, navigationContainer, logger);
             _ = client.ConnectAsync();
             return client;
+        });
+
+        // Register performance monitor that sends metrics to debug server
+        builder.Services.AddSingleton<IAppMonitor>(sp =>
+        {
+            var client = sp.GetRequiredService<DebugBridgeClient>();
+            return new DebugAppMonitor(client);
         });
 
         // Register logger provider (uses ServiceProviderService to get DebugBridgeClient)

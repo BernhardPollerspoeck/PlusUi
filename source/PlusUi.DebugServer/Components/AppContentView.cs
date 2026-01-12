@@ -18,25 +18,12 @@ internal class AppContentView : UserControl
     {
         return new Grid()
             .SetBackground(new Color(30, 30, 30))
-            .AddRow(Row.Auto)  // Status Bar
-            .AddRow(Row.Star)  // Feature Tabs
+            .AddRow(Row.Star)
             .AddColumn(Column.Star)
-
-            // Status Bar Placeholder
-            .AddChild(
-                row: 0,
-                column: 0,
-                child: new Border()
-                    .SetBackground(new Color(50, 50, 50))
-                    .AddChild(new Label()
-                        .SetText("FPS: 60 (100%) │ Memory: 45MB │ Render: 16ms │ Modified: No")
-                        .SetTextColor(new Color(220, 220, 220))
-                        .SetTextSize(12)
-                        .SetMargin(new Margin(12, 8))))
 
             // Feature Tabs
             .AddChild(
-                row: 1,
+                row: 0,
                 column: 0,
                 child: new TabControl()
                     .SetTabs(new[]
@@ -49,7 +36,7 @@ internal class AppContentView : UserControl
                             .SetContent(new LogsView(_viewModel)),
                         new TabItem()
                             .SetHeader("Performance")
-                            .SetContent(CreatePlaceholder("Performance Content")),
+                            .SetContent(new PerformanceView(_viewModel)),
                         new TabItem()
                             .SetHeader("Changes")
                             .SetContent(CreatePlaceholder("Changes Content")),
@@ -100,4 +87,5 @@ internal class AppContentView : UserControl
                 .SetTextColor(new Color(120, 120, 120))
                 .SetTextSize(16));
     }
+
 }

@@ -21,7 +21,7 @@ public class TreeViewNode(object item, int depth, TreeViewNode? parent = null)
         float childrenHeight = 0;
         if (IsExpanded && Children != null)
         {
-            foreach (var child in Children)
+            foreach (var child in Children.ToList())
             {
                 childrenHeight += child.ExpandedHeight;
             }

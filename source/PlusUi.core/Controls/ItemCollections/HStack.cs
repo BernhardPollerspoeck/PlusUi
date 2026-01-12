@@ -48,6 +48,41 @@ public partial class HStack : UiLayoutElement
         Children.AddRange(elements);
     }
 
+    #region Spacing
+    /// <summary>
+    /// Gets or sets the spacing between child elements.
+    /// </summary>
+    internal float Spacing
+    {
+        get => field;
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    }
+
+    /// <summary>
+    /// Sets the spacing between child elements.
+    /// </summary>
+    public HStack SetSpacing(float spacing)
+    {
+        Spacing = spacing;
+        return this;
+    }
+
+    /// <summary>
+    /// Binds the spacing property to a data source.
+    /// </summary>
+    public HStack BindSpacing(Expression<Func<float>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Spacing = getter());
+        return this;
+    }
+    #endregion
+
     #region Wrap
     /// <summary>
     /// Gets whether elements wrap to the next row when they exceed the available width.
@@ -87,8 +122,8 @@ public partial class HStack : UiLayoutElement
 
         var childAvailableSize = new Size(availableSize.Width, availableSize.Height);
 
-        //first measure all not stretching children
-        foreach (var child in Children.Where(c => c.HorizontalAlignment is not HorizontalAlignment.Stretch))
+        // First measure all non-stretching children
+        foreach (var child in Children.Where(c => c.HorizontalAlignment is not HorizontalAlignment.Stretch).ToList())
         {
             var result = child.Measure(childAvailableSize, dontStretch);
             childAvailableSize = new Size(
@@ -96,14 +131,20 @@ public partial class HStack : UiLayoutElement
                 childAvailableSize.Height);
         }
 
-        //split available space for stretching children
+        // Measure stretching children - they share the remaining space
         var stretchingChildren = Children.Where(c => c.HorizontalAlignment is HorizontalAlignment.Stretch).ToList();
-        var stretchWidth = stretchingChildren.Count > 0
-            ? childAvailableSize.Width / stretchingChildren.Count
-            : 0;
-        stretchingChildren.ForEach(child => child.Measure(new Size(stretchWidth, childAvailableSize.Height), dontStretch));
+        if (stretchingChildren.Count > 0)
+        {
+            var stretchWidth = childAvailableSize.Width / stretchingChildren.Count;
+            stretchingChildren.ForEach(child => child.Measure(new Size(stretchWidth, childAvailableSize.Height), false));
+        }
 
         var width = Children.Sum(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right);
+        // Add spacing between children
+        if (Children.Count > 1)
+        {
+            width += (Children.Count - 1) * Spacing;
+        }
         var height = Children.Count > 0
             ? Children.Max(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom)
             : 0;
@@ -113,7 +154,7 @@ public partial class HStack : UiLayoutElement
     private Size MeasureWrapped(Size availableSize, bool dontStretch)
     {
         // Measure all children first to get their natural sizes
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             child.Measure(availableSize, true);
         }
@@ -123,11 +164,12 @@ public partial class HStack : UiLayoutElement
         var currentRow = new List<UiElement>();
         var currentRowWidth = 0f;
 
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var childWidth = child.ElementSize.Width + child.Margin.Horizontal;
+            var spacingToAdd = currentRow.Count > 0 ? Spacing : 0;
 
-            if (currentRow.Count > 0 && currentRowWidth + childWidth > availableSize.Width)
+            if (currentRow.Count > 0 && currentRowWidth + spacingToAdd + childWidth > availableSize.Width)
             {
                 // Start new row
                 rows.Add(currentRow);
@@ -137,7 +179,7 @@ public partial class HStack : UiLayoutElement
             else
             {
                 currentRow.Add(child);
-                currentRowWidth += childWidth;
+                currentRowWidth += spacingToAdd + childWidth;
             }
         }
 
@@ -156,6 +198,10 @@ public partial class HStack : UiLayoutElement
                 ? row.Max(c => c.ElementSize.Height + c.Margin.Vertical)
                 : 0f;
             var rowWidth = row.Sum(c => c.ElementSize.Width + c.Margin.Horizontal);
+            if (row.Count > 1)
+            {
+                rowWidth += (row.Count - 1) * Spacing;
+            }
 
             totalHeight += rowHeight;
             maxWidth = Math.Max(maxWidth, rowWidth);
@@ -187,8 +233,15 @@ public partial class HStack : UiLayoutElement
 
         var y = positionY;
         var x = positionX;
-        foreach (var child in Children)
+        var isFirst = true;
+        foreach (var child in Children.ToList())
         {
+            if (!isFirst)
+            {
+                x += Spacing;
+            }
+            isFirst = false;
+
             var childTopBound = child.VerticalAlignment switch
             {
                 VerticalAlignment.Center => y + ((ElementSize.Height - child.ElementSize.Height) / 2),
@@ -206,18 +259,24 @@ public partial class HStack : UiLayoutElement
         var x = startX;
         var y = startY;
         var rowHeight = 0f;
+        var isFirstInRow = true;
 
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var childWidth = child.ElementSize.Width + child.Margin.Horizontal;
+            var spacingToAdd = isFirstInRow ? 0 : Spacing;
 
             // Check if we need to wrap to next row
-            if (x > startX && x - startX + childWidth > availableWidth)
+            if (!isFirstInRow && x - startX + spacingToAdd + childWidth > availableWidth)
             {
                 x = startX;
                 y += rowHeight;
                 rowHeight = 0f;
+                isFirstInRow = true;
+                spacingToAdd = 0;
             }
+
+            x += spacingToAdd;
 
             // Don't add margins here - UiElement.Arrange handles them internally
             child.Arrange(new Rect(
@@ -228,6 +287,7 @@ public partial class HStack : UiLayoutElement
 
             x += childWidth;
             rowHeight = Math.Max(rowHeight, child.ElementSize.Height + child.Margin.Vertical);
+            isFirstInRow = false;
         }
     }
 
@@ -235,7 +295,7 @@ public partial class HStack : UiLayoutElement
 
     public override UiElement? HitTest(Point point)
     {
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var result = child.HitTest(point);
             if (result is not null)

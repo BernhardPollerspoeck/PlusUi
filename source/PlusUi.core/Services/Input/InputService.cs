@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Microsoft.Extensions.Logging;
 using PlusUi.core.Services.Focus;
 
 namespace PlusUi.core;
@@ -13,6 +14,7 @@ public class InputService
     private readonly IKeyboardHandler _keyboardHandler;
     private readonly ITooltipService _tooltipService;
     private readonly IFocusManager _focusManager;
+    private readonly ILogger<InputService>? _logger;
     private Vector2 _lastMousePosition;
     private IScrollableControl? _activeScrollControl;
     private IDraggableControl? _activeDragControl;
@@ -32,7 +34,8 @@ public class InputService
         OverlayService overlayService,
         IKeyboardHandler keyboardHandler,
         IFocusManager focusManager,
-        ITooltipService tooltipService)
+        ITooltipService tooltipService,
+        ILogger<InputService>? logger = null)
     {
         _navigationContainer = navigationContainer;
         _popupService = popupService;
@@ -40,8 +43,19 @@ public class InputService
         _keyboardHandler = keyboardHandler;
         _tooltipService = tooltipService;
         _focusManager = focusManager;
+        _logger = logger;
         _keyboardHandler.KeyInput += HandleKeyInput;
         _keyboardHandler.CharInput += HandleCharInput;
+    }
+
+    private void LogEvent(string eventType, object control, string trigger)
+    {
+        if (_logger == null) return;
+
+        var controlType = control.GetType().Name;
+
+        _logger.LogInformation("[Event] {EventType}: {ControlType} via {Trigger}",
+            eventType, controlType, trigger);
     }
 
 
@@ -164,6 +178,7 @@ public class InputService
 
         if (hitControl is IInputControl inputControl)
         {
+            LogEvent("Click", inputControl, "Mouse");
             inputControl.InvokeCommand();
         }
 
@@ -193,6 +208,7 @@ public class InputService
 
         if (hitControl is IToggleButtonControl toggleButtonControl)
         {
+            LogEvent("Toggle", toggleButtonControl, "Mouse");
             toggleButtonControl.Toggle();
         }
 
@@ -416,12 +432,14 @@ public class InputService
         // Handle IInputControl (buttons, links)
         if (focused is IInputControl inputControl)
         {
+            LogEvent("Click", inputControl, "Keyboard");
             inputControl.InvokeCommand();
         }
 
         // Handle IToggleButtonControl (checkbox, toggle, radio)
         if (focused is IToggleButtonControl toggleControl)
         {
+            LogEvent("Toggle", toggleControl, "Keyboard");
             toggleControl.Toggle();
         }
     }

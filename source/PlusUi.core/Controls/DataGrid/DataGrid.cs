@@ -1156,7 +1156,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
         // Render row cells (children except header cells)
         if (_headerCells != null)
         {
-            foreach (var child in Children.Skip(_headerCells.Count))
+            foreach (var child in Children.Skip(_headerCells.Count).ToList())
             {
                 var childOriginalOffset = child.VisualOffset;
                 child.SetVisualOffset(new Point(childOriginalOffset.X + VisualOffset.X, childOriginalOffset.Y + VisualOffset.Y));
@@ -1281,7 +1281,7 @@ public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IIn
             }
         }
 
-        foreach (var child in Children)
+        foreach (var child in Children.ToList())
         {
             var hit = child.HitTest(point);
             if (hit is IInputControl or ITextInputControl or IToggleButtonControl or IDraggableControl)
