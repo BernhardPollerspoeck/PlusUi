@@ -5,16 +5,16 @@ TODO
 | Section | Description | Done | Total | Progress | Remaining |
 |---------|-------------|------|-------|----------|-----------|
 | 0 | Random stuff | 8 | 11 | 🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 73% | ~3 weeks |
+| 0.5 | App Default Style | 0 | 3 | ⬜⬜⬜ 0% | ~2 days |
 | 1 | DebugServer: Tree | 6 | 9 | 🟩🟩🟩🟩🟩🟩⬜⬜⬜ 67% | ~1.5 days |
 | 2 | DebugServer: Property Grid | 5 | 5 | 🟩🟩🟩🟩🟩 100% | ✅ Done |
 | 3 | DebugServer: Change Tracking | 0 | 6 | ⬜⬜⬜⬜⬜⬜ 0% | ~2 days |
 | 4 | DebugServer: Logging | 4 | 4 | 🟩🟩🟩🟩 100% | ✅ Done |
 | 5 | DebugServer: Performance | 6 | 6 | 🟩🟩🟩🟩🟩🟩 100% | ✅ Done |
-| 6 | DebugServer: Screenshot | 0 | 3 | ⬜⬜⬜ 0% | ~5 hrs |
+| 6 | DebugServer: Screenshot | 3 | 6 | 🟩🟩🟩⬜⬜⬜ 50% | ~4 hrs |
 | 7 | DebugServer: Logging Cleanup | 3 | 3 | 🟩🟩🟩 100% | ✅ Done |
 | 8 | DebugServer: Layout Vis | 1 | 2 | 🟩⬜ 50% | ~2 hrs |
-| 9 | DebugServer: Multi-App | 6 | 9 | 🟩🟩🟩🟩🟩🟩⬜⬜⬜ 67% | ~3 days |
-| **Total** | | **39** | **58** | **67%** | **~3 weeks** |
+| **Total** | | **36** | **55** | **65%** | **~4.5 weeks** |
 
 ---
 
@@ -52,7 +52,48 @@ TODO
 - [x] [x] 999.10 5️⃣ return ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>() wirft Exception in UiElment beim stoppen
 - [x] [x] 999.11 6️⃣ Remove remaining on-demand service resolves (ServiceProvider?.GetService<T>()) - cache in constructor instead
 
+### 0.5 App Default Style
+- [ ] [ ] 0.5.1 5️⃣ Evaluate default values from DebugServer (analyze current styles and derive sensible defaults)
+- [ ] [ ] 0.5.2 4️⃣ Testing of default styles across all controls
+- [ ] [ ] 0.5.3 7️⃣ Rework Sandbox to full control library showcase (TabView with tabs on the left, all controls displayed)
 
+**Controls:**
+- [ ] [ ] ActivityIndicator
+- [ ] [ ] Border
+- [ ] [ ] Button
+- [ ] [ ] Checkbox
+- [ ] [ ] ComboBox
+- [ ] [ ] ContextMenu
+- [ ] [ ] DatePicker
+- [ ] [ ] Entry
+- [ ] [ ] Grid
+- [ ] [ ] HStack
+- [ ] [ ] Image
+- [ ] [ ] ItemsList
+- [ ] [ ] Label
+- [ ] [ ] LineGraph
+- [ ] [ ] Link
+- [ ] [ ] Menu
+- [ ] [ ] ProgressBar
+- [ ] [ ] RadioButton
+- [ ] [ ] Scrollbar
+- [ ] [ ] ScrollView
+- [ ] [ ] Separator
+- [ ] [ ] Slider
+- [ ] [ ] Solid
+- [ ] [ ] TabControl
+- [ ] [ ] TimePicker
+- [ ] [ ] Toggle
+- [ ] [ ] Toolbar
+- [ ] [ ] ToolbarIconGroup
+- [ ] [ ] TreeView
+- [ ] [ ] UniformGrid
+- [ ] [ ] VStack
+
+**User Controls & Popups:**
+- [ ] [ ] UserControl (base class)
+- [ ] [ ] RawUserControl (base class)
+- [ ] [ ] UiPopupElement (base class)
 
 ### 1. DebugServer Tree Improvements
 - [ ] [ ] 1.1 6️⃣ Update tree incrementally instead of full reload (including better navigation handling when pages change)
@@ -78,19 +119,16 @@ TODO
 ### ✅ 4. DebugServer Logging
 
 ### ✅ 5. DebugServer Performance Monitor
-- [x] [x] 5.1 4️⃣ FPS counter
-- [x] [x] 5.2 4️⃣ Memory usage
-- [x] [x] 5.3 4️⃣ Render time per frame (Measure/Arrange/Render breakdown)
-- [x] [x] 5.4 5️⃣ Frame time graph (LineGraph control + 120s history)
-- [x] [x] 5.5 6️⃣ Render event graph (shows when renders actually happen for on-demand rendering)
-- [x] [x] 5.6 2️⃣ Render utilization % (how much of 60fps is actually used)
 
 ## Medium Priority
 
 ### 6. DebugServer Screenshot
-- [ ] [ ] 6.1 4️⃣ Capture current UI state as image
-- [ ] [ ] 6.2 3️⃣ Save to file or clipboard
-- [ ] [ ] 6.3 4️⃣ Capture specific element or full page
+- [x] [ ] 6.1 4️⃣ Capture current UI state as image
+- [x] [ ] 6.2 3️⃣ Save to file or clipboard
+- [x] [ ] 6.3 4️⃣ Capture specific element or full page
+- [ ] [ ] 6.4 3️⃣ Fix Screenshots Tab UI layout (broken/ugly)
+- [ ] [ ] 6.5 2️⃣ Fix screenshot count not updating in header
+- [ ] [ ] 6.6 3️⃣ Fix second screenshot not visible (list/scroll issue)
 
 ### ✅ 7. DebugServer Logging Cleanup
 
@@ -99,78 +137,3 @@ TODO
 ### 8. DebugServer Layout Visualization
 - [ ] [ ] 8.1 4️⃣ Wireframe overlay showing element bounds (server-side feature to toggle debug visualization remotely)
 - [x] [x] 8.2 Margin/padding visualization (PlusUi.core - implemented with IsDebug property)
-
-### 9. DebugServer UI Layout & Multi-App Support
-**Target Layout:**
-```
-┌──────────────────────────────────────────────────────────┐
-│ [● App 1 ×] [○ App 2 ×] [+]                              │  ← App Tabs
-├──────────────────────────────────────────────────────────┤
-│ FPS: 60 (100%) │ Memory: 45MB │ Render: 16ms │ Modified │  ← Status Bar
-├──────────────────────────────────────────────────────────┤
-│ [Inspector] [Logs] [Performance] [Changes] [Screenshot]  │  ← Feature Tabs
-│ ┌────────────────────────┬─────────────────────────────┐ │
-│ │   Tree (left)          │   Property Grid (right)     │ │  ← Tab Content
-│ └────────────────────────┴─────────────────────────────┘ │
-└──────────────────────────────────────────────────────────┘
-```
-
-**Tasks:**
-- [x] [x] 9.1 Multi-App Support in ViewModel
-  - Dictionary<string, AppState> to manage multiple connected clients
-  - Each AppState contains: clientId, connected status, tree data, selected node, properties, changes list
-  - Switch between apps updates all UI accordingly
-
-- [x] [x] 9.2 App Tabs Component
-  - Use PlusUi.core TabControl with BindTabs() instead of custom control
-  - Each connected app = one TabItem
-  - Tab header shows app name with LED indicator: ● (green) for connected
-  - Selected tab determines active app in ViewModel
-  - TabControl automatically handles dynamic tab addition/removal via bindings
-
-- [~] 9.3 Global Status Bar Component (Removed - data moved to Performance Tab)
-  - [x] [x] ~~Placeholder layout with static text~~ (removed, data now in Performance Tab)
-  - [x] [x] 4️⃣ FPS counter with utilization % (now in Performance Tab)
-  - [x] [x] 4️⃣ Memory usage (now in Performance Tab)
-  - [x] [x] 3️⃣ Last render time in ms (now in Performance Tab as Measure/Arrange/Render breakdown)
-  - [ ] [ ] 2️⃣ Modified indicator (shows if current app has unsaved changes)
-  - ~~[x] [x] Always visible regardless of selected feature tab~~ (status bar removed)
-
-- [~] 9.4 Feature TabView Component (Placeholder tabs done, content pending)
-  - [x] [x] TabView with 5 tabs: Inspector, Logs, Performance, Changes, Screenshot
-  - [x] [x] Each tab shows content for currently selected app (from App Tabs)
-  - [x] [x] Tab content updates when switching apps
-  - [ ] [ ] 5️⃣ Actual content for each tab (currently placeholders)
-
-- [x] [x] 9.5 Inspector Tab (refactor existing)
-  - Left: TreeView showing element hierarchy (already exists)
-  - Right: Property Grid with pinning support (already exists)
-  - Split view within tab content area
-
-- [x] [ ] 9.6 Logs Tab
-  - Log output panel receiving logs from app via WebSocket
-  - Level filtering buttons: [TRC] [DBG] [INF] [WRN] [ERR] [CRT]
-  - Clear button
-  - Auto-scroll and search/filter not yet implemented
-
-- [x] [x] 9.7 7️⃣ Performance Tab (Complete with LineGraph control)
-  - [x] [x] Live FPS graph (120s history)
-  - [x] [x] Render activity graph showing when frames are rendered vs skipped
-  - [x] [x] Frame time graph
-  - [x] [x] Frame time breakdown (Measure/Arrange/Render)
-  - [x] [x] Live stats: FPS, Utilization %, Memory, Frame Time
-  - [x] [x] Y-axis labels on graphs
-
-- [ ] [ ] 9.8 5️⃣ Changes Tab
-  - List of all property changes made during debug session
-  - Format: "ElementId.PropertyPath: oldValue → newValue"
-  - Per-app change tracking
-  - [Reload Page] button to discard all changes for current app
-  - [Export] button to copy changes as code/JSON
-
-- [ ] [ ] 9.9 5️⃣ Screenshot Tab
-  - Preview area showing captured screenshot
-  - [Capture Full Page] button
-  - [Capture Selected Element] button (uses tree selection)
-  - [Save to File] and [Copy to Clipboard] buttons
-  - Screenshot received from app via WebSocket as base64 image

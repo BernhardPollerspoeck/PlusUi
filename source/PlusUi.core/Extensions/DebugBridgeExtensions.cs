@@ -40,7 +40,8 @@ public static class DebugBridgeExtensions
         {
             var navigationContainer = sp.GetRequiredService<NavigationContainer>();
             var logger = sp.GetRequiredService<ILogger<DebugBridgeClient>>();
-            var client = new DebugBridgeClient(serverUrl, navigationContainer, logger);
+            var imageExportService = sp.GetRequiredService<IImageExportService>();
+            var client = new DebugBridgeClient(serverUrl, navigationContainer, logger, imageExportService);
             _ = client.ConnectAsync();
             return client;
         });

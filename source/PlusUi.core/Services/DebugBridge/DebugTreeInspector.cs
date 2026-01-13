@@ -288,6 +288,18 @@ internal class DebugTreeInspector
     }
 
     /// <summary>
+    /// Finds an element by its ID.
+    /// </summary>
+    public UiElement? FindElementById(UiElement root, string elementId)
+    {
+        // First, ensure IDs are populated
+        SerializeTree(root);
+
+        // Find the element by ID
+        return _elementIds.FirstOrDefault(kvp => kvp.Value == elementId).Key;
+    }
+
+    /// <summary>
     /// Updates a property value on an element.
     /// </summary>
     public bool UpdateProperty(UiElement root, string elementId, string propertyPath, string value)

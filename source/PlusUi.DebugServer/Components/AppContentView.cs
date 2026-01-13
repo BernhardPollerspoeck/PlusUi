@@ -41,8 +41,8 @@ internal class AppContentView : UserControl
                             .SetHeader("Changes")
                             .SetContent(CreatePlaceholder("Changes Content")),
                         new TabItem()
-                            .SetHeader("Screenshot")
-                            .SetContent(CreatePlaceholder("Screenshot Content"))
+                            .SetHeader("Screenshots")
+                            .SetContent(new ScreenshotsView(_viewModel))
                     })
                     .SetHeaderBackgroundColor(new Color(35, 35, 35))
                     .SetActiveTabBackgroundColor(new Color(45, 45, 45))

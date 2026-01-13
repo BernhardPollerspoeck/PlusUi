@@ -18,6 +18,7 @@ internal class DebugBridgeClient : IDisposable
     private readonly string _serverUrl;
     private readonly NavigationContainer _navigationContainer;
     private readonly ILogger<DebugBridgeClient> _logger;
+    private readonly IImageExportService _imageExportService;
     private readonly DebugTreeInspector _treeInspector = new();
 
     private ClientWebSocket? _webSocket;
@@ -31,11 +32,13 @@ internal class DebugBridgeClient : IDisposable
     public DebugBridgeClient(
         string serverUrl,
         NavigationContainer navigationContainer,
-        ILogger<DebugBridgeClient> logger)
+        ILogger<DebugBridgeClient> logger,
+        IImageExportService imageExportService)
     {
         _serverUrl = serverUrl;
         _navigationContainer = navigationContainer;
         _logger = logger;
+        _imageExportService = imageExportService;
     }
 
     /// <summary>
@@ -242,6 +245,10 @@ internal class DebugBridgeClient : IDisposable
                     await HandleSetPropertyCommandAsync(message.Data);
                     break;
 
+                case "capture_screenshot":
+                    await HandleCaptureScreenshotCommandAsync(message.Data);
+                    break;
+
                 default:
                     _logger?.LogWarning("Unknown command type: {Type}", message.Type);
                     break;
@@ -397,6 +404,77 @@ internal class DebugBridgeClient : IDisposable
 
         [JsonPropertyName("value")]
         public string Value { get; set; } = "";
+    }
+
+    private class CaptureScreenshotDto
+    {
+        [JsonPropertyName("elementId")]
+        public string? ElementId { get; set; }
+    }
+
+    /// <summary>
+    /// Handles capture_screenshot command - captures and sends a screenshot.
+    /// </summary>
+    private async Task HandleCaptureScreenshotCommandAsync(object? data)
+    {
+        try
+        {
+            string? elementId = null;
+
+            if (data != null)
+            {
+                var json = JsonSerializer.Serialize(data);
+                var captureDto = JsonSerializer.Deserialize<CaptureScreenshotDto>(json);
+                elementId = captureDto?.ElementId;
+            }
+
+            var currentPage = _navigationContainer.CurrentPage;
+            if (currentPage == null)
+            {
+                _logger?.LogWarning("No current page to capture");
+                return;
+            }
+
+            UiElement targetElement;
+            if (string.IsNullOrEmpty(elementId))
+            {
+                targetElement = currentPage;
+            }
+            else
+            {
+                var element = _treeInspector.FindElementById(currentPage, elementId);
+                if (element == null)
+                {
+                    _logger?.LogWarning("Element {ElementId} not found for screenshot", elementId);
+                    return;
+                }
+                targetElement = element;
+            }
+
+            var imageBytes = _imageExportService.ExportToBytes(targetElement);
+            var base64 = Convert.ToBase64String(imageBytes);
+
+            var screenshot = new ScreenshotDto
+            {
+                ElementId = elementId,
+                ImageBase64 = base64,
+                Width = (int)targetElement.ElementSize.Width,
+                Height = (int)targetElement.ElementSize.Height,
+                Timestamp = DateTimeOffset.Now
+            };
+
+            await SendAsync(new DebugMessage
+            {
+                Type = "screenshot",
+                Data = screenshot
+            });
+
+            _logger?.LogDebug("Sent screenshot for {ElementId}", elementId ?? "full page");
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error capturing screenshot");
+        }
     }
 
     /// <summary>

@@ -56,6 +56,7 @@ internal partial class AppViewModel : ObservableObject, IDisposable
     public ObservableCollection<PropertyDto> SelectedProperties { get; } = [];
     public ObservableCollection<LogMessageDto> Logs { get; } = [];
     public ObservableCollection<LogMessageDto> FilteredLogs { get; } = [];
+    public ObservableCollection<ScreenshotItem> Screenshots { get; } = [];
 
     partial void OnSelectedNodeChanged(TreeNodeDto? value)
     {

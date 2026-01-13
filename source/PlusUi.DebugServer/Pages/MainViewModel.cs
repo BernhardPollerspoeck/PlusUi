@@ -40,6 +40,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
     public ObservableCollection<TreeNodeDto> RootItems { get; } = [];
     public ObservableCollection<PropertyDto> SelectedProperties { get; } = [];
     public ObservableCollection<LogMessageDto> FilteredLogs { get; } = [];
+    public ObservableCollection<ScreenshotItem> Screenshots { get; } = [];
 
     [ObservableProperty]
     private int _rootItemsCount;
@@ -174,6 +175,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
             oldValue.RootItems.CollectionChanged -= OnAppRootItemsChanged;
             oldValue.SelectedProperties.CollectionChanged -= OnAppSelectedPropertiesChanged;
             oldValue.FilteredLogs.CollectionChanged -= OnAppFilteredLogsChanged;
+            oldValue.Screenshots.CollectionChanged -= OnAppScreenshotsChanged;
         }
 
         if (newValue != null)
@@ -184,6 +186,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
             newValue.RootItems.CollectionChanged += OnAppRootItemsChanged;
             newValue.SelectedProperties.CollectionChanged += OnAppSelectedPropertiesChanged;
             newValue.FilteredLogs.CollectionChanged += OnAppFilteredLogsChanged;
+            newValue.Screenshots.CollectionChanged += OnAppScreenshotsChanged;
         }
 
         SyncCollectionsFromSelectedApp();
@@ -300,6 +303,32 @@ internal partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
+    private void OnAppScreenshotsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (SelectedApp == null) return;
+
+        if (e.Action == NotifyCollectionChangedAction.Reset)
+        {
+            Screenshots.Clear();
+        }
+        else if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
+        {
+            foreach (var item in e.NewItems)
+            {
+                if (item is ScreenshotItem screenshot)
+                    Screenshots.Add(screenshot);
+            }
+        }
+        else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
+        {
+            foreach (var item in e.OldItems)
+            {
+                if (item is ScreenshotItem screenshot)
+                    Screenshots.Remove(screenshot);
+            }
+        }
+    }
+
     partial void OnLogLevelFilterChanged(LogLevel value)
     {
         if (SelectedApp != null)
@@ -360,6 +389,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
         RootItems.Clear();
         SelectedProperties.Clear();
         FilteredLogs.Clear();
+        Screenshots.Clear();
 
         if (SelectedApp != null)
         {
@@ -383,6 +413,11 @@ internal partial class MainViewModel : ObservableObject, IDisposable
             {
                 if (log != null)
                     FilteredLogs.Add(log);
+            }
+
+            foreach (var screenshot in SelectedApp.Screenshots)
+            {
+                Screenshots.Add(screenshot);
             }
         }
         else
@@ -580,6 +615,34 @@ internal partial class MainViewModel : ObservableObject, IDisposable
                     _logger.LogError(ex, "Error processing performance data from {ClientId}", e.ClientId);
                 }
                 break;
+
+            case "screenshot" when e.Message.Data != null:
+                try
+                {
+                    var json = JsonSerializer.Serialize(e.Message.Data);
+                    var screenshotData = JsonSerializer.Deserialize<ScreenshotDto>(json);
+                    if (screenshotData != null)
+                    {
+                        var imageBytes = Convert.FromBase64String(screenshotData.ImageBase64);
+                        var screenshotItem = new ScreenshotItem
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            ElementId = screenshotData.ElementId,
+                            ImageData = imageBytes,
+                            Width = screenshotData.Width,
+                            Height = screenshotData.Height,
+                            Timestamp = screenshotData.Timestamp
+                        };
+                        app.Screenshots.Add(screenshotItem);
+                        _logger.LogDebug("Screenshot received: {ElementId}, {Width}x{Height}",
+                            screenshotData.ElementId ?? "Full Page", screenshotData.Width, screenshotData.Height);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error processing screenshot from {ClientId}", e.ClientId);
+                }
+                break;
         }
     }
 
@@ -667,6 +730,51 @@ internal partial class MainViewModel : ObservableObject, IDisposable
     public void RefreshProperties()
     {
         UpdateSortedProperties();
+    }
+
+    [RelayCommand]
+    private async Task CapturePageScreenshotAsync()
+    {
+        if (SelectedAppId == null)
+            return;
+
+        await _server.SendToClientAsync(SelectedAppId, new DebugMessage
+        {
+            Type = "capture_screenshot",
+            Data = new { elementId = (string?)null }
+        });
+
+        if (SelectedApp != null)
+        {
+            SelectedApp.StatusText = "Capturing page screenshot...";
+        }
+    }
+
+    [RelayCommand]
+    private async Task CaptureElementScreenshotAsync(string? elementId)
+    {
+        if (SelectedAppId == null || string.IsNullOrEmpty(elementId))
+            return;
+
+        await _server.SendToClientAsync(SelectedAppId, new DebugMessage
+        {
+            Type = "capture_screenshot",
+            Data = new { elementId }
+        });
+
+        if (SelectedApp != null)
+        {
+            SelectedApp.StatusText = $"Capturing screenshot of {elementId}...";
+        }
+    }
+
+    [RelayCommand]
+    private void DeleteScreenshot(ScreenshotItem screenshot)
+    {
+        if (SelectedApp == null)
+            return;
+
+        SelectedApp.Screenshots.Remove(screenshot);
     }
 
     public void CloseApp(string appId)
