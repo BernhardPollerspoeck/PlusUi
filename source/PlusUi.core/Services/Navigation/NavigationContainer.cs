@@ -1,6 +1,22 @@
 ﻿namespace PlusUi.core;
 
 /// <summary>
+/// Event arguments for page change events.
+/// </summary>
+public class PageChangedEventArgs(UiPageElement newPage, UiPageElement? previousPage) : EventArgs
+{
+    /// <summary>
+    /// The page being navigated to (new current page).
+    /// </summary>
+    public UiPageElement NewPage { get; } = newPage;
+
+    /// <summary>
+    /// The page being navigated from (previous current page), or null if this is the initial page.
+    /// </summary>
+    public UiPageElement? PreviousPage { get; } = previousPage;
+}
+
+/// <summary>
 /// Container that manages the navigation stack for page-based navigation.
 /// </summary>
 public class NavigationContainer
@@ -9,6 +25,11 @@ public class NavigationContainer
     private readonly bool _stackEnabled;
     private readonly bool _preservePageState;
     private readonly int _maxStackDepth;
+
+    /// <summary>
+    /// Raised when the current page changes (navigation, go back, pop to root).
+    /// </summary>
+    public event EventHandler<PageChangedEventArgs>? PageChanged;
 
     /// <summary>
     /// Gets the current page being displayed.
@@ -66,6 +87,8 @@ public class NavigationContainer
     {
         ArgumentNullException.ThrowIfNull(page);
 
+        UiPageElement? previousPage = _navigationStack.Count > 0 ? _navigationStack.Peek().Page : null;
+
         if (_stackEnabled)
         {
             // Check max stack depth
@@ -101,6 +124,8 @@ public class NavigationContainer
             }
             _navigationStack.Push(new NavigationStackItem(page, parameter));
         }
+
+        PageChanged?.Invoke(this, new PageChangedEventArgs(page, previousPage));
     }
 
     /// <summary>
@@ -123,7 +148,10 @@ public class NavigationContainer
             currentItem.Page.Dispose();
         }
 
-        return _navigationStack.Peek();
+        var newItem = _navigationStack.Peek();
+        PageChanged?.Invoke(this, new PageChangedEventArgs(newItem.Page, currentItem.Page));
+
+        return newItem;
     }
 
     /// <summary>
@@ -136,6 +164,8 @@ public class NavigationContainer
         {
             return _navigationStack.Peek();
         }
+
+        var previousPage = _navigationStack.Peek().Page;
 
         // Dispose all pages except the root if not preserving state
         if (!_preservePageState)
@@ -159,7 +189,10 @@ public class NavigationContainer
             }
         }
 
-        return _navigationStack.Peek();
+        var newItem = _navigationStack.Peek();
+        PageChanged?.Invoke(this, new PageChangedEventArgs(newItem.Page, previousPage));
+
+        return newItem;
     }
 
     /// <summary>

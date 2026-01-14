@@ -881,8 +881,13 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         Children.Clear();
         _visibleItemElements.Clear();
 
-        var width = DesiredSize?.Width > 0 ? DesiredSize.Value.Width : availableSize.Width;
-        var height = DesiredSize?.Height > 0 ? DesiredSize.Value.Height : availableSize.Height;
+        // Subtract own margin from available size
+        var availableForContent = new Size(
+            Math.Max(0, availableSize.Width - Margin.Horizontal),
+            Math.Max(0, availableSize.Height - Margin.Vertical));
+
+        var width = DesiredSize?.Width > 0 ? DesiredSize.Value.Width : availableForContent.Width;
+        var height = DesiredSize?.Height > 0 ? DesiredSize.Value.Height : availableForContent.Height;
 
         // Get visible nodes and create elements for them
         var visibleNodes = GetVisibleNodes(_scrollOffset, (float)height);

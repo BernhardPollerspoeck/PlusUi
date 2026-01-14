@@ -121,7 +121,9 @@ public partial class VStack : UiLayoutElement
             return MeasureWrapped(availableSize, dontStretch);
         }
 
-        var childAvailableSize = new Size(availableSize.Width, availableSize.Height);
+        var childAvailableSize = new Size(
+            Math.Max(0, availableSize.Width - Margin.Horizontal),
+            Math.Max(0, availableSize.Height - Margin.Vertical));
 
         // First measure all non-stretching children
         foreach (var child in Children.Where(c => c.VerticalAlignment is not VerticalAlignment.Stretch).ToList())
@@ -165,10 +167,14 @@ public partial class VStack : UiLayoutElement
 
     private Size MeasureWrapped(Size availableSize, bool dontStretch)
     {
+        var childAvailableSize = new Size(
+            Math.Max(0, availableSize.Width - Margin.Horizontal),
+            Math.Max(0, availableSize.Height - Margin.Vertical));
+
         // Measure all children first to get their natural sizes
         foreach (var child in Children.ToList())
         {
-            child.Measure(availableSize, true);
+            child.Measure(childAvailableSize, true);
         }
 
         // Calculate columns
@@ -181,7 +187,7 @@ public partial class VStack : UiLayoutElement
             var childHeight = child.ElementSize.Height + child.Margin.Vertical;
             var spacingToAdd = currentColumn.Count > 0 ? Spacing : 0;
 
-            if (currentColumn.Count > 0 && currentColumnHeight + spacingToAdd + childHeight > availableSize.Height)
+            if (currentColumn.Count > 0 && currentColumnHeight + spacingToAdd + childHeight > childAvailableSize.Height)
             {
                 // Start new column
                 columns.Add(currentColumn);

@@ -39,6 +39,19 @@ internal class DebugBridgeClient : IDisposable
         _navigationContainer = navigationContainer;
         _logger = logger;
         _imageExportService = imageExportService;
+
+        _navigationContainer.PageChanged += OnPageChanged;
+    }
+
+    private async void OnPageChanged(object? sender, PageChangedEventArgs e)
+    {
+        if (!_isConnected || _webSocket == null || _webSocket.State != WebSocketState.Open)
+            return;
+
+        _logger?.LogDebug("Page changed from {OldPage} to {NewPage}, sending tree update",
+            e.PreviousPage?.GetType().Name ?? "(none)", e.NewPage.GetType().Name);
+
+        await HandleGetTreeCommandAsync();
     }
 
     /// <summary>
@@ -513,6 +526,7 @@ internal class DebugBridgeClient : IDisposable
 
         _disposed = true;
 
+        _navigationContainer.PageChanged -= OnPageChanged;
         _cancellationTokenSource?.Cancel();
         _cancellationTokenSource?.Dispose();
         _webSocket?.Dispose();

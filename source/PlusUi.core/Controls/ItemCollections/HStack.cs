@@ -120,7 +120,9 @@ public partial class HStack : UiLayoutElement
             return MeasureWrapped(availableSize, dontStretch);
         }
 
-        var childAvailableSize = new Size(availableSize.Width, availableSize.Height);
+        var childAvailableSize = new Size(
+            Math.Max(0, availableSize.Width - Margin.Horizontal),
+            Math.Max(0, availableSize.Height - Margin.Vertical));
 
         // First measure all non-stretching children
         foreach (var child in Children.Where(c => c.HorizontalAlignment is not HorizontalAlignment.Stretch).ToList())
@@ -153,10 +155,14 @@ public partial class HStack : UiLayoutElement
 
     private Size MeasureWrapped(Size availableSize, bool dontStretch)
     {
+        var childAvailableSize = new Size(
+            Math.Max(0, availableSize.Width - Margin.Horizontal),
+            Math.Max(0, availableSize.Height - Margin.Vertical));
+
         // Measure all children first to get their natural sizes
         foreach (var child in Children.ToList())
         {
-            child.Measure(availableSize, true);
+            child.Measure(childAvailableSize, true);
         }
 
         // Calculate rows
@@ -169,7 +175,7 @@ public partial class HStack : UiLayoutElement
             var childWidth = child.ElementSize.Width + child.Margin.Horizontal;
             var spacingToAdd = currentRow.Count > 0 ? Spacing : 0;
 
-            if (currentRow.Count > 0 && currentRowWidth + spacingToAdd + childWidth > availableSize.Width)
+            if (currentRow.Count > 0 && currentRowWidth + spacingToAdd + childWidth > childAvailableSize.Width)
             {
                 // Start new row
                 rows.Add(currentRow);

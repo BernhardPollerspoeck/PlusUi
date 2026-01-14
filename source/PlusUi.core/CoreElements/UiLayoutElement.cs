@@ -10,6 +10,7 @@ public abstract class UiLayoutElement<T> : UiLayoutElement where T : UiLayoutEle
 {
     public new T AddChild(UiElement child)
     {
+        ArgumentNullException.ThrowIfNull(child);
         child.Parent = this;
         Children.Add(child);
         return (T)this;
@@ -136,6 +137,7 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
 
     public UiElement AddChild(UiElement child)
     {
+        ArgumentNullException.ThrowIfNull(child);
         child.Parent = this;
         Children.Add(child);
         InvalidateMeasure();

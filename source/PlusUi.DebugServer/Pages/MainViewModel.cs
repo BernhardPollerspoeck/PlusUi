@@ -46,6 +46,9 @@ internal partial class MainViewModel : ObservableObject, IDisposable
     private int _rootItemsCount;
 
     [ObservableProperty]
+    private int _screenshotsCount;
+
+    [ObservableProperty]
     private LogLevel _logLevelFilter = LogLevel.Trace;
 
     // Performance metrics (from selected app)
@@ -327,6 +330,8 @@ internal partial class MainViewModel : ObservableObject, IDisposable
                     Screenshots.Remove(screenshot);
             }
         }
+
+        ScreenshotsCount = Screenshots.Count;
     }
 
     partial void OnLogLevelFilterChanged(LogLevel value)
@@ -427,7 +432,8 @@ internal partial class MainViewModel : ObservableObject, IDisposable
         }
 
         RootItemsCount = RootItems.Count;
-        _logger.LogDebug("Updated RootItemsCount to {Count} after sync", RootItemsCount);
+        ScreenshotsCount = Screenshots.Count;
+        _logger.LogDebug("Updated RootItemsCount to {Count}, ScreenshotsCount to {ScreenshotsCount} after sync", RootItemsCount, ScreenshotsCount);
 
         UpdateStatusText();
         UpdatePerformanceFromApp();

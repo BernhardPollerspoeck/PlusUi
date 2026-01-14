@@ -173,9 +173,14 @@ public partial class UniformGrid : UiLayoutElement
             return new Size(0, 0);
         }
 
-        // Use DesiredSize if set, otherwise use availableSize
-        var gridWidth = DesiredSize?.Width > 0 ? DesiredSize.Value.Width : availableSize.Width;
-        var gridHeight = DesiredSize?.Height > 0 ? DesiredSize.Value.Height : availableSize.Height;
+        // Subtract own margin from available size
+        var availableForContent = new Size(
+            Math.Max(0, availableSize.Width - Margin.Horizontal),
+            Math.Max(0, availableSize.Height - Margin.Vertical));
+
+        // Use DesiredSize if set, otherwise use available size (minus margin)
+        var gridWidth = DesiredSize?.Width > 0 ? DesiredSize.Value.Width : availableForContent.Width;
+        var gridHeight = DesiredSize?.Height > 0 ? DesiredSize.Value.Height : availableForContent.Height;
 
         // Calculate cell size based on grid size
         _cellWidth = gridWidth / _calculatedColumns;

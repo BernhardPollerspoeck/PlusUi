@@ -294,8 +294,12 @@ public partial class Grid : UiLayoutElement
 
         // Calculate star sizes - first pass
         // Use available size AFTER accounting for Grid's margin
+        // If available size is very large (e.g., float.MaxValue), star columns get 0 width
+        // They will be recalculated in ArrangeInternal with actual bounds
         var totalFixedWidth = _columns.Where(c => c.Type != Column.Star).Sum(c => c.MeasuredSize);
-        var remainingWidthForStars = Math.Max(0, availableWidthForColumns - totalFixedWidth);
+        var remainingWidthForStars = availableWidthForColumns > 1e6f
+            ? 0
+            : Math.Max(0, availableWidthForColumns - totalFixedWidth);
         var totalStarWeight = _columns.Where(c => c.Type == Column.Star).Sum(c => c.FixedSize ?? 0);
 
         if (totalStarWeight > 0)
@@ -307,7 +311,9 @@ public partial class Grid : UiLayoutElement
         }
 
         var totalFixedHeight = _rows.Where(r => r.Type != Row.Star).Sum(r => r.MeasuredSize);
-        var remainingHeightForStars = Math.Max(0, availableHeightForRows - totalFixedHeight);
+        var remainingHeightForStars = availableHeightForRows > 1e6f
+            ? 0
+            : Math.Max(0, availableHeightForRows - totalFixedHeight);
         var totalStarHeightWeight = _rows.Where(r => r.Type == Row.Star).Sum(r => r.FixedSize ?? 0);
 
         if (totalStarHeightWeight > 0)
@@ -369,6 +375,9 @@ public partial class Grid : UiLayoutElement
         // First call base.ArrangeInternal to get the grid's position with margin applied
         var gridPosition = base.ArrangeInternal(bounds);
 
+        // Recalculate star columns/rows if they were deferred (measured with MaxValue)
+        RecalculateStarSizesIfNeeded(bounds.Width - Margin.Horizontal, bounds.Height - Margin.Vertical);
+
         var columnWidths = _columns.Select(c => c.MeasuredSize).ToArray();
         var rowHeights = _rows.Select(r => r.MeasuredSize).ToArray();
 
@@ -383,6 +392,47 @@ public partial class Grid : UiLayoutElement
             child.Element.Arrange(new Rect(x, y, width, height));
         }
         return gridPosition;
+    }
+
+    private void RecalculateStarSizesIfNeeded(float availableWidth, float availableHeight)
+    {
+        // Recalculate star columns if needed
+        var hasStarColumns = _columns.Any(c => c.Type == Column.Star);
+        var starColumnsNeedRecalc = hasStarColumns && _columns.Where(c => c.Type == Column.Star).All(c => c.MeasuredSize == 0);
+
+        if (starColumnsNeedRecalc && availableWidth > 0)
+        {
+            var totalFixedWidth = _columns.Where(c => c.Type != Column.Star).Sum(c => c.MeasuredSize);
+            var remainingWidth = Math.Max(0, availableWidth - totalFixedWidth);
+            var totalStarWeight = _columns.Where(c => c.Type == Column.Star).Sum(c => c.FixedSize ?? 0);
+
+            if (totalStarWeight > 0)
+            {
+                foreach (var column in _columns.Where(c => c.Type == Column.Star))
+                {
+                    column.MeasuredSize = remainingWidth * (column.FixedSize ?? 0) / totalStarWeight;
+                }
+            }
+        }
+
+        // Recalculate star rows if needed
+        var hasStarRows = _rows.Any(r => r.Type == Row.Star);
+        var starRowsNeedRecalc = hasStarRows && _rows.Where(r => r.Type == Row.Star).All(r => r.MeasuredSize == 0);
+
+        if (starRowsNeedRecalc && availableHeight > 0)
+        {
+            var totalFixedHeight = _rows.Where(r => r.Type != Row.Star).Sum(r => r.MeasuredSize);
+            var remainingHeight = Math.Max(0, availableHeight - totalFixedHeight);
+            var totalStarWeight = _rows.Where(r => r.Type == Row.Star).Sum(r => r.FixedSize ?? 0);
+
+            if (totalStarWeight > 0)
+            {
+                foreach (var row in _rows.Where(r => r.Type == Row.Star))
+                {
+                    row.MeasuredSize = remainingHeight * (row.FixedSize ?? 0) / totalStarWeight;
+                }
+            }
+        }
     }
 
     public override UiElement? HitTest(Point point)

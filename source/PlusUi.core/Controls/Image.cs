@@ -238,6 +238,66 @@ public partial class Image : UiElement
     }
     #endregion
 
+    public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
+    {
+        // Get the current image dimensions
+        var imageWidth = 0f;
+        var imageHeight = 0f;
+
+        if (_svgImageInfo != null)
+        {
+            imageWidth = _svgImageInfo.Width;
+            imageHeight = _svgImageInfo.Height;
+        }
+        else if (_animatedImageInfo != null && _animatedImageInfo.Frames.Length > 0)
+        {
+            imageWidth = _animatedImageInfo.Frames[0].Width;
+            imageHeight = _animatedImageInfo.Frames[0].Height;
+        }
+        else if (_image != null)
+        {
+            imageWidth = _image.Width;
+            imageHeight = _image.Height;
+        }
+
+        if (imageWidth <= 0 || imageHeight <= 0)
+            return new Size(0, 0);
+
+        var imageAspect = imageWidth / imageHeight;
+        var desiredW = DesiredSize?.Width ?? -1;
+        var desiredH = DesiredSize?.Height ?? -1;
+
+        // Both dimensions set - use them
+        if (desiredW > 0 && desiredH > 0)
+            return new Size(desiredW, desiredH);
+
+        // Only height set - calculate width from aspect ratio
+        if (desiredH > 0)
+            return new Size(desiredH * imageAspect, desiredH);
+
+        // Only width set - calculate height from aspect ratio
+        if (desiredW > 0)
+            return new Size(desiredW, desiredW / imageAspect);
+
+        // Stretching vertically (no fixed height) - use available height to calculate width
+        if (VerticalAlignment == VerticalAlignment.Stretch && availableSize.Height < 1e6f)
+            return new Size(availableSize.Height * imageAspect, availableSize.Height);
+
+        // Stretching horizontally (no fixed width) - use available width to calculate height
+        if (HorizontalAlignment == HorizontalAlignment.Stretch && availableSize.Width < 1e6f)
+            return new Size(availableSize.Width, availableSize.Width / imageAspect);
+
+        // Neither set, no stretch - use image size capped to available
+        var width = Math.Min(imageWidth, availableSize.Width);
+        var height = width / imageAspect;
+        if (height > availableSize.Height)
+        {
+            height = availableSize.Height;
+            width = height * imageAspect;
+        }
+        return new Size(width, height);
+    }
+
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);

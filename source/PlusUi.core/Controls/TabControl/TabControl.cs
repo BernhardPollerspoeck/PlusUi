@@ -692,22 +692,27 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
         _tabRects.Clear();
         _measuredTabPosition = TabPosition;
 
+        // Subtract own margin from available size
+        var availableForContent = new Size(
+            Math.Max(0, availableSize.Width - Margin.Horizontal),
+            Math.Max(0, availableSize.Height - Margin.Vertical));
+
         // Calculate header dimensions
         var isHorizontal = TabPosition == TabPosition.Top || TabPosition == TabPosition.Bottom;
 
         if (isHorizontal)
         {
-            MeasureHorizontalTabs(availableSize);
+            MeasureHorizontalTabs(availableForContent);
         }
         else
         {
-            MeasureVerticalTabs(availableSize);
+            MeasureVerticalTabs(availableForContent);
         }
 
         // Measure content - measure all tab contents so they're ready when selected
         var contentAvailable = isHorizontal
-            ? new Size(availableSize.Width, availableSize.Height - _headerHeight)
-            : new Size(availableSize.Width - _headerWidth, availableSize.Height);
+            ? new Size(availableForContent.Width, availableForContent.Height - _headerHeight)
+            : new Size(availableForContent.Width - _headerWidth, availableForContent.Height);
 
         // Use snapshot to avoid collection modified exception during shutdown
         foreach (var tab in _tabs.ToList())
@@ -715,7 +720,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
             tab.Content?.Measure(contentAvailable, dontStretch);
         }
 
-        return new Size(availableSize.Width, availableSize.Height);
+        return new Size(availableForContent.Width, availableForContent.Height);
     }
 
     private void MeasureHorizontalTabs(Size availableSize)

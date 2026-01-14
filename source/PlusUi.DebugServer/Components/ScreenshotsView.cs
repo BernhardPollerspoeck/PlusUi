@@ -29,7 +29,7 @@ internal class ScreenshotsView : UserControl
                         .SetTextSize(16)
                         .SetFontWeight(FontWeight.SemiBold),
                     new Label()
-                        .BindText(() => $"({_viewModel.Screenshots.Count})")
+                        .BindText(() => $"({_viewModel.ScreenshotsCount})")
                         .SetTextColor(Colors.Gray)
                         .SetTextSize(14))
                 .SetSpacing(8)
@@ -48,74 +48,79 @@ internal class ScreenshotsView : UserControl
             .SetBackground(new Color(45, 45, 45))
             .SetCornerRadius(4)
             .SetMargin(new Margin(4))
+            .SetDesiredHeight(116)
+            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
             .AddChild(
-                new HStack(
-                    // Thumbnail placeholder (gray box with size)
-                    new Border()
-                        .SetBackground(new Color(60, 60, 60))
-                        .SetCornerRadius(4)
-                        .SetDesiredWidth(80)
-                        .SetDesiredHeight(60)
-                        .AddChild(
-                            new Label()
-                                .SetText($"{item.Width}x{item.Height}")
+                new Grid()
+                    .AddColumn(Column.Star, 1)
+                    .AddColumn(Column.Star, 1)
+                    .AddColumn(Column.Auto)
+                    .SetMargin(new Margin(8))
+                    .AddChild(
+                        // Thumbnail preview with border - stretches vertically, left aligned
+                        new Border()
+                            .SetStrokeColor(new Color(80, 80, 80))
+                            .SetStrokeThickness(1)
+                            .SetCornerRadius(2)
+                            .SetVerticalAlignment(VerticalAlignment.Stretch)
+                            .SetHorizontalAlignment(HorizontalAlignment.Left)
+                            .AddChild(
+                                new ScreenshotPreview()
+                                    .SetImageData(item.ImageData)
+                                    .SetVerticalAlignment(VerticalAlignment.Stretch)
+                                    .SetHorizontalAlignment(HorizontalAlignment.Left)),
+                        row: 0, column: 0)
+                    .AddChild(
+                        // Info: Name, Size, Timestamp
+                        new VStack()
+                            .AddChild(new Label()
+                                .SetText(item.DisplayName)
+                                .SetTextColor(Colors.White)
+                                .SetTextSize(13)
+                                .SetFontWeight(FontWeight.Medium))
+                            .AddChild(new Label()
+                                .SetText(item.SizeDisplay)
                                 .SetTextColor(Colors.Gray)
-                                .SetTextSize(10)
-                                .SetHorizontalAlignment(HorizontalAlignment.Center)
-                                .SetVerticalAlignment(VerticalAlignment.Center)),
-
-                    // Info
-                    new VStack()
-                        .AddChild(new Label()
-                            .SetText(item.DisplayName)
-                            .SetTextColor(Colors.White)
-                            .SetTextSize(13))
-                        .AddChild(new Label()
-                            .SetText(item.TimestampDisplay)
-                            .SetTextColor(Colors.Gray)
-                            .SetTextSize(11))
-                        .AddChild(new Label()
-                            .SetText(item.SizeDisplay)
-                            .SetTextColor(Colors.Gray)
-                            .SetTextSize(11))
-                        .SetSpacing(2)
-                        .SetVerticalAlignment(VerticalAlignment.Center),
-
-                    // Spacer
-                    new Solid()
-                        .SetHorizontalAlignment(HorizontalAlignment.Stretch),
-
-                    // Action buttons
-                    new HStack(
-                        new Button()
-                            .SetIcon("save.svg")
-                            .SetIconTintColor(Colors.White)
-                            .SetBackground(new Color(60, 60, 60))
-                            .SetCornerRadius(4)
-                            .SetDesiredWidth(32)
-                            .SetDesiredHeight(32)
-                            .SetOnClick(() => SaveScreenshot(item)),
-                        new Button()
-                            .SetIcon("clipboard.svg")
-                            .SetIconTintColor(Colors.White)
-                            .SetBackground(new Color(60, 60, 60))
-                            .SetCornerRadius(4)
-                            .SetDesiredWidth(32)
-                            .SetDesiredHeight(32)
-                            .SetOnClick(() => CopyToClipboard(item)),
-                        new Button()
-                            .SetIcon("trash.svg")
-                            .SetIconTintColor(new Color(255, 100, 100))
-                            .SetBackground(new Color(60, 60, 60))
-                            .SetCornerRadius(4)
-                            .SetDesiredWidth(32)
-                            .SetDesiredHeight(32)
-                            .SetCommand(_viewModel.DeleteScreenshotCommand)
-                            .SetCommandParameter(item))
-                    .SetSpacing(4)
-                    .SetVerticalAlignment(VerticalAlignment.Center))
-                .SetSpacing(12)
-                .SetMargin(new Margin(8)));
+                                .SetTextSize(11))
+                            .AddChild(new Label()
+                                .SetText(item.TimestampDisplay)
+                                .SetTextColor(Colors.Gray)
+                                .SetTextSize(11))
+                            .SetSpacing(2)
+                            .SetVerticalAlignment(VerticalAlignment.Center)
+                            .SetMargin(new Margin(12, 0, 0, 0)),
+                        row: 0, column: 1)
+                    .AddChild(
+                        // Action buttons: Copy, Save, Delete
+                        new HStack()
+                            .AddChild(new Button()
+                                .SetIcon("clipboard.svg")
+                                .SetIconTintColor(Colors.White)
+                                .SetBackground(new Color(60, 60, 60))
+                                .SetCornerRadius(4)
+                                .SetDesiredWidth(32)
+                                .SetDesiredHeight(32)
+                                .SetOnClick(() => CopyToClipboard(item)))
+                            .AddChild(new Button()
+                                .SetIcon("save.svg")
+                                .SetIconTintColor(Colors.White)
+                                .SetBackground(new Color(60, 60, 60))
+                                .SetCornerRadius(4)
+                                .SetDesiredWidth(32)
+                                .SetDesiredHeight(32)
+                                .SetOnClick(() => SaveScreenshot(item)))
+                            .AddChild(new Button()
+                                .SetIcon("trash.svg")
+                                .SetIconTintColor(new Color(255, 100, 100))
+                                .SetBackground(new Color(60, 60, 60))
+                                .SetCornerRadius(4)
+                                .SetDesiredWidth(32)
+                                .SetDesiredHeight(32)
+                                .SetCommand(_viewModel.DeleteScreenshotCommand)
+                                .SetCommandParameter(item))
+                            .SetSpacing(4)
+                            .SetVerticalAlignment(VerticalAlignment.Center),
+                        row: 0, column: 2));
     }
 
     private void SaveScreenshot(ScreenshotItem item)

@@ -1096,11 +1096,17 @@ public abstract class UiElement : IDisposable
     {
         if (NeedsMeasure || dontStretch)
         {
+            // Don't stretch to infinity - if availableSize is very large, use measured size instead
+            var canStretchWidth = !dontStretch && HorizontalAlignment == HorizontalAlignment.Stretch && availableSize.Width < 1e6f;
+            var canStretchHeight = !dontStretch && VerticalAlignment == VerticalAlignment.Stretch && availableSize.Height < 1e6f;
+
             // Constrain available size by DesiredSize before measuring children
             // This ensures children know the actual available space for wrapping
+            // Note: Add Margin because MeasureInternal expects availableSize to include margin space,
+            // but DesiredSize is content size (without margin)
             var constrainedAvailable = new Size(
-                DesiredSize?.Width >= 0 ? Math.Min(DesiredSize.Value.Width, availableSize.Width) : availableSize.Width,
-                DesiredSize?.Height >= 0 ? Math.Min(DesiredSize.Value.Height, availableSize.Height) : availableSize.Height
+                DesiredSize?.Width >= 0 ? Math.Min(DesiredSize.Value.Width + Margin.Horizontal, availableSize.Width) : availableSize.Width,
+                DesiredSize?.Height >= 0 ? Math.Min(DesiredSize.Value.Height + Margin.Vertical, availableSize.Height) : availableSize.Height
             );
 
             var measuredSize = MeasureInternal(constrainedAvailable, dontStretch);
@@ -1108,14 +1114,14 @@ public abstract class UiElement : IDisposable
             // For width: Use DesiredSize if set, or stretch to available width if alignment is Stretch, otherwise use measured width
             var desiredWidth = DesiredSize?.Width >= 0
                 ? Math.Min(DesiredSize.Value.Width, availableSize.Width)
-                : !dontStretch && HorizontalAlignment == HorizontalAlignment.Stretch
+                : canStretchWidth
                     ? availableSize.Width - Margin.Horizontal
                     : Math.Min(measuredSize.Width, availableSize.Width);
 
             // For height: Use DesiredSize if set, or stretch to available height if alignment is Stretch, otherwise use measured height
             var desiredHeight = DesiredSize?.Height >= 0
                 ? Math.Min(DesiredSize.Value.Height, availableSize.Height)
-                : !dontStretch && VerticalAlignment == VerticalAlignment.Stretch
+                : canStretchHeight
                     ? availableSize.Height - Margin.Vertical
                     : Math.Min(measuredSize.Height, availableSize.Height);
 

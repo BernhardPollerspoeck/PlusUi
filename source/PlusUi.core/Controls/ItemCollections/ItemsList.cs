@@ -358,7 +358,8 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         {
             if (!_realizedItems.ContainsKey(i))
             {
-                var item = _itemTemplate(items[i], i);
+                var item = _itemTemplate(items[i], i)
+                    ?? throw new InvalidOperationException($"ItemTemplate returned null for index {i}");
                 item.Parent = this;
 
                 // Measure the item to get its actual size
@@ -372,16 +373,23 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             }
         }
 
-        // Remove items outside visible range
-        var keysToRemove = _realizedItems.Keys.Where(k => k < newFirstVisible || k > newLastVisible).ToList();
-        foreach (var key in keysToRemove)
+        // Remove items outside visible range - snapshot keys first to avoid enumeration issues
+        var allKeys = _realizedItems.Keys.ToArray();
+        foreach (var key in allKeys)
         {
-            _realizedItems.Remove(key);
+            if (key < newFirstVisible || key > newLastVisible)
+                _realizedItems.Remove(key);
         }
 
-        // Update children list
+        // Update children list - snapshot to array for stable enumeration
         Children.Clear();
-        Children.AddRange(_realizedItems.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).Where(v => v != null)!);
+        var sortedItems = _realizedItems.ToArray();
+        Array.Sort(sortedItems, (a, b) => a.Key.CompareTo(b.Key));
+        foreach (var kvp in sortedItems)
+        {
+            if (kvp.Value != null)
+                Children.Add(kvp.Value);
+        }
 
         _firstVisibleIndex = newFirstVisible;
         _lastVisibleIndex = newLastVisible;
@@ -426,9 +434,13 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             return new Size(0, 0);
         }
 
+        var childAvailableSize = new Size(
+            Math.Max(0, availableSize.Width - Margin.Horizontal),
+            Math.Max(0, availableSize.Height - Margin.Vertical));
+
         // Measure first item to get typical size
         var firstItem = _itemTemplate(items[0], 0);
-        firstItem.Measure(availableSize, true);
+        firstItem.Measure(childAvailableSize, true);
         _estimatedItemSize = Orientation == Orientation.Vertical
             ? firstItem.ElementSize.Height + firstItem.Margin.Top + firstItem.Margin.Bottom
             : firstItem.ElementSize.Width + firstItem.Margin.Left + firstItem.Margin.Right;
@@ -444,7 +456,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             float maxWidth = 0;
             foreach (var child in Children.ToArray())
             {
-                child.Measure(availableSize, dontStretch);
+                child.Measure(childAvailableSize, dontStretch);
                 maxWidth = Math.Max(maxWidth, child.ElementSize.Width + child.Margin.Left + child.Margin.Right);
             }
 
@@ -456,7 +468,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             float maxHeight = 0;
             foreach (var child in Children.ToArray())
             {
-                child.Measure(availableSize, dontStretch);
+                child.Measure(childAvailableSize, dontStretch);
                 maxHeight = Math.Max(maxHeight, child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom);
             }
 
