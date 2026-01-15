@@ -1096,29 +1096,34 @@ public abstract class UiElement : IDisposable
     {
         if (NeedsMeasure || dontStretch)
         {
-            var canStretchWidth = !dontStretch && HorizontalAlignment == HorizontalAlignment.Stretch && availableSize.Width < 1e6f;
-            var canStretchHeight = !dontStretch && VerticalAlignment == VerticalAlignment.Stretch && availableSize.Height < 1e6f;
+            // Don't stretch to infinite/MaxValue sizes
+            var canStretchWidth = !dontStretch && HorizontalAlignment == HorizontalAlignment.Stretch && availableSize.Width < float.MaxValue;
+            var canStretchHeight = !dontStretch && VerticalAlignment == VerticalAlignment.Stretch && availableSize.Height < float.MaxValue;
 
             var constrainedAvailable = new Size(
-                DesiredSize?.Width >= 0 ? Math.Min(DesiredSize.Value.Width + Margin.Horizontal, availableSize.Width) : availableSize.Width,
-                DesiredSize?.Height >= 0 ? Math.Min(DesiredSize.Value.Height + Margin.Vertical, availableSize.Height) : availableSize.Height
+                DesiredSize?.Width >= 0 ? Math.Min(DesiredSize.Value.Width, availableSize.Width) : availableSize.Width,
+                DesiredSize?.Height >= 0 ? Math.Min(DesiredSize.Value.Height, availableSize.Height) : availableSize.Height
             );
 
             var measuredSize = MeasureInternal(constrainedAvailable, dontStretch);
 
-            // For width: Use DesiredSize if set, or stretch to available width if alignment is Stretch, otherwise use measured width
+            // Calculate max size accounting for margin (element can't be larger than available space minus margin)
+            var maxWidth = Math.Max(0, availableSize.Width - Margin.Horizontal);
+            var maxHeight = Math.Max(0, availableSize.Height - Margin.Vertical);
+
+            // For width: Use DesiredSize if set, or stretch to max width if alignment is Stretch, otherwise use measured width
             var desiredWidth = DesiredSize?.Width >= 0
                 ? Math.Min(DesiredSize.Value.Width, availableSize.Width)
                 : canStretchWidth
-                    ? availableSize.Width - Margin.Horizontal
-                    : Math.Min(measuredSize.Width, availableSize.Width);
+                    ? maxWidth
+                    : Math.Min(measuredSize.Width, maxWidth);
 
-            // For height: Use DesiredSize if set, or stretch to available height if alignment is Stretch, otherwise use measured height
+            // For height: Use DesiredSize if set, or stretch to max height if alignment is Stretch, otherwise use measured height
             var desiredHeight = DesiredSize?.Height >= 0
                 ? Math.Min(DesiredSize.Value.Height, availableSize.Height)
                 : canStretchHeight
-                    ? availableSize.Height - Margin.Vertical
-                    : Math.Min(measuredSize.Height, availableSize.Height);
+                    ? maxHeight
+                    : Math.Min(measuredSize.Height, maxHeight);
 
             // Enforce minimum touch target size for accessibility
             if (EnforceMinimumTouchTarget)

@@ -234,4 +234,90 @@ public class ButtonTests
         //Assert - When IconPosition is None, icon should not be included in the width
         Assert.AreEqual(buttonTextOnly.ElementSize.Width, buttonWithIconNone.ElementSize.Width, 0.1);
     }
+
+    [TestMethod]
+    public void TestButton_WithLargeAvailableSize_HasNonZeroHeight()
+    {
+        // Arrange - Button with large available size (like in popup)
+        var button = new Button()
+            .SetText("Save Changes")
+            .SetPadding(new Margin(20, 10));
+
+        // Act - Measure with very large size (simulates popup scenario)
+        button.Measure(new Size(1920, 1080), dontStretch: true);
+
+        // Assert - Button should have non-zero height
+        Assert.IsTrue(button.ElementSize.Height > 0, $"Button height should be > 0, but was {button.ElementSize.Height}");
+        Assert.IsTrue(button.ElementSize.Width > 0, $"Button width should be > 0, but was {button.ElementSize.Width}");
+    }
+
+    [TestMethod]
+    public void TestButton_InHStackWithLargeAvailableSize_HasNonZeroHeight()
+    {
+        // Arrange - Exact popup scenario
+        var button = new Button()
+            .SetText("Save Changes")
+            .SetPadding(new Margin(20, 10));
+
+        var hstack = new HStack(button)
+            .SetMargin(new Margin(24, 12, 24, 24));
+
+        // Act - Measure with large size and dontStretch=true (like popup)
+        hstack.Measure(new Size(1920, 1080), dontStretch: true);
+
+        // Assert - Button should have non-zero height
+        Assert.IsTrue(button.ElementSize.Height > 0, $"Button height should be > 0, but was {button.ElementSize.Height}. HStack height: {hstack.ElementSize.Height}");
+    }
+
+    [TestMethod]
+    public void TestButton_InPopupLikeStructure_HasNonZeroHeight()
+    {
+        // Arrange - Full popup structure
+        var saveButton = new Button()
+            .SetText("Save Changes")
+            .SetPadding(new Margin(20, 10));
+
+        var cancelButton = new Button()
+            .SetText("Cancel")
+            .SetPadding(new Margin(20, 10))
+            .SetMargin(new Margin(0, 0, 12, 0));
+
+        var buttonRow = new HStack(cancelButton, saveButton)
+            .SetMargin(new Margin(24, 12, 24, 24))
+            .SetHorizontalAlignment(HorizontalAlignment.Right);
+
+        var dataGridPlaceholder = new Border()
+            .SetDesiredHeight(250)
+            .SetMargin(new Margin(24, 0, 24, 12));
+
+        var headerLabel = new Label()
+            .SetText("Edit Property")
+            .SetMargin(new Margin(24, 24, 24, 12));
+
+        var outerVStack = new VStack(headerLabel, dataGridPlaceholder, buttonRow)
+            .SetDesiredWidth(340)
+            .SetMargin(new Margin(40));
+
+        // Grid centered like UiPopupElement does
+        var grid = new Grid()
+            .AddChild(outerVStack, 0, 0, 1, 1)
+            .SetHorizontalAlignment(HorizontalAlignment.Center)
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        // Act - popup uses dontStretch=true
+        grid.Measure(new Size(1920, 1080), dontStretch: true);
+        grid.Arrange(new Rect(0, 0, 1920, 1080));
+
+        // Debug info
+        var debugInfo = $"Grid: {grid.ElementSize.Width}x{grid.ElementSize.Height}, " +
+                        $"VStack: {outerVStack.ElementSize.Width}x{outerVStack.ElementSize.Height}, " +
+                        $"HStack: {buttonRow.ElementSize.Width}x{buttonRow.ElementSize.Height}, " +
+                        $"SaveBtn: {saveButton.ElementSize.Width}x{saveButton.ElementSize.Height}, " +
+                        $"CancelBtn: {cancelButton.ElementSize.Width}x{cancelButton.ElementSize.Height}";
+
+        // Assert - All buttons should have non-zero height
+        Assert.IsTrue(saveButton.ElementSize.Height > 0, $"Save button height = 0. {debugInfo}");
+        Assert.IsTrue(cancelButton.ElementSize.Height > 0, $"Cancel button height = 0. {debugInfo}");
+        Assert.IsTrue(buttonRow.ElementSize.Height > 0, $"ButtonRow height = 0. {debugInfo}");
+    }
 }

@@ -352,9 +352,8 @@ public partial class Grid : UiLayoutElement
                 }
             }
 
-            // Adjust available size by the child's margin
-            availableWidth -= child.Element.Margin.Left + child.Element.Margin.Right;
-            availableHeight -= child.Element.Margin.Top + child.Element.Margin.Bottom;
+            // Don't subtract child margin here - MeasureInternal handles its own margin
+            // This prevents double margin subtraction for containers like VStack/HStack
 
             // Ensure we don't pass negative sizes to children
             availableWidth = Math.Max(0, availableWidth);

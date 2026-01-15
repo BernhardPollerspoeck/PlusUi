@@ -221,11 +221,14 @@ public partial class Border : UiLayoutElement
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        // Available space for child = availableSize - Margin - StrokeThickness
-        // StrokeThickness is INSIDE the border (reduces content area)
+        // When DesiredSize is set, it represents the element size (margin is outside)
+        // When no DesiredSize, we need to account for margin in available space
+        var marginW = DesiredSize?.Width >= 0 ? 0 : Margin.Horizontal;
+        var marginH = DesiredSize?.Height >= 0 ? 0 : Margin.Vertical;
+
         var availableChildSize = new Size(
-            Math.Max(0, availableSize.Width - Margin.Horizontal - StrokeThickness * 2),
-            Math.Max(0, availableSize.Height - Margin.Vertical - StrokeThickness * 2));
+            Math.Max(0, availableSize.Width - marginW - StrokeThickness * 2),
+            Math.Max(0, availableSize.Height - marginH - StrokeThickness * 2));
 
         Size childSize = Size.Empty;
 
