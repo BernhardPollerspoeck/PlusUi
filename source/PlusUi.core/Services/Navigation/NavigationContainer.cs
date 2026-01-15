@@ -125,7 +125,11 @@ public class NavigationContainer
             _navigationStack.Push(new NavigationStackItem(page, parameter));
         }
 
-        PageChanged?.Invoke(this, new PageChangedEventArgs(page, previousPage));
+    }
+
+    internal void RaisePageChangedForPush(UiPageElement newPage, UiPageElement? previousPage)
+    {
+        PageChanged?.Invoke(this, new PageChangedEventArgs(newPage, previousPage));
     }
 
     /// <summary>

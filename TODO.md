@@ -11,10 +11,10 @@ TODO
 | 3 | DebugServer: Change Tracking | 0 | 6 | ⬜⬜⬜⬜⬜⬜ 0% | ~2 days |
 | 4 | DebugServer: Logging | 4 | 4 | 🟩🟩🟩🟩 100% | ✅ Done |
 | 5 | DebugServer: Performance | 6 | 6 | 🟩🟩🟩🟩🟩🟩 100% | ✅ Done |
-| 6 | DebugServer: Screenshot | 3 | 6 | 🟩🟩🟩⬜⬜⬜ 50% | ~4 hrs |
+| 6 | DebugServer: Screenshot | 6 | 6 | 🟩🟩🟩🟩🟩🟩 100% | ✅ Done |
 | 7 | DebugServer: Logging Cleanup | 3 | 3 | 🟩🟩🟩 100% | ✅ Done |
-| 8 | DebugServer: Layout Vis | 1 | 2 | 🟩⬜ 50% | ~2 hrs |
-| **Total** | | **36** | **55** | **65%** | **~4.5 weeks** |
+| 8 | DebugServer: Layout Vis | 2 | 2 | 🟩🟩 100% | ✅ Done |
+| **Total** | | **40** | **55** | **73%** | **~4 weeks** |
 
 ---
 
@@ -58,6 +58,7 @@ TODO
 - [ ] [ ] 0.5.3 7️⃣ Rework Sandbox to full control library showcase (TabView with tabs on the left, all controls displayed)
 
 **Controls:**
+- [ ] [ ] Page
 - [ ] [ ] ActivityIndicator
 - [ ] [ ] Border
 - [ ] [ ] Button
@@ -120,20 +121,8 @@ TODO
 
 ### ✅ 5. DebugServer Performance Monitor
 
-## Medium Priority
-
-### 6. DebugServer Screenshot
-- [x] [ ] 6.1 4️⃣ Capture current UI state as image
-- [x] [ ] 6.2 3️⃣ Save to file or clipboard
-- [x] [ ] 6.3 4️⃣ Capture specific element or full page
-- [ ] [ ] 6.4 3️⃣ Fix Screenshots Tab UI layout (broken/ugly)
-- [ ] [ ] 6.5 2️⃣ Fix screenshot count not updating in header
-- [ ] [ ] 6.6 3️⃣ Fix second screenshot not visible (list/scroll issue)
+### ✅ 6. DebugServer Screenshot
 
 ### ✅ 7. DebugServer Logging Cleanup
 
-## Low Priority / Future
-
-### 8. DebugServer Layout Visualization
-- [ ] [ ] 8.1 4️⃣ Wireframe overlay showing element bounds (server-side feature to toggle debug visualization remotely)
-- [x] [x] 8.2 Margin/padding visualization (PlusUi.core - implemented with IsDebug property)
+### ✅ 8. DebugServer Layout Visualization

@@ -263,10 +263,10 @@ public class PlusUiNavigationService(
                 page.ViewModel.PropertyChanged += OnViewModelPropertyChanged;
             }
 
-            // Build and show the page
             page.BuildPage();
 
-            // Start transition if configured and not init call
+            _navigationContainer.RaisePageChangedForPush(page, outgoingPage);
+
             if (!isInitCall && outgoingPage != null && _transitionService != null)
             {
                 var transition = GetTransitionForPage(page);
