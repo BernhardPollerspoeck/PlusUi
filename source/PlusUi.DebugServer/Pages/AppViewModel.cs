@@ -58,6 +58,13 @@ internal partial class AppViewModel : ObservableObject, IDisposable
     public ObservableCollection<LogMessageDto> FilteredLogs { get; } = [];
     public ObservableCollection<ScreenshotItem> Screenshots { get; } = [];
 
+    public event EventHandler? TreeRefreshRequested;
+
+    public void RequestTreeRefresh()
+    {
+        TreeRefreshRequested?.Invoke(this, EventArgs.Empty);
+    }
+
     partial void OnSelectedNodeChanged(TreeNodeDto? value)
     {
         SelectedProperties.Clear();

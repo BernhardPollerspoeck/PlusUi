@@ -101,6 +101,8 @@ internal partial class MainViewModel : ObservableObject, IDisposable
     public PinnedPropertiesService PinnedPropertiesService => _pinnedPropertiesService;
     public string CurrentElementType => SelectedNode?.Type ?? "";
 
+    public event EventHandler? TreeRefreshRequested;
+
     /// <summary>
     /// Properties sorted with pinned items first, then alphabetically.
     /// </summary>
@@ -180,6 +182,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
             oldValue.SelectedProperties.CollectionChanged -= OnAppSelectedPropertiesChanged;
             oldValue.FilteredLogs.CollectionChanged -= OnAppFilteredLogsChanged;
             oldValue.Screenshots.CollectionChanged -= OnAppScreenshotsChanged;
+            oldValue.TreeRefreshRequested -= OnAppTreeRefreshRequested;
         }
 
         if (newValue != null)
@@ -191,9 +194,15 @@ internal partial class MainViewModel : ObservableObject, IDisposable
             newValue.SelectedProperties.CollectionChanged += OnAppSelectedPropertiesChanged;
             newValue.FilteredLogs.CollectionChanged += OnAppFilteredLogsChanged;
             newValue.Screenshots.CollectionChanged += OnAppScreenshotsChanged;
+            newValue.TreeRefreshRequested += OnAppTreeRefreshRequested;
         }
 
         SyncCollectionsFromSelectedApp();
+    }
+
+    private void OnAppTreeRefreshRequested(object? sender, EventArgs e)
+    {
+        TreeRefreshRequested?.Invoke(this, EventArgs.Empty);
     }
 
     partial void OnSelectedNodeChanged(TreeNodeDto? value)
@@ -547,11 +556,19 @@ internal partial class MainViewModel : ObservableObject, IDisposable
                     {
                         var nodeCount = CountNodes(tree);
 
-                        app.RootItems.Clear();
-                        app.RootItems.Add(tree);
+                        // Incremental update instead of full reload
+                        if (app.RootItems.Count > 0)
+                        {
+                            app.RootItems[0].MergeFrom(tree);
+                            app.RequestTreeRefresh();
+                        }
+                        else
+                        {
+                            app.RootItems.Add(tree);
+                        }
 
                         app.SelectedNode = null;
-                        app.StatusText = $"Tree received - {nodeCount} elements";
+                        app.StatusText = $"Tree updated - {nodeCount} elements";
                         app.TreeReceived = true;
                         app.RetryTimer?.Dispose();
                         app.RetryTimer = null;

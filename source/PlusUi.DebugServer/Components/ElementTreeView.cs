@@ -11,14 +11,22 @@ namespace PlusUi.DebugServer.Components;
 internal class ElementTreeView : UserControl
 {
     private readonly MainViewModel _viewModel;
+    private TreeView? _treeView;
 
     public ElementTreeView(MainViewModel viewModel)
     {
         _viewModel = viewModel;
+        _viewModel.TreeRefreshRequested += OnTreeRefreshRequested;
+    }
+
+    private void OnTreeRefreshRequested(object? sender, EventArgs e)
+    {
+        _treeView?.Refresh();
     }
 
     protected override UiElement Build()
     {
+        _treeView = CreateTreeView();
         return new VStack()
             .AddChild(
                 // Capture Page Button at top
@@ -35,7 +43,7 @@ internal class ElementTreeView : UserControl
                         .SetCommand(_viewModel.CapturePageScreenshotCommand))
                 .SetMargin(new Margin(8))
                 .SetHorizontalAlignment(HorizontalAlignment.Left))
-            .AddChild(CreateTreeView());
+            .AddChild(_treeView);
     }
 
     private TreeView CreateTreeView()

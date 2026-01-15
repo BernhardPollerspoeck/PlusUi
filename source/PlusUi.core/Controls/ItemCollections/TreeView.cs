@@ -527,6 +527,16 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         }
     }
 
+    /// <summary>
+    /// Refreshes the tree view after data has been updated in place (e.g., via MergeFrom).
+    /// Preserves expansion state automatically.
+    /// </summary>
+    public void Refresh()
+    {
+        BuildNodes();
+        InvalidateMeasure();
+    }
+
     public void BuildNodes()
     {
         var isFirstBuild = _rootNodes.Count == 0;

@@ -6,7 +6,7 @@ TODO
 |---------|-------------|------|-------|----------|-----------|
 | 0 | Random stuff | 8 | 11 | 🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 73% | ~3 weeks |
 | 0.5 | App Default Style | 0 | 3 | ⬜⬜⬜ 0% | ~2 days |
-| 1 | DebugServer: Tree | 6 | 9 | 🟩🟩🟩🟩🟩🟩⬜⬜⬜ 67% | ~1.5 days |
+| 1 | DebugServer: Tree | 8 | 9 | 🟩🟩🟩🟩🟩🟩🟩🟩⬜ 89% | ~0.5 days |
 | 2 | DebugServer: Property Grid | 5 | 5 | 🟩🟩🟩🟩🟩 100% | ✅ Done |
 | 3 | DebugServer: Change Tracking | 0 | 6 | ⬜⬜⬜⬜⬜⬜ 0% | ~2 days |
 | 4 | DebugServer: Logging | 4 | 4 | 🟩🟩🟩🟩 100% | ✅ Done |
@@ -14,7 +14,7 @@ TODO
 | 6 | DebugServer: Screenshot | 6 | 6 | 🟩🟩🟩🟩🟩🟩 100% | ✅ Done |
 | 7 | DebugServer: Logging Cleanup | 3 | 3 | 🟩🟩🟩 100% | ✅ Done |
 | 8 | DebugServer: Layout Vis | 2 | 2 | 🟩🟩 100% | ✅ Done |
-| **Total** | | **40** | **55** | **73%** | **~4 weeks** |
+| **Total** | | **42** | **55** | **76%** | **~4 weeks** |
 
 ---
 
@@ -97,9 +97,9 @@ TODO
 - [ ] [ ] UiPopupElement (base class)
 
 ### 1. DebugServer Tree Improvements
-- [ ] [ ] 1.1 6️⃣ Update tree incrementally instead of full reload (including better navigation handling when pages change)
+- [x] [x] 1.1 6️⃣ Update tree incrementally instead of full reload (including better navigation handling when pages change)
 - [x] [x] 1.2 Add page prefix to element IDs for uniqueness (e.g., `MainPage.Button_123`)
-- [ ] [ ] 1.3 4️⃣ Maintain expansion state during updates
+- [x] [x] 1.3 4️⃣ Maintain expansion state during updates
 - [x] [x] 1.4 Auto-expand first 2-3 levels on tree load
 - [x] [x] 1.5 Fix TreeView scrolling - can scroll too far down until all content is off-screen
 - [ ] [ ] 1.6 4️⃣ Fix TreeView rendering bug - text disappears when scrolling in adjacent TreeView (clipping issue)
