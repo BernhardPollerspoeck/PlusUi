@@ -41,6 +41,7 @@ internal partial class MainViewModel : ObservableObject, IDisposable
     public ObservableCollection<PropertyDto> SelectedProperties { get; } = [];
     public ObservableCollection<LogMessageDto> FilteredLogs { get; } = [];
     public ObservableCollection<ScreenshotItem> Screenshots { get; } = [];
+    public HashSet<string> ExpandedTreeIds { get; } = [];
 
     [ObservableProperty]
     private int _rootItemsCount;

@@ -168,7 +168,8 @@ internal class PropertyEditorPopup(PropertyEditorPopupViewModel vm) : UiPopupEle
                 .SetBackground(new Color(45, 45, 45))
                 .SetCornerRadius(6)
                 .SetMargin(new Margin(24, 0, 24, 12))
-                .SetDesiredHeight(250),
+                .SetDesiredHeight(200)
+                .SetVerticalAlignment(VerticalAlignment.Top),
 
             // Buttons
             new HStack(

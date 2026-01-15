@@ -1096,14 +1096,9 @@ public abstract class UiElement : IDisposable
     {
         if (NeedsMeasure || dontStretch)
         {
-            // Don't stretch to infinity - if availableSize is very large, use measured size instead
             var canStretchWidth = !dontStretch && HorizontalAlignment == HorizontalAlignment.Stretch && availableSize.Width < 1e6f;
             var canStretchHeight = !dontStretch && VerticalAlignment == VerticalAlignment.Stretch && availableSize.Height < 1e6f;
 
-            // Constrain available size by DesiredSize before measuring children
-            // This ensures children know the actual available space for wrapping
-            // Note: Add Margin because MeasureInternal expects availableSize to include margin space,
-            // but DesiredSize is content size (without margin)
             var constrainedAvailable = new Size(
                 DesiredSize?.Width >= 0 ? Math.Min(DesiredSize.Value.Width + Margin.Horizontal, availableSize.Width) : availableSize.Width,
                 DesiredSize?.Height >= 0 ? Math.Min(DesiredSize.Value.Height + Margin.Vertical, availableSize.Height) : availableSize.Height

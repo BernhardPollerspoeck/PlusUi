@@ -29,4 +29,30 @@ internal class TreeNodeDto
     /// Child elements.
     /// </summary>
     public List<TreeNodeDto> Children { get; set; } = [];
+
+    public void MergeFrom(TreeNodeDto source)
+    {
+        Type = source.Type;
+        IsVisible = source.IsVisible;
+        Properties = source.Properties;
+
+        var existingById = Children.ToDictionary(c => c.Id);
+        var newChildren = new List<TreeNodeDto>();
+
+        foreach (var sourceChild in source.Children)
+        {
+            if (existingById.TryGetValue(sourceChild.Id, out var existing))
+            {
+                existing.MergeFrom(sourceChild);
+                newChildren.Add(existing);
+                existingById.Remove(sourceChild.Id);
+            }
+            else
+            {
+                newChildren.Add(sourceChild);
+            }
+        }
+
+        Children = newChildren;
+    }
 }

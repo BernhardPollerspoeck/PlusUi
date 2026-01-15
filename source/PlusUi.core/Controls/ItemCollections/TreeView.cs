@@ -105,6 +105,80 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
 
     #endregion
 
+    #region ExpandedKeys
+
+    private HashSet<string>? _expandedKeys;
+    private Func<object, string>? _keySelector;
+
+    public TreeView SetExpandedKeys<T>(HashSet<string> expandedKeys, Func<T, string> keySelector)
+    {
+        _expandedKeys = expandedKeys;
+        _keySelector = item => item is T typed ? keySelector(typed) : item.GetHashCode().ToString();
+        return this;
+    }
+
+    private void SyncExpandedKeysToSet()
+    {
+        if (_expandedKeys == null || _keySelector == null) return;
+        _expandedKeys.Clear();
+        CollectExpandedKeysRecursive(_rootNodes);
+    }
+
+    private void CollectExpandedKeysRecursive(IEnumerable<TreeViewNode> nodes)
+    {
+        foreach (var node in nodes)
+        {
+            if (node.IsExpanded)
+            {
+                _expandedKeys!.Add(_keySelector!(node.Item));
+                if (node.Children != null)
+                    CollectExpandedKeysRecursive(node.Children);
+            }
+        }
+    }
+
+    private void RestoreExpandedKeysFromSet()
+    {
+        if (_expandedKeys == null || _keySelector == null || _expandedKeys.Count == 0) return;
+        RestoreExpandedKeysRecursive(_rootNodes);
+    }
+
+    private void RestoreExpandedKeysRecursive(IEnumerable<TreeViewNode> nodes)
+    {
+        foreach (var node in nodes)
+        {
+            var key = _keySelector!(node.Item);
+            if (_expandedKeys!.Contains(key) && node.HasChildren)
+            {
+                if (node.Children == null)
+                {
+                    var selector = _childrenSelectors.GetValueOrDefault(node.Item.GetType());
+                    if (selector != null)
+                    {
+                        var childItems = selector(node.Item);
+                        node.Children = [];
+                        foreach (var childItem in childItems)
+                        {
+                            var childNode = new TreeViewNode(childItem, node.Depth + 1, node);
+                            childNode.HasChildren = HasChildrenFor(childItem);
+                            childNode.UpdateExpandedHeight(_itemHeight);
+                            node.Children.Add(childNode);
+                            _nodesByItem[childItem] = childNode;
+                        }
+                    }
+                }
+
+                node.IsExpanded = true;
+                node.UpdateExpandedHeight(_itemHeight);
+
+                if (node.Children != null)
+                    RestoreExpandedKeysRecursive(node.Children);
+            }
+        }
+    }
+
+    #endregion
+
     #region SelectedItem
 
     private object? _selectedItem;
@@ -453,11 +527,13 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         }
     }
 
-    /// <summary>
-    /// Builds the node structure from the current ItemsSource.
-    /// </summary>
     public void BuildNodes()
     {
+        var isFirstBuild = _rootNodes.Count == 0;
+
+        if (_expandedKeys != null && !isFirstBuild)
+            SyncExpandedKeysToSet();
+
         _rootNodes.Clear();
         _nodesByItem.Clear();
 
@@ -473,7 +549,11 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
             _nodesByItem[item] = node;
         }
 
-        if (_autoExpandInitialLevels)
+        if (_expandedKeys != null && _expandedKeys.Count > 0)
+        {
+            RestoreExpandedKeysFromSet();
+        }
+        else if (_autoExpandInitialLevels && isFirstBuild)
         {
             PerformAutoExpandInitialLevels();
         }
@@ -595,13 +675,12 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
         }
 
         node.IsExpanded = true;
+        if (_expandedKeys != null && _keySelector != null)
+            _expandedKeys.Add(_keySelector(item));
         node.UpdateExpandedHeight(_itemHeight);
         InvalidateMeasure();
     }
 
-    /// <summary>
-    /// Collapses the node for the specified item.
-    /// </summary>
     public void CollapseNode(object item)
     {
         if (!_nodesByItem.TryGetValue(item, out var node))
@@ -611,13 +690,53 @@ public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputCon
             return;
 
         node.IsExpanded = false;
+        if (_expandedKeys != null && _keySelector != null)
+            _expandedKeys.Remove(_keySelector(item));
         node.UpdateExpandedHeight(_itemHeight);
         InvalidateMeasure();
     }
 
-    /// <summary>
-    /// Toggles the expand/collapse state of the node for the specified item.
-    /// </summary>
+    public void ExpandWhere(Func<object, bool> predicate)
+    {
+        ExpandWhereRecursive(_rootNodes, predicate);
+        InvalidateMeasure();
+    }
+
+    private void ExpandWhereRecursive(IEnumerable<TreeViewNode> nodes, Func<object, bool> predicate)
+    {
+        foreach (var node in nodes)
+        {
+            if (predicate(node.Item) && node.HasChildren)
+            {
+                if (node.Children == null)
+                {
+                    var selector = _childrenSelectors.GetValueOrDefault(node.Item.GetType());
+                    if (selector != null)
+                    {
+                        var childItems = selector(node.Item);
+                        node.Children = [];
+                        foreach (var childItem in childItems)
+                        {
+                            var childNode = new TreeViewNode(childItem, node.Depth + 1, node);
+                            childNode.HasChildren = HasChildrenFor(childItem);
+                            childNode.UpdateExpandedHeight(_itemHeight);
+                            node.Children.Add(childNode);
+                            _nodesByItem[childItem] = childNode;
+                        }
+                    }
+                }
+
+                node.IsExpanded = true;
+                node.UpdateExpandedHeight(_itemHeight);
+
+                if (node.Children != null)
+                {
+                    ExpandWhereRecursive(node.Children, predicate);
+                }
+            }
+        }
+    }
+
     public void ToggleNode(object item)
     {
         if (!_nodesByItem.TryGetValue(item, out var node))

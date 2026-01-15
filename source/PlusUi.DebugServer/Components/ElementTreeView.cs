@@ -43,6 +43,7 @@ internal class ElementTreeView : UserControl
         var treeView = new TreeView();
         treeView.BindItemsSource(() => _viewModel.RootItems);
         treeView.SetChildrenSelector<TreeNodeDto>(node => node.Children);
+        treeView.SetExpandedKeys<TreeNodeDto>(_viewModel.ExpandedTreeIds, node => node.Id);
         treeView.SetItemTemplate((item, depth) => item switch
         {
             TreeNodeDto node => CreateTreeItem(node),
