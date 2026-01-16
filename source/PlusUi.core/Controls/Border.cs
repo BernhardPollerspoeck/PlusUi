@@ -191,9 +191,7 @@ public partial class Border : UiLayoutElement
 
     public override void Render(SKCanvas canvas)
     {
-        base.Render(canvas);
-
-        // Draw stroke border
+        // Draw stroke border BEFORE base.Render() so it appears behind content
         if (StrokeThickness > 0 && StrokeColor != SKColors.Transparent)
         {
             var strokeRect = new SKRect(
@@ -212,11 +210,8 @@ public partial class Border : UiLayoutElement
             }
         }
 
-        // Render children
-        foreach (var child in Children.ToList())
-        {
-            child.Render(canvas);
-        }
+        // base.Render() (UiLayoutElement) handles background and children rendering with VisualOffset
+        base.Render(canvas);
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)

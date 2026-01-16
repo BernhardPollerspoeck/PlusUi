@@ -87,10 +87,65 @@ public partial class TreeViewDemoPageViewModel : ObservableObject
                 ]
             }
         ];
+
+        CategoryItems =
+        [
+            new Category
+            {
+                Name = "Electronics",
+                SubCategories =
+                [
+                    new Category
+                    {
+                        Name = "Computers",
+                        SubCategories = [],
+                        Products = [new Product { Name = "Laptop Pro 15" }, new Product { Name = "Desktop Tower" }]
+                    },
+                    new Category
+                    {
+                        Name = "Phones",
+                        SubCategories = [],
+                        Products = [new Product { Name = "SmartPhone X" }, new Product { Name = "BasicPhone" }]
+                    }
+                ],
+                Products = []
+            },
+            new Category
+            {
+                Name = "Books",
+                SubCategories =
+                [
+                    new Category
+                    {
+                        Name = "Programming",
+                        SubCategories = [],
+                        Products = [new Product { Name = "C# in Depth" }, new Product { Name = "Clean Code" }]
+                    },
+                    new Category
+                    {
+                        Name = "Fiction",
+                        SubCategories = [],
+                        Products = [new Product { Name = "The Hobbit" }]
+                    }
+                ],
+                Products = []
+            },
+            new Category
+            {
+                Name = "Clothing",
+                SubCategories =
+                [
+                    new Category { Name = "Men", SubCategories = [], Products = [new Product { Name = "T-Shirt" }] },
+                    new Category { Name = "Women", SubCategories = [], Products = [new Product { Name = "Dress" }] }
+                ],
+                Products = []
+            }
+        ];
     }
 
     public ICommand GoBackCommand { get; }
     public ObservableCollection<object> RootItems { get; }
+    public ObservableCollection<object> CategoryItems { get; }
 
     [ObservableProperty]
     private object? _selectedItem;

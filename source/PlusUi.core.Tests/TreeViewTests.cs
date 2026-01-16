@@ -1066,4 +1066,204 @@ public class TreeViewTests
     }
 
     #endregion
+
+    #region Bug Investigation: Two TreeViews
+
+    [TestMethod]
+    public void TreeView_TwoTreeViewsInGrid_ChildrenConsistentAfterLayout()
+    {
+        // Arrange - Two TreeViews side by side (like DebugServer Inspector)
+        var items1 = new List<object>
+        {
+            new Category { Name = "Item1A" },
+            new Category { Name = "Item1B" }
+        };
+        var items2 = new List<object>
+        {
+            new Category { Name = "Item2A" },
+            new Category { Name = "Item2B" },
+            new Category { Name = "Item2C" }
+        };
+
+        var treeView1 = new TreeView()
+            .SetItemHeight(28)
+            .SetChildrenSelector<Category>(c => c.SubCategories.Cast<object>())
+            .SetItemTemplate((item, depth) => new Label().SetText(((Category)item).Name))
+            .SetItemsSource(items1);
+
+        var treeView2 = new TreeView()
+            .SetItemHeight(28)
+            .SetChildrenSelector<Category>(c => c.SubCategories.Cast<object>())
+            .SetItemTemplate((item, depth) => new Label().SetText(((Category)item).Name))
+            .SetItemsSource(items2);
+
+        var grid = new Grid()
+            .AddRow(Row.Star)
+            .AddColumn(Column.Star)
+            .AddColumn(Column.Star)
+            .AddChild(treeView1, row: 0, column: 0)
+            .AddChild(treeView2, row: 0, column: 1);
+
+        // Act - Full layout cycle
+        var availableSize = new Size(800, 600);
+        grid.Measure(availableSize);
+        grid.Arrange(new Rect(0, 0, 800, 600));
+
+        // Capture children count after arrange
+        var tree1ChildrenAfterArrange = treeView1.Children.Count;
+        var tree2ChildrenAfterArrange = treeView2.Children.Count;
+
+        // Trigger another measure (simulating what might happen during render)
+        grid.Measure(availableSize);
+
+        // Check if children count changed
+        var tree1ChildrenAfterSecondMeasure = treeView1.Children.Count;
+        var tree2ChildrenAfterSecondMeasure = treeView2.Children.Count;
+
+        // Assert
+        Assert.AreEqual(2, tree1ChildrenAfterArrange, "TreeView1 should have 2 children after arrange");
+        Assert.AreEqual(3, tree2ChildrenAfterArrange, "TreeView2 should have 3 children after arrange");
+        Assert.AreEqual(tree1ChildrenAfterArrange, tree1ChildrenAfterSecondMeasure,
+            "TreeView1 children count should be same after second measure");
+        Assert.AreEqual(tree2ChildrenAfterArrange, tree2ChildrenAfterSecondMeasure,
+            "TreeView2 children count should be same after second measure");
+    }
+
+    #endregion
+
+    #region VisualOffset Bug Tests
+
+    /// <summary>
+    /// Test Label that captures its VisualOffset and Position during Render
+    /// </summary>
+    private class TestLabel : Label
+    {
+        public Point CapturedVisualOffset { get; private set; }
+        public Point CapturedPosition { get; private set; }
+        public bool WasRendered { get; private set; }
+
+        public override void Render(SkiaSharp.SKCanvas canvas)
+        {
+            CapturedVisualOffset = VisualOffset;
+            CapturedPosition = Position;
+            WasRendered = true;
+            base.Render(canvas);
+        }
+    }
+
+    /// <summary>
+    /// Test UserControl that wraps a TreeView
+    /// </summary>
+    private class TestTreeViewUserControl : UserControl
+    {
+        public TreeView TreeView { get; }
+
+        public TestTreeViewUserControl(List<object> items, string prefix)
+        {
+            TreeView = new TreeView()
+                .SetItemsSource(items)
+                .SetChildrenSelector<Category>(c => c.SubCategories.Cast<object>())
+                .SetItemTemplate((item, depth) =>
+                {
+                    var label = new TestLabel();
+                    label.SetText(prefix + ": " + ((Category)item).Name);
+                    label.SetTextColor(Colors.White);
+                    return label;
+                })
+                .SetItemHeight(28);
+        }
+
+        protected override UiElement Build() => TreeView;
+
+        /// <summary>
+        /// Get the TestLabels that are currently in the TreeView's Children (after layout)
+        /// </summary>
+        public List<TestLabel> GetCurrentTestLabels() =>
+            TreeView.Children.OfType<TestLabel>().ToList();
+    }
+
+    [TestMethod]
+    public void TreeView_TwoInUserControls_VisualOffsetIsCorrectDuringRender()
+    {
+        // Arrange - Create two TreeViews wrapped in UserControls
+        var items1 = new List<object>
+        {
+            new Category { Name = "Cat1" },
+            new Category { Name = "Cat2" }
+        };
+        var items2 = new List<object>
+        {
+            new Category { Name = "Other1" },
+            new Category { Name = "Other2" },
+            new Category { Name = "Other3" }
+        };
+
+        var userControl1 = new TestTreeViewUserControl(items1, "UC1");
+        var userControl2 = new TestTreeViewUserControl(items2, "UC2");
+
+        var grid = new Grid()
+            .AddRow(Row.Star)
+            .AddColumn(Column.Star)
+            .AddColumn(Column.Star)
+            .AddChild(userControl1, row: 0, column: 0)
+            .AddChild(userControl2, row: 0, column: 1);
+
+        // Act - Full layout cycle
+        var availableSize = new Size(800, 600);
+        grid.BuildContent();
+        grid.Measure(availableSize);
+        grid.Arrange(new Rect(0, 0, 800, 600));
+
+        // Render with a real canvas
+        using var bitmap = new SkiaSharp.SKBitmap(800, 600);
+        using var canvas = new SkiaSharp.SKCanvas(bitmap);
+        grid.Render(canvas);
+
+        // Get labels that are actually in Children (after all layout passes)
+        var labelsUC1 = userControl1.GetCurrentTestLabels();
+        var labelsUC2 = userControl2.GetCurrentTestLabels();
+
+        // Assert - Check that labels were rendered
+        Assert.IsTrue(labelsUC1.Count > 0, "UC1 should have labels");
+        Assert.IsTrue(labelsUC2.Count > 0, "UC2 should have labels");
+
+        // Check that all labels in UC1 were rendered
+        foreach (var label in labelsUC1)
+        {
+            Assert.IsTrue(label.WasRendered, $"Label '{label.Text}' in UC1 should have been rendered");
+        }
+
+        // Check that all labels in UC2 were rendered
+        foreach (var label in labelsUC2)
+        {
+            Assert.IsTrue(label.WasRendered, $"Label '{label.Text}' in UC2 should have been rendered");
+        }
+
+        // The critical check: Labels in UC2 should have Position.X > 400 (right half)
+        // AND their VisualOffset should NOT push them outside the visible area
+        foreach (var label in labelsUC2)
+        {
+            var effectiveX = label.CapturedPosition.X + label.CapturedVisualOffset.X;
+            Assert.IsTrue(effectiveX >= 400,
+                $"Label '{label.Text}' effective X ({effectiveX}) should be >= 400 (right column). " +
+                $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
+            Assert.IsTrue(effectiveX < 800,
+                $"Label '{label.Text}' effective X ({effectiveX}) should be < 800 (within grid). " +
+                $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
+        }
+
+        // Labels in UC1 should have Position.X < 400 (left half)
+        foreach (var label in labelsUC1)
+        {
+            var effectiveX = label.CapturedPosition.X + label.CapturedVisualOffset.X;
+            Assert.IsTrue(effectiveX >= 0,
+                $"Label '{label.Text}' effective X ({effectiveX}) should be >= 0. " +
+                $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
+            Assert.IsTrue(effectiveX < 400,
+                $"Label '{label.Text}' effective X ({effectiveX}) should be < 400 (left column). " +
+                $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
+        }
+    }
+
+    #endregion
 }

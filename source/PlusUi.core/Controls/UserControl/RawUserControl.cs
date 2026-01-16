@@ -56,7 +56,7 @@ public abstract class RawUserControl : UiElement
 
         var bitmap = new SKBitmap((int)Size.Width, (int)Size.Height);
         RenderControl(bitmap);
-        canvas.DrawBitmap(bitmap, Position.X, Position.Y);
+        canvas.DrawBitmap(bitmap, (float)(Position.X + VisualOffset.X), (float)(Position.Y + VisualOffset.Y));
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)

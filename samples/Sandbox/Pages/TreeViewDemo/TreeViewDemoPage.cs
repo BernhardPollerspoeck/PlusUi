@@ -15,34 +15,24 @@ public class TreeViewDemoPage(TreeViewDemoPageViewModel vm) : UiPageElement(vm)
                 .SetTextColor(Colors.White)
                 .SetPadding(new Margin(10, 5)),
 
-            new TreeView()
-                .SetItemsSource(vm.RootItems)
-                .SetChildrenSelector<Drive>(d => d.Folders.Cast<object>())
-                .SetChildrenSelector<Folder>(f => f.SubFolders.Cast<object>().Concat(f.Files.Cast<object>()))
-                .SetItemTemplate((item, depth) => item switch
-                {
-                    Drive d => new Label()
-                        .SetText(":: " + d.Name)
-                        .SetTextColor(Colors.Yellow)
-                        .SetVerticalAlignment(VerticalAlignment.Center),
-                    Folder f => new Label()
-                        .SetText("[+] " + f.Name)
-                        .SetTextColor(Colors.LightBlue)
-                        .SetVerticalAlignment(VerticalAlignment.Center),
-                    FileItem file => new Label()
-                        .SetText(file.Name)
-                        .SetTextColor(Colors.White)
-                        .SetVerticalAlignment(VerticalAlignment.Center),
-                    _ => new Label()
-                        .SetText(item?.ToString() ?? "")
-                        .SetTextColor(Colors.Gray)
-                        .SetVerticalAlignment(VerticalAlignment.Center)
-                })
-                .SetItemHeight(28)
-                .SetIndentation(24)
-                .SetExpanderSize(16)
-                .SetShowLines(true)
-                .SetLineColor(new Color(60, 60, 60))
+            new Grid()
+                .AddColumn(Column.Star)
+                .AddColumn(Column.Star)
+                .AddRow(Row.Star)
+                .AddChild(
+                    new Border()
+                        .SetBackground(new Color(40, 40, 40))
+                        .SetCornerRadius(4)
+                        .SetMargin(new Margin(8))
+                        .AddChild(new FileTreeUserControl(vm)),
+                    row: 0, column: 0)
+                .AddChild(
+                    new Border()
+                        .SetBackground(new Color(40, 40, 40))
+                        .SetCornerRadius(4)
+                        .SetMargin(new Margin(8))
+                        .AddChild(new CategoryTreeUserControl(vm)),
+                    row: 0, column: 1)
         );
     }
 }

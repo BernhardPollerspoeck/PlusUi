@@ -73,7 +73,13 @@ public abstract class UserControl : UiElement<UserControl>, IDebugInspectable
         {
             return;
         }
+
+        // Use canvas translation instead of VisualOffset propagation
+        // This ensures all child rendering is offset correctly
+        canvas.Save();
+        canvas.Translate((float)VisualOffset.X, (float)VisualOffset.Y);
         _content.Render(canvas);
+        canvas.Restore();
     }
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
@@ -107,6 +113,12 @@ public abstract class UserControl : UiElement<UserControl>, IDebugInspectable
     {
         base.ApplyStyles();
         _content.ApplyStyles();
+    }
+
+    public override void InvalidateMeasure()
+    {
+        base.InvalidateMeasure();
+        _content.InvalidateMeasure();
     }
 
     protected override void Dispose(bool disposing)
