@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Sandbox.h264": {
-      "commandName": "Project",
-      "commandLineArgs": "-frameOutput --frameTimestamp 00:00:05.000"
-    }
-  }
-}

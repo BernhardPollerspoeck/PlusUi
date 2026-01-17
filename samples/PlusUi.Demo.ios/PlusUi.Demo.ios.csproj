@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-ios</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
+    <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+
+    <!--
+      Enable full trimming in Release mode.
+      To learn more, see: https://learn.microsoft.com/dotnet/core/deploying/trimming/trimming-options#trimming-granularity
+    -->
+    <TrimMode Condition="'$(Configuration)' == 'Release'">full</TrimMode>
+    <ProvisioningType>manual</ProvisioningType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\source\PlusUi.ios\PlusUi.ios.csproj" />
+    <ProjectReference Include="..\PlusUi.Demo\PlusUi.Demo.csproj" />
+  </ItemGroup>
+</Project>

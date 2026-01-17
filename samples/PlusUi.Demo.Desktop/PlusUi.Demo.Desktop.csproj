@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\source\PlusUi.desktop\PlusUi.desktop.csproj" />
+    <ProjectReference Include="..\PlusUi.Demo\PlusUi.Demo.csproj" />
+  </ItemGroup>
+
+</Project>

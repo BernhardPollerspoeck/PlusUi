@@ -30,21 +30,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3_Head Libs", "3_Head Libs"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "9_Unit Tests", "9_Unit Tests", "{9424FE2F-EA7C-49CB-9873-0F157F4C0B71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "samples\Sandbox\Sandbox.csproj", "{0E36168E-6AFF-4A5D-B871-7EC9CE8797E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Demo", "samples\PlusUi.Demo\PlusUi.Demo.csproj", "{0E36168E-6AFF-4A5D-B871-7EC9CE8797E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.Desktop", "samples\Sandbox.Desktop\Sandbox.Desktop.csproj", "{81D9EBC3-0A38-4647-8EFB-9CDFA2EB6033}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Demo.Desktop", "samples\PlusUi.Demo.Desktop\PlusUi.Demo.Desktop.csproj", "{81D9EBC3-0A38-4647-8EFB-9CDFA2EB6033}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.Android", "samples\Sandbox.Android\Sandbox.Android.csproj", "{ABDB8E7D-DDE7-45A0-A20A-6EAE66E7C72E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Demo.Android", "samples\PlusUi.Demo.Android\PlusUi.Demo.Android.csproj", "{ABDB8E7D-DDE7-45A0-A20A-6EAE66E7C72E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.droid", "source\PlusUi.droid\PlusUi.droid.csproj", "{84849601-1348-4C5E-B654-9A984A08E62E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.ios", "samples\Sandbox.ios\Sandbox.ios.csproj", "{BFF236E5-6FA1-4A70-90AD-A0C9609FE29B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Demo.ios", "samples\PlusUi.Demo.ios\PlusUi.Demo.ios.csproj", "{BFF236E5-6FA1-4A70-90AD-A0C9609FE29B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.ios", "source\PlusUi.ios\PlusUi.ios.csproj", "{FD4CEB9D-0EC5-49E1-B37D-C1170E581842}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.h264", "samples\Sandbox.h264\Sandbox.h264.csproj", "{7AB3027C-DDFB-4781-9D97-CDA6A204DC42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Demo.h264", "samples\PlusUi.Demo.h264\PlusUi.Demo.h264.csproj", "{7AB3027C-DDFB-4781-9D97-CDA6A204DC42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.Headless", "samples\Sandbox.Headless\Sandbox.Headless.csproj", "{D5E6F7A8-9B0C-1D2E-3F4A-5B6C7D8E9F0A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Demo.Headless", "samples\PlusUi.Demo.Headless\PlusUi.Demo.Headless.csproj", "{D5E6F7A8-9B0C-1D2E-3F4A-5B6C7D8E9F0A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.h264", "source\PlusUi.h264\PlusUi.h264.csproj", "{B2B71706-0A48-42C1-AFC0-6D850EA76F3D}"
 EndProject
@@ -56,7 +56,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Headless", "source\P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Templates", "templates\PlusUi.Templates.csproj", "{B5C6D7E8-9F01-2345-6789-ABCDEF012345}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.Web", "samples\Sandbox.Web\Sandbox.Web.csproj", "{D134FEC6-FBEF-4A4D-B835-6EFD279A1569}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlusUi.Demo.Web", "samples\PlusUi.Demo.Web\PlusUi.Demo.Web.csproj", "{D134FEC6-FBEF-4A4D-B835-6EFD279A1569}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5_ Debug Server", "5_ Debug Server", "{B8EFCA5F-814F-285C-A8CB-F00F14650265}"
 EndProject
