@@ -168,7 +168,7 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
             field = value;
             InvalidateMeasure();
         }
-    } = IconPosition.Leading;
+    }
     public Button SetIconPosition(IconPosition iconPosition)
     {
         IconPosition = iconPosition;
@@ -248,6 +248,7 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
     public Button()
     {
         HorizontalTextAlignment = HorizontalTextAlignment.Center;
+        IconPosition = PlusUiDefaults.IconPosition;
         SetBackground(new SolidColorBackground(PlusUiDefaults.BackgroundControl));
         SetHoverBackground(new SolidColorBackground(PlusUiDefaults.BackgroundHover));
         SetCornerRadius(PlusUiDefaults.CornerRadius);

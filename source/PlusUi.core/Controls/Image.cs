@@ -18,6 +18,11 @@ public partial class Image : UiElement
     protected internal override bool IsFocusable => false;
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Image;
 
+    public Image()
+    {
+        Aspect = PlusUiDefaults.ImageAspect;
+    }
+
     public override void BuildContent()
     {
         base.BuildContent();

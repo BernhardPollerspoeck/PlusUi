@@ -22,6 +22,29 @@ public abstract class UiTextElement : UiElement
     protected IFontRegistryService? FontRegistry { get; }
     #endregion
 
+    #region Constructor
+    protected UiTextElement()
+    {
+        // Cache services
+        FontRegistry = ServiceProviderService.ServiceProvider?.GetService<IFontRegistryService>();
+
+        // Text defaults
+        TextSize = PlusUiDefaults.FontSize;
+        TextColor = PlusUiDefaults.TextPrimary;
+        FontWeight = PlusUiDefaults.FontWeight;
+        FontStyle = PlusUiDefaults.FontStyle;
+        HorizontalTextAlignment = PlusUiDefaults.HorizontalTextAlignment;
+        TextWrapping = PlusUiDefaults.TextWrapping;
+        TextTruncation = PlusUiDefaults.TextTruncation;
+
+        // Accessibility defaults
+        HighContrastForeground = PlusUiDefaults.HcForeground;
+
+        // Initialize Paint/Font from registry
+        UpdatePaintFromRegistry();
+    }
+    #endregion
+
     #region Accessibility Settings Subscription
     private bool _subscribedToAccessibilityChanges;
 
@@ -139,7 +162,7 @@ public abstract class UiTextElement : UiElement
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
-    } = PlusUiDefaults.FontSize;
+    }
     public UiTextElement SetTextSize(float fontSize)
     {
         TextSize = fontSize;
@@ -164,7 +187,7 @@ public abstract class UiTextElement : UiElement
             field = value;
             UpdatePaintFromRegistry();
         }
-    } = PlusUiDefaults.TextPrimary;
+    }
     public UiTextElement SetTextColor(Color color)
     {
         TextColor = color;
@@ -218,7 +241,7 @@ public abstract class UiTextElement : UiElement
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
-    } = FontWeight.Regular;
+    }
     public UiTextElement SetFontWeight(FontWeight weight)
     {
         FontWeight = weight;
@@ -245,7 +268,7 @@ public abstract class UiTextElement : UiElement
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
-    } = FontStyle.Normal;
+    }
     public UiTextElement SetFontStyle(FontStyle style)
     {
         FontStyle = style;
@@ -270,7 +293,7 @@ public abstract class UiTextElement : UiElement
             field = value;
             InvalidateMeasure();
         }
-    } = HorizontalTextAlignment.Left;
+    }
     public UiTextElement SetHorizontalTextAlignment(HorizontalTextAlignment alignment)
     {
         HorizontalTextAlignment = alignment;
@@ -296,7 +319,7 @@ public abstract class UiTextElement : UiElement
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
-    } = TextWrapping.NoWrap;
+    }
     public UiTextElement SetTextWrapping(TextWrapping textWrapping)
     {
         TextWrapping = textWrapping;
@@ -348,7 +371,7 @@ public abstract class UiTextElement : UiElement
             InvalidateTextLayoutCache();
             InvalidateMeasure();
         }
-    } = TextTruncation.None;
+    }
     public UiTextElement SetTextTruncation(TextTruncation textTruncation)
     {
         TextTruncation = textTruncation;
@@ -362,15 +385,6 @@ public abstract class UiTextElement : UiElement
         return this;
     }
     #endregion
-
-    protected UiTextElement()
-    {
-        // Cache services
-        FontRegistry = ServiceProviderService.ServiceProvider?.GetService<IFontRegistryService>();
-
-        // Initialize Paint/Font from registry
-        UpdatePaintFromRegistry();
-    }
 
     /// <inheritdoc />
     public override void Render(SKCanvas canvas)

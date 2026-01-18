@@ -79,6 +79,21 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
     private int _firstVisibleIndex;
     private int _lastVisibleIndex;
     private float _estimatedItemSize; // For items we haven't measured yet
+    private Size _lastMeasuredAvailableSize; // For virtualization when ElementSize is not yet set
+    private float _measuredContentWidth; // For limiting Stretch children to content width
+    private float _measuredContentHeight;
+    private float _totalContentSize; // Total size of all items (for scrollbar calculation)
+
+    /// <summary>
+    /// The scrollbar control for this ItemsList.
+    /// </summary>
+    public Scrollbar Scrollbar { get; }
+
+    /// <summary>
+    /// Returns Children plus the scrollbar for debug inspection.
+    /// </summary>
+    protected override IEnumerable<UiElement> GetDebugChildrenCore() =>
+        Children.Concat([Scrollbar]);
 
     #region Orientation
     internal Orientation Orientation
@@ -89,7 +104,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             field = value;
             InvalidateMeasure();
         }
-    } = Orientation.Vertical;
+    }
 
     public ItemsList<T> SetOrientation(Orientation orientation)
     {
@@ -180,7 +195,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
     {
         get => field;
         set => field = value;
-    } = 1.0f;
+    }
 
     public ItemsList<T> SetScrollFactor(float factor)
     {
@@ -228,8 +243,61 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
     }
     #endregion
 
+    #region ShowScrollbar
+    internal bool ShowScrollbar
+    {
+        get => field;
+        set
+        {
+            field = value;
+            InvalidateMeasure();
+        }
+    } = true;
+
+    public ItemsList<T> SetShowScrollbar(bool show)
+    {
+        ShowScrollbar = show;
+        return this;
+    }
+
+    public ItemsList<T> BindShowScrollbar(Expression<Func<bool>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => ShowScrollbar = getter());
+        return this;
+    }
+    #endregion
+
     public ItemsList()
     {
+        Orientation = PlusUiDefaults.ListOrientation;
+        ScrollFactor = PlusUiDefaults.ScrollFactor;
+
+        // Initialize scrollbar
+        Scrollbar = new Scrollbar()
+            .SetOrientation(ScrollbarOrientation.Vertical)
+            .SetOnValueChanged(OnScrollbarValueChanged);
+    }
+
+    private void OnScrollbarValueChanged(float newOffset)
+    {
+        ScrollOffset = newOffset;
+    }
+
+    private void UpdateScrollbarState()
+    {
+        var viewportSize = Orientation == Orientation.Vertical
+            ? ElementSize.Height
+            : ElementSize.Width;
+
+        var maxOffset = Math.Max(0, _totalContentSize - viewportSize);
+
+        Scrollbar.UpdateScrollState(
+            ScrollOffset,
+            maxOffset,
+            viewportSize,
+            _totalContentSize);
     }
 
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -282,6 +350,14 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
         int newFirstVisible = 0;
         int newLastVisible = 0;
 
+        // Use ElementSize if available, otherwise fall back to last measured available size
+        var viewportSize = Orientation == Orientation.Vertical
+            ? (ElementSize.Height > 0 ? ElementSize.Height : _lastMeasuredAvailableSize.Height)
+            : (ElementSize.Width > 0 ? ElementSize.Width : _lastMeasuredAvailableSize.Width);
+
+        // If we still don't have a viewport size, show all items
+        var showAllItems = viewportSize <= 0;
+
         if (Orientation == Orientation.Vertical)
         {
             // Find first visible item
@@ -307,7 +383,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
                 float itemSize = _itemSizes.TryGetValue(i, out var size) ? size : _estimatedItemSize;
                 _itemPositions[i] = currentPosition;
 
-                if (currentPosition >= ScrollOffset + ElementSize.Height)
+                if (!showAllItems && currentPosition >= ScrollOffset + viewportSize)
                 {
                     newLastVisible = i;
                     break;
@@ -342,7 +418,7 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
                 float itemSize = _itemSizes.TryGetValue(i, out var size) ? size : _estimatedItemSize;
                 _itemPositions[i] = currentPosition;
 
-                if (currentPosition >= ScrollOffset + ElementSize.Width)
+                if (!showAllItems && currentPosition >= ScrollOffset + viewportSize)
                 {
                     newLastVisible = i;
                     break;
@@ -438,41 +514,91 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             Math.Max(0, availableSize.Width - Margin.Horizontal),
             Math.Max(0, availableSize.Height - Margin.Vertical));
 
-        // Measure first item to get typical size
-        var firstItem = _itemTemplate(items[0], 0);
-        firstItem.Measure(childAvailableSize, true);
-        _estimatedItemSize = Orientation == Orientation.Vertical
-            ? firstItem.ElementSize.Height + firstItem.Margin.Top + firstItem.Margin.Bottom
-            : firstItem.ElementSize.Width + firstItem.Margin.Left + firstItem.Margin.Right;
+        _lastMeasuredAvailableSize = childAvailableSize;
 
-        _itemSizes[0] = _estimatedItemSize;
+        // Measure ALL items to find max width/height (prevents UI jumping when scrolling)
+        float maxWidth = 0;
+        float maxHeight = 0;
+        float totalHeight = 0;
+        float totalWidth = 0;
+
+        for (var i = 0; i < items.Count; i++)
+        {
+            var item = _itemTemplate(items[i], i);
+            item.Measure(childAvailableSize, true);
+
+            var itemWidth = item.ElementSize.Width + item.Margin.Left + item.Margin.Right;
+            var itemHeight = item.ElementSize.Height + item.Margin.Top + item.Margin.Bottom;
+
+            maxWidth = Math.Max(maxWidth, itemWidth);
+            maxHeight = Math.Max(maxHeight, itemHeight);
+            totalHeight += itemHeight;
+            totalWidth += itemWidth;
+
+            // Cache the size for virtualization
+            _itemSizes[i] = Orientation == Orientation.Vertical ? itemHeight : itemWidth;
+        }
+
+        _estimatedItemSize = Orientation == Orientation.Vertical
+            ? totalHeight / items.Count
+            : totalWidth / items.Count;
+
+        // Store total content size for scrollbar
+        _totalContentSize = Orientation == Orientation.Vertical ? totalHeight : totalWidth;
 
         // Update visible range after measuring
         UpdateVisibleRange();
 
-        // Measure all visible items
+        // Store measured content size (widest/tallest child including margins)
+        _measuredContentWidth = maxWidth;
+        _measuredContentHeight = maxHeight;
+
+        // Measure visible items for rendering
+        // Use a constrained size so Stretch children expand to the widest child, not the full available
+        var stretchConstrainedSize = Orientation == Orientation.Vertical
+            ? new Size(maxWidth, childAvailableSize.Height)
+            : new Size(childAvailableSize.Width, maxHeight);
+
+        foreach (var child in Children.ToArray())
+        {
+            child.Measure(stretchConstrainedSize, false);
+        }
+
+        // Measure scrollbar
+        Scrollbar.Parent = this;
+        var scrollbarOrientation = Orientation == Orientation.Vertical
+            ? ScrollbarOrientation.Vertical
+            : ScrollbarOrientation.Horizontal;
+        Scrollbar.SetOrientation(scrollbarOrientation);
+
         if (Orientation == Orientation.Vertical)
         {
-            float maxWidth = 0;
-            foreach (var child in Children.ToArray())
-            {
-                child.Measure(childAvailableSize, dontStretch);
-                maxWidth = Math.Max(maxWidth, child.ElementSize.Width + child.Margin.Left + child.Margin.Right);
-            }
-
-            // Return available size as our size for scrolling to work
-            return availableSize;
+            Scrollbar.Measure(new Size(Scrollbar.Width, childAvailableSize.Height), true);
         }
         else
         {
-            float maxHeight = 0;
-            foreach (var child in Children.ToArray())
-            {
-                child.Measure(childAvailableSize, dontStretch);
-                maxHeight = Math.Max(maxHeight, child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom);
-            }
+            Scrollbar.Measure(new Size(childAvailableSize.Width, Scrollbar.Width), true);
+        }
 
-            return availableSize;
+        // Update scrollbar state
+        UpdateScrollbarState();
+
+        // Return actual needed size based on orientation
+        // Width/Height = widest/tallest child + scrollbar, scrolling dimension = min of content and available
+        var needsScrollbar = ShowScrollbar && (Orientation == Orientation.Vertical
+            ? totalHeight > availableSize.Height
+            : totalWidth > availableSize.Width);
+        var scrollbarSize = needsScrollbar ? Scrollbar.Width : 0;
+
+        if (Orientation == Orientation.Vertical)
+        {
+            var contentHeight = totalHeight;
+            return new Size(maxWidth + scrollbarSize, Math.Min(contentHeight, availableSize.Height));
+        }
+        else
+        {
+            var contentWidth = totalWidth;
+            return new Size(Math.Min(contentWidth, availableSize.Width), maxHeight + scrollbarSize);
         }
     }
 
@@ -491,6 +617,10 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             _ => bounds.Top + Margin.Top,
         };
 
+        // Check if scrollbar should be shown
+        var viewportSize = Orientation == Orientation.Vertical ? ElementSize.Height : ElementSize.Width;
+        var needsScrollbar = ShowScrollbar && _totalContentSize > viewportSize;
+
         if (Orientation == Orientation.Vertical)
         {
             // Use the cached position for the first visible item
@@ -499,19 +629,22 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
 
             foreach (var child in Children.ToArray())
             {
-                var childLeftBound = child.HorizontalAlignment switch
-                {
-                    HorizontalAlignment.Center => positionX + ((ElementSize.Width - child.ElementSize.Width) / 2),
-                    HorizontalAlignment.Right => positionX + ElementSize.Width - child.ElementSize.Width,
-                    _ => positionX,
-                };
+                // Pass the full content width as available space - child's ArrangeInternal handles alignment/margins
+                var contentWidth = _measuredContentWidth > 0 ? _measuredContentWidth : ElementSize.Width;
 
                 child.Arrange(new Rect(
-                    childLeftBound,
+                    positionX,
                     y,
-                    child.ElementSize.Width,
-                    child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom));
+                    contentWidth,
+                    child.ElementSize.Height + child.Margin.Vertical));
                 y += child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom;
+            }
+
+            // Arrange scrollbar on the right side
+            if (needsScrollbar)
+            {
+                var scrollbarX = positionX + ElementSize.Width - Scrollbar.Width;
+                Scrollbar.Arrange(new Rect(scrollbarX, positionY, Scrollbar.Width, ElementSize.Height));
             }
         }
         else
@@ -522,15 +655,22 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
 
             foreach (var child in Children.ToArray())
             {
-                var childTopBound = child.VerticalAlignment switch
-                {
-                    VerticalAlignment.Center => positionY + ((ElementSize.Height - child.ElementSize.Height) / 2),
-                    VerticalAlignment.Bottom => positionY + ElementSize.Height - child.ElementSize.Height,
-                    _ => positionY,
-                };
+                // Pass the full content height as available space - child's ArrangeInternal handles alignment/margins
+                var contentHeight = _measuredContentHeight > 0 ? _measuredContentHeight : ElementSize.Height;
 
-                child.Arrange(new Rect(x, childTopBound, child.ElementSize.Width, child.ElementSize.Height));
+                child.Arrange(new Rect(
+                    x,
+                    positionY,
+                    child.ElementSize.Width + child.Margin.Horizontal,
+                    contentHeight));
                 x += child.ElementSize.Width + child.Margin.Left + child.Margin.Right;
+            }
+
+            // Arrange scrollbar at the bottom
+            if (needsScrollbar)
+            {
+                var scrollbarY = positionY + ElementSize.Height - Scrollbar.Width;
+                Scrollbar.Arrange(new Rect(positionX, scrollbarY, ElementSize.Width, Scrollbar.Width));
             }
         }
 
@@ -586,6 +726,19 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             child.SetVisualOffset(childOriginalOffset);
         }
 
+        // Render scrollbar (after children, so it's on top)
+        var viewportSize = Orientation == Orientation.Vertical ? ElementSize.Height : ElementSize.Width;
+        if (ShowScrollbar && _totalContentSize > viewportSize)
+        {
+            var scrollbarOriginalOffset = Scrollbar.VisualOffset;
+            Scrollbar.SetVisualOffset(new Point(
+                scrollbarOriginalOffset.X + VisualOffset.X,
+                scrollbarOriginalOffset.Y + VisualOffset.Y
+            ));
+            Scrollbar.Render(canvas);
+            Scrollbar.SetVisualOffset(scrollbarOriginalOffset);
+        }
+
         // Restore canvas state
         canvas.Restore();
     }
@@ -597,6 +750,17 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
               point.Y >= Position.Y && point.Y <= Position.Y + ElementSize.Height))
         {
             return null;
+        }
+
+        // Check scrollbar first (it's rendered on top)
+        var viewportSize = Orientation == Orientation.Vertical ? ElementSize.Height : ElementSize.Width;
+        if (ShowScrollbar && _totalContentSize > viewportSize)
+        {
+            var scrollbarHit = Scrollbar.HitTest(point);
+            if (scrollbarHit != null)
+            {
+                return scrollbarHit;
+            }
         }
 
         // Check if any child was hit

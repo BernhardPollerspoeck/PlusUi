@@ -154,4 +154,125 @@ public static class PlusUiDefaults
     public const float TreeViewIndent = 20f;
 
     #endregion
+
+    #region Focus
+
+    /// <summary>Width of the focus ring stroke.</summary>
+    public const float FocusRingWidth = 2f;
+
+    /// <summary>Offset of the focus ring from element bounds.</summary>
+    public const float FocusRingOffset = 2f;
+
+    /// <summary>Default tab stop behavior - elements are included in tab navigation.</summary>
+    public const bool TabStop = true;
+
+    #endregion
+
+    #region Element Defaults
+
+    /// <summary>Default visibility state.</summary>
+    public const bool IsVisible = true;
+
+    /// <summary>Default opacity (fully opaque).</summary>
+    public const float Opacity = 1f;
+
+    /// <summary>Default corner radius for base elements (no rounding).</summary>
+    public const float CornerRadiusNone = 0f;
+
+    /// <summary>Default horizontal alignment.</summary>
+    public const HorizontalAlignment HorizontalAlignment = core.HorizontalAlignment.Undefined;
+
+    /// <summary>Default vertical alignment.</summary>
+    public const VerticalAlignment VerticalAlignment = core.VerticalAlignment.Undefined;
+
+    #endregion
+
+    #region Shadow Defaults
+
+    /// <summary>Default shadow color (transparent = no shadow).</summary>
+    public static readonly Color ShadowColorNone = Colors.Transparent;
+
+    /// <summary>Default shadow blur radius.</summary>
+    public const float ShadowBlur = 0f;
+
+    /// <summary>Default shadow spread.</summary>
+    public const float ShadowSpread = 0f;
+
+    #endregion
+
+    #region Accessibility Defaults
+
+    /// <summary>Default accessibility traits.</summary>
+    public const AccessibilityTrait AccessibilityTraits = AccessibilityTrait.None;
+
+    /// <summary>Default accessibility element visibility.</summary>
+    public const bool IsAccessibilityElement = true;
+
+    #endregion
+
+    #region Border
+
+    /// <summary>Default border stroke color.</summary>
+    public static readonly Color StrokeColor = Colors.Black;
+
+    /// <summary>Default border stroke thickness.</summary>
+    public const float StrokeThickness = 1f;
+
+    /// <summary>Default border stroke type.</summary>
+    public const StrokeType StrokeType = core.StrokeType.Solid;
+
+    #endregion
+
+    #region Button
+
+    /// <summary>Default icon position for buttons.</summary>
+    public const IconPosition IconPosition = core.IconPosition.Leading;
+
+    #endregion
+
+    #region Stack (HStack/VStack)
+
+    /// <summary>Default spacing between stack children.</summary>
+    public const float StackSpacing = 0f;
+
+    /// <summary>Default wrap behavior for stacks.</summary>
+    public const bool StackWrap = false;
+
+    #endregion
+
+    #region Image
+
+    /// <summary>Default image aspect mode.</summary>
+    public const Aspect ImageAspect = Aspect.AspectFit;
+
+    #endregion
+
+    #region ItemsList
+
+    /// <summary>Default list orientation.</summary>
+    public const Orientation ListOrientation = Orientation.Vertical;
+
+    /// <summary>Default scroll factor.</summary>
+    public const float ScrollFactor = 1f;
+
+    #endregion
+
+    #region Text
+
+    /// <summary>Default font weight.</summary>
+    public const FontWeight FontWeight = core.FontWeight.Regular;
+
+    /// <summary>Default font style.</summary>
+    public const FontStyle FontStyle = core.FontStyle.Normal;
+
+    /// <summary>Default horizontal text alignment.</summary>
+    public const HorizontalTextAlignment HorizontalTextAlignment = core.HorizontalTextAlignment.Left;
+
+    /// <summary>Default text wrapping mode.</summary>
+    public const TextWrapping TextWrapping = core.TextWrapping.NoWrap;
+
+    /// <summary>Default text truncation mode.</summary>
+    public const TextTruncation TextTruncation = core.TextTruncation.None;
+
+    #endregion
 }

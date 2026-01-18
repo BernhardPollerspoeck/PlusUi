@@ -17,11 +17,75 @@ namespace PlusUi.core;
 [GenerateGenericWrapper]
 public abstract class UiElement : IDisposable
 {
+    #region Fields
     private readonly Dictionary<string, List<Action>> _bindings = [];
     private readonly List<PathBindingTracker> _pathBindings = [];
     protected readonly Dictionary<string, List<Action<object?>>> _setter = [];
     protected bool _ignoreStyling;
+    #endregion
 
+    #region Services
+    /// <summary>
+    /// Paint registry service for managing shared paint/font resources.
+    /// </summary>
+    protected IPaintRegistryService PaintRegistry { get; }
+
+    /// <summary>
+    /// Expression path service for binding path extraction.
+    /// </summary>
+    private protected IExpressionPathService ExpressionPathService { get; }
+
+    /// <summary>
+    /// Configuration for the PlusUi application.
+    /// </summary>
+    protected PlusUiConfiguration? Configuration { get; }
+
+    /// <summary>
+    /// Accessibility settings service for High Contrast detection and touch target sizes.
+    /// </summary>
+    protected IAccessibilitySettingsService? AccessibilitySettings { get; }
+
+    /// <summary>
+    /// Focus manager for handling focus changes.
+    /// </summary>
+    private IFocusManager? FocusManager { get; }
+    #endregion
+
+    #region Constructor
+    protected UiElement()
+    {
+        // Services
+        PaintRegistry = ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>()
+            ?? throw new InvalidOperationException("PaintRegistry service not available. Ensure the application is properly initialized.");
+        ExpressionPathService = ServiceProviderService.ServiceProvider?.GetService<IExpressionPathService>()
+            ?? new Binding.ExpressionPathService();
+        Configuration = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
+        AccessibilitySettings = ServiceProviderService.ServiceProvider?.GetService<IAccessibilitySettingsService>();
+        FocusManager = ServiceProviderService.ServiceProvider?.GetService<IFocusManager>();
+
+        // Layout defaults
+        IsVisible = PlusUiDefaults.IsVisible;
+        Opacity = PlusUiDefaults.Opacity;
+        HorizontalAlignment = PlusUiDefaults.HorizontalAlignment;
+        VerticalAlignment = PlusUiDefaults.VerticalAlignment;
+        CornerRadius = PlusUiDefaults.CornerRadiusNone;
+
+        // Shadow defaults
+        ShadowColor = PlusUiDefaults.ShadowColorNone;
+        ShadowBlur = PlusUiDefaults.ShadowBlur;
+        ShadowSpread = PlusUiDefaults.ShadowSpread;
+
+        // Focus defaults
+        TabStop = PlusUiDefaults.TabStop;
+        FocusRingColor = PlusUiDefaults.AccentPrimary;
+        FocusRingWidth = PlusUiDefaults.FocusRingWidth;
+        FocusRingOffset = PlusUiDefaults.FocusRingOffset;
+
+        // Accessibility defaults
+        AccessibilityTraits = PlusUiDefaults.AccessibilityTraits;
+        IsAccessibilityElement = PlusUiDefaults.IsAccessibilityElement;
+    }
+    #endregion
 
     protected virtual bool NeedsMeasure { get; set; } = true;
     protected internal virtual bool NeedsArrange { get; set; } = true;
@@ -43,7 +107,7 @@ public abstract class UiElement : IDisposable
     #endregion
 
     #region IsVisible
-    public bool IsVisible { get; internal set; } = true;
+    public bool IsVisible { get; internal set; }
 
     public UiElement SetIsVisible(bool isVisible)
     {
@@ -61,7 +125,7 @@ public abstract class UiElement : IDisposable
     #endregion
 
     #region VisualOffset
-    internal Point VisualOffset { get; set; } = new Point(0, 0);
+    internal Point VisualOffset { get; set; }
     public UiElement SetVisualOffset(Point offset)
     {
         VisualOffset = offset;
@@ -77,7 +141,7 @@ public abstract class UiElement : IDisposable
     #endregion
 
     #region Opacity
-    internal float Opacity { get; set; } = 1f;
+    internal float Opacity { get; set; }
     public UiElement SetOpacity(float opacity)
     {
         Opacity = Math.Clamp(opacity, 0f, 1f);
@@ -174,7 +238,7 @@ public abstract class UiElement : IDisposable
             field = value;
             InvalidateMeasure();
         }
-    } = HorizontalAlignment.Undefined;
+    }
     public UiElement SetHorizontalAlignment(HorizontalAlignment alignment)
     {
         HorizontalAlignment = alignment;
@@ -199,7 +263,7 @@ public abstract class UiElement : IDisposable
             field = value;
             InvalidateMeasure();
         }
-    } = VerticalAlignment.Undefined;
+    }
     public UiElement SetVerticalAlignment(VerticalAlignment alignment)
     {
         VerticalAlignment = alignment;
@@ -222,7 +286,7 @@ public abstract class UiElement : IDisposable
         {
             field = value;
         }
-    } = 0;
+    }
     public UiElement SetCornerRadius(float radius)
     {
         CornerRadius = radius;
@@ -246,7 +310,7 @@ public abstract class UiElement : IDisposable
             field = value;
             InvalidateShadowCache();
         }
-    } = Colors.Transparent;
+    }
     public UiElement SetShadowColor(Color color)
     {
         ShadowColor = color;
@@ -270,7 +334,7 @@ public abstract class UiElement : IDisposable
             field = value;
             InvalidateShadowCache();
         }
-    } = new Point(0, 0);
+    }
     public UiElement SetShadowOffset(Point offset)
     {
         ShadowOffset = offset;
@@ -294,7 +358,7 @@ public abstract class UiElement : IDisposable
             field = value;
             InvalidateShadowCache();
         }
-    } = 0;
+    }
     public UiElement SetShadowBlur(float blur)
     {
         ShadowBlur = blur;
@@ -310,7 +374,7 @@ public abstract class UiElement : IDisposable
     #endregion
 
     #region ShadowSpread
-    internal float ShadowSpread { get; set; } = 0;
+    internal float ShadowSpread { get; set; }
     public UiElement SetShadowSpread(float spread)
     {
         ShadowSpread = spread;
@@ -414,7 +478,7 @@ public abstract class UiElement : IDisposable
     /// When false, the element is skipped during Tab/Shift+Tab navigation.
     /// Default is true for focusable elements.
     /// </summary>
-    internal bool TabStop { get; set; } = true;
+    internal bool TabStop { get; set; }
 
     /// <summary>
     /// Gets or sets whether this element currently has keyboard focus.
@@ -424,17 +488,17 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Gets or sets the color of the focus ring.
     /// </summary>
-    internal Color FocusRingColor { get; set; } = new Color(0, 122, 255); // iOS blue
+    internal Color FocusRingColor { get; set; }
 
     /// <summary>
     /// Gets or sets the width of the focus ring stroke.
     /// </summary>
-    internal float FocusRingWidth { get; set; } = 2f;
+    internal float FocusRingWidth { get; set; }
 
     /// <summary>
     /// Gets or sets the offset of the focus ring from the element bounds.
     /// </summary>
-    internal float FocusRingOffset { get; set; } = 2f;
+    internal float FocusRingOffset { get; set; }
 
     /// <summary>
     /// Gets or sets the background color when the element has focus.
@@ -707,13 +771,13 @@ public abstract class UiElement : IDisposable
     /// <summary>
     /// Gets or sets the accessibility traits that describe the state of this element.
     /// </summary>
-    public AccessibilityTrait AccessibilityTraits { get; protected internal set; } = AccessibilityTrait.None;
+    public AccessibilityTrait AccessibilityTraits { get; protected internal set; }
 
     /// <summary>
     /// Gets or sets whether this element should be exposed to assistive technologies.
     /// When false, the element is hidden from accessibility.
     /// </summary>
-    public bool IsAccessibilityElement { get; protected internal set; } = true;
+    public bool IsAccessibilityElement { get; protected internal set; }
 
     /// <summary>
     /// Sets the accessibility label.
@@ -1308,52 +1372,6 @@ public abstract class UiElement : IDisposable
     }
     protected virtual void UpdateBindingsInternal() { }
     protected virtual void UpdateBindingsInternal(string propertyName) { }
-    #endregion
-
-    #region Services
-    /// <summary>
-    /// Paint registry service for managing shared paint/font resources.
-    /// Resolved once in constructor - required for UI rendering.
-    /// </summary>
-    protected IPaintRegistryService PaintRegistry { get; }
-
-    /// <summary>
-    /// Expression path service for binding path extraction.
-    /// Resolved once in constructor, falls back to default instance for tests.
-    /// </summary>
-    private protected IExpressionPathService ExpressionPathService { get; }
-
-    /// <summary>
-    /// Configuration for the PlusUi application.
-    /// Resolved once in constructor for High Contrast and accessibility settings.
-    /// </summary>
-    protected PlusUiConfiguration? Configuration { get; }
-
-    /// <summary>
-    /// Accessibility settings service for High Contrast detection and touch target sizes.
-    /// Resolved once in constructor.
-    /// </summary>
-    protected IAccessibilitySettingsService? AccessibilitySettings { get; }
-
-    /// <summary>
-    /// Focus manager for handling focus changes.
-    /// Resolved once in constructor.
-    /// </summary>
-    private IFocusManager? FocusManager { get; }
-
-    protected UiElement()
-    {
-        PaintRegistry = ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>()
-            ?? throw new InvalidOperationException("PaintRegistry service not available. Ensure the application is properly initialized.");
-
-        ExpressionPathService = ServiceProviderService.ServiceProvider?.GetService<IExpressionPathService>()
-            ?? new Binding.ExpressionPathService();
-
-        Configuration = ServiceProviderService.ServiceProvider?.GetService<PlusUiConfiguration>();
-        AccessibilitySettings = ServiceProviderService.ServiceProvider?.GetService<IAccessibilitySettingsService>();
-        FocusManager = ServiceProviderService.ServiceProvider?.GetService<IFocusManager>();
-    }
-
     #endregion
 
     #region rendering

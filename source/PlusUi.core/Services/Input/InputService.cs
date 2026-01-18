@@ -553,11 +553,20 @@ public class InputService
             }
         }
 
-        // Scroll the control if it's scrollable
-        if (hitControl is IScrollableControl scrollControl)
+        // Scroll the control if it's scrollable (search up the hierarchy)
+        var scrollControl = FindScrollableControl(hitControl);
+        scrollControl?.HandleScroll(deltaX, deltaY);
+    }
+
+    private IScrollableControl? FindScrollableControl(UiElement? element)
+    {
+        while (element != null)
         {
-            scrollControl.HandleScroll(deltaX, deltaY);
+            if (element is IScrollableControl scrollable)
+                return scrollable;
+            element = element.Parent;
         }
+        return null;
     }
 
     public void SetCtrlPressed(bool isPressed)

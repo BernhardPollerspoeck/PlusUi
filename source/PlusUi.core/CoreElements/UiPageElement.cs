@@ -6,10 +6,16 @@ using System.ComponentModel;
 
 namespace PlusUi.core;
 
-public abstract class UiPageElement(INotifyPropertyChanged vm) : UiLayoutElement<UiPageElement>
+public abstract class UiPageElement : UiLayoutElement<UiPageElement>
 {
-    public INotifyPropertyChanged ViewModel { get; } = vm;
+    public INotifyPropertyChanged ViewModel { get; }
     private UiElement _tree = new NullElement();
+
+    protected UiPageElement(INotifyPropertyChanged vm)
+    {
+        ViewModel = vm;
+        SetBackground(PlusUiDefaults.BackgroundPage);
+    }
 
     /// <summary>
     /// Gets the root element of the page's content tree for traversal purposes.

@@ -41,6 +41,9 @@ public partial class HStack : UiLayoutElement
 
     public HStack(params UiElement[] elements)
     {
+        Spacing = PlusUiDefaults.StackSpacing;
+        Wrap = PlusUiDefaults.StackWrap;
+
         foreach (var element in elements)
         {
             element.Parent = this;

@@ -47,6 +47,15 @@ public abstract class UiLayoutElement<T> : UiLayoutElement where T : UiLayoutEle
 
 public abstract class UiLayoutElement : UiElement, IDebugInspectable
 {
+    #region Constructor
+    protected UiLayoutElement()
+    {
+        // Focus scope defaults
+        FocusScope = FocusScopeMode.None;
+        AccessibilityLandmark = AccessibilityLandmark.None;
+    }
+    #endregion
+
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;
 
@@ -58,7 +67,7 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
     /// Gets or sets the focus scope mode for this container.
     /// When set to Trap or TrapWithEscape, tab navigation cycles within this container.
     /// </summary>
-    internal FocusScopeMode FocusScope { get; set; } = FocusScopeMode.None;
+    internal FocusScopeMode FocusScope { get; set; }
 
     /// <summary>
     /// Sets the focus scope mode for this container.
@@ -86,7 +95,7 @@ public abstract class UiLayoutElement : UiElement, IDebugInspectable
     /// Gets or sets the accessibility landmark for this container.
     /// Landmarks help screen reader users quickly navigate between main content areas.
     /// </summary>
-    internal AccessibilityLandmark AccessibilityLandmark { get; set; } = AccessibilityLandmark.None;
+    internal AccessibilityLandmark AccessibilityLandmark { get; set; }
 
     /// <summary>
     /// Sets the accessibility landmark for this container.

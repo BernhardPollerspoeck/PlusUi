@@ -43,7 +43,7 @@ public partial class Border : UiLayoutElement
             field = value;
             StrokePaint = CreateStrokePaint();
         }
-    } = Colors.Black;
+    }
 
     public Border SetStrokeColor(Color color)
     {
@@ -68,7 +68,7 @@ public partial class Border : UiLayoutElement
             field = value;
             StrokePaint = CreateStrokePaint();
         }
-    } = 1f;
+    }
 
     public Border SetStrokeThickness(float thickness)
     {
@@ -93,7 +93,7 @@ public partial class Border : UiLayoutElement
             field = value;
             StrokePaint = CreateStrokePaint();
         }
-    } = StrokeType.Solid;
+    }
 
     public Border SetStrokeType(StrokeType strokeType)
     {
@@ -158,6 +158,9 @@ public partial class Border : UiLayoutElement
 
     public Border()
     {
+        StrokeColor = PlusUiDefaults.StrokeColor;
+        StrokeThickness = PlusUiDefaults.StrokeThickness;
+        StrokeType = PlusUiDefaults.StrokeType;
         StrokePaint = CreateStrokePaint();
     }
 

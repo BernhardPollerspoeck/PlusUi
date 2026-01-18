@@ -42,6 +42,9 @@ public partial class VStack : UiLayoutElement
 
     public VStack(params UiElement[] elements)
     {
+        Spacing = PlusUiDefaults.StackSpacing;
+        Wrap = PlusUiDefaults.StackWrap;
+
         foreach (var element in elements)
         {
             element.Parent = this;
