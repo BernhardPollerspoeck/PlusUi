@@ -189,9 +189,12 @@ public partial class UniformGrid : UiLayoutElement
         // Measure all children with the uniform cell size
         // Don't subtract margin here - UiElement.Measure handles margin for Stretch alignment
         var cellSize = new Size(_cellWidth, _cellHeight);
+        // When grid has a fixed DesiredSize, children should stretch to fill their cells
+        // (don't propagate dontStretch since cell size is known/fixed)
+        var hasFixedSize = DesiredSize?.Width > 0 && DesiredSize?.Height > 0;
         foreach (var child in visibleChildren)
         {
-            child.Measure(cellSize, dontStretch);
+            child.Measure(cellSize, hasFixedSize ? false : dontStretch);
         }
 
         // Return the total grid size

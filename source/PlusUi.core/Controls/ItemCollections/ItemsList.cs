@@ -580,9 +580,6 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
             Scrollbar.Measure(new Size(childAvailableSize.Width, Scrollbar.Width), true);
         }
 
-        // Update scrollbar state
-        UpdateScrollbarState();
-
         // Return actual needed size based on orientation
         // Width/Height = widest/tallest child + scrollbar, scrolling dimension = min of content and available
         var needsScrollbar = ShowScrollbar && (Orientation == Orientation.Vertical
@@ -673,6 +670,9 @@ public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
                 Scrollbar.Arrange(new Rect(positionX, scrollbarY, ElementSize.Width, Scrollbar.Width));
             }
         }
+
+        // Update scrollbar state (must be after ElementSize is set via Arrange)
+        UpdateScrollbarState();
 
         return new Point(positionX, positionY);
     }

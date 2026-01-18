@@ -1240,6 +1240,24 @@ public abstract class UiElement : IDisposable
     #region Arranging
     public Point Arrange(Rect bounds)
     {
+        // Stretch alignment: expand ElementSize to fill available space (only if no explicit DesiredSize)
+        if (HorizontalAlignment == HorizontalAlignment.Stretch && DesiredSize?.Width is null or <= 0)
+        {
+            var stretchWidth = Math.Max(0, bounds.Width - Margin.Horizontal);
+            if (stretchWidth > ElementSize.Width)
+            {
+                ElementSize = new Size(stretchWidth, ElementSize.Height);
+            }
+        }
+        if (VerticalAlignment == VerticalAlignment.Stretch && DesiredSize?.Height is null or <= 0)
+        {
+            var stretchHeight = Math.Max(0, bounds.Height - Margin.Vertical);
+            if (stretchHeight > ElementSize.Height)
+            {
+                ElementSize = new Size(ElementSize.Width, stretchHeight);
+            }
+        }
+
         if (NeedsArrange)
         {
             Position = ArrangeInternal(bounds);

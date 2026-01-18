@@ -62,7 +62,9 @@ public partial class Label : UiTextElement
         if (TextWrapping == TextWrapping.NoWrap)
         {
             // Single line rendering with optional truncation
-            var truncatedText = ApplyTruncation(text, ElementSize.Width);
+            // Replace newlines with space and remove other control characters
+            var cleanText = RemoveControlCharacters(text.Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " "));
+            var truncatedText = ApplyTruncation(cleanText, ElementSize.Width);
 
             // Calculate X position based on text alignment
             var x = HorizontalTextAlignment switch

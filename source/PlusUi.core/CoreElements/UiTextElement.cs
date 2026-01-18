@@ -531,72 +531,103 @@ public abstract class UiTextElement : UiElement
         var lines = new List<string>();
         if (string.IsNullOrEmpty(text) || maxWidth <= 0)
         {
-            lines.Add(text);
+            lines.Add(text ?? string.Empty);
             _cachedWrapText = text;
             _cachedWrapMaxWidth = maxWidth;
             _cachedWrapResult = lines;
             return lines;
         }
 
-        if (TextWrapping == TextWrapping.WordWrap)
+        // First split by newlines to respect explicit line breaks
+        var paragraphs = text.Replace("\r\n", "\n").Replace("\r", "\n").Split('\n');
+
+        foreach (var paragraph in paragraphs)
         {
-            // Word wrap - break at word boundaries
-            var words = text.Split(' ');
-            var currentLine = "";
+            // Remove control characters (except we already handled newlines)
+            var cleanParagraph = RemoveControlCharacters(paragraph);
 
-            foreach (var word in words)
+            if (string.IsNullOrEmpty(cleanParagraph))
             {
-                var testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
-                var testWidth = Font.MeasureText(testLine);
+                lines.Add(string.Empty);
+                continue;
+            }
 
-                if (testWidth > maxWidth && !string.IsNullOrEmpty(currentLine))
+            if (TextWrapping == TextWrapping.WordWrap)
+            {
+                // Word wrap - break at word boundaries
+                var words = cleanParagraph.Split(' ');
+                var currentLine = "";
+
+                foreach (var word in words)
+                {
+                    var testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
+                    var testWidth = Font.MeasureText(testLine);
+
+                    if (testWidth > maxWidth && !string.IsNullOrEmpty(currentLine))
+                    {
+                        lines.Add(currentLine);
+                        currentLine = word;
+                    }
+                    else
+                    {
+                        currentLine = testLine;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(currentLine))
                 {
                     lines.Add(currentLine);
-                    currentLine = word;
                 }
-                else
+            }
+            else // TextWrapping.Wrap
+            {
+                // Character wrap - break at any character
+                var currentLine = "";
+
+                foreach (var ch in cleanParagraph)
                 {
-                    currentLine = testLine;
+                    var testLine = currentLine + ch;
+                    var testWidth = Font.MeasureText(testLine);
+
+                    if (testWidth > maxWidth && !string.IsNullOrEmpty(currentLine))
+                    {
+                        lines.Add(currentLine);
+                        currentLine = ch.ToString();
+                    }
+                    else
+                    {
+                        currentLine = testLine;
+                    }
                 }
-            }
 
-            if (!string.IsNullOrEmpty(currentLine))
-            {
-                lines.Add(currentLine);
-            }
-        }
-        else // TextWrapping.Wrap
-        {
-            // Character wrap - break at any character
-            var currentLine = "";
-
-            foreach (var ch in text)
-            {
-                var testLine = currentLine + ch;
-                var testWidth = Font.MeasureText(testLine);
-
-                if (testWidth > maxWidth && !string.IsNullOrEmpty(currentLine))
+                if (!string.IsNullOrEmpty(currentLine))
                 {
                     lines.Add(currentLine);
-                    currentLine = ch.ToString();
                 }
-                else
-                {
-                    currentLine = testLine;
-                }
-            }
-
-            if (!string.IsNullOrEmpty(currentLine))
-            {
-                lines.Add(currentLine);
             }
         }
 
-        var result = lines.Count > 0 ? lines : [text];
+        var result = lines.Count > 0 ? lines : [string.Empty];
         _cachedWrapText = text;
         _cachedWrapMaxWidth = maxWidth;
         _cachedWrapResult = result;
         return result;
+    }
+
+    protected static string RemoveControlCharacters(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+
+        var sb = new System.Text.StringBuilder(text.Length);
+        foreach (var ch in text)
+        {
+            // Keep printable characters (space and above, excluding DEL)
+            if (ch >= ' ' && ch != '\x7F')
+            {
+                sb.Append(ch);
+            }
+        }
+        return sb.ToString();
     }
 
     protected string ApplyTruncation(string text, float maxWidth)

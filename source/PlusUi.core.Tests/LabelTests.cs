@@ -399,8 +399,137 @@ public sealed class LabelTests
             .SetTextWrapping(TextWrapping.WordWrap)
             .SetMaxLines(3)
             .SetTextTruncation(TextTruncation.End);
-        
+
         // Assert
         Assert.IsNotNull(label);
+    }
+
+    [TestMethod]
+    public void TestLabel_WordWrap_ShouldNotExpandToAvailableWidth()
+    {
+        // Arrange - long text that will wrap
+        var label = new Label()
+            .SetText("This is a test with some words that will wrap to multiple lines when measured.")
+            .SetTextWrapping(TextWrapping.WordWrap);
+
+        // Act - measure with large available width
+        var availableSize = new Size(800, 600);
+        label.Measure(availableSize);
+
+        // Assert - ElementSize.Width should be the width of the longest wrapped line,
+        // NOT the full available width (800)
+        Console.WriteLine($"Available width: {availableSize.Width}");
+        Console.WriteLine($"Label ElementSize: {label.ElementSize.Width} x {label.ElementSize.Height}");
+
+        // The text should NOT take full available width
+        Assert.IsLessThan(availableSize.Width, label.ElementSize.Width,
+            $"Label width ({label.ElementSize.Width}) should be less than available width ({availableSize.Width}) when text wraps");
+    }
+
+    [TestMethod]
+    public void TestLabel_WordWrap_InVStack_ShouldNotExpandToAvailableWidth()
+    {
+        // Arrange - VStack with label like in MainPage
+        var label = new Label()
+            .SetText("This is a long text that will wrap. It has multiple sentences to ensure wrapping happens correctly.")
+            .SetTextWrapping(TextWrapping.WordWrap);
+
+        var vstack = new VStack(label)
+            .SetHorizontalAlignment(HorizontalAlignment.Center)
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        // Act - measure VStack with large available width
+        var availableSize = new Size(800, 600);
+        vstack.Measure(availableSize);
+        vstack.Arrange(new Rect(0, 0, 800, 600));
+
+        // Assert
+        Console.WriteLine($"Available width: {availableSize.Width}");
+        Console.WriteLine($"VStack ElementSize: {vstack.ElementSize.Width} x {vstack.ElementSize.Height}");
+        Console.WriteLine($"Label ElementSize: {label.ElementSize.Width} x {label.ElementSize.Height}");
+
+        // VStack should be as wide as its content (label), not full available width
+        Assert.IsLessThan(availableSize.Width, vstack.ElementSize.Width,
+            $"VStack width ({vstack.ElementSize.Width}) should be less than available ({availableSize.Width})");
+    }
+
+    [TestMethod]
+    public void TestLabel_WordWrap_InHStackWithVStack_ShouldNotExpandToAvailableWidth()
+    {
+        // Arrange - simulates MainPage: HStack with sidebar and content VStack
+        var label = new Label()
+            .SetText("This is a long text that will wrap. It has multiple sentences to ensure wrapping happens correctly.")
+            .SetTextWrapping(TextWrapping.WordWrap);
+
+        var contentVStack = new VStack(label)
+            .SetHorizontalAlignment(HorizontalAlignment.Center)
+            .SetVerticalAlignment(VerticalAlignment.Center);
+
+        var sidebar = new Solid()
+            .SetDesiredSize(new Size(150, 400));
+
+        var hstack = new HStack(sidebar, contentVStack);
+
+        // Act - measure and arrange with window size
+        var windowSize = new Size(1000, 600);
+        hstack.Measure(windowSize);
+        hstack.Arrange(new Rect(0, 0, 1000, 600));
+
+        // Assert
+        Console.WriteLine($"Window width: {windowSize.Width}");
+        Console.WriteLine($"HStack ElementSize: {hstack.ElementSize.Width} x {hstack.ElementSize.Height}");
+        Console.WriteLine($"Sidebar ElementSize: {sidebar.ElementSize.Width} x {sidebar.ElementSize.Height}");
+        Console.WriteLine($"VStack ElementSize: {contentVStack.ElementSize.Width} x {contentVStack.ElementSize.Height}");
+        Console.WriteLine($"Label ElementSize: {label.ElementSize.Width} x {label.ElementSize.Height}");
+
+        // VStack should NOT be stretched to fill remaining space (1000 - 150 = 850)
+        var remainingWidth = windowSize.Width - sidebar.ElementSize.Width;
+        Console.WriteLine($"Remaining width after sidebar: {remainingWidth}");
+
+        Assert.IsLessThan(remainingWidth, contentVStack.ElementSize.Width,
+            $"VStack width ({contentVStack.ElementSize.Width}) should be less than remaining ({remainingWidth})");
+    }
+
+    [TestMethod]
+    public void TestLabel_WordWrap_WithRealMainPageText()
+    {
+        // Arrange - exact text from MainPage
+        var longText = """
+            PlusUi is a passion project born from the desire to create something truly cross-platform.
+            No more platform-specific quirks, no more "it works differently on iOS" moments.
+            Just pure, consistent UI rendering powered by SkiaSharp.
+
+            I started this project because I was frustrated with existing solutions.
+            MAUI was unreliable - every update broke something else, and debugging
+            platform-specific issues became a full-time job. Avalonia had its own set
+            of quirks. I wanted something that just works - everywhere, the same way, every time.
+
+            What you see here is the result of countless late nights, debugging sessions,
+            and "aha!" moments. Every control, every animation, every pixel is rendered
+            by our own engine. No native controls, no platform abstractions - just Skia
+            drawing directly to the screen.
+
+            Select a control from the sidebar to explore what PlusUi can do.
+            Each demo shows the control in action with real, working examples.
+            Feel free to play around, break things, and discover what's possible.
+
+            This is just the beginning. There's so much more to come.
+            """;
+
+        var label = new Label()
+            .SetText(longText)
+            .SetTextWrapping(TextWrapping.WordWrap);
+
+        // Act - measure with large available width
+        var availableSize = new Size(800, 600);
+        label.Measure(availableSize);
+
+        // Assert
+        Console.WriteLine($"Available width: {availableSize.Width}");
+        Console.WriteLine($"Label ElementSize: {label.ElementSize.Width} x {label.ElementSize.Height}");
+
+        // Should be less than 800
+        Assert.IsLessThan(availableSize.Width, label.ElementSize.Width,
+            $"Label width ({label.ElementSize.Width}) should be less than available ({availableSize.Width})");
     }
 }

@@ -128,10 +128,11 @@ public partial class VStack : UiLayoutElement
             Math.Max(0, availableSize.Width - Margin.Horizontal),
             Math.Max(0, availableSize.Height - Margin.Vertical));
 
-        // First measure all non-stretching children
+        // First measure all non-stretching children with dontStretch=true to get their natural sizes
+        // This prevents nested Stretch children from expanding the parent's measured width
         foreach (var child in Children.Where(c => c.VerticalAlignment is not VerticalAlignment.Stretch).ToList())
         {
-            var result = child.Measure(childAvailableSize, dontStretch);
+            var result = child.Measure(childAvailableSize, true);
             childAvailableSize = new Size(
                 childAvailableSize.Width,
                 Math.Max(0, childAvailableSize.Height - (result.Height + child.Margin.Vertical)));
