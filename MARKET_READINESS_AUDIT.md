@@ -453,6 +453,8 @@ docs/
 | **Code-Only + Fluent API** | Eleganter als XAML für viele Entwickler |
 | **6 Plattformen + 2 Spezial** | Breiteste Abdeckung im .NET-Bereich |
 
+*Fun Fact:* Der Headless-Modus ermöglicht theoretisch auch "UI-as-a-Service" - die App hinter einer REST API zu betreiben (z.B. für serverseitige Screenshot-Generierung, PDF-Rendering mit UI-Komponenten). Ein experimenteller Ansatz, der bei keinem anderen Framework möglich ist.
+
 ---
 
 ## Teil 4: Stärken und Schwächen
