@@ -15,7 +15,7 @@ namespace PlusUi.core;
 /// Provides layout, rendering, data binding, styling, accessibility, and input handling.
 /// </summary>
 [GenerateGenericWrapper]
-public abstract class UiElement : IDisposable
+public abstract partial class UiElement : IDisposable
 {
     #region Fields
     private readonly Dictionary<string, List<Action>> _bindings = [];

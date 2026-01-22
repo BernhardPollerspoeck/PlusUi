@@ -39,7 +39,7 @@ namespace PlusUi.core;
 ///     );
 /// </code>
 /// </example>
-public class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
+public partial class ItemsList<T> : UiLayoutElement<ItemsList<T>>, IScrollableControl
 {
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.List;

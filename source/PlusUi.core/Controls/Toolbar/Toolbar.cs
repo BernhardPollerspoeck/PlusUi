@@ -190,8 +190,8 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     }
     #endregion
 
-    #region ContentPadding
-    internal Margin ContentPadding
+    #region Padding
+    internal Margin Padding
     {
         get => field;
         set
@@ -199,17 +199,17 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
             field = value;
             InvalidateMeasure();
         }
-    } = new Margin(16, 0, 16, 0);
-    public Toolbar SetContentPadding(Margin padding)
+    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
+    public Toolbar SetPadding(Margin padding)
     {
-        ContentPadding = padding;
+        Padding = padding;
         return this;
     }
-    public Toolbar BindContentPadding(Expression<Func<Margin>> propertyExpression)
+    public Toolbar BindPadding(Expression<Func<Margin>> propertyExpression)
     {
         var path = ExpressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => ContentPadding = getter());
+        RegisterPathBinding(path, () => Padding = getter());
         return this;
     }
     #endregion
@@ -451,8 +451,8 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
     {
         _overflowItems.Clear();
 
-        var effectiveWidth = availableSize.Width - ContentPadding.Horizontal;
-        var effectiveHeight = availableSize.Height - ContentPadding.Vertical;
+        var effectiveWidth = availableSize.Width - Padding.Horizontal;
+        var effectiveHeight = availableSize.Height - Padding.Vertical;
         var childAvailableSize = new Size(effectiveWidth, effectiveHeight);
 
         // Use overflow handling when CollapseToMenu is enabled
@@ -502,7 +502,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
             maxHeight = Math.Max(maxHeight, centerSize.Height);
         }
 
-        return new Size(availableSize.Width, maxHeight + ContentPadding.Vertical);
+        return new Size(availableSize.Width, maxHeight + Padding.Vertical);
     }
 
     private Size MeasureWithOverflow(Size availableSize, Size childAvailableSize)
@@ -625,7 +625,7 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
 
         // Note: Overflow menu is measured/arranged by ToolbarOverflowMenuOverlay
 
-        return new Size(availableSize.Width, maxHeight + ContentPadding.Vertical);
+        return new Size(availableSize.Width, maxHeight + Padding.Vertical);
     }
 
     protected override Point ArrangeInternal(Rect bounds)
@@ -634,10 +634,10 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         var positionY = bounds.Top;
 
         var contentBounds = new Rect(
-            bounds.Left + ContentPadding.Left,
-            bounds.Top + ContentPadding.Top,
-            bounds.Width - ContentPadding.Horizontal,
-            bounds.Height - ContentPadding.Vertical);
+            bounds.Left + Padding.Left,
+            bounds.Top + Padding.Top,
+            bounds.Width - Padding.Horizontal,
+            bounds.Height - Padding.Vertical);
 
         // Recalculate visibility based on actual arrange bounds (may differ from measure bounds)
         if (OverflowBehavior == OverflowBehavior.CollapseToMenu)

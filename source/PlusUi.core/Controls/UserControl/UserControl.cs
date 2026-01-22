@@ -32,7 +32,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateGenericWrapper]
-public abstract class UserControl : UiElement<UserControl>, IDebugInspectable
+public abstract partial class UserControl : UiElement<UserControl>, IDebugInspectable
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;

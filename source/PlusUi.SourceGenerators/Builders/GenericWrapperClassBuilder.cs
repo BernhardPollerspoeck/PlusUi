@@ -1,8 +1,9 @@
 using Microsoft.CodeAnalysis;
+using PlusUi.SourceGenerators.Utilities;
 using System.Linq;
 using System.Text;
 
-namespace PlusUi.SourceGenerators;
+namespace PlusUi.SourceGenerators.Builders;
 
 internal static class GenericWrapperClassBuilder
 {

@@ -10,7 +10,7 @@ namespace PlusUi.core;
 /// Overlay element that renders a menu dropdown with items.
 /// Supports nested submenus, keyboard navigation, and hover tracking.
 /// </summary>
-internal class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKeyboardInputHandler, IDebugInspectable
+internal partial class MenuOverlay : UiElement, IInputControl, IDismissableOverlay, IKeyboardInputHandler, IDebugInspectable
 {
     private static readonly Color DefaultBackgroundColor = PlusUiDefaults.BackgroundPrimary;
 

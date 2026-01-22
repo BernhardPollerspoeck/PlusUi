@@ -7,7 +7,7 @@ namespace PlusUi.core.CoreElements;
 /// <summary>
 /// Popup element with typed argument and result support.
 /// </summary>
-public abstract class UiPopupElement<TArgument, TResult>(INotifyPropertyChanged vm) : UiPopupElement(vm)
+public abstract partial class UiPopupElement<TArgument, TResult>(INotifyPropertyChanged vm) : UiPopupElement(vm)
 {
     public TArgument? Argument { get; private set; }
     public TResult? Result { get; protected set; }
@@ -45,7 +45,7 @@ public abstract class UiPopupElement<TArgument, TResult>(INotifyPropertyChanged 
 /// <summary>
 /// Popup element with typed argument (no result).
 /// </summary>
-public abstract class UiPopupElement<TArgument>(INotifyPropertyChanged vm) : UiPopupElement(vm)
+public abstract partial class UiPopupElement<TArgument>(INotifyPropertyChanged vm) : UiPopupElement(vm)
 {
     public TArgument? Argument { get; private set; }
     public Action? OnClosed { get; private set; }
@@ -65,7 +65,7 @@ public abstract class UiPopupElement<TArgument>(INotifyPropertyChanged vm) : UiP
         }
     }
 }
-public abstract class UiPopupElement : UiElement, IInputControl
+public abstract partial class UiPopupElement : UiElement, IInputControl
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;

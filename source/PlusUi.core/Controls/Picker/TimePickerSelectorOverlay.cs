@@ -5,7 +5,7 @@ namespace PlusUi.core;
 /// <summary>
 /// Time selector overlay with hour and minute columns.
 /// </summary>
-internal class TimePickerSelectorOverlay : UiElement, IInputControl, IDismissableOverlay, IScrollableControl
+internal partial class TimePickerSelectorOverlay : UiElement, IInputControl, IDismissableOverlay, IScrollableControl
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;

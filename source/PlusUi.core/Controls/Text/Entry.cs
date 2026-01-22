@@ -36,7 +36,6 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
     {
         SetBackground(new SolidColorBackground(PlusUiDefaults.BackgroundInput));
         SetCornerRadius(PlusUiDefaults.CornerRadius);
-        Padding = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
         SetDesiredWidth(200);
         SetHighContrastBackground(PlusUiDefaults.HcInputBackground);
         SetHighContrastForeground(PlusUiDefaults.HcForeground);
@@ -85,7 +84,7 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
             field = value;
             InvalidateMeasure();
         }
-    }
+    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
     public Entry SetPadding(Margin padding)
     {
         Padding = padding;

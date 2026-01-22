@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace PlusUi.core;
 
-public abstract class UiPageElement : UiLayoutElement<UiPageElement>
+public abstract partial class UiPageElement : UiLayoutElement<UiPageElement>
 {
     public INotifyPropertyChanged ViewModel { get; }
     private UiElement _tree = new NullElement();

@@ -8,7 +8,7 @@ namespace PlusUi.core;
 /// A hierarchical tree view control for displaying nested data structures.
 /// Supports heterogeneous child types via type-specific children selectors.
 /// </summary>
-public class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputControl, IHoverableControl
+public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, IInputControl, IHoverableControl
 {
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Tree;

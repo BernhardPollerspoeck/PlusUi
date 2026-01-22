@@ -12,7 +12,7 @@ namespace PlusUi.core;
 /// Base class for UI elements that display text content.
 /// Provides text rendering, font management, text alignment, wrapping, and truncation.
 /// </summary>
-public abstract class UiTextElement : UiElement
+public abstract partial class UiTextElement : UiElement
 {
     #region Services
     /// <summary>

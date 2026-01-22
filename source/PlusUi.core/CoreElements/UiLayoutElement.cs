@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace PlusUi.core;
 
-public abstract class UiLayoutElement<T> : UiLayoutElement where T : UiLayoutElement<T>
+public abstract partial class UiLayoutElement<T> : UiLayoutElement where T : UiLayoutElement<T>
 {
     public new T AddChild(UiElement child)
     {
@@ -45,7 +45,7 @@ public abstract class UiLayoutElement<T> : UiLayoutElement where T : UiLayoutEle
     }
 }
 
-public abstract class UiLayoutElement : UiElement, IDebugInspectable
+public abstract partial class UiLayoutElement : UiElement, IDebugInspectable
 {
     #region Constructor
     protected UiLayoutElement()

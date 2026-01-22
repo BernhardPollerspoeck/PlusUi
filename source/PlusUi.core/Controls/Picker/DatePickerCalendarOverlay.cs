@@ -6,7 +6,7 @@ namespace PlusUi.core;
 /// <summary>
 /// Calendar overlay for DatePicker with month/year navigation.
 /// </summary>
-internal class DatePickerCalendarOverlay(DatePicker datePicker) : UiElement, IInputControl, IDismissableOverlay
+internal partial class DatePickerCalendarOverlay(DatePicker datePicker) : UiElement, IInputControl, IDismissableOverlay
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;

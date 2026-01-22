@@ -8,7 +8,7 @@ namespace PlusUi.core;
 /// <summary>
 /// Overlay element that renders the toolbar overflow menu above all page content.
 /// </summary>
-internal class ToolbarOverflowMenuOverlay(Toolbar toolbar) : UiElement, IDismissableOverlay, IDebugInspectable
+internal partial class ToolbarOverflowMenuOverlay(Toolbar toolbar) : UiElement, IDismissableOverlay, IDebugInspectable
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;

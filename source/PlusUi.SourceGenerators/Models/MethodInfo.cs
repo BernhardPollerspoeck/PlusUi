@@ -1,4 +1,4 @@
-namespace PlusUi.SourceGenerators;
+namespace PlusUi.SourceGenerators.Models;
 
 internal class MethodInfo(string name, string parameters, string arguments)
 {

@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace PlusUi.SourceGenerators;
+namespace PlusUi.SourceGenerators.Utilities;
 
 internal static class NamespaceExtractor
 {

@@ -1,7 +1,7 @@
 using Microsoft.CodeAnalysis;
 using System.Linq;
 
-namespace PlusUi.SourceGenerators;
+namespace PlusUi.SourceGenerators.Generators;
 
 [Generator]
 public class GenericWrapperGenerator : IIncrementalGenerator
@@ -11,8 +11,8 @@ public class GenericWrapperGenerator : IIncrementalGenerator
         // Find classes with GenerateGenericWrapper attribute
         var classDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
-                predicate: static (s, _) => SyntaxTargetAnalyzer.IsSyntaxTargetForGeneration(s),
-                transform: static (ctx, _) => SemanticTargetAnalyzer.GetSemanticTargetForGeneration(ctx))
+                predicate: static (s, _) => Analyzers.SyntaxTargetAnalyzer.IsSyntaxTargetForGeneration(s),
+                transform: static (ctx, _) => Analyzers.SemanticTargetAnalyzer.GetSemanticTargetForGeneration(ctx))
             .Where(static m => m is not null);
 
         // Generate source for each class

@@ -1,9 +1,12 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using PlusUi.SourceGenerators.Builders;
+using PlusUi.SourceGenerators.Models;
+using PlusUi.SourceGenerators.Utilities;
 using System.Linq;
 using System.Text;
 
-namespace PlusUi.SourceGenerators;
+namespace PlusUi.SourceGenerators.Generators;
 
 internal static class SourceGenerator
 {
@@ -36,13 +39,13 @@ internal static class SourceGenerator
         {
             // Generate the generic wrapper class (for base classes like UiElement, UiTextElement)
             var sourceText = GenericWrapperClassBuilder.GenerateGenericWrapperClass(namespaceName, className, classSymbol);
-            context.AddSource($"{className}Generic.g.cs", SourceText.From(sourceText, Encoding.UTF8));
+            context.AddSource($"{className}/{className}_Generic.g.cs", SourceText.From(sourceText, Encoding.UTF8));
         }
         else if (hasShadowMethods)
         {
             // Generate shadow methods for concrete classes (for Button, Entry, Label, etc.)
             var sourceText = ConcreteClassShadowBuilder.GenerateConcreteClassShadows(namespaceName, className, classSymbol);
-            context.AddSource($"{className}Shadows.g.cs", SourceText.From(sourceText, Encoding.UTF8));
+            context.AddSource($"{className}/{className}_GenShadowMethods.g.cs", SourceText.From(sourceText, Encoding.UTF8));
         }
     }
 }

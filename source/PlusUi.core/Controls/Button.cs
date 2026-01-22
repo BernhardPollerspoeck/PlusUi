@@ -71,7 +71,7 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
             field = value;
             InvalidateMeasure();
         }
-    }
+    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
     public Button SetPadding(Margin padding)
     {
         Padding = padding;
@@ -252,7 +252,6 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         SetBackground(new SolidColorBackground(PlusUiDefaults.BackgroundControl));
         SetHoverBackground(new SolidColorBackground(PlusUiDefaults.BackgroundHover));
         SetCornerRadius(PlusUiDefaults.CornerRadius);
-        Padding = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
         SetHighContrastBackground(PlusUiDefaults.HcButtonBackground);
         SetHighContrastForeground(PlusUiDefaults.HcForeground);
     }

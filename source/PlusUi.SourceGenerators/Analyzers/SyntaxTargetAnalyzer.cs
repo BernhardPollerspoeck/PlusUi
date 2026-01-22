@@ -1,7 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace PlusUi.SourceGenerators;
+namespace PlusUi.SourceGenerators.Analyzers;
 
 internal static class SyntaxTargetAnalyzer
 {

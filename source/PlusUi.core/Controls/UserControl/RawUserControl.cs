@@ -31,7 +31,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateGenericWrapper]
-public abstract class RawUserControl : UiElement
+public abstract partial class RawUserControl : UiElement
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;

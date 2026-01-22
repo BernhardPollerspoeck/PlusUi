@@ -1,9 +1,10 @@
 using Microsoft.CodeAnalysis;
+using PlusUi.SourceGenerators.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PlusUi.SourceGenerators;
+namespace PlusUi.SourceGenerators.Builders;
 
 internal static class ConcreteClassShadowBuilder
 {

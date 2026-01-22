@@ -10,7 +10,7 @@ namespace PlusUi.core;
 /// Supports multiple column types, selection, alternating row styles, and custom row styling.
 /// </summary>
 /// <typeparam name="T">The type of items in the grid.</typeparam>
-public class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IInputControl, IHoverableControl
+public partial class DataGrid<T> : UiLayoutElement<DataGrid<T>>, IScrollableControl, IInputControl, IHoverableControl
 {
     /// <inheritdoc />
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Grid;

@@ -9,6 +9,8 @@
     <PackageTags>PlusUi;UiFramework;Skiasharp</PackageTags>
     <PackageIcon>plusui.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

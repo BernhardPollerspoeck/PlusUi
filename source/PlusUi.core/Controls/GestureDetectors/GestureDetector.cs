@@ -7,7 +7,7 @@ namespace PlusUi.core;
 /// Wraps content and detects specific gestures.
 /// </summary>
 /// <typeparam name="T">The concrete gesture detector type for method chaining.</typeparam>
-public abstract class GestureDetector<T> : UiLayoutElement where T : GestureDetector<T>
+public abstract partial class GestureDetector<T> : UiLayoutElement where T : GestureDetector<T>
 {
     protected UiElement Content { get; }
 

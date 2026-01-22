@@ -1,8 +1,9 @@
 using Microsoft.CodeAnalysis;
+using PlusUi.SourceGenerators.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PlusUi.SourceGenerators;
+namespace PlusUi.SourceGenerators.Utilities;
 
 internal static class UiElementMethodProvider
 {
@@ -12,10 +13,10 @@ internal static class UiElementMethodProvider
 
         // Get all public instance methods that return the class type
         var allMembers = classSymbol.GetMembers();
-        
+
         foreach (var member in allMembers)
         {
-            if (member is IMethodSymbol methodSymbol && 
+            if (member is IMethodSymbol methodSymbol &&
                 methodSymbol.MethodKind == MethodKind.Ordinary &&
                 methodSymbol.DeclaredAccessibility == Accessibility.Public &&
                 !methodSymbol.IsStatic)
@@ -50,20 +51,20 @@ internal static class UiElementMethodProvider
     private static MethodInfo CreateMethodInfo(IMethodSymbol methodSymbol)
     {
         var name = methodSymbol.Name;
-        var parameters = string.Join(", ", methodSymbol.Parameters.Select(p => 
+        var parameters = string.Join(", ", methodSymbol.Parameters.Select(p =>
         {
             var paramType = p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
             var paramName = p.Name;
-            
+
             if (p.HasExplicitDefaultValue)
             {
                 var defaultValue = FormatDefaultValue(p);
                 return $"{paramType} {paramName} = {defaultValue}";
             }
-            
+
             return $"{paramType} {paramName}";
         }));
-        
+
         var arguments = string.Join(", ", methodSymbol.Parameters.Select(p => p.Name));
 
         return new MethodInfo(name, parameters, arguments);
@@ -77,7 +78,7 @@ internal static class UiElementMethodProvider
         }
 
         var value = parameter.ExplicitDefaultValue;
-        
+
         return value switch
         {
             bool boolValue => boolValue ? "true" : "false",

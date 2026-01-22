@@ -6,7 +6,7 @@ using SkiaSharp;
 
 namespace PlusUi.core;
 
-internal class TooltipOverlay : UiElement, IDebugInspectable
+internal partial class TooltipOverlay : UiElement, IDebugInspectable
 {
     protected internal override bool IsFocusable => false;
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Tooltip;

@@ -1,8 +1,8 @@
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PlusUi.SourceGenerators.Models;
 
-namespace PlusUi.SourceGenerators;
+namespace PlusUi.SourceGenerators.Analyzers;
 
 internal static class SemanticTargetAnalyzer
 {

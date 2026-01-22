@@ -5,7 +5,7 @@ namespace PlusUi.core;
 /// <summary>
 /// Overlay element that renders the combo box dropdown above all page content.
 /// </summary>
-internal class ComboBoxDropdownOverlay<T>(ComboBox<T> comboBox) : UiElement, IInputControl, IDismissableOverlay
+internal partial class ComboBoxDropdownOverlay<T>(ComboBox<T> comboBox) : UiElement, IInputControl, IDismissableOverlay
 {
     /// <inheritdoc />
     protected internal override bool IsFocusable => false;

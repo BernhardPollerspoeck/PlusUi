@@ -1,7 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace PlusUi.SourceGenerators;
+namespace PlusUi.SourceGenerators.Models;
 
 internal class GeneratorContext(ClassDeclarationSyntax classDeclaration, SemanticModel semanticModel)
 {
