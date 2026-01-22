@@ -655,7 +655,7 @@ public sealed class GridTests
         border.Arrange(new Rect(0, 0, containerWidth, 100));
 
         // Assert - Grid should not exceed the container width
-        Assert.IsTrue(grid.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(grid.ElementSize.Width, containerWidth,
             $"Grid width ({grid.ElementSize.Width}) should not exceed container width ({containerWidth})");
         Assert.AreEqual(containerWidth, border.ElementSize.Width,
             $"Border width should match container width");
@@ -690,7 +690,7 @@ public sealed class GridTests
         border.Arrange(new Rect(0, 0, containerWidth, 100));
 
         // Assert - After arrange, grid should respect container bounds
-        Assert.IsTrue(grid.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(grid.ElementSize.Width, containerWidth,
             $"Grid width ({grid.ElementSize.Width}) should not exceed container width ({containerWidth}) even when measured with MaxValue");
     }
 
@@ -725,7 +725,7 @@ public sealed class GridTests
         // Assert - The item should not exceed container width
         var firstItem = itemsList.Children.FirstOrDefault();
         Assert.IsNotNull(firstItem, "ItemsList should have at least one child");
-        Assert.IsTrue(firstItem.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(firstItem.ElementSize.Width, containerWidth,
             $"Item width ({firstItem.ElementSize.Width}) should not exceed container width ({containerWidth})");
     }
 
@@ -767,9 +767,9 @@ public sealed class GridTests
         var firstItem = itemsList.Children.FirstOrDefault();
         Assert.IsNotNull(firstItem, "ItemsList should have at least one child");
 
-        Assert.IsTrue(capturedGrid.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(capturedGrid.ElementSize.Width, containerWidth,
             $"Grid width ({capturedGrid.ElementSize.Width}) should not exceed container width ({containerWidth})");
-        Assert.IsTrue(firstItem.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(firstItem.ElementSize.Width, containerWidth,
             $"Item width ({firstItem.ElementSize.Width}) should not exceed container width ({containerWidth})");
     }
 
@@ -817,11 +817,11 @@ public sealed class GridTests
         Assert.IsNotNull(capturedBorder, "Border should have been created");
 
         // Check each level of nesting
-        Assert.IsTrue(itemsList.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(itemsList.ElementSize.Width, containerWidth,
             $"ItemsList width ({itemsList.ElementSize.Width}) should not exceed container width ({containerWidth})");
-        Assert.IsTrue(capturedBorder.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(capturedBorder.ElementSize.Width, containerWidth,
             $"Border width ({capturedBorder.ElementSize.Width}) should not exceed container width ({containerWidth})");
-        Assert.IsTrue(capturedGrid.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(capturedGrid.ElementSize.Width, containerWidth,
             $"Grid width ({capturedGrid.ElementSize.Width}) should not exceed container width ({containerWidth})");
     }
 
@@ -887,11 +887,11 @@ public sealed class GridTests
         System.Diagnostics.Debug.WriteLine($"Grid: {capturedGrid.ElementSize.Width}");
 
         // Check each level of nesting
-        Assert.IsTrue(capturedItemsList.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(capturedItemsList.ElementSize.Width, containerWidth,
             $"ItemsList width ({capturedItemsList.ElementSize.Width}) should not exceed container width ({containerWidth})");
-        Assert.IsTrue(capturedBorder.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(capturedBorder.ElementSize.Width, containerWidth,
             $"Border width ({capturedBorder.ElementSize.Width}) should not exceed container width ({containerWidth})");
-        Assert.IsTrue(capturedGrid.ElementSize.Width <= containerWidth,
+        Assert.IsLessThanOrEqualTo(capturedGrid.ElementSize.Width, containerWidth,
             $"Grid width ({capturedGrid.ElementSize.Width}) should not exceed container width ({containerWidth})");
     }
 
@@ -1024,9 +1024,9 @@ public sealed class GridTests
         Console.WriteLine($"ItemBorder: {itemBorder.ElementSize.Width}");
         Console.WriteLine($"ItemGrid: {itemGrid.ElementSize.Width}");
 
-        Assert.IsTrue(itemBorder.ElementSize.Width <= expectedMaxItemWidth,
+        Assert.IsLessThanOrEqualTo(itemBorder.ElementSize.Width, expectedMaxItemWidth,
             $"Item Border width ({itemBorder.ElementSize.Width}) should not exceed {expectedMaxItemWidth} (window {windowWidth} - ItemsList margin 16)");
-        Assert.IsTrue(itemGrid.ElementSize.Width <= expectedMaxItemWidth - 8,
+        Assert.IsLessThanOrEqualTo(itemGrid.ElementSize.Width, expectedMaxItemWidth - 8,
             $"Item Grid width ({itemGrid.ElementSize.Width}) should not exceed {expectedMaxItemWidth - 8} (available after Border margin)");
     }
 

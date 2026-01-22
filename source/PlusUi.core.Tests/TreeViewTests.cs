@@ -1224,8 +1224,8 @@ public class TreeViewTests
         var labelsUC2 = userControl2.GetCurrentTestLabels();
 
         // Assert - Check that labels were rendered
-        Assert.IsTrue(labelsUC1.Count > 0, "UC1 should have labels");
-        Assert.IsTrue(labelsUC2.Count > 0, "UC2 should have labels");
+        Assert.IsNotEmpty(labelsUC1, "UC1 should have labels");
+        Assert.IsNotEmpty(labelsUC2, "UC2 should have labels");
 
         // Check that all labels in UC1 were rendered
         foreach (var label in labelsUC1)
@@ -1244,10 +1244,10 @@ public class TreeViewTests
         foreach (var label in labelsUC2)
         {
             var effectiveX = label.CapturedPosition.X + label.CapturedVisualOffset.X;
-            Assert.IsTrue(effectiveX >= 400,
+            Assert.IsGreaterThanOrEqualTo(effectiveX, 400,
                 $"Label '{label.Text}' effective X ({effectiveX}) should be >= 400 (right column). " +
                 $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
-            Assert.IsTrue(effectiveX < 800,
+            Assert.IsLessThan(effectiveX, 800,
                 $"Label '{label.Text}' effective X ({effectiveX}) should be < 800 (within grid). " +
                 $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
         }
@@ -1256,10 +1256,10 @@ public class TreeViewTests
         foreach (var label in labelsUC1)
         {
             var effectiveX = label.CapturedPosition.X + label.CapturedVisualOffset.X;
-            Assert.IsTrue(effectiveX >= 0,
+            Assert.IsGreaterThanOrEqualTo(effectiveX, 0,
                 $"Label '{label.Text}' effective X ({effectiveX}) should be >= 0. " +
                 $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
-            Assert.IsTrue(effectiveX < 400,
+            Assert.IsLessThan(effectiveX, 400,
                 $"Label '{label.Text}' effective X ({effectiveX}) should be < 400 (left column). " +
                 $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
         }

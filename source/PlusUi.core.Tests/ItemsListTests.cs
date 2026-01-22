@@ -505,7 +505,7 @@ public class ItemsListTests
 
         // Get the children (buttons)
         var buttons = itemsList.Children.OfType<Button>().ToList();
-        Assert.IsTrue(buttons.Count >= 1, "Should have at least one button");
+        Assert.IsGreaterThanOrEqualTo(buttons.Count, 1, "Should have at least one button");
 
         // Debug info
         var debugInfo = $"ItemsList: Position=({itemsList.Position.X},{itemsList.Position.Y}), " +
@@ -759,7 +759,7 @@ public class ItemsListTests
 
         // Get all buttons
         var buttons = itemsList.Children.OfType<Button>().ToList();
-        Assert.IsTrue(buttons.Count >= 2, $"Should have at least 2 visible buttons, got {buttons.Count}");
+        Assert.IsGreaterThanOrEqualTo(buttons.Count, 2, $"Should have at least 2 visible buttons, got {buttons.Count}");
 
         // Build debug info
         var debugInfo = $"\nLeftSide: Size=({leftSide.ElementSize.Width}, {leftSide.ElementSize.Height})\n" +
@@ -815,7 +815,7 @@ public class ItemsListTests
 
         // Get all visible buttons
         var buttons = itemsList.Children.OfType<Button>().ToList();
-        Assert.IsTrue(buttons.Count >= 2, $"Should have at least 2 visible buttons, got {buttons.Count}");
+        Assert.IsGreaterThanOrEqualTo(buttons.Count, 2, $"Should have at least 2 visible buttons, got {buttons.Count}");
 
         // Build debug info
         var debugInfo = $"\nItemsList: Size=({itemsList.ElementSize.Width}, {itemsList.ElementSize.Height})\n";
@@ -900,7 +900,7 @@ public class ItemsListTests
         hstack.Arrange(new Rect(0, 0, 800, 300));
 
         var initialButtons = itemsList.Children.OfType<Button>().ToList();
-        Assert.IsTrue(initialButtons.Count >= 1, "Should have at least 1 visible button initially");
+        Assert.IsGreaterThanOrEqualTo(initialButtons.Count, 1, "Should have at least 1 visible button initially");
         var expectedWidth = initialButtons[0].ElementSize.Width;
 
         // Act 2: Scroll down (to show bottom items)
@@ -915,7 +915,7 @@ public class ItemsListTests
 
         // Get buttons after scrolling back
         var buttonsAfterScroll = itemsList.Children.OfType<Button>().ToList();
-        Assert.IsTrue(buttonsAfterScroll.Count >= 1, "Should have at least 1 visible button after scrolling");
+        Assert.IsGreaterThanOrEqualTo(buttonsAfterScroll.Count, 1, "Should have at least 1 visible button after scrolling");
 
         // Build debug info
         var debugInfo = $"\nExpected width: {expectedWidth}\n" +
@@ -968,7 +968,7 @@ public class ItemsListTests
         itemsList.Arrange(new Rect(0, 0, 200, 150));
 
         var initialButtons = itemsList.Children.OfType<Button>().ToList();
-        Assert.IsTrue(initialButtons.Count >= 1, "Should have at least 1 visible button initially");
+        Assert.IsGreaterThanOrEqualTo(initialButtons.Count, 1, "Should have at least 1 visible button initially");
         var initialButtonWidth = initialButtons[0].ElementSize.Width;
 
         // Scroll down to show different items
@@ -977,7 +977,7 @@ public class ItemsListTests
         itemsList.Arrange(new Rect(0, 0, 200, 150));
 
         var scrolledButtons = itemsList.Children.OfType<Button>().ToList();
-        Assert.IsTrue(scrolledButtons.Count >= 1, "Should have at least 1 visible button after scrolling");
+        Assert.IsGreaterThanOrEqualTo(scrolledButtons.Count, 1, "Should have at least 1 visible button after scrolling");
 
         // Build debug info
         var debugInfo = $"\nInitial button width: {initialButtonWidth}\n" +

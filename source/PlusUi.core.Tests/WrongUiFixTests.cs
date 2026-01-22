@@ -375,12 +375,12 @@ public class WrongUiFixTests
         Console.WriteLine($"Frame Breakdown Border Size: {frameBreakdown.ElementSize.Width} x {frameBreakdown.ElementSize.Height}");
 
         // The border width should be much less than the available width
-        Assert.IsTrue(frameBreakdown.ElementSize.Width < 300,
+        Assert.IsLessThan(frameBreakdown.ElementSize.Width, 300,
             $"Border should size to content (~200px), but was {frameBreakdown.ElementSize.Width}px. " +
             "Use SetHorizontalAlignment(Left) to prevent stretching.");
 
         // Container also sizes to content
-        Assert.IsTrue(container.ElementSize.Width < 350,
+        Assert.IsLessThan(container.ElementSize.Width, 350,
             $"Container should size to content, but was {container.ElementSize.Width}px");
     }
 

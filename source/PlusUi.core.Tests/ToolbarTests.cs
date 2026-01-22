@@ -489,10 +489,10 @@ public sealed class ToolbarTests
         // Arrange
         var padding = new Margin(20, 8, 20, 8);
         var toolbar = new Toolbar()
-            .SetContentPadding(padding);
+            .SetPadding(padding);
 
         // Assert
-        Assert.AreEqual(padding, toolbar.ContentPadding);
+        Assert.AreEqual(padding, toolbar.Padding);
     }
 
     [TestMethod]
