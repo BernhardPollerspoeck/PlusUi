@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.UiPropGen;
 using PlusUi.core.Models;
 using SkiaSharp;
 using System.Linq.Expressions;
@@ -26,6 +27,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
+[UiPropGenPadding]
 public partial class Button : UiTextElement, IInputControl, IHoverableControl, IFocusable
 {
     private IImageLoaderService? _imageLoaderService;
@@ -58,30 +60,6 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         var path = ExpressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();
         RegisterPathBinding(path, () => HoverBackground = getter());
-        return this;
-    }
-    #endregion
-
-    #region Padding
-    internal Margin Padding
-    {
-        get => field;
-        set
-        {
-            field = value;
-            InvalidateMeasure();
-        }
-    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
-    public Button SetPadding(Margin padding)
-    {
-        Padding = padding;
-        return this;
-    }
-    public Button BindPadding(Expression<Func<Margin>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Padding = getter());
         return this;
     }
     #endregion

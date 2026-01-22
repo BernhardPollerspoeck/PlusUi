@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.UiPropGen;
 using PlusUi.core.Services;
 using SkiaSharp;
 using System.Globalization;
@@ -22,6 +23,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
+[UiPropGenPadding]
 public partial class TimePicker : UiElement, IInputControl, ITextInputControl, IHoverableControl, IFocusable, IKeyboardInputHandler
 {
     private const float ArrowSize = 8f;
@@ -316,32 +318,6 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         var path = ExpressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();
         RegisterPathBinding(path, () => FontFamily = getter());
-        return this;
-    }
-    #endregion
-
-    #region Padding
-    internal Margin Padding
-    {
-        get => field;
-        set
-        {
-            field = value;
-            InvalidateMeasure();
-        }
-    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
-
-    public TimePicker SetPadding(Margin padding)
-    {
-        Padding = padding;
-        return this;
-    }
-
-    public TimePicker BindPadding(Expression<Func<Margin>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Padding = getter());
         return this;
     }
     #endregion

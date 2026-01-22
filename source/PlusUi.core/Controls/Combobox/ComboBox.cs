@@ -1,9 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using PlusUi.core.Attributes;
 using PlusUi.core.Services;
 using PlusUi.core.Services.DebugBridge;
+using PlusUi.core.UiPropGen;
 using SkiaSharp;
-using System.Collections;
 using System.Collections.Specialized;
 using System.Linq.Expressions;
 
@@ -14,36 +15,18 @@ namespace PlusUi.core;
 /// Supports data binding and custom display formatting.
 /// </summary>
 /// <typeparam name="T">The type of items in the combo box.</typeparam>
-/// <example>
-/// <code>
-/// // Simple combo box with string items
-/// new ComboBox<string>()
-///     .SetItemsSource(new[] { "Option 1", "Option 2", "Option 3" })
-///     .SetPlaceholder("Select an option...");
-///
-/// // Combo box with custom objects and display function
-/// new ComboBox<Person>()
-///     .SetItemsSource(people)
-///     .SetDisplayFunc(person => person.Name)
-///     .BindSelectedItem(nameof(vm.SelectedPerson), () => vm.SelectedPerson, p => vm.SelectedPerson = p);
-/// </code>
-/// </example>
-public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboardInputHandler, IDebugInspectable
+[GenerateShadowMethods]
+public partial class ComboBox<T> : ComboBox, IInputControl, IFocusable, IKeyboardInputHandler, IDebugInspectable
 {
-    /// <summary>
-    /// Returns the dropdown overlay for debug inspection.
-    /// </summary>
     IEnumerable<UiElement> IDebugInspectable.GetDebugChildren() =>
         _dropdownOverlay != null ? [_dropdownOverlay] : [];
 
     private IEnumerable<T>? _itemsSource;
     internal readonly List<T> _cachedItems = [];
-    internal const float DropdownMaxHeight = 200f;
-    internal static readonly float ItemHeight = PlusUiDefaults.ItemHeight;
-    private const float ArrowSize = 8f;
     private IOverlayService? _overlayService;
     private ComboBoxDropdownOverlay<T>? _dropdownOverlay;
     private IPlatformService? _platformService;
+    private Action<T?>? _onSelectionChanged;
 
     #region ItemsSource
     internal IEnumerable<T>? ItemsSource
@@ -51,20 +34,14 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         get => field;
         set
         {
-            // Unsubscribe from old collection
             if (_itemsSource is INotifyCollectionChanged oldCollection)
-            {
                 oldCollection.CollectionChanged -= OnCollectionChanged;
-            }
 
             field = value;
             _itemsSource = value;
 
-            // Subscribe to new collection
             if (_itemsSource is INotifyCollectionChanged newCollection)
-            {
                 newCollection.CollectionChanged += OnCollectionChanged;
-            }
 
             RefreshCache();
             InvalidateMeasure();
@@ -93,20 +70,15 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         set
         {
             if (EqualityComparer<T>.Default.Equals(field, value))
-            {
                 return;
-            }
 
             field = value;
 
-            // Update SelectedIndex
             if (value != null)
             {
                 var index = _cachedItems.IndexOf(value);
                 if (index >= 0)
-                {
                     _selectedIndex = index;
-                }
             }
             else
             {
@@ -129,9 +101,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         var getter = propertyExpression.Compile();
         RegisterPathBinding(path, () => SelectedItem = getter());
         foreach (var segment in path)
-        {
             RegisterSetter<T?>(segment, propertySetter);
-        }
         RegisterSetter<T?>(nameof(SelectedItem), propertySetter);
         return this;
     }
@@ -146,21 +116,14 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         set
         {
             if (_selectedIndex == value)
-            {
                 return;
-            }
 
             _selectedIndex = value;
 
-            // Update SelectedItem
             if (value >= 0 && value < _cachedItems.Count)
-            {
                 SelectedItem = _cachedItems[value];
-            }
             else
-            {
                 SelectedItem = default;
-            }
         }
     }
 
@@ -176,157 +139,8 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         var getter = propertyExpression.Compile();
         RegisterPathBinding(path, () => SelectedIndex = getter());
         foreach (var segment in path)
-        {
             RegisterSetter<int>(segment, propertySetter);
-        }
         RegisterSetter<int>(nameof(SelectedIndex), propertySetter);
-        return this;
-    }
-    #endregion
-
-    #region IsOpen
-    internal bool IsOpen
-    {
-        get => field;
-        set
-        {
-            if (field == value)
-                return;
-
-            field = value;
-
-            if (value)
-            {
-                RegisterDropdownOverlay();
-            }
-            else
-            {
-                UnregisterDropdownOverlay();
-            }
-
-            InvalidateMeasure();
-        }
-    }
-
-    public ComboBox<T> SetIsOpen(bool isOpen)
-    {
-        IsOpen = isOpen;
-        return this;
-    }
-
-    public ComboBox<T> BindIsOpen(Expression<Func<bool>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => IsOpen = getter());
-        return this;
-    }
-
-    private void RegisterDropdownOverlay()
-    {
-        _overlayService ??= ServiceProviderService.ServiceProvider?.GetService<IOverlayService>();
-        if (_overlayService == null)
-            return;
-
-        _dropdownOverlay = new ComboBoxDropdownOverlay<T>(this);
-        _overlayService.RegisterOverlay(_dropdownOverlay);
-    }
-
-    private void UnregisterDropdownOverlay()
-    {
-        if (_overlayService != null && _dropdownOverlay != null)
-        {
-            _overlayService.UnregisterOverlay(_dropdownOverlay);
-            _dropdownOverlay = null;
-        }
-    }
-    #endregion
-
-    #region Placeholder
-    internal string? Placeholder { get; set; }
-
-    public ComboBox<T> SetPlaceholder(string placeholder)
-    {
-        Placeholder = placeholder;
-        return this;
-    }
-
-    public ComboBox<T> BindPlaceholder(Expression<Func<string?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Placeholder = getter());
-        return this;
-    }
-    #endregion
-
-    #region PlaceholderColor
-    internal SKColor PlaceholderColor { get; set; } = PlusUiDefaults.TextPlaceholder;
-
-    public ComboBox<T> SetPlaceholderColor(SKColor color)
-    {
-        PlaceholderColor = color;
-        return this;
-    }
-
-    public ComboBox<T> BindPlaceholderColor(Expression<Func<SKColor>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => PlaceholderColor = getter());
-        return this;
-    }
-    #endregion
-
-    #region TextColor
-    internal SKColor TextColor
-    {
-        get => field;
-        set
-        {
-            field = value;
-            UpdatePaint();
-        }
-    } = PlusUiDefaults.TextPrimary;
-
-    public ComboBox<T> SetTextColor(SKColor color)
-    {
-        TextColor = color;
-        return this;
-    }
-
-    public ComboBox<T> BindTextColor(Expression<Func<SKColor>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => TextColor = getter());
-        return this;
-    }
-    #endregion
-
-    #region TextSize
-    internal float TextSize
-    {
-        get => field;
-        set
-        {
-            field = value;
-            UpdatePaint();
-            InvalidateMeasure();
-        }
-    } = PlusUiDefaults.FontSize;
-
-    public ComboBox<T> SetTextSize(float size)
-    {
-        TextSize = size;
-        return this;
-    }
-
-    public ComboBox<T> BindTextSize(Expression<Func<float>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => TextSize = getter());
         return this;
     }
     #endregion
@@ -350,180 +164,55 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     }
     #endregion
 
-    #region Padding
-    internal Margin Padding
-    {
-        get => field;
-        set
-        {
-            field = value;
-            InvalidateMeasure();
-        }
-    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
-
-    public ComboBox<T> SetPadding(Margin padding)
-    {
-        Padding = padding;
-        return this;
-    }
-
-    public ComboBox<T> BindPadding(Expression<Func<Margin>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Padding = getter());
-        return this;
-    }
-    #endregion
-
-    #region DropdownBackground
-    internal SKColor DropdownBackground { get; set; } = PlusUiDefaults.BackgroundPrimary;
-
-    public ComboBox<T> SetDropdownBackground(SKColor color)
-    {
-        DropdownBackground = color;
-        return this;
-    }
-
-    public ComboBox<T> BindDropdownBackground(Expression<Func<SKColor>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => DropdownBackground = getter());
-        return this;
-    }
-    #endregion
-
-    #region HoverBackground
-    internal SKColor HoverBackground { get; set; } = PlusUiDefaults.BackgroundHover;
-
-    public ComboBox<T> SetHoverBackground(SKColor color)
-    {
-        HoverBackground = color;
-        return this;
-    }
-
-    public ComboBox<T> BindHoverBackground(Expression<Func<SKColor>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => HoverBackground = getter());
-        return this;
-    }
-    #endregion
-
-    #region FontFamily
-    internal string? FontFamily
-    {
-        get => field;
-        set
-        {
-            field = value;
-            UpdatePaint();
-            InvalidateMeasure();
-        }
-    }
-
-    public ComboBox<T> SetFontFamily(string fontFamily)
-    {
-        FontFamily = fontFamily;
-        return this;
-    }
-
-    public ComboBox<T> BindFontFamily(Expression<Func<string?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => FontFamily = getter());
-        return this;
-    }
-    #endregion
-
     #region OnSelectionChanged
-
-    private Action<T?>? _onSelectionChanged;
-
-    /// <summary>
-    /// Sets a callback that is invoked when the selection changes.
-    /// </summary>
     public ComboBox<T> SetOnSelectionChanged(Action<T?> callback)
     {
         _onSelectionChanged = callback;
         return this;
     }
-
     #endregion
 
-    private SKFont _font;
-    private SKPaint _paint;
-
-    internal int _hoveredIndex = -1;
-    internal int _scrollStartIndex = 0; // First visible item index for scrolling
-
-    /// <inheritdoc />
-    protected internal override bool IsFocusable => true;
-
-    /// <inheritdoc />
-    public override AccessibilityRole AccessibilityRole => AccessibilityRole.ComboBox;
-
-    public ComboBox()
+    #region Dropdown Overlay (override abstract)
+    protected override void OnDropdownOpened()
     {
-        SetDesiredSize(new Size(200, 40));
-        SetBackground(new SolidColorBackground(PlusUiDefaults.BackgroundInput));
-        SetCornerRadius(PlusUiDefaults.CornerRadius);
-        SetHighContrastBackground(PlusUiDefaults.HcInputBackground);
-        SetHighContrastForeground(PlusUiDefaults.HcForeground);
-        UpdatePaint();
+        _overlayService ??= ServiceProviderService.ServiceProvider?.GetService<IOverlayService>();
+        if (_overlayService == null)
+            return;
+
+        _dropdownOverlay = new ComboBoxDropdownOverlay<T>(this);
+        _overlayService.RegisterOverlay(_dropdownOverlay);
     }
 
-    [MemberNotNull(nameof(_font), nameof(_paint))]
-    private void UpdatePaint()
+    protected override void OnDropdownClosed()
     {
-        // Release old paint if exists (for property changes)
-        if (_paint is not null && _font is not null)
+        if (_overlayService != null && _dropdownOverlay != null)
         {
-            PaintRegistry.Release(_paint, _font);
+            _overlayService.UnregisterOverlay(_dropdownOverlay);
+            _dropdownOverlay = null;
         }
-
-        // Get or create paint from registry
-        var typeface = string.IsNullOrEmpty(FontFamily)
-            ? SKTypeface.FromFamilyName(null)
-            : SKTypeface.FromFamilyName(FontFamily);
-
-        (_paint, _font) = PaintRegistry.GetOrCreate(
-            color: TextColor,
-            size: TextSize,
-            typeface: typeface
-        );
     }
+    #endregion
 
-    /// <inheritdoc />
-    public override string? GetComputedAccessibilityLabel()
-    {
-        return AccessibilityLabel ?? Placeholder ?? "Dropdown";
-    }
+    #region Accessibility
+    public override string? GetComputedAccessibilityLabel() =>
+        AccessibilityLabel ?? Placeholder ?? "Dropdown";
 
-    /// <inheritdoc />
     public override string? GetComputedAccessibilityValue()
     {
         if (!string.IsNullOrEmpty(AccessibilityValue))
-        {
             return AccessibilityValue;
-        }
         return SelectedItem != null ? DisplayFunc(SelectedItem) : null;
     }
 
-    /// <inheritdoc />
     public override AccessibilityTrait GetComputedAccessibilityTraits()
     {
         var traits = base.GetComputedAccessibilityTraits();
         if (IsOpen)
-        {
             traits |= AccessibilityTrait.Expanded;
-        }
         traits |= AccessibilityTrait.HasPopup;
         return traits;
     }
+    #endregion
 
     #region IFocusable
     bool IFocusable.IsFocusable => IsFocusable;
@@ -538,27 +227,22 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     void IFocusable.OnBlur()
     {
         OnBlur();
-        // Close dropdown when losing focus
         IsOpen = false;
     }
     #endregion
 
     #region IKeyboardInputHandler
-    /// <inheritdoc />
     public bool HandleKeyboardInput(PlusKey key)
     {
         if (!IsOpen)
         {
-            // When closed, Enter/Space opens the dropdown
             if (key == PlusKey.Enter || key == PlusKey.Space)
             {
                 IsOpen = true;
-                // Initialize hover to current selection
                 _hoveredIndex = _selectedIndex;
                 ScrollToSelection();
                 return true;
             }
-            // Arrow up/down can also open and navigate
             if (key == PlusKey.ArrowUp || key == PlusKey.ArrowDown)
             {
                 IsOpen = true;
@@ -569,7 +253,6 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
             return false;
         }
 
-        // When open, navigate items
         switch (key)
         {
             case PlusKey.Escape:
@@ -602,9 +285,7 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
             case PlusKey.Enter:
             case PlusKey.Space:
                 if (_hoveredIndex >= 0 && _hoveredIndex < _cachedItems.Count)
-                {
                     SelectItem(_hoveredIndex);
-                }
                 IsOpen = false;
                 return true;
             default:
@@ -619,24 +300,15 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         _selectedIndex = index;
         SelectedItem = _cachedItems[index];
 
-        // Invoke selection changed callback
         _onSelectionChanged?.Invoke(SelectedItem);
 
-        // Notify setters
         if (_setter.TryGetValue(nameof(SelectedItem), out var itemSetters))
-        {
             foreach (var setter in itemSetters)
-            {
                 setter(SelectedItem);
-            }
-        }
+
         if (_setter.TryGetValue(nameof(SelectedIndex), out var indexSetters))
-        {
             foreach (var setter in indexSetters)
-            {
                 setter(SelectedIndex);
-            }
-        }
     }
 
     private void EnsureHoveredItemVisible()
@@ -646,18 +318,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         var dropdownRect = GetDropdownRect();
         var visibleItemCount = (int)(dropdownRect.Height / ItemHeight);
 
-        // Scroll up if hovered is above visible area
         if (_hoveredIndex < _scrollStartIndex)
-        {
             _scrollStartIndex = _hoveredIndex;
-        }
-        // Scroll down if hovered is below visible area
         else if (_hoveredIndex >= _scrollStartIndex + visibleItemCount)
-        {
             _scrollStartIndex = _hoveredIndex - visibleItemCount + 1;
-        }
 
-        // Clamp scroll start
         _scrollStartIndex = Math.Max(0, Math.Min(_scrollStartIndex, _cachedItems.Count - visibleItemCount));
     }
 
@@ -672,10 +337,13 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         var dropdownRect = GetDropdownRect();
         var visibleItemCount = (int)(dropdownRect.Height / ItemHeight);
 
-        // Center the selection in the visible area
         _scrollStartIndex = Math.Max(0, _selectedIndex - visibleItemCount / 2);
         _scrollStartIndex = Math.Min(_scrollStartIndex, Math.Max(0, _cachedItems.Count - visibleItemCount));
     }
+    #endregion
+
+    #region IInputControl
+    public void InvokeCommand() => IsOpen = !IsOpen;
     #endregion
 
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -688,11 +356,8 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     {
         _cachedItems.Clear();
         if (_itemsSource != null)
-        {
             _cachedItems.AddRange(_itemsSource);
-        }
 
-        // Validate selected index
         if (_selectedIndex >= _cachedItems.Count)
         {
             _selectedIndex = -1;
@@ -700,27 +365,13 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         }
     }
 
-    #region IInputControl
-    public void InvokeCommand()
-    {
-        IsOpen = !IsOpen;
-    }
-    #endregion
-
-    protected override Margin? GetDebugPadding() => Padding;
-
     public override void Render(SKCanvas canvas)
     {
         base.Render(canvas);
         if (!IsVisible)
-        {
             return;
-        }
 
-        // Render the main combo box button
         RenderComboBoxButton(canvas);
-
-        // Dropdown is rendered via OverlayService (above all page content)
     }
 
     private void RenderComboBoxButton(SKCanvas canvas)
@@ -731,21 +382,17 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
             Position.X + VisualOffset.X + ElementSize.Width,
             Position.Y + VisualOffset.Y + ElementSize.Height);
 
-        // Determine display text
         var displayText = SelectedItem != null
             ? DisplayFunc(SelectedItem)
             : (Placeholder ?? string.Empty);
 
         var showingPlaceholder = SelectedItem == null && !string.IsNullOrEmpty(Placeholder);
 
-        // Render text
         if (!string.IsNullOrEmpty(displayText))
         {
             var originalColor = _paint.Color;
             if (showingPlaceholder)
-            {
                 _paint.Color = PlaceholderColor;
-            }
 
             _font.GetFontMetrics(out var fontMetrics);
             var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
@@ -759,68 +406,26 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
                 _paint);
 
             if (showingPlaceholder)
-            {
                 _paint.Color = originalColor;
-            }
         }
 
-        // Draw dropdown arrow
         RenderArrow(canvas, rect);
     }
 
-    private void RenderArrow(SKCanvas canvas, SKRect rect)
-    {
-        var arrowCenterX = rect.Right - Padding.Right - ArrowSize - 4;
-        var arrowCenterY = rect.Top + rect.Height / 2;
-
-        using var arrowPaint = new SKPaint
-        {
-            Color = TextColor,
-            IsAntialias = true,
-            Style = SKPaintStyle.Fill
-        };
-
-        var arrowPath = new SKPath();
-        if (IsOpen)
-        {
-            // Up arrow
-            arrowPath.MoveTo(arrowCenterX - ArrowSize / 2, arrowCenterY + ArrowSize / 4);
-            arrowPath.LineTo(arrowCenterX + ArrowSize / 2, arrowCenterY + ArrowSize / 4);
-            arrowPath.LineTo(arrowCenterX, arrowCenterY - ArrowSize / 4);
-        }
-        else
-        {
-            // Down arrow
-            arrowPath.MoveTo(arrowCenterX - ArrowSize / 2, arrowCenterY - ArrowSize / 4);
-            arrowPath.LineTo(arrowCenterX + ArrowSize / 2, arrowCenterY - ArrowSize / 4);
-            arrowPath.LineTo(arrowCenterX, arrowCenterY + ArrowSize / 4);
-        }
-        arrowPath.Close();
-
-        canvas.DrawPath(arrowPath, arrowPaint);
-    }
-
-    /// <summary>
-    /// Calculates the dropdown rectangle with intelligent positioning.
-    /// Opens upward if there's not enough space below.
-    /// </summary>
     internal SKRect GetDropdownRect()
     {
         var dropdownHeight = Math.Min(_cachedItems.Count * ItemHeight, DropdownMaxHeight);
         var comboBoxBottom = Position.Y + VisualOffset.Y + ElementSize.Height;
         var comboBoxTop = Position.Y + VisualOffset.Y;
 
-        // Get window size to check available space
         _platformService ??= ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
         var windowHeight = _platformService?.WindowSize.Height ?? 800f;
 
-        // Check if dropdown fits below
         var spaceBelow = windowHeight - comboBoxBottom;
         var opensUpward = spaceBelow < dropdownHeight && comboBoxTop > spaceBelow;
 
         if (opensUpward)
         {
-            // Open upward
             return new SKRect(
                 Position.X + VisualOffset.X,
                 comboBoxTop - dropdownHeight,
@@ -829,7 +434,6 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         }
         else
         {
-            // Open downward (default)
             return new SKRect(
                 Position.X + VisualOffset.X,
                 comboBoxBottom,
@@ -841,14 +445,11 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     internal void RenderDropdown(SKCanvas canvas)
     {
         if (_cachedItems.Count == 0)
-        {
             return;
-        }
 
         var dropdownRect = GetDropdownRect();
         var dropdownHeight = dropdownRect.Height;
 
-        // Draw dropdown background
         using var bgPaint = new SKPaint
         {
             Color = DropdownBackground,
@@ -857,11 +458,9 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         };
         canvas.DrawRoundRect(dropdownRect, CornerRadius, CornerRadius, bgPaint);
 
-        // Clip to rounded rect for item rendering (so hover effects respect corner radius)
         canvas.Save();
         canvas.ClipRoundRect(new SKRoundRect(dropdownRect, CornerRadius, CornerRadius));
 
-        // Draw items
         _font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
@@ -879,7 +478,6 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
                 dropdownRect.Right,
                 itemY + ItemHeight);
 
-            // Highlight hovered or selected item
             if (i == _hoveredIndex || i == _selectedIndex)
             {
                 using var hoverPaint = new SKPaint
@@ -891,7 +489,6 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
                 canvas.DrawRect(itemRect, hoverPaint);
             }
 
-            // Draw item text
             var itemText = DisplayFunc(item);
             canvas.DrawText(
                 itemText,
@@ -902,10 +499,8 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
                 _paint);
         }
 
-        // Restore canvas (remove clipping)
         canvas.Restore();
 
-        // Draw dropdown border (after restore so it's not clipped)
         using var borderPaint = new SKPaint
         {
             Color = TextColor,
@@ -916,9 +511,300 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
         canvas.DrawRoundRect(dropdownRect, CornerRadius, CornerRadius, borderPaint);
     }
 
+    internal void InvokeSetters()
+    {
+        if (_setter.TryGetValue(nameof(SelectedItem), out var itemSetters))
+            foreach (var setter in itemSetters)
+                setter(SelectedItem);
+
+        if (_setter.TryGetValue(nameof(SelectedIndex), out var indexSetters))
+            foreach (var setter in indexSetters)
+                setter(SelectedIndex);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if (_itemsSource is INotifyCollectionChanged collection)
+                collection.CollectionChanged -= OnCollectionChanged;
+
+            OnDropdownClosed();
+        }
+        base.Dispose(disposing);
+    }
+}
+
+/// <summary>
+/// Non-generic base class for ComboBox. Contains T-independent properties.
+/// </summary>
+[GenerateShadowMethods]
+[UiPropGenPadding]
+public abstract partial class ComboBox : UiElement
+{
+    internal const float DropdownMaxHeight = 200f;
+    internal static readonly float ItemHeight = PlusUiDefaults.ItemHeight;
+    protected const float ArrowSize = 8f;
+
+    protected internal override bool IsFocusable => true;
+    public override AccessibilityRole AccessibilityRole => AccessibilityRole.ComboBox;
+
+    internal SKFont _font = null!;
+    internal SKPaint _paint = null!;
+    internal int _hoveredIndex = -1;
+    internal int _scrollStartIndex = 0;
+
+    #region IsOpen
+    internal bool IsOpen
+    {
+        get => field;
+        set
+        {
+            if (field == value)
+                return;
+
+            field = value;
+
+            if (value)
+                OnDropdownOpened();
+            else
+                OnDropdownClosed();
+
+            InvalidateMeasure();
+        }
+    }
+
+    public ComboBox SetIsOpen(bool isOpen)
+    {
+        IsOpen = isOpen;
+        return this;
+    }
+
+    public ComboBox BindIsOpen(Expression<Func<bool>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => IsOpen = getter());
+        return this;
+    }
+
+    protected abstract void OnDropdownOpened();
+    protected abstract void OnDropdownClosed();
+    #endregion
+
+    #region Placeholder
+    internal string? Placeholder { get; set; }
+
+    public ComboBox SetPlaceholder(string placeholder)
+    {
+        Placeholder = placeholder;
+        return this;
+    }
+
+    public ComboBox BindPlaceholder(Expression<Func<string?>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => Placeholder = getter());
+        return this;
+    }
+    #endregion
+
+    #region PlaceholderColor
+    internal SKColor PlaceholderColor { get; set; } = PlusUiDefaults.TextPlaceholder;
+
+    public ComboBox SetPlaceholderColor(SKColor color)
+    {
+        PlaceholderColor = color;
+        return this;
+    }
+
+    public ComboBox BindPlaceholderColor(Expression<Func<SKColor>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => PlaceholderColor = getter());
+        return this;
+    }
+    #endregion
+
+    #region TextColor
+    internal SKColor TextColor
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdatePaint();
+        }
+    } = PlusUiDefaults.TextPrimary;
+
+    public ComboBox SetTextColor(SKColor color)
+    {
+        TextColor = color;
+        return this;
+    }
+
+    public ComboBox BindTextColor(Expression<Func<SKColor>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextColor = getter());
+        return this;
+    }
+    #endregion
+
+    #region TextSize
+    internal float TextSize
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdatePaint();
+            InvalidateMeasure();
+        }
+    } = PlusUiDefaults.FontSize;
+
+    public ComboBox SetTextSize(float size)
+    {
+        TextSize = size;
+        return this;
+    }
+
+    public ComboBox BindTextSize(Expression<Func<float>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => TextSize = getter());
+        return this;
+    }
+    #endregion
+
+    #region DropdownBackground
+    internal SKColor DropdownBackground { get; set; } = PlusUiDefaults.BackgroundPrimary;
+
+    public ComboBox SetDropdownBackground(SKColor color)
+    {
+        DropdownBackground = color;
+        return this;
+    }
+
+    public ComboBox BindDropdownBackground(Expression<Func<SKColor>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => DropdownBackground = getter());
+        return this;
+    }
+    #endregion
+
+    #region HoverBackground
+    internal SKColor HoverBackground { get; set; } = PlusUiDefaults.BackgroundHover;
+
+    public ComboBox SetHoverBackground(SKColor color)
+    {
+        HoverBackground = color;
+        return this;
+    }
+
+    public ComboBox BindHoverBackground(Expression<Func<SKColor>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => HoverBackground = getter());
+        return this;
+    }
+    #endregion
+
+    #region FontFamily
+    internal string? FontFamily
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdatePaint();
+            InvalidateMeasure();
+        }
+    }
+
+    public ComboBox SetFontFamily(string fontFamily)
+    {
+        FontFamily = fontFamily;
+        return this;
+    }
+
+    public ComboBox BindFontFamily(Expression<Func<string?>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => FontFamily = getter());
+        return this;
+    }
+    #endregion
+
+    protected ComboBox()
+    {
+        SetDesiredSize(new Size(200, 40));
+        SetBackground(new SolidColorBackground(PlusUiDefaults.BackgroundInput));
+        SetCornerRadius(PlusUiDefaults.CornerRadius);
+        SetHighContrastBackground(PlusUiDefaults.HcInputBackground);
+        SetHighContrastForeground(PlusUiDefaults.HcForeground);
+        UpdatePaint();
+    }
+
+    [MemberNotNull(nameof(_font), nameof(_paint))]
+    private void UpdatePaint()
+    {
+        if (_paint is not null && _font is not null)
+            PaintRegistry.Release(_paint, _font);
+
+        var typeface = string.IsNullOrEmpty(FontFamily)
+            ? SKTypeface.FromFamilyName(null)
+            : SKTypeface.FromFamilyName(FontFamily);
+
+        (_paint, _font) = PaintRegistry.GetOrCreate(
+            color: TextColor,
+            size: TextSize,
+            typeface: typeface
+        );
+    }
+
+    protected override Margin? GetDebugPadding() => Padding;
+
+    protected void RenderArrow(SKCanvas canvas, SKRect rect)
+    {
+        var arrowCenterX = rect.Right - Padding.Right - ArrowSize - 4;
+        var arrowCenterY = rect.Top + rect.Height / 2;
+
+        using var arrowPaint = new SKPaint
+        {
+            Color = TextColor,
+            IsAntialias = true,
+            Style = SKPaintStyle.Fill
+        };
+
+        var arrowPath = new SKPath();
+        if (IsOpen)
+        {
+            arrowPath.MoveTo(arrowCenterX - ArrowSize / 2, arrowCenterY + ArrowSize / 4);
+            arrowPath.LineTo(arrowCenterX + ArrowSize / 2, arrowCenterY + ArrowSize / 4);
+            arrowPath.LineTo(arrowCenterX, arrowCenterY - ArrowSize / 4);
+        }
+        else
+        {
+            arrowPath.MoveTo(arrowCenterX - ArrowSize / 2, arrowCenterY - ArrowSize / 4);
+            arrowPath.LineTo(arrowCenterX + ArrowSize / 2, arrowCenterY - ArrowSize / 4);
+            arrowPath.LineTo(arrowCenterX, arrowCenterY + ArrowSize / 4);
+        }
+        arrowPath.Close();
+
+        canvas.DrawPath(arrowPath, arrowPaint);
+    }
+
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
-        // Get font metrics for height calculation
         _font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
 
@@ -930,40 +816,13 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
             Math.Min(height, availableSize.Height));
     }
 
-    /// <summary>
-    /// Invokes the setters for two-way binding after selection changes.
-    /// </summary>
-    internal void InvokeSetters()
-    {
-        if (_setter.TryGetValue(nameof(SelectedItem), out var itemSetters))
-        {
-            foreach (var setter in itemSetters)
-            {
-                setter(SelectedItem);
-            }
-        }
-
-        if (_setter.TryGetValue(nameof(SelectedIndex), out var indexSetters))
-        {
-            foreach (var setter in indexSetters)
-            {
-                setter(SelectedIndex);
-            }
-        }
-    }
-
     public override UiElement? HitTest(Point point)
     {
-        // Dropdown clicks are handled by the overlay
-        // Click outside is handled by InputService dismissing overlays
-
-        // Check if clicking on combo box button
         if (point.X >= Position.X && point.X <= Position.X + ElementSize.Width &&
             point.Y >= Position.Y && point.Y <= Position.Y + ElementSize.Height)
         {
             return this;
         }
-
         return null;
     }
 
@@ -971,19 +830,8 @@ public partial class ComboBox<T> : UiElement, IInputControl, IFocusable, IKeyboa
     {
         if (disposing)
         {
-            // Unsubscribe from collection changes
-            if (_itemsSource is INotifyCollectionChanged collection)
-            {
-                collection.CollectionChanged -= OnCollectionChanged;
-            }
-
-            UnregisterDropdownOverlay();
-
-            // Release paint from registry
             if (_paint is not null && _font is not null)
-            {
                 PaintRegistry.Release(_paint, _font);
-            }
         }
         base.Dispose(disposing);
     }

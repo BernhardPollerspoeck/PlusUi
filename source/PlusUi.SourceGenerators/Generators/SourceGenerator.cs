@@ -35,17 +35,26 @@ internal static class SourceGenerator
             attr.AttributeClass?.Name == "GenerateShadowMethodsAttribute" ||
             attr.AttributeClass?.Name == "GenerateShadowMethods");
 
+        // Build type parameter suffix for file names and full class name for code generation
+        var typeParams = classSymbol.TypeParameters;
+        var typeParamSuffix = typeParams.Length > 0
+            ? "_" + string.Join("_", typeParams.Select(tp => tp.Name))
+            : "";
+        var fullClassName = typeParams.Length > 0
+            ? $"{className}<{string.Join(", ", typeParams.Select(tp => tp.Name))}>"
+            : className;
+
         if (hasGenericWrapper)
         {
             // Generate the generic wrapper class (for base classes like UiElement, UiTextElement)
             var sourceText = GenericWrapperClassBuilder.GenerateGenericWrapperClass(namespaceName, className, classSymbol);
-            context.AddSource($"{className}/{className}_Generic.g.cs", SourceText.From(sourceText, Encoding.UTF8));
+            context.AddSource($"{className}/{className}{typeParamSuffix}_Generic.g.cs", SourceText.From(sourceText, Encoding.UTF8));
         }
         else if (hasShadowMethods)
         {
             // Generate shadow methods for concrete classes (for Button, Entry, Label, etc.)
-            var sourceText = ConcreteClassShadowBuilder.GenerateConcreteClassShadows(namespaceName, className, classSymbol);
-            context.AddSource($"{className}/{className}_GenShadowMethods.g.cs", SourceText.From(sourceText, Encoding.UTF8));
+            var sourceText = ConcreteClassShadowBuilder.GenerateConcreteClassShadows(namespaceName, fullClassName, classSymbol);
+            context.AddSource($"{className}/{className}{typeParamSuffix}_GenShadowMethods.g.cs", SourceText.From(sourceText, Encoding.UTF8));
         }
     }
 }

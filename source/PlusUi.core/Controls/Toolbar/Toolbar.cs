@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.Attributes;
+using PlusUi.core.UiPropGen;
 using PlusUi.core.Services;
 using SkiaSharp;
 using System.Linq.Expressions;
@@ -30,6 +31,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
+[UiPropGenPadding]
 public partial class Toolbar : UiLayoutElement<Toolbar>
 {
     /// <inheritdoc />
@@ -186,30 +188,6 @@ public partial class Toolbar : UiLayoutElement<Toolbar>
         var path = ExpressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();
         RegisterPathBinding(path, () => ItemSpacing = getter());
-        return this;
-    }
-    #endregion
-
-    #region Padding
-    internal Margin Padding
-    {
-        get => field;
-        set
-        {
-            field = value;
-            InvalidateMeasure();
-        }
-    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
-    public Toolbar SetPadding(Margin padding)
-    {
-        Padding = padding;
-        return this;
-    }
-    public Toolbar BindPadding(Expression<Func<Margin>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Padding = getter());
         return this;
     }
     #endregion

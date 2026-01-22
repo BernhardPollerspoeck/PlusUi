@@ -1,4 +1,5 @@
 using PlusUi.core.Attributes;
+using PlusUi.core.UiPropGen;
 using SkiaSharp;
 using System.Linq.Expressions;
 
@@ -27,6 +28,7 @@ namespace PlusUi.core;
 /// </code>
 /// </example>
 [GenerateShadowMethods]
+[UiPropGenPadding]
 public partial class Entry : UiTextElement, ITextInputControl, IFocusable
 {
     private bool _isSelected;
@@ -73,30 +75,6 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
     }
     void IFocusable.OnFocus() => OnFocus();
     void IFocusable.OnBlur() => OnBlur();
-    #endregion
-
-    #region Padding
-    internal Margin Padding
-    {
-        get => field;
-        set
-        {
-            field = value;
-            InvalidateMeasure();
-        }
-    } = new Margin(PlusUiDefaults.PaddingHorizontal, PlusUiDefaults.PaddingVertical);
-    public Entry SetPadding(Margin padding)
-    {
-        Padding = padding;
-        return this;
-    }
-    public Entry BindPadding(Expression<Func<Margin>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Padding = getter());
-        return this;
-    }
     #endregion
 
     #region IsPassword
