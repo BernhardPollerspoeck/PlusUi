@@ -1,567 +1,420 @@
 # PlusUi - Marktreife-Audit und Wettbewerbsanalyse
 
 **Datum:** Januar 2026
-**Version:** 2.0 (Korrigiert)
+**Version:** 3.0 (Kritische Revision)
 **Autor:** Claude Code Audit
 
 ---
 
 ## Executive Summary
 
-PlusUi ist ein Cross-Platform UI-Framework für .NET, das auf SkiaSharp als einheitlicher Rendering-Engine aufbaut. Die Analyse zeigt ein **technisch ausgereiftes Framework** mit professioneller Code-Qualität, umfangreicher Control-Bibliothek und durchdachter Architektur.
+PlusUi ist ein ambitioniertes Cross-Platform UI-Framework für .NET mit solidem technischen Fundament. Die Analyse zeigt ein Framework mit **klaren Stärken in Architektur und Developer Tools**, aber auch **realistischen Herausforderungen** beim Markteintritt in einen etablierten Wettbewerb.
 
-### Gesamtbewertung: 8.2/10 (Marktreif mit Einschränkungen)
+### Gesamtbewertung: 7.8/10
 
-| Kriterium | Score | Status |
-|-----------|-------|--------|
-| Architektur & Design | 8.5/10 | ✅ Exzellent |
-| Code-Qualität | 8.4/10 | ✅ Exzellent |
-| Control-Bibliothek | 8.0/10 | ✅ Sehr gut |
-| Theming/Styling | 8.5/10 | ✅ Exzellent |
-| Plattform-Support | 7.5/10 | ⚠️ Finales Testing |
-| Developer Tools | 9.0/10 | ✅ Herausragend |
-| Dokumentation | 7.5/10 | ✅ Gut |
-| **Marktreife gesamt** | **8.2/10** | **✅ Bereit** |
+| Kriterium | Score | Einschätzung |
+|-----------|-------|--------------|
+| Architektur & Design | 8.5/10 | Solide, durchdacht |
+| Code-Qualität | 8.4/10 | Professionell |
+| Control-Bibliothek | 7.5/10 | Gute Basis, Lücken vorhanden |
+| Theming/Styling | 8.0/10 | Vollständig, aber ungetestet im Feld |
+| Plattform-Support | 6.5/10 | Kritischer Punkt - Testing ausstehend |
+| Developer Tools | 8.5/10 | Stark, DebugServer herausragend |
+| Dokumentation | 7.0/10 | Vorhanden, aber verbesserungsfähig |
+| Marktpositionierung | 5.0/10 | Unklar, Differenzierung nötig |
 
-*Hinweis: Community/Ökosystem wurde nicht bewertet, da das Projekt pre-release ist.*
+*Community/Ökosystem nicht bewertet (pre-release)*
 
 ---
 
-## Teil 1: Technische Analyse
+## Teil 1: Kritische Analyse
 
-### 1.1 Projektstruktur und Organisation
+### 1.1 Architektur - Was funktioniert, was nicht
 
-```
-PlusUi/
-├── source/
-│   ├── PlusUi.core/             # Kern-Framework (229 Dateien)
-│   ├── PlusUi.SourceGenerators/ # Roslyn Code-Generatoren
-│   ├── PlusUi.desktop/          # Windows/macOS/Linux via Silk.NET
-│   ├── PlusUi.ios/              # iOS native
-│   ├── PlusUi.droid/            # Android native
-│   ├── PlusUi.Web/              # Blazor WebAssembly
-│   ├── PlusUi.Headless/         # Server-Side Rendering
-│   ├── PlusUi.h264/             # Video-Rendering
-│   └── PlusUi.DebugServer/      # Developer Tools
-├── samples/                      # Plattform-Demos
-├── templates/                    # Projekt-Templates
-├── docs/                         # GitHub Pages Dokumentation
-└── tests/                        # Unit-Tests
-```
+#### Stärken
+- **Einheitliches Rendering:** SkiaSharp als Single-Source-of-Truth ist die richtige Entscheidung für Konsistenz
+- **Fluent API:** Gut lesbar, IDE-freundlich, moderne C#-Patterns
+- **Source Generators:** Reduzieren Boilerplate effektiv
 
-**Bewertung:** Professionelle, klar strukturierte Organisation mit sauberer Trennung zwischen Kern-Bibliothek und plattformspezifischen Implementierungen.
+#### Kritische Punkte
 
-### 1.2 Architektur
-
-#### Rendering-Architektur
-- **Einheitliche Engine:** SkiaSharp 3.119.1 für alle Plattformen
-- **Konsistenz:** Pixel-perfekte Darstellung überall
-- **Ansatz:** Custom-Rendering (bewusste Design-Entscheidung für Konsistenz)
-
-#### Klassenarchitektur
-```
-UiElement (abstrakte Basis)
-├── UiTextElement (Text-basierte Controls)
-├── UiLayoutElement<T> (Container/Layouts)
-├── UiPageElement (Seiten)
-├── UiPopupElement (Popups/Overlays)
-└── Konkrete Controls (Button, Label, etc.)
-```
-
-#### Service-Architektur
-Das Framework nutzt Dependency Injection mit folgenden Kern-Services:
-- `IPaintRegistryService` - Paint/Font-Ressourcen-Management mit Reference Counting
-- `IThemeService` - Theme-Verwaltung (Light/Dark/Custom)
-- `INavigationService` - Navigation mit Transitions
-- `IFocusManager` - Fokus-Navigation
-- `IAccessibilityService` - Barrierefreiheit
-- `IRenderService` - Rendering-Pipeline
-- `ITransitionService` - Page-Animationen
-
-**Architektur-Entscheidung:** Service Locator Pattern (`ServiceProviderService.ServiceProvider`) wird bewusst verwendet, da Entwickler Controls manuell instanziieren (`new Button()`). Dies ist eine ergonomische Entscheidung zugunsten der Developer Experience - Constructor-Injection wäre hier nicht praktikabel.
-
-**Stärken:**
-- Saubere Separation of Concerns
-- Fluent API durchgängig implementiert
-- Source Generators reduzieren Boilerplate-Code
-- Pragmatische Architektur-Entscheidungen
-
-### 1.3 Control-Bibliothek
-
-#### Verfügbare Controls (60+)
-
-| Kategorie | Controls | Vollständigkeit |
-|-----------|----------|-----------------|
-| **Text** | Label, Entry, Link | ✅ Vollständig |
-| **Buttons** | Button, Checkbox, RadioButton, Toggle | ✅ Vollständig |
-| **Layout** | VStack, HStack, Grid, UniformGrid, Border, ScrollView | ✅ Vollständig |
-| **Listen** | ItemsList<T>, TreeView, DataGrid<T> | ✅ Vollständig |
-| **Auswahl** | ComboBox<T>, Slider, DatePicker, TimePicker | ✅ Vollständig |
-| **Navigation** | TabControl, Menu, Toolbar, ContextMenu | ✅ Vollständig |
-| **Medien** | Image (statisch, animiert, SVG), ProgressBar, ActivityIndicator | ✅ Vollständig |
-| **Gesten** | Tap, DoubleTap, LongPress, Swipe, Pinch, Drag | ✅ Vollständig |
-
-#### DataGrid-Spaltentypen (11 Varianten)
-TextColumn, ButtonColumn, CheckboxColumn, ComboBoxColumn, DatePickerColumn, ImageColumn, LinkColumn, ProgressColumn, SliderColumn, TimePickerColumn, TemplateColumn
-
-#### Bewusst nicht priorisierte Controls
-- **Charts:** Anwendungsspezifisch, können bei Bedarf ergänzt werden
-- **RichTextBox:** Komplexität vs. Nutzen abgewogen
-- **WebView/MediaPlayer:** Plattformspezifische Abhängigkeiten
-
-**Begründung:** Der Fokus liegt auf soliden Basis-Controls. Spezialisierte Controls können durch die Community oder bei konkretem Bedarf natürlich wachsen.
-
-### 1.4 Theming und Styling
-
-#### Vollständiges Styling-System
-
+**Service Locator Pattern**
 ```csharp
-// Globales Styling via IApplicationStyle
-public class MyAppTheme : IApplicationStyle
-{
-    public void ConfigureStyle(Style style)
-    {
-        // Default Theme
-        style.AddStyle<Button>(button => button
-            .SetBackground(Colors.Blue)
-            .SetTextColor(Colors.White));
-
-        // Dark Theme spezifisch
-        style.AddStyle<Button>(Theme.Dark, button => button
-            .SetBackground(Colors.DarkGray));
-
-        // Light Theme spezifisch
-        style.AddStyle<Button>(Theme.Light, button => button
-            .SetBackground(Colors.White)
-            .SetTextColor(Colors.Black));
-    }
-}
+// Aktuell
+var service = ServiceProviderService.ServiceProvider?.GetRequiredService<IThemeService>();
 ```
+- **Realität:** Notwendig wegen `new Button()` Syntax - verstanden und akzeptiert
+- **Problem:** Erschwert Unit-Testing von Controls, da globaler State
+- **Risiko:** Bei Multi-Window-Szenarien oder isolierten Tests könnten Probleme auftreten
 
-#### Theme-Features
-| Feature | Status |
-|---------|--------|
-| Light Theme | ✅ |
-| Dark Theme | ✅ |
-| Custom Themes | ✅ |
-| Global Styles | ✅ |
-| Page-spezifische Styles | ✅ |
-| Style Inheritance | ✅ |
-| `.IgnoreStyling()` Opt-out | ✅ |
-| Hover States | ✅ |
-| Runtime Theme-Wechsel | ✅ |
+**Große Control-Klassen**
+- `DataGrid.cs`, `TreeView.cs` sind komplex
+- Nicht zwingend schlecht, aber erhöht Wartungsaufwand
+- Bei Bugs in diesen Controls: hoher Diagnose-Aufwand
 
-#### Background-Optionen
-- SolidColorBackground
-- LinearGradient (2 Farben + Winkel)
-- RadialGradient (Zentrum zu Rand)
-- MultiStopGradient (mehrere Farben)
+### 1.2 Control-Bibliothek - Ehrliche Bestandsaufnahme
 
-#### Vordefinierte Ressourcen
-- 150+ Farben in `Colors` Klasse
-- Semantic Colors in `PlusUiDefaults`
-- High-Contrast-Farben für Barrierefreiheit
+#### Was da ist (60+ Controls)
+| Kategorie | Status | Marktvergleich |
+|-----------|--------|----------------|
+| Basis (Button, Label, Entry) | ✅ Solide | Gleichwertig |
+| Layout (Grid, Stack, ScrollView) | ✅ Gut | Gleichwertig |
+| Listen (ItemsList, DataGrid, TreeView) | ✅ Gut | Gleichwertig |
+| Navigation (TabControl, Menu) | ✅ Gut | Gleichwertig |
+| Datum/Zeit (DatePicker, TimePicker) | ✅ Vorhanden | Gleichwertig |
 
-**Bewertung:** Das Theming-System ist vollständig und flexibel. Es deckt alle gängigen Anwendungsfälle ab.
+#### Was fehlt - und warum das relevant ist
 
-### 1.5 Animationen
+| Control | Wichtigkeit | Begründung |
+|---------|-------------|------------|
+| **MultiLine TextBox** | Kritisch | Jede Business-App braucht das |
+| **AutoComplete/SearchBox** | Hoch | Standard-Erwartung 2026 |
+| **RichTextEditor** | Mittel | Oft angefragt, komplex |
+| **NumberEntry/MaskedEntry** | Hoch | Formular-Apps brauchen das |
+| **ColorPicker** | Mittel | Design-Tools, Einstellungen |
+| **Charts** | Niedrig* | Anwendungsspezifisch - OK als Community-Beitrag |
+| **WebView** | Niedrig* | Plattform-abhängig - verständlich |
 
-#### Page Transitions
-```csharp
-// Verfügbare Transitions
-source/PlusUi.core/Animations/
-├── Easing.cs           # Easing-Funktionen
-├── FadeTransition.cs   # Ein-/Ausblenden
-├── SlideTransition.cs  # Slide mit Richtung
-├── SlideDirection.cs   # Left, Right, Up, Down
-├── NoneTransition.cs   # Keine Animation
-└── IPageTransition.cs  # Interface
-```
+*Diese bewusst nicht zu priorisieren ist eine valide Entscheidung.*
 
-#### H264 Video-Animationen
-```csharp
-source/PlusUi.h264/Animations/
-├── EAnimationType.cs
-├── IAnimation.cs
-└── LinearAnimation.cs
-```
+**Fazit Controls:** Die Basis ist da, aber für "Enterprise-Ready" fehlen 2-3 kritische Controls.
 
-**Bewertung:** Solide Basis für Page-Transitions. Erweiterbar bei Bedarf.
+### 1.3 Plattform-Support - Der kritischste Punkt
 
-### 1.6 Plattform-Unterstützung
+#### Realität
+Alle Plattformen sind "im finalen Testing" - das ist gut. Aber:
 
-| Plattform | Status | Technologie |
-|-----------|--------|-------------|
-| **Windows** | 🔄 Finales Testing | Silk.NET/OpenGL |
-| **macOS** | 🔄 Finales Testing | Silk.NET/OpenGL |
-| **Linux** | 🔄 Finales Testing | Silk.NET/OpenGL |
-| **iOS** | 🔄 Finales Testing | Native UIKit |
-| **Android** | 🔄 Finales Testing | Native + OpenGL ES |
-| **Web** | 🔄 Finales Testing | Blazor WASM |
-| **Headless** | ✅ Stabil | In-Memory Rendering |
-| **H264/Video** | ✅ Stabil | FFmpeg |
+| Plattform | Risiko-Einschätzung | Begründung |
+|-----------|---------------------|------------|
+| Windows | Niedrig | Hauptentwicklungsplattform, vermutlich gut getestet |
+| macOS | Mittel | OpenGL auf macOS ist deprecated (Apple pusht Metal) |
+| Linux | Mittel | Viele Distros, viele Edge Cases |
+| iOS | Hoch | App Store Review, Performance-Erwartungen, Gesten |
+| Android | Hoch | Fragmentierung, Lifecycle-Management komplex |
+| Web/Blazor | Mittel-Hoch | WASM Performance, Browser-Unterschiede |
 
-**Status:** Alle Plattformen befinden sich im finalen Testing und Feinschliff vor dem öffentlichen Release.
+**Ehrliche Einschätzung:** Mobile (iOS/Android) wird die größte Herausforderung. Hier werden nach Release die meisten Bugs gemeldet werden.
 
-### 1.7 Developer Tools
+#### Empfehlung
+- Nicht alle Plattformen gleichzeitig als "stable" releasen
+- Stattdessen: **Gestaffelter Release** (siehe Release-Strategie)
 
-#### Hot Reload ✅
-```csharp
-// PlusUiHotReloadManager.cs
-[assembly: System.Reflection.Metadata.MetadataUpdateHandler(typeof(PlusUiHotReloadManager))]
+### 1.4 Developer Tools - Echte Stärke
 
-internal class PlusUiHotReloadManager
-{
-    public static void UpdateApplication(Type[]? updatedTypes)
-    {
-        // Automatische Page/UserControl/Popup-Aktualisierung
-    }
-}
-```
+#### DebugServer
+Das ist ein **echtes Differenzierungsmerkmal**. Konkret:
+- Element Tree wie Chrome DevTools
+- Live Property Editing
+- Performance Monitoring
+- Multi-App Support
 
-Nutzt .NET's eingebauten `MetadataUpdateHandler` für echten Hot Reload - elegante Implementierung!
+**Kritik:** Ist das ausreichend dokumentiert? Können neue User es sofort nutzen?
 
-#### DebugServer - Herausragendes Differenzierungsmerkmal
+#### Hot Reload
+Nutzt .NET's `MetadataUpdateHandler` - elegant und standardkonform.
 
-```
-PlusUi.DebugServer/
-├── Components/
-│   ├── ElementTreeView.cs      # DOM-Inspector (wie Browser DevTools)
-│   ├── PropertyGridView.cs     # Live Property-Editor
-│   ├── PerformanceView.cs      # Performance Monitoring
-│   ├── LogsView.cs             # Log-Viewer
-│   ├── ScreenshotsView.cs      # Screenshot Capture
-│   └── AppContentView.cs       # App-Ansicht
-├── Services/
-│   └── DebugBridgeServer.cs    # WebSocket-Kommunikation
-└── Pages/
-    ├── MainPage.cs             # Multi-App Tabs
-    └── PropertyEditorPopup.cs  # Property-Editor
-```
+**Kritik:** Funktioniert das zuverlässig auf allen Plattformen? Edge Cases bei komplexen Änderungen?
 
-**Features:**
-- Element Tree Inspection (wie Chrome DevTools)
-- Live Property-Editing
-- Performance-Metriken
-- Log-Aggregation
-- Screenshot-Capture
-- Multi-App-Support via Tabs
-- WebSocket-basierte Kommunikation
+### 1.5 Dokumentation - Vorhanden, aber...
 
-**Das ist ein signifikantes Differenzierungsmerkmal!** Flutter und .NET MAUI haben kein vergleichbares integriertes Tool out-of-the-box.
-
-### 1.8 Code-Qualität
-
-#### Quantitative Metriken
-
-| Metrik | Wert | Bewertung |
-|--------|------|-----------|
-| Produktionscode | ~33.000 LOC | - |
-| Testcode | ~16.500 LOC | - |
-| Test-zu-Code-Ratio | ~0.50 | ✅ Solide Basis |
-| TODO/FIXME Kommentare | 1 | ✅ Exzellent |
-| Exception-Throws | 56 (0.24/Datei) | ✅ Exzellent |
-| XML-Dokumentation | 2.483 | ✅ Gut |
-
-**Hinweis zur Test-Ratio:** Tests werden pragmatisch mit auftretenden Bugs wachsen. "Blind Tests" ohne konkreten Nutzen werden bewusst nicht geschrieben - ein vernünftiger Ansatz.
-
-#### Code-Patterns
-
-**Positiv:**
-- Konsistente Fluent API (Set*/Bind* Pattern)
-- Moderne C# Features (Primary Constructors, Pattern Matching)
-- Nullable Reference Types durchgängig aktiviert
-- Source Generators für Boilerplate-Reduktion
-- Minimale technische Schulden
-
-**Maintainability Score: 8.4/10**
-
-### 1.9 Dokumentation
-
-#### GitHub Pages Dokumentation (`/docs`)
-
-```
-docs/
-├── index.md                 # Landing Page
-├── platform-support.md      # Plattform-Matrix
-├── migration.md             # Migration Guide
-├── getting-started/
-│   ├── installation.md
-│   └── first-app.md
-├── guides/
-│   ├── best-practices.md
-│   ├── headless.md
-│   ├── project-setup.md
-│   └── theming.md
-└── controls/                # 35+ Control-Dokumentationen
-    ├── button.md
-    ├── label.md
-    ├── datagrid.md
-    ├── ... (35+ Dateien)
-```
-
-**Umfang:**
-- 35+ Control-Dokumentationen mit Properties und Beispielen
-- Getting Started Guide
-- Theming Guide mit vollständigen Beispielen
+#### Was da ist
+- 35+ Control-Dokumentationen
+- Theming Guide
+- Getting Started
 - Best Practices
-- Platform Support Matrix
-- Migration Guide
 
-**Bewertung:** Solide Dokumentation vorhanden. Wird vor Release finalisiert.
+#### Was fehlt oder verbessert werden sollte
 
----
+| Lücke | Impact |
+|-------|--------|
+| **Video-Tutorials** | Viele Entwickler lernen visuell |
+| **Komplette Sample-App** | Zeigt Best Practices in Aktion |
+| **Migration Guide von MAUI/Avalonia** | Senkt Einstiegshürde für Wechsler |
+| **Troubleshooting/FAQ** | Reduziert Support-Aufwand |
+| **Performance-Guide** | Wann wird's langsam? Wie optimieren? |
+| **DebugServer-Tutorial** | Killer-Feature muss prominent sein |
 
-## Teil 2: Wettbewerbsanalyse
+### 1.6 Theming - Vollständig, aber...
 
-### 2.1 .NET MAUI (Microsoft)
+Das Theming-System ist technisch vollständig:
+- Light/Dark/Custom
+- Global/Page-spezifisch
+- Runtime-Wechsel
 
-**Plattformen:** Android, iOS, macOS, Windows
-**Rendering:** Native Controls pro Plattform
+**Kritische Frage:** Gibt es vordefinierte Themes?
 
-| Aspekt | .NET MAUI | PlusUi |
-|--------|-----------|--------|
-| Plattformen | 4 | 6 + Headless + H264 |
-| Linux-Support | ❌ | ✅ |
-| Konsistenz | Platform-spezifisch | Pixel-perfekt |
-| Controls | 40+ (+ Toolkits) | 60+ |
-| Hot Reload | ✅ | ✅ |
-| Debug Tools | VS Diagnostics | ✅ Integriert |
-| IDE-Support | Umfangreich | Basis |
-| Code vs XAML | XAML-fokussiert | Code-Only |
+| Framework | Vordefinierte Themes |
+|-----------|---------------------|
+| Flutter | Material, Cupertino |
+| MAUI | Platform-Native |
+| Avalonia | Fluent, Simple |
+| Uno | WinUI |
+| **PlusUi** | ? |
 
-**PlusUi-Vorteile:** Linux-Support, pixel-perfekte Konsistenz, integrierte Debug-Tools, mehr Plattformen
-
-### 2.2 Avalonia UI
-
-**Plattformen:** Windows, macOS, Linux, iOS, Android, WebAssembly
-**Rendering:** Skia → Impeller (geplant)
-
-| Aspekt | Avalonia | PlusUi |
-|--------|----------|--------|
-| Rendering | Skia → Impeller | SkiaSharp |
-| Markup | XAML | Code-Only ✅ |
-| Themes | Fluent, Material | Custom |
-| Designer | In Entwicklung | DebugServer |
-| Dokumentation | Umfangreich | Gut |
-| Lizenz | MIT | MIT |
-
-**PlusUi-Vorteile:** Code-Only (wenn bevorzugt), integrierter DebugServer, H264-Export
-
-### 2.3 Uno Platform
-
-**Plattformen:** Windows, iOS, Android, macOS, Linux, WebAssembly
-**Basis:** WinUI/UWP-API
-
-| Aspekt | Uno Platform | PlusUi |
-|--------|--------------|--------|
-| API-Basis | WinUI 3 | Custom Fluent API |
-| Rendering | Skia (unified) | SkiaSharp |
-| Designer | Hot Design | DebugServer |
-| AI-Tools | ✅ Agentic | ❌ |
-| Lernkurve | Steiler (WinUI) | Flacher |
-| Code vs XAML | XAML | Code-Only ✅ |
-
-**PlusUi-Vorteile:** Einfachere API, flachere Lernkurve, Code-Only
-
-### 2.4 Flutter (Google) - Nicht-.NET
-
-**Sprache:** Dart
-**Plattformen:** iOS, Android, Web, Windows, macOS, Linux
-
-| Aspekt | Flutter | PlusUi |
-|--------|---------|--------|
-| Marktanteil | ~46% | Neu |
-| Rendering | Impeller/Skia | SkiaSharp |
-| Performance | Exzellent | Gut |
-| Widgets | Tausende | 60+ |
-| Hot Reload | ✅ | ✅ |
-| Sprache | Dart | C# ✅ |
-| .NET Integration | ❌ | ✅ |
-| Debug Tools | DevTools | DebugServer |
-
-**PlusUi-Vorteile:** C#/.NET-Ökosystem, bestehende .NET-Kenntnisse nutzbar
-
-### 2.5 React Native (Meta) - Nicht-.NET
-
-**Sprache:** JavaScript/TypeScript
-**Plattformen:** iOS, Android, (Web via RN Web)
-
-| Aspekt | React Native | PlusUi |
-|--------|--------------|--------|
-| Rendering | Native Controls | SkiaSharp |
-| Code-Sharing | 70-90% | 100% |
-| Sprache | JS/TS | C# |
-| Desktop | Limitiert | ✅ Vollständig |
-| Web | Via RN Web | ✅ Blazor |
-| Performance | Gut | Gut |
-
-**PlusUi-Vorteile:** Echter Desktop-Support, 100% Code-Sharing, C#
-
-### 2.6 Compose Multiplatform (JetBrains) - Nicht-.NET
-
-**Sprache:** Kotlin
-**Plattformen:** Android, iOS, Desktop, Web
-
-| Aspekt | Compose MP | PlusUi |
-|--------|------------|--------|
-| UI-Paradigma | Deklarativ | Fluent/Deklarativ |
-| iOS Status | Stabil (seit Mai 2025) | Finales Testing |
-| Hot Reload | ✅ | ✅ |
-| IDE-Support | Exzellent (JetBrains) | Basis |
-| Sprache | Kotlin | C# |
-
-**PlusUi-Vorteile:** C#/.NET-Integration, DebugServer
+**Empfehlung:** Ein oder zwei polierte Default-Themes (z.B. "PlusUi Modern", "PlusUi Classic") würden den Einstieg erleichtern.
 
 ---
 
-## Teil 3: Vergleichsmatrix
+## Teil 2: Wettbewerbsanalyse (Realistisch)
 
-### Feature-Vergleich
+### Marktposition 2026
 
-| Feature | PlusUi | MAUI | Avalonia | Uno | Flutter | React Native | Compose MP |
-|---------|--------|------|----------|-----|---------|--------------|------------|
-| **Plattformen** |
-| Windows | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ |
-| macOS | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ |
-| Linux | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| iOS | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Android | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Web | ✅ | ✅¹ | ✅ | ✅ | ✅ | ⚠️ | ⚠️ |
-| Headless | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Video Export | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Entwicklung** |
-| Hot Reload | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Debug Tools | ✅² | ⚠️ | ⚠️ | ⚠️ | ✅ | ✅ | ⚠️ |
-| Code-Only | ✅ | ⚠️ | ⚠️ | ⚠️ | ✅ | ❌ | ✅ |
-| **UI** |
-| Controls | 60+ | 40+ | 50+ | 100+ | 500+ | 100+ | 100+ |
-| Theming | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ |
-| Pixel-Perfekt | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| Accessibility | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Framework | Marktanteil (geschätzt) | Trend |
+|-----------|------------------------|-------|
+| Flutter | ~45% | Stabil |
+| React Native | ~30% | Stabil |
+| .NET MAUI | ~10% | Wachsend |
+| Compose MP | ~8% | Wachsend |
+| Avalonia/Uno | ~5% | Wachsend |
+| Andere | ~2% | - |
 
-✅ Vollständig | ⚠️ Teilweise | ❌ Nicht vorhanden
-¹ Via Blazor Hybrid | ² Integrierter DebugServer
+**Realität:** PlusUi tritt in einen Markt ein, der von etablierten Playern dominiert wird.
 
-### Alleinstellungsmerkmale von PlusUi
+### Direkte Konkurrenz (.NET)
 
-| Feature | Einzigartigkeit |
-|---------|-----------------|
-| **Integrierter DebugServer** | Kein anderes Framework hat vergleichbares out-of-the-box |
-| **H264 Video Export** | Einzigartig - UI als Video rendern |
-| **Headless Rendering** | Für Tests/Automation - selten verfügbar |
-| **Code-Only + Fluent API** | Eleganter als XAML für viele Entwickler |
-| **6 Plattformen + 2 Spezial** | Breiteste Abdeckung im .NET-Bereich |
+#### vs .NET MAUI
+| Aspekt | MAUI | PlusUi | Vorteil |
+|--------|------|--------|---------|
+| Backing | Microsoft | Solo/Community | MAUI |
+| Plattformen | 4 | 6+ | PlusUi |
+| Linux | ❌ | ✅ | PlusUi |
+| Konsistenz | Gering (native) | Hoch (Skia) | PlusUi |
+| Tooling | VS Integration | DebugServer | Unterschiedlich |
+| Community | Groß | Neu | MAUI |
+| Jobs/Hiring | Vorhanden | Keine | MAUI |
+
+**Ehrlich:** MAUI hat Microsoft-Backing. Das ist für Enterprise-Entscheidungen oft ausschlaggebend.
+
+#### vs Avalonia
+| Aspekt | Avalonia | PlusUi | Vorteil |
+|--------|----------|--------|---------|
+| Reife | Jahre | Neu | Avalonia |
+| XAML | ✅ | ❌ | Geschmackssache |
+| Community | Etabliert | Neu | Avalonia |
+| Funding | $3M+ | ? | Avalonia |
+| DevTools | Extern | Integriert | PlusUi |
+| Video Export | ❌ | ✅ | PlusUi |
+
+**Ehrlich:** Avalonia hat Momentum und kürzlich signifikantes Funding erhalten.
+
+### Indirekte Konkurrenz (Nicht-.NET)
+
+#### vs Flutter
+**Warum jemand Flutter wählt:**
+- Riesige Community
+- Tausende Packages
+- Bewährt in Produktion
+- Google-Backing
+
+**Warum jemand PlusUi wählen könnte:**
+- Bereits im .NET-Ökosystem
+- C# statt Dart
+- Bestehende .NET-Libraries nutzen
+
+#### vs React Native
+**Warum jemand RN wählt:**
+- JavaScript-Kenntnisse vorhanden
+- Web-Entwickler-Transition
+- Riesiges npm-Ökosystem
+
+**Warum jemand PlusUi wählen könnte:**
+- Typsicherheit mit C#
+- Echter Desktop-Support
+- Bessere Performance (kein JS-Bridge)
+
+---
+
+## Teil 3: Release-Strategie
+
+### Option A: Big Bang Release (Nicht empfohlen)
+
+Alle Plattformen gleichzeitig als "stable" releasen.
+
+**Risiken:**
+- Überwältigende Bug-Reports
+- Support nicht skalierbar
+- Erste Eindrücke prägen sich ein
+
+### Option B: Gestaffelter Release (Empfohlen)
+
+```
+Phase 1: Desktop (Windows, Linux, macOS)
+    └── 4-6 Wochen Stabilisierung
+
+Phase 2: Web (Blazor WASM)
+    └── 4-6 Wochen Stabilisierung
+
+Phase 3: Mobile (Android, dann iOS)
+    └── Längere Stabilisierung
+```
+
+**Vorteile:**
+- Fokussiertes Feedback
+- Manageable Support-Last
+- Lernen aus jeder Phase
+
+### Vor dem Release: Checkliste
+
+| Task | Status | Priorität |
+|------|--------|-----------|
+| MultiLine TextBox implementieren | ❌ | Kritisch |
+| AutoComplete/SearchBox | ❌ | Hoch |
+| NuGet Package Setup | ? | Kritisch |
+| GitHub Releases konfigurieren | ? | Kritisch |
+| CI/CD Pipeline (Build, Test, Publish) | ? | Kritisch |
+| Changelog etablieren | ? | Hoch |
+| Contributing Guide | ? | Hoch |
+| Issue Templates | ? | Mittel |
+| Default Themes (1-2 polierte) | ? | Hoch |
+| Sample App (vollständig) | ? | Hoch |
+| Video: "Getting Started in 10 min" | ❌ | Hoch |
+| Video: "DebugServer Tutorial" | ❌ | Hoch |
+| Performance Benchmarks dokumentieren | ❌ | Mittel |
+| Lizenz klären (MIT?) | ? | Kritisch |
+
+### Launch-Tag Vorbereitung
+
+1. **Announcement Post** vorbereiten (Reddit r/dotnet, r/csharp, Hacker News)
+2. **Twitter/X Thread** mit GIFs/Videos
+3. **Dev.to / Medium Artikel** mit Tutorial
+4. **YouTube Video** (Demo + Getting Started)
+5. **Discord Server** aufsetzen (vor Launch!)
+
+---
+
+## Teil 4: Community Building
+
+### Phase 1: Pre-Launch (Jetzt bis Release)
+
+#### Early Adopter Programm
+- 5-10 Entwickler einladen, die Framework vorab testen
+- Feedback einsammeln, kritische Bugs finden
+- Diese werden später Advocates
+
+#### Presence aufbauen
+- [ ] GitHub Repository public machen (aber als "pre-release" markieren)
+- [ ] Discord Server erstellen
+- [ ] Twitter/X Account
+- [ ] Dev.to Account für Artikel
+
+### Phase 2: Launch
+
+#### Launch-Woche Aktivitäten
+| Tag | Aktivität |
+|-----|-----------|
+| Mo | GitHub Release + NuGet + Announcement Posts |
+| Di | Tutorial-Artikel auf Dev.to |
+| Mi | YouTube Getting Started Video |
+| Do | Reddit AMA in r/dotnet |
+| Fr | Twitter Spaces / Discord Voice Chat |
+
+#### Wo posten
+| Plattform | Erwartung | Aufwand |
+|-----------|-----------|---------|
+| Reddit r/dotnet | Hoch | Mittel |
+| Reddit r/csharp | Mittel | Niedrig |
+| Hacker News | Variabel (kann viral gehen) | Niedrig |
+| Twitter/X | Mittel | Mittel |
+| LinkedIn | Niedrig-Mittel | Niedrig |
+| Dev.to | Mittel (SEO langfristig) | Hoch |
+
+### Phase 3: Post-Launch (Erste 3 Monate)
+
+#### Wöchentliche Aktivitäten
+- **Blog Post / Changelog** bei jedem Release
+- **"Control der Woche"** - Deep Dive in einen Control
+- **Community Highlights** - wer baut was damit?
+
+#### Monatliche Aktivitäten
+- **Roadmap Update**
+- **Community Call** (Discord/YouTube Live)
+- **Contributor Spotlight**
+
+#### Community-Wachstums-Ziele (Realistisch)
+
+| Zeitraum | GitHub Stars | Discord Members | NuGet Downloads |
+|----------|--------------|-----------------|-----------------|
+| Launch | 0 | 0 | 0 |
+| +1 Monat | 100-300 | 20-50 | 500-1.000 |
+| +3 Monate | 300-800 | 50-150 | 2.000-5.000 |
+| +6 Monate | 800-2.000 | 150-400 | 5.000-15.000 |
+| +1 Jahr | 2.000-5.000 | 400-1.000 | 20.000-50.000 |
+
+*Diese Zahlen sind konservativ. Ein viraler Moment kann alles ändern.*
+
+### Contributor-Strategie
+
+#### "Good First Issues" vorbereiten
+- 10-20 Issues labeln, die für Newcomer geeignet sind
+- Dokumentation, kleine Bugfixes, Tests
+
+#### Was Contributors anzieht
+1. **Klare Contribution Guidelines**
+2. **Schnelle PR Reviews** (< 48h)
+3. **Freundlicher Umgang**
+4. **Öffentliche Anerkennung**
+
+#### Was Contributors abschreckt
+1. PRs die wochenlang liegen
+2. Unklare Architektur-Entscheidungen
+3. Keine Reaktion auf Issues
+4. "Wir machen das anders" ohne Erklärung
+
+---
+
+## Teil 5: Alleinstellungsmerkmale (USPs)
+
+### Primäre Differenzierung
+
+| USP | Messaging |
+|-----|-----------|
+| **Code-Only** | "No XAML, no XML, just C#" |
+| **DebugServer** | "Chrome DevTools for your .NET UI" |
+| **Pixel-Perfect** | "Same pixels on every platform" |
+| **H264 Export** | "Render your UI to video" |
+| **Headless** | "UI testing without a window" |
+
+### Sekundäre Differenzierung
+
+| USP | Messaging |
+|-----|-----------|
+| Linux-Support | "Unlike MAUI, we run on Linux" |
+| Fluent API | "Readable, chainable, IDE-friendly" |
+| Lightweight | "No XAML parser, no markup overhead" |
 
 *Fun Fact:* Der Headless-Modus ermöglicht theoretisch auch "UI-as-a-Service" - die App hinter einer REST API zu betreiben (z.B. für serverseitige Screenshot-Generierung, PDF-Rendering mit UI-Komponenten). Ein experimenteller Ansatz, der bei keinem anderen Framework möglich ist.
 
 ---
 
-## Teil 4: Stärken und Schwächen
+## Teil 6: Risiken und Mitigierung
 
-### Stärken
+### Technische Risiken
 
-1. **Architektonische Reinheit**
-   - Einheitliches SkiaSharp-Rendering
-   - Pixel-perfekte Konsistenz überall
-   - Saubere, pragmatische Architektur
+| Risiko | Wahrscheinlichkeit | Impact | Mitigierung |
+|--------|-------------------|--------|-------------|
+| Mobile-Performance-Probleme | Hoch | Hoch | Benchmarks vor Release, gestaffelter Launch |
+| macOS OpenGL Deprecation | Mittel | Mittel | Metal-Backend evaluieren (langfristig) |
+| Breaking Changes in SkiaSharp | Niedrig | Hoch | Version pinnen, Abstraktion evaluieren |
+| Blazor WASM Limitations | Mittel | Mittel | Klare Dokumentation der Einschränkungen |
 
-2. **Herausragende Developer Tools**
-   - Integrierter DebugServer (Element Inspector, Property Editor, Performance)
-   - Hot Reload via .NET MetadataUpdateHandler
-   - Headless-Modus für automatisierte Tests
+### Business/Community Risiken
 
-3. **Code-Qualität**
-   - Professioneller, gut strukturierter Code
-   - Moderne C#-Features durchgängig
-   - Minimale technische Schulden
+| Risiko | Wahrscheinlichkeit | Impact | Mitigierung |
+|--------|-------------------|--------|-------------|
+| Kein Traction nach Launch | Mittel | Hoch | Marketing-Plan, Early Adopters |
+| Überwältigender Support-Bedarf | Mittel | Mittel | FAQ, Community-Moderation |
+| Key-Contributor Burnout | Hoch (Solo-Projekt) | Kritisch | Realistische Erwartungen, Pausen |
+| Microsoft announced ähnliches Feature | Niedrig | Mittel | Nische besetzen, schneller sein |
 
-4. **Vollständiges Theming**
-   - Light/Dark/Custom Themes
-   - Global + Page-spezifische Styles
-   - Runtime Theme-Wechsel
+### Solo-Entwickler Realität
 
-5. **Einzigartige Features**
-   - H264 Video Export
-   - Headless Rendering
-   - 8 Zielplattformen
+**Ehrlich:** Ein Solo-Projekt gegen Microsoft (MAUI) und gut-finanzierte Projekte (Avalonia) anzutreten ist herausfordernd.
 
-6. **Design-Entscheidungen**
-   - Code-Only (kein XAML) - bewusste Entscheidung
-   - Fluent API für bessere Lesbarkeit
-   - Pragmatische Architektur
-
-### Verbesserungspotential
-
-1. **IDE-Integration**
-   - Kein Visual Studio Extension
-   - Kein dedizierter Designer (DebugServer ist Runtime-Tool)
-
-2. **Control-Bibliothek**
-   - Charts und spezialisierte Controls bei Bedarf ergänzbar
-   - Natürliches Wachstum mit Community erwartet
-
-3. **Dokumentation**
-   - Vorhanden aber wird vor Release finalisiert
-   - Video-Tutorials wären hilfreich
-
----
-
-## Teil 5: Marktreife-Bewertung
-
-### Checkliste für Marktstart
-
-| Anforderung | Status |
-|-------------|--------|
-| Stabile Kern-Architektur | ✅ |
-| Control-Bibliothek (Basis) | ✅ 60+ Controls |
-| Theming-System | ✅ Vollständig |
-| Hot Reload | ✅ |
-| Debug Tools | ✅ DebugServer |
-| Dokumentation | ✅ Vorhanden |
-| Plattformen getestet | 🔄 Finales Testing |
-| Accessibility | ✅ 28 Rollen |
-| Projekt-Templates | ✅ |
-
-### Bewertung nach Einsatzbereich
-
-| Einsatzbereich | Eignung | Begründung |
-|----------------|---------|------------|
-| Desktop-Apps (Business) | ✅ Sehr gut | Alle 3 Desktop-Plattformen, gute Controls |
-| Desktop-Apps (Consumer) | ✅ Gut | Konsistente UX, gutes Theming |
-| Mobile Apps | ✅ Gut | Nach finalem Testing |
-| Web Apps | ✅ Gut | Blazor WASM Integration |
-| Kiosk/Embedded | ✅ Sehr gut | Headless, Video-Export |
-| Automatisierte Tests | ✅ Exzellent | Headless-Modus |
-| Video-Generierung | ✅ Einzigartig | H264-Export |
-
----
-
-## Teil 6: Strategische Positionierung
-
-### Empfohlene Marktpositionierung
-
-**Primäre Zielgruppe:** .NET-Entwickler, die:
-- Code-First bevorzugen (kein XAML)
-- Pixel-perfekte Cross-Platform-Konsistenz brauchen
-- Professionelle Debug-Tools schätzen
-- Desktop + Mobile + Web aus einer Codebase wollen
-
-**Differenzierung:**
-1. **"Code-First Cross-Platform UI"** - Keine XAML-Komplexität
-2. **"Pixel-Perfect Everywhere"** - Einheitliches Rendering
-3. **"Built-in DevTools"** - DebugServer als Killer-Feature
-4. **"Beyond Apps"** - Video-Export, Headless für Spezialfälle
-
-### Wettbewerbsvorteile gegenüber...
-
-| Konkurrent | PlusUi-Vorteil |
-|------------|----------------|
-| MAUI | Linux-Support, Konsistenz, DebugServer, Code-Only |
-| Avalonia | Integrierte DevTools, einfachere API |
-| Uno | Flachere Lernkurve, Code-Only |
-| Flutter | C#/.NET-Ökosystem, .NET-Integration |
-| React Native | Echter Desktop, 100% Code-Sharing |
+**Strategien:**
+1. **Nische besetzen** - Nicht "besser als MAUI" sondern "anders als MAUI"
+2. **Community früh einbinden** - Contributors sind force multipliers
+3. **Scope begrenzen** - Nicht alles auf einmal
+4. **Sustainable Pace** - Burnout ist das größte Risiko
 
 ---
 
@@ -569,51 +422,70 @@ docs/
 
 ### Ist PlusUi marktreif?
 
-**Ja, mit dem Abschluss des finalen Testings.**
+**Bedingt ja.** Das Framework hat:
 
-PlusUi ist ein technisch ausgereiftes Framework mit:
-- ✅ Solider Architektur
-- ✅ Professioneller Code-Qualität
-- ✅ Umfangreicher Control-Bibliothek
-- ✅ Vollständigem Theming
-- ✅ Herausragenden Developer Tools (DebugServer, Hot Reload)
-- ✅ Vorhandener Dokumentation
-- 🔄 Allen Plattformen im finalen Testing
+✅ Solide technische Basis
+✅ Gute Code-Qualität
+✅ Einzigartige Features (DebugServer, H264, Headless)
+✅ Vorhandene Dokumentation
+✅ Vollständiges Theming
+
+Aber es braucht noch:
+
+⚠️ Finales Plattform-Testing (besonders Mobile)
+⚠️ 2-3 fehlende kritische Controls
+⚠️ Polierte Default-Themes
+⚠️ Video-Tutorials
+⚠️ Vollständige Sample-App
 
 ### Empfehlung
 
-**Für den Marktstart nach Abschluss des Plattform-Testings:**
+1. **Gestaffelter Release:** Desktop → Web → Mobile
+2. **Early Adopter Phase:** 2-4 Wochen vor offiziellem Launch
+3. **Community-First:** Discord + schnelle Issue-Responses
+4. **Klare Positionierung:** "Code-First Cross-Platform UI for .NET"
+5. **Realistische Erwartungen:** Wachstum braucht Zeit
 
-1. **Dokumentation finalisieren** - Bereits gute Basis vorhanden
-2. **NuGet-Packages publizieren**
-3. **Beispiel-Apps showcasen** - DebugServer als Referenz nutzen
-4. **Community aufbauen** - GitHub Discussions, Discord
+### Abschließende Einschätzung
 
-### Prognose
+PlusUi hat das Potential, eine Nische im .NET Cross-Platform-Markt zu besetzen. Der Erfolg hängt weniger von technischer Perfektion ab (die ist bereits gut), sondern von:
 
-PlusUi hat das Potential, eine relevante Alternative im .NET Cross-Platform-Markt zu werden, besonders für Entwickler die:
-- Code-Only bevorzugen
-- Pixel-perfekte Konsistenz brauchen
-- Integrierte DevTools schätzen
-- Spezialfälle wie Video-Export oder Headless-Testing haben
+1. **Marketing und Visibility**
+2. **Community-Aufbau**
+3. **Sustained Development** über Jahre
+4. **Klare Differenzierung** von Alternativen
 
----
-
-## Quellen
-
-### Framework-Dokumentation
-- [.NET MAUI Official](https://dotnet.microsoft.com/en-us/apps/maui)
-- [Avalonia UI](https://avaloniaui.net/)
-- [Uno Platform](https://platform.uno/)
-- [Flutter](https://flutter.dev/)
-- [React Native](https://reactnative.dev/)
-- [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/)
-
-### Marktanalysen
-- [.NET MAUI in 2025 - Brainhub](https://brainhub.eu/library/net-maui-in-nutshell)
-- [State of .NET MAUI 2025 - Appisto](https://appisto.app/blog/state-of-dotnet-maui)
-- [Flutter vs React Native 2025](https://dev.to/mridudixit15/flutter-vs-react-native-2025-who-wins-the-cross-platform-war-4hfh)
+Das Framework verdient Aufmerksamkeit. Ob es sie bekommt, hängt von der Execution des Launches ab.
 
 ---
 
-*Dieser Bericht wurde basierend auf einer vollständigen Code-Analyse des PlusUi-Repositories erstellt und nach Feedback des Projektautors korrigiert.*
+## Anhang: Quick Reference
+
+### Vergleichsmatrix
+
+| Feature | PlusUi | MAUI | Avalonia | Uno | Flutter |
+|---------|--------|------|----------|-----|---------|
+| Windows | ✅ | ✅ | ✅ | ✅ | ✅ |
+| macOS | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Linux | ✅ | ❌ | ✅ | ✅ | ✅ |
+| iOS | ✅* | ✅ | ✅ | ✅ | ✅ |
+| Android | ✅* | ✅ | ✅ | ✅ | ✅ |
+| Web | ✅* | ✅¹ | ✅ | ✅ | ✅ |
+| Hot Reload | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Code-Only | ✅ | ⚠️ | ⚠️ | ⚠️ | ✅ |
+| XAML | ❌ | ✅ | ✅ | ✅ | ❌ |
+| Integrierte DevTools | ✅ | ❌ | ❌ | ❌ | ✅ |
+| Video Export | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Headless | ✅ | ❌ | ❌ | ❌ | ❌ |
+
+*Im finalen Testing | ¹Via Blazor Hybrid
+
+### Ressourcen für Community Building
+
+- [GitHub Community Guidelines](https://docs.github.com/en/communities)
+- [Discord Community Server Best Practices](https://discord.com/community)
+- [Open Source Guide](https://opensource.guide/)
+
+---
+
+*Dieser Bericht wurde kritisch aber fair erstellt, mit dem Ziel, einen erfolgreichen Markteintritt zu unterstützen.*
