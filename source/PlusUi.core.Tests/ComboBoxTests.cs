@@ -546,12 +546,13 @@ public class ComboBoxTests
     {
         // Arrange
         var comboBox = new ComboBox<string>();
+        var grayColor = new Color(128, 128, 128);
 
         // Act
-        comboBox.SetPlaceholderColor(SkiaSharp.SKColors.Gray);
+        comboBox.SetPlaceholderColor(grayColor);
 
         // Assert
-        Assert.AreEqual(SkiaSharp.SKColors.Gray, comboBox.PlaceholderColor);
+        Assert.AreEqual(grayColor, comboBox.PlaceholderColor);
     }
 
     [TestMethod]

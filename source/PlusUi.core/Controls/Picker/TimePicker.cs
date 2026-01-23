@@ -24,6 +24,8 @@ namespace PlusUi.core;
 /// </example>
 [GenerateShadowMethods]
 [UiPropGenPadding]
+[UiPropGenPlaceholder]
+[UiPropGenPlaceholderColor]
 public partial class TimePicker : UiElement, IInputControl, ITextInputControl, IHoverableControl, IFocusable, IKeyboardInputHandler
 {
     private const float ArrowSize = 8f;
@@ -202,42 +204,6 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         var path = ExpressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();
         RegisterPathBinding(path, () => Is24HourFormat = getter());
-        return this;
-    }
-    #endregion
-
-    #region Placeholder
-    internal string? Placeholder { get; set; }
-
-    public TimePicker SetPlaceholder(string placeholder)
-    {
-        Placeholder = placeholder;
-        return this;
-    }
-
-    public TimePicker BindPlaceholder(Expression<Func<string?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Placeholder = getter());
-        return this;
-    }
-    #endregion
-
-    #region PlaceholderColor
-    internal SKColor PlaceholderColor { get; set; } = PlusUiDefaults.TextPlaceholder;
-
-    public TimePicker SetPlaceholderColor(SKColor color)
-    {
-        PlaceholderColor = color;
-        return this;
-    }
-
-    public TimePicker BindPlaceholderColor(Expression<Func<SKColor>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => PlaceholderColor = getter());
         return this;
     }
     #endregion
@@ -453,6 +419,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         SetDesiredSize(new Size(150, 40));
         SetHighContrastBackground(PlusUiDefaults.HcInputBackground);
         SetHighContrastForeground(PlusUiDefaults.HcForeground);
+        PlaceholderColor = PlusUiDefaults.TextPlaceholder;
         UpdatePaint();
     }
 

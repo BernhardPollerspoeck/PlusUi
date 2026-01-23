@@ -29,6 +29,8 @@ namespace PlusUi.core;
 /// </example>
 [GenerateShadowMethods]
 [UiPropGenPadding]
+[UiPropGenPlaceholder]
+[UiPropGenPlaceholderColor]
 public partial class Entry : UiTextElement, ITextInputControl, IFocusable
 {
     private bool _isSelected;
@@ -41,6 +43,7 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         SetDesiredWidth(200);
         SetHighContrastBackground(PlusUiDefaults.HcInputBackground);
         SetHighContrastForeground(PlusUiDefaults.HcForeground);
+        PlaceholderColor = PlusUiDefaults.TextPlaceholder;
     }
 
     /// <inheritdoc />
@@ -105,38 +108,6 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable
         var path = ExpressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();
         RegisterPathBinding(path, () => PasswordChar = getter());
-        return this;
-    }
-    #endregion
-
-    #region Placeholder
-    internal string? Placeholder { get; set; }
-    public Entry SetPlaceholder(string placeholder)
-    {
-        Placeholder = placeholder;
-        return this;
-    }
-    public Entry BindPlaceholder(Expression<Func<string?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Placeholder = getter());
-        return this;
-    }
-    #endregion
-
-    #region PlaceholderColor
-    internal Color PlaceholderColor { get; set; } = PlusUiDefaults.TextPlaceholder;
-    public Entry SetPlaceholderColor(Color color)
-    {
-        PlaceholderColor = color;
-        return this;
-    }
-    public Entry BindPlaceholderColor(Expression<Func<Color>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => PlaceholderColor = getter());
         return this;
     }
     #endregion

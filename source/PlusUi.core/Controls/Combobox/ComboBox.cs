@@ -171,6 +171,32 @@ public partial class ComboBox<T> : ComboBox, IDebugInspectable
     }
     #endregion
 
+    #region Placeholder/PlaceholderColor (fluent wrappers)
+    public new ComboBox<T> SetPlaceholder(string? value)
+    {
+        base.SetPlaceholder(value);
+        return this;
+    }
+
+    public new ComboBox<T> BindPlaceholder(Expression<Func<string?>> propertyExpression)
+    {
+        base.BindPlaceholder(propertyExpression);
+        return this;
+    }
+
+    public new ComboBox<T> SetPlaceholderColor(Color value)
+    {
+        base.SetPlaceholderColor(value);
+        return this;
+    }
+
+    public new ComboBox<T> BindPlaceholderColor(Expression<Func<Color>> propertyExpression)
+    {
+        base.BindPlaceholderColor(propertyExpression);
+        return this;
+    }
+    #endregion
+
     #region DisplayFunc
     internal Func<T, string> DisplayFunc { get; set; } = item => item?.ToString() ?? string.Empty;
 
@@ -324,6 +350,8 @@ public partial class ComboBox<T> : ComboBox, IDebugInspectable
 /// </summary>
 [GenerateShadowMethods]
 [UiPropGenPadding]
+[UiPropGenPlaceholder]
+[UiPropGenPlaceholderColor]
 public abstract partial class ComboBox : UiElement, IInputControl, IFocusable, IKeyboardInputHandler
 {
     internal const float DropdownMaxHeight = 200f;
@@ -413,42 +441,6 @@ public abstract partial class ComboBox : UiElement, IInputControl, IFocusable, I
         foreach (var segment in path)
             RegisterSetter<int>(segment, propertySetter);
         RegisterSetter<int>(nameof(SelectedIndex), propertySetter);
-        return this;
-    }
-    #endregion
-
-    #region Placeholder
-    internal string? Placeholder { get; set; }
-
-    public ComboBox SetPlaceholder(string placeholder)
-    {
-        Placeholder = placeholder;
-        return this;
-    }
-
-    public ComboBox BindPlaceholder(Expression<Func<string?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Placeholder = getter());
-        return this;
-    }
-    #endregion
-
-    #region PlaceholderColor
-    internal SKColor PlaceholderColor { get; set; } = PlusUiDefaults.TextPlaceholder;
-
-    public ComboBox SetPlaceholderColor(SKColor color)
-    {
-        PlaceholderColor = color;
-        return this;
-    }
-
-    public ComboBox BindPlaceholderColor(Expression<Func<SKColor>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => PlaceholderColor = getter());
         return this;
     }
     #endregion
@@ -576,6 +568,7 @@ public abstract partial class ComboBox : UiElement, IInputControl, IFocusable, I
         SetCornerRadius(PlusUiDefaults.CornerRadius);
         SetHighContrastBackground(PlusUiDefaults.HcInputBackground);
         SetHighContrastForeground(PlusUiDefaults.HcForeground);
+        PlaceholderColor = PlusUiDefaults.TextPlaceholder;
         UpdatePaint();
     }
 

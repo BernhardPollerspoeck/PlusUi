@@ -7,6 +7,7 @@ using PlusUi.core.Services.Focus;
 using SkiaSharp;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using PlusUi.core.UiPropGen;
 
 namespace PlusUi.core;
 
@@ -15,6 +16,33 @@ namespace PlusUi.core;
 /// Provides layout, rendering, data binding, styling, accessibility, and input handling.
 /// </summary>
 [GenerateGenericWrapper]
+[UiPropGenDebug]
+[UiPropGenIsVisible]
+[UiPropGenVisualOffset]
+[UiPropGenCornerRadius]
+[UiPropGenShadowSpread]
+[UiPropGenTabIndex]
+[UiPropGenTabStop]
+[UiPropGenFocusRingColor]
+[UiPropGenFocusRingWidth]
+[UiPropGenFocusRingOffset]
+[UiPropGenFocusedBorderColor]
+[UiPropGenAccessibilityLabel]
+[UiPropGenAccessibilityHint]
+[UiPropGenAccessibilityValue]
+[UiPropGenIsAccessibilityElement]
+[UiPropGenHighContrastForeground]
+[UiPropGenMargin]
+[UiPropGenHorizontalAlignment]
+[UiPropGenVerticalAlignment]
+[UiPropGenShadowColor]
+[UiPropGenShadowOffset]
+[UiPropGenShadowBlur]
+[UiPropGenOpacity]
+[UiPropGenBackground]
+[UiPropGenFocusedBackground]
+[UiPropGenHighContrastBackground]
+[UiPropGenDesiredSize]
 public abstract partial class UiElement : IDisposable
 {
     #region Fields
@@ -90,353 +118,8 @@ public abstract partial class UiElement : IDisposable
     protected virtual bool NeedsMeasure { get; set; } = true;
     protected internal virtual bool NeedsArrange { get; set; } = true;
 
-    #region Debug
-    protected bool Debug { get; private set; }
-    public UiElement SetDebug(bool debug = true)
-    {
-        Debug = debug;
-        return this;
-    }
-    public UiElement BindDebug(Expression<Func<bool>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Debug = getter());
-        return this;
-    }
-    #endregion
 
-    #region IsVisible
-    public bool IsVisible { get; internal set; }
-
-    public UiElement SetIsVisible(bool isVisible)
-    {
-        IsVisible = isVisible;
-        return this;
-    }
-
-    public UiElement BindIsVisible(Expression<Func<bool>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => IsVisible = getter());
-        return this;
-    }
-    #endregion
-
-    #region VisualOffset
-    internal Point VisualOffset { get; set; }
-    public UiElement SetVisualOffset(Point offset)
-    {
-        VisualOffset = offset;
-        return this;
-    }
-    public UiElement BindVisualOffset(Expression<Func<Point>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => VisualOffset = getter());
-        return this;
-    }
-    #endregion
-
-    #region Opacity
-    internal float Opacity { get; set; }
-    public UiElement SetOpacity(float opacity)
-    {
-        Opacity = Math.Clamp(opacity, 0f, 1f);
-        return this;
-    }
-    public UiElement BindOpacity(Expression<Func<float>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Opacity = Math.Clamp(getter(), 0f, 1f));
-        return this;
-    }
-    #endregion
-
-    #region Background
-    /// <summary>
-    /// The background of the element (gradient, solid color, or custom).
-    /// </summary>
-    internal IBackground? Background { get; set; }
     protected virtual bool SkipBackgroundRendering => false;
-    public UiElement SetBackground(IBackground? background)
-    {
-        Background = background;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets a solid color background for the element.
-    /// This is a convenience overload that internally creates a SolidColorBackground.
-    /// </summary>
-    /// <param name="color">The solid color to use for the background</param>
-    public UiElement SetBackground(Color color)
-    {
-        Background = new SolidColorBackground(color);
-        return this;
-    }
-
-    public UiElement BindBackground(Expression<Func<IBackground?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Background = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Binds a solid color background to a property.
-    /// This is a convenience overload that internally creates a SolidColorBackground.
-    /// </summary>
-    /// <param name="propertyExpression">Expression that returns the color from the property</param>
-    public UiElement BindBackgroundColor(Expression<Func<Color>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Background = new SolidColorBackground(getter()));
-        return this;
-    }
-    #endregion
-
-    
-
-    #region Margin
-    internal Margin Margin
-    {
-        get => field;
-        set
-        {
-            if (field.Equals(value)) return;
-            field = value;
-            InvalidateMeasure();
-        }
-    }
-    public UiElement SetMargin(Margin margin)
-    {
-        Margin = margin;
-        return this;
-    }
-    public UiElement BindMargin(Expression<Func<Margin>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => Margin = getter());
-        return this;
-    }
-    #endregion
-
-    #region HorizontalAlignment
-    internal virtual HorizontalAlignment HorizontalAlignment
-    {
-        get => field;
-        set
-        {
-            if (field == value) return;
-            field = value;
-            InvalidateMeasure();
-        }
-    }
-    public UiElement SetHorizontalAlignment(HorizontalAlignment alignment)
-    {
-        HorizontalAlignment = alignment;
-        return this;
-    }
-    public UiElement BindHorizontalAlignment(Expression<Func<HorizontalAlignment>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => HorizontalAlignment = getter());
-        return this;
-    }
-    #endregion
-
-    #region VerticalAlignment
-    internal virtual VerticalAlignment VerticalAlignment
-    {
-        get => field;
-        set
-        {
-            if (field == value) return;
-            field = value;
-            InvalidateMeasure();
-        }
-    }
-    public UiElement SetVerticalAlignment(VerticalAlignment alignment)
-    {
-        VerticalAlignment = alignment;
-        return this;
-    }
-    public UiElement BindVerticalAlignment(Expression<Func<VerticalAlignment>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => VerticalAlignment = getter());
-        return this;
-    }
-    #endregion
-
-    #region CornerRadius
-    internal float CornerRadius
-    {
-        get => field;
-        set
-        {
-            field = value;
-        }
-    }
-    public UiElement SetCornerRadius(float radius)
-    {
-        CornerRadius = radius;
-        return this;
-    }
-    public UiElement BindCornerRadius(Expression<Func<float>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => CornerRadius = getter());
-        return this;
-    }
-    #endregion
-
-    #region ShadowColor
-    internal Color ShadowColor
-    {
-        get => field;
-        set
-        {
-            field = value;
-            InvalidateShadowCache();
-        }
-    }
-    public UiElement SetShadowColor(Color color)
-    {
-        ShadowColor = color;
-        return this;
-    }
-    public UiElement BindShadowColor(Expression<Func<Color>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => ShadowColor = getter());
-        return this;
-    }
-    #endregion
-
-    #region ShadowOffset
-    internal Point ShadowOffset
-    {
-        get => field;
-        set
-        {
-            field = value;
-            InvalidateShadowCache();
-        }
-    }
-    public UiElement SetShadowOffset(Point offset)
-    {
-        ShadowOffset = offset;
-        return this;
-    }
-    public UiElement BindShadowOffset(Expression<Func<Point>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => ShadowOffset = getter());
-        return this;
-    }
-    #endregion
-
-    #region ShadowBlur
-    internal float ShadowBlur
-    {
-        get => field;
-        set
-        {
-            field = value;
-            InvalidateShadowCache();
-        }
-    }
-    public UiElement SetShadowBlur(float blur)
-    {
-        ShadowBlur = blur;
-        return this;
-    }
-    public UiElement BindShadowBlur(Expression<Func<float>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => ShadowBlur = getter());
-        return this;
-    }
-    #endregion
-
-    #region ShadowSpread
-    internal float ShadowSpread { get; set; }
-    public UiElement SetShadowSpread(float spread)
-    {
-        ShadowSpread = spread;
-        return this;
-    }
-    public UiElement BindShadowSpread(Expression<Func<float>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => ShadowSpread = getter());
-        return this;
-    }
-    #endregion
-
-    #region size
-    internal virtual Size? DesiredSize
-    {
-        get => field;
-        set
-        {
-            if (field.HasValue && field.Equals(value)) return;
-            field = value;
-            InvalidateMeasure();
-        }
-    }
-    public UiElement SetDesiredSize(Size size)
-    {
-        DesiredSize = size;
-        return this;
-    }
-    public UiElement BindDesiredSize(Expression<Func<Size>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => DesiredSize = getter());
-        return this;
-    }
-    public UiElement SetDesiredWidth(float width)
-    {
-        DesiredSize = new Size(width, DesiredSize?.Height ?? -1);
-        return this;
-    }
-    public UiElement SetDesiredHeight(float height)
-    {
-        DesiredSize = new Size(DesiredSize?.Width ?? -1, height);
-        return this;
-    }
-    public UiElement BindDesiredWidth(Expression<Func<float>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => DesiredSize = new Size(getter(), DesiredSize?.Height ?? -1));
-        return this;
-    }
-    public UiElement BindDesiredHeight(Expression<Func<float>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => DesiredSize = new Size(DesiredSize?.Width ?? -1, getter()));
-        return this;
-    }
-    #endregion
 
     public UiElement IgnoreStyling()
     {
@@ -467,50 +150,9 @@ public abstract partial class UiElement : IDisposable
     protected internal abstract bool IsFocusable { get; }
 
     /// <summary>
-    /// Gets or sets the tab index for focus order.
-    /// Null means automatic order (declaration order).
-    /// Negative values exclude the element from tab navigation.
-    /// </summary>
-    internal int? TabIndex { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether this element should be included in tab navigation.
-    /// When false, the element is skipped during Tab/Shift+Tab navigation.
-    /// Default is true for focusable elements.
-    /// </summary>
-    internal bool TabStop { get; set; }
-
-    /// <summary>
     /// Gets or sets whether this element currently has keyboard focus.
     /// </summary>
     public bool IsFocused { get; internal set; }
-
-    /// <summary>
-    /// Gets or sets the color of the focus ring.
-    /// </summary>
-    internal Color FocusRingColor { get; set; }
-
-    /// <summary>
-    /// Gets or sets the width of the focus ring stroke.
-    /// </summary>
-    internal float FocusRingWidth { get; set; }
-
-    /// <summary>
-    /// Gets or sets the offset of the focus ring from the element bounds.
-    /// </summary>
-    internal float FocusRingOffset { get; set; }
-
-    /// <summary>
-    /// Gets or sets the background color when the element has focus.
-    /// When null, no focused background is applied.
-    /// </summary>
-    internal IBackground? FocusedBackground { get; set; }
-
-    /// <summary>
-    /// Gets or sets the border color when the element has focus.
-    /// When null, no focused border color is applied.
-    /// </summary>
-    internal Color? FocusedBorderColor { get; set; }
 
     /// <summary>
     /// Programmatically sets focus to this element.
@@ -535,166 +177,6 @@ public abstract partial class UiElement : IDisposable
         }
 
         return false;
-    }
-
-    /// <summary>
-    /// Sets the tab index for focus order.
-    /// </summary>
-    public UiElement SetTabIndex(int? tabIndex)
-    {
-        TabIndex = tabIndex;
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the TabIndex property.
-    /// </summary>
-    public UiElement BindTabIndex(Expression<Func<int?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => TabIndex = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Sets whether this element should be included in tab navigation.
-    /// </summary>
-    public UiElement SetTabStop(bool tabStop)
-    {
-        TabStop = tabStop;
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the TabStop property.
-    /// </summary>
-    public UiElement BindTabStop(Expression<Func<bool>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => TabStop = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the focus ring color.
-    /// </summary>
-    public UiElement SetFocusRingColor(Color color)
-    {
-        FocusRingColor = color;
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the focus ring color.
-    /// </summary>
-    public UiElement BindFocusRingColor(Expression<Func<Color>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => FocusRingColor = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the focus ring width.
-    /// </summary>
-    public UiElement SetFocusRingWidth(float width)
-    {
-        FocusRingWidth = width;
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the focus ring width.
-    /// </summary>
-    public UiElement BindFocusRingWidth(Expression<Func<float>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => FocusRingWidth = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the focus ring offset from element bounds.
-    /// </summary>
-    public UiElement SetFocusRingOffset(float offset)
-    {
-        FocusRingOffset = offset;
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the focus ring offset.
-    /// </summary>
-    public UiElement BindFocusRingOffset(Expression<Func<float>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => FocusRingOffset = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the background to use when the element has focus.
-    /// </summary>
-    public UiElement SetFocusedBackground(IBackground? background)
-    {
-        FocusedBackground = background;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets a solid color background to use when the element has focus.
-    /// </summary>
-    public UiElement SetFocusedBackground(Color color)
-    {
-        FocusedBackground = new SolidColorBackground(color);
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the focused background.
-    /// </summary>
-    public UiElement BindFocusedBackground(Expression<Func<IBackground?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => FocusedBackground = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the focused background as a solid color.
-    /// </summary>
-    public UiElement BindFocusedBackgroundColor(Expression<Func<Color>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => FocusedBackground = new SolidColorBackground(getter()));
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the border color to use when the element has focus.
-    /// </summary>
-    public UiElement SetFocusedBorderColor(Color? color)
-    {
-        FocusedBorderColor = color;
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the focused border color.
-    /// </summary>
-    public UiElement BindFocusedBorderColor(Expression<Func<Color?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => FocusedBorderColor = getter());
-        return this;
     }
 
     /// <summary>
@@ -746,23 +228,6 @@ public abstract partial class UiElement : IDisposable
 
     #region Accessibility
     /// <summary>
-    /// Gets or sets the accessibility label that describes this element to assistive technologies.
-    /// This is the primary text read by screen readers.
-    /// </summary>
-    public string? AccessibilityLabel { get; protected internal set; }
-
-    /// <summary>
-    /// Gets or sets additional accessibility hint text that provides more context about the element.
-    /// This is typically read after the label and value.
-    /// </summary>
-    public string? AccessibilityHint { get; protected internal set; }
-
-    /// <summary>
-    /// Gets or sets the current accessibility value of the element (e.g., slider position, text content).
-    /// </summary>
-    public string? AccessibilityValue { get; protected internal set; }
-
-    /// <summary>
     /// Gets the semantic accessibility role of this element.
     /// Override in derived classes to define the semantic role of the control.
     /// </summary>
@@ -772,39 +237,6 @@ public abstract partial class UiElement : IDisposable
     /// Gets or sets the accessibility traits that describe the state of this element.
     /// </summary>
     public AccessibilityTrait AccessibilityTraits { get; protected internal set; }
-
-    /// <summary>
-    /// Gets or sets whether this element should be exposed to assistive technologies.
-    /// When false, the element is hidden from accessibility.
-    /// </summary>
-    public bool IsAccessibilityElement { get; protected internal set; }
-
-    /// <summary>
-    /// Sets the accessibility label.
-    /// </summary>
-    public UiElement SetAccessibilityLabel(string? label)
-    {
-        AccessibilityLabel = label;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the accessibility hint.
-    /// </summary>
-    public UiElement SetAccessibilityHint(string? hint)
-    {
-        AccessibilityHint = hint;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the accessibility value.
-    /// </summary>
-    public UiElement SetAccessibilityValue(string? value)
-    {
-        AccessibilityValue = value;
-        return this;
-    }
 
     /// <summary>
     /// Sets the accessibility traits.
@@ -830,59 +262,6 @@ public abstract partial class UiElement : IDisposable
     public UiElement RemoveAccessibilityTraits(AccessibilityTrait traits)
     {
         AccessibilityTraits &= ~traits;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets whether this element should be exposed to assistive technologies.
-    /// </summary>
-    public UiElement SetIsAccessibilityElement(bool isAccessible)
-    {
-        IsAccessibilityElement = isAccessible;
-        return this;
-    }
-
-    /// <summary>
-    /// Binds whether this element should be exposed to assistive technologies.
-    /// </summary>
-    public UiElement BindIsAccessibilityElement(Expression<Func<bool>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => IsAccessibilityElement = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the accessibility label.
-    /// </summary>
-    public UiElement BindAccessibilityLabel(Expression<Func<string?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => AccessibilityLabel = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the accessibility hint.
-    /// </summary>
-    public UiElement BindAccessibilityHint(Expression<Func<string?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => AccessibilityHint = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the accessibility value.
-    /// </summary>
-    public UiElement BindAccessibilityValue(Expression<Func<string?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => AccessibilityValue = getter());
         return this;
     }
 
@@ -938,77 +317,6 @@ public abstract partial class UiElement : IDisposable
         }
 
         return traits;
-    }
-
-    /// <summary>
-    /// Gets or sets the background to use when high contrast mode is enabled.
-    /// When set and high contrast is active, this replaces the normal Background.
-    /// </summary>
-    internal IBackground? HighContrastBackground { get; set; }
-
-    /// <summary>
-    /// Gets or sets the foreground/text color to use when high contrast mode is enabled.
-    /// </summary>
-    internal Color? HighContrastForeground { get; set; }
-
-    /// <summary>
-    /// Sets the high contrast background.
-    /// </summary>
-    public UiElement SetHighContrastBackground(IBackground? background)
-    {
-        HighContrastBackground = background;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the high contrast background as a solid color.
-    /// </summary>
-    public UiElement SetHighContrastBackground(Color color)
-    {
-        HighContrastBackground = new SolidColorBackground(color);
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the high contrast background.
-    /// </summary>
-    public UiElement BindHighContrastBackground(Expression<Func<IBackground?>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => HighContrastBackground = getter());
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the high contrast background as a solid color.
-    /// </summary>
-    public UiElement BindHighContrastBackgroundColor(Expression<Func<Color>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => HighContrastBackground = new SolidColorBackground(getter()));
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the high contrast foreground color.
-    /// </summary>
-    public UiElement SetHighContrastForeground(Color color)
-    {
-        HighContrastForeground = color;
-        return this;
-    }
-
-    /// <summary>
-    /// Binds the high contrast foreground color.
-    /// </summary>
-    public UiElement BindHighContrastForeground(Expression<Func<Color>> propertyExpression)
-    {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => HighContrastForeground = getter());
-        return this;
     }
 
     /// <summary>
