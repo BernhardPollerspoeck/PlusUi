@@ -247,8 +247,8 @@ public class ButtonTests
         button.Measure(new Size(1920, 1080), dontStretch: true);
 
         // Assert - Button should have non-zero height
-        Assert.IsGreaterThan(button.ElementSize.Height, 0, $"Button height should be > 0, but was {button.ElementSize.Height}");
-        Assert.IsGreaterThan(button.ElementSize.Width, 0, $"Button width should be > 0, but was {button.ElementSize.Width}");
+        Assert.IsGreaterThan(0, button.ElementSize.Height, $"Button height should be > 0, but was {button.ElementSize.Height}");
+        Assert.IsGreaterThan(0, button.ElementSize.Width, $"Button width should be > 0, but was {button.ElementSize.Width}");
     }
 
     [TestMethod]
@@ -266,7 +266,7 @@ public class ButtonTests
         hstack.Measure(new Size(1920, 1080), dontStretch: true);
 
         // Assert - Button should have non-zero height
-        Assert.IsGreaterThan(button.ElementSize.Height, 0, $"Button height should be > 0, but was {button.ElementSize.Height}. HStack height: {hstack.ElementSize.Height}");
+        Assert.IsGreaterThan(0, button.ElementSize.Height, $"Button height should be > 0, but was {button.ElementSize.Height}. HStack height: {hstack.ElementSize.Height}");
     }
 
     [TestMethod]
@@ -316,8 +316,8 @@ public class ButtonTests
                         $"CancelBtn: {cancelButton.ElementSize.Width}x{cancelButton.ElementSize.Height}";
 
         // Assert - All buttons should have non-zero height
-        Assert.IsGreaterThan(saveButton.ElementSize.Height, 0, $"Save button height = 0. {debugInfo}");
-        Assert.IsGreaterThan(cancelButton.ElementSize.Height, 0, $"Cancel button height = 0. {debugInfo}");
-        Assert.IsGreaterThan(buttonRow.ElementSize.Height, 0, $"ButtonRow height = 0. {debugInfo}");
+        Assert.IsGreaterThan(0, saveButton.ElementSize.Height, $"Save button height = 0. {debugInfo}");
+        Assert.IsGreaterThan(0, cancelButton.ElementSize.Height, $"Cancel button height = 0. {debugInfo}");
+        Assert.IsGreaterThan(0, buttonRow.ElementSize.Height, $"ButtonRow height = 0. {debugInfo}");
     }
 }

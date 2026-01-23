@@ -1244,10 +1244,10 @@ public class TreeViewTests
         foreach (var label in labelsUC2)
         {
             var effectiveX = label.CapturedPosition.X + label.CapturedVisualOffset.X;
-            Assert.IsGreaterThanOrEqualTo(effectiveX, 400,
+            Assert.IsGreaterThanOrEqualTo(400, effectiveX,
                 $"Label '{label.Text}' effective X ({effectiveX}) should be >= 400 (right column). " +
                 $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
-            Assert.IsLessThan(effectiveX, 800,
+            Assert.IsLessThan(800, effectiveX,
                 $"Label '{label.Text}' effective X ({effectiveX}) should be < 800 (within grid). " +
                 $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
         }
@@ -1256,10 +1256,10 @@ public class TreeViewTests
         foreach (var label in labelsUC1)
         {
             var effectiveX = label.CapturedPosition.X + label.CapturedVisualOffset.X;
-            Assert.IsGreaterThanOrEqualTo(effectiveX, 0,
+            Assert.IsGreaterThanOrEqualTo(0, effectiveX,
                 $"Label '{label.Text}' effective X ({effectiveX}) should be >= 0. " +
                 $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
-            Assert.IsLessThan(effectiveX, 400,
+            Assert.IsLessThan(400, effectiveX,
                 $"Label '{label.Text}' effective X ({effectiveX}) should be < 400 (left column). " +
                 $"Position.X={label.CapturedPosition.X}, VisualOffset.X={label.CapturedVisualOffset.X}");
         }
