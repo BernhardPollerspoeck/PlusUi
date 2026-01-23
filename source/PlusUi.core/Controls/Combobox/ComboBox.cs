@@ -16,17 +16,67 @@ namespace PlusUi.core;
 /// </summary>
 /// <typeparam name="T">The type of items in the combo box.</typeparam>
 [GenerateShadowMethods]
-public partial class ComboBox<T> : ComboBox, IInputControl, IFocusable, IKeyboardInputHandler, IDebugInspectable
+public partial class ComboBox<T> : ComboBox, IDebugInspectable
 {
     IEnumerable<UiElement> IDebugInspectable.GetDebugChildren() =>
         _dropdownOverlay != null ? [_dropdownOverlay] : [];
 
     private IEnumerable<T>? _itemsSource;
     internal readonly List<T> _cachedItems = [];
-    private IOverlayService? _overlayService;
     private ComboBoxDropdownOverlay<T>? _dropdownOverlay;
-    private IPlatformService? _platformService;
     private Action<T?>? _onSelectionChanged;
+
+    #region Abstract Implementations
+    protected override int GetItemCount() => _cachedItems.Count;
+
+    protected override string? GetDisplayText() =>
+        SelectedItem != null ? DisplayFunc(SelectedItem) : null;
+
+    protected override void SelectItemAt(int index)
+    {
+        if (index < 0 || index >= _cachedItems.Count) return;
+
+        _selectedIndex = index;
+        SelectedItem = _cachedItems[index];
+
+        _onSelectionChanged?.Invoke(SelectedItem);
+
+        if (_setter.TryGetValue(nameof(SelectedItem), out var itemSetters))
+            foreach (var setter in itemSetters)
+                setter(SelectedItem);
+
+        if (_setter.TryGetValue(nameof(SelectedIndex), out var indexSetters))
+            foreach (var setter in indexSetters)
+                setter(SelectedIndex);
+    }
+
+    protected override void OnSelectedIndexChanged(int index)
+    {
+        if (index >= 0 && index < _cachedItems.Count)
+            SelectedItem = _cachedItems[index];
+        else
+            SelectedItem = default;
+    }
+
+    protected override void OnDropdownOpened()
+    {
+        _overlayService ??= ServiceProviderService.ServiceProvider?.GetService<IOverlayService>();
+        if (_overlayService == null)
+            return;
+
+        _dropdownOverlay = new ComboBoxDropdownOverlay<T>(this);
+        _overlayService.RegisterOverlay(_dropdownOverlay);
+    }
+
+    protected override void OnDropdownClosed()
+    {
+        if (_overlayService != null && _dropdownOverlay != null)
+        {
+            _overlayService.UnregisterOverlay(_dropdownOverlay);
+            _dropdownOverlay = null;
+        }
+    }
+    #endregion
 
     #region ItemsSource
     internal IEnumerable<T>? ItemsSource
@@ -107,40 +157,16 @@ public partial class ComboBox<T> : ComboBox, IInputControl, IFocusable, IKeyboar
     }
     #endregion
 
-    #region SelectedIndex
-    private int _selectedIndex = -1;
-
-    internal int SelectedIndex
+    #region SelectedIndex (fluent wrappers)
+    public new ComboBox<T> SetSelectedIndex(int index)
     {
-        get => _selectedIndex;
-        set
-        {
-            if (_selectedIndex == value)
-                return;
-
-            _selectedIndex = value;
-
-            if (value >= 0 && value < _cachedItems.Count)
-                SelectedItem = _cachedItems[value];
-            else
-                SelectedItem = default;
-        }
-    }
-
-    public ComboBox<T> SetSelectedIndex(int index)
-    {
-        SelectedIndex = index;
+        base.SetSelectedIndex(index);
         return this;
     }
 
-    public ComboBox<T> BindSelectedIndex(Expression<Func<int>> propertyExpression, Action<int> propertySetter)
+    public new ComboBox<T> BindSelectedIndex(Expression<Func<int>> propertyExpression, Action<int> propertySetter)
     {
-        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
-        var getter = propertyExpression.Compile();
-        RegisterPathBinding(path, () => SelectedIndex = getter());
-        foreach (var segment in path)
-            RegisterSetter<int>(segment, propertySetter);
-        RegisterSetter<int>(nameof(SelectedIndex), propertySetter);
+        base.BindSelectedIndex(propertyExpression, propertySetter);
         return this;
     }
     #endregion
@@ -172,178 +198,13 @@ public partial class ComboBox<T> : ComboBox, IInputControl, IFocusable, IKeyboar
     }
     #endregion
 
-    #region Dropdown Overlay (override abstract)
-    protected override void OnDropdownOpened()
-    {
-        _overlayService ??= ServiceProviderService.ServiceProvider?.GetService<IOverlayService>();
-        if (_overlayService == null)
-            return;
-
-        _dropdownOverlay = new ComboBoxDropdownOverlay<T>(this);
-        _overlayService.RegisterOverlay(_dropdownOverlay);
-    }
-
-    protected override void OnDropdownClosed()
-    {
-        if (_overlayService != null && _dropdownOverlay != null)
-        {
-            _overlayService.UnregisterOverlay(_dropdownOverlay);
-            _dropdownOverlay = null;
-        }
-    }
-    #endregion
-
     #region Accessibility
-    public override string? GetComputedAccessibilityLabel() =>
-        AccessibilityLabel ?? Placeholder ?? "Dropdown";
-
     public override string? GetComputedAccessibilityValue()
     {
         if (!string.IsNullOrEmpty(AccessibilityValue))
             return AccessibilityValue;
         return SelectedItem != null ? DisplayFunc(SelectedItem) : null;
     }
-
-    public override AccessibilityTrait GetComputedAccessibilityTraits()
-    {
-        var traits = base.GetComputedAccessibilityTraits();
-        if (IsOpen)
-            traits |= AccessibilityTrait.Expanded;
-        traits |= AccessibilityTrait.HasPopup;
-        return traits;
-    }
-    #endregion
-
-    #region IFocusable
-    bool IFocusable.IsFocusable => IsFocusable;
-    int? IFocusable.TabIndex => TabIndex;
-    bool IFocusable.TabStop => TabStop;
-    bool IFocusable.IsFocused
-    {
-        get => IsFocused;
-        set => IsFocused = value;
-    }
-    void IFocusable.OnFocus() => OnFocus();
-    void IFocusable.OnBlur()
-    {
-        OnBlur();
-        IsOpen = false;
-    }
-    #endregion
-
-    #region IKeyboardInputHandler
-    public bool HandleKeyboardInput(PlusKey key)
-    {
-        if (!IsOpen)
-        {
-            if (key == PlusKey.Enter || key == PlusKey.Space)
-            {
-                IsOpen = true;
-                _hoveredIndex = _selectedIndex;
-                ScrollToSelection();
-                return true;
-            }
-            if (key == PlusKey.ArrowUp || key == PlusKey.ArrowDown)
-            {
-                IsOpen = true;
-                _hoveredIndex = _selectedIndex;
-                ScrollToSelection();
-                return true;
-            }
-            return false;
-        }
-
-        switch (key)
-        {
-            case PlusKey.Escape:
-                IsOpen = false;
-                return true;
-            case PlusKey.ArrowUp:
-                if (_hoveredIndex > 0)
-                {
-                    _hoveredIndex--;
-                    EnsureHoveredItemVisible();
-                }
-                else if (_hoveredIndex < 0 && _cachedItems.Count > 0)
-                {
-                    _hoveredIndex = _cachedItems.Count - 1;
-                    EnsureHoveredItemVisible();
-                }
-                return true;
-            case PlusKey.ArrowDown:
-                if (_hoveredIndex < _cachedItems.Count - 1)
-                {
-                    _hoveredIndex++;
-                    EnsureHoveredItemVisible();
-                }
-                else if (_hoveredIndex < 0 && _cachedItems.Count > 0)
-                {
-                    _hoveredIndex = 0;
-                    EnsureHoveredItemVisible();
-                }
-                return true;
-            case PlusKey.Enter:
-            case PlusKey.Space:
-                if (_hoveredIndex >= 0 && _hoveredIndex < _cachedItems.Count)
-                    SelectItem(_hoveredIndex);
-                IsOpen = false;
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    private void SelectItem(int index)
-    {
-        if (index < 0 || index >= _cachedItems.Count) return;
-
-        _selectedIndex = index;
-        SelectedItem = _cachedItems[index];
-
-        _onSelectionChanged?.Invoke(SelectedItem);
-
-        if (_setter.TryGetValue(nameof(SelectedItem), out var itemSetters))
-            foreach (var setter in itemSetters)
-                setter(SelectedItem);
-
-        if (_setter.TryGetValue(nameof(SelectedIndex), out var indexSetters))
-            foreach (var setter in indexSetters)
-                setter(SelectedIndex);
-    }
-
-    private void EnsureHoveredItemVisible()
-    {
-        if (_hoveredIndex < 0) return;
-
-        var dropdownRect = GetDropdownRect();
-        var visibleItemCount = (int)(dropdownRect.Height / ItemHeight);
-
-        if (_hoveredIndex < _scrollStartIndex)
-            _scrollStartIndex = _hoveredIndex;
-        else if (_hoveredIndex >= _scrollStartIndex + visibleItemCount)
-            _scrollStartIndex = _hoveredIndex - visibleItemCount + 1;
-
-        _scrollStartIndex = Math.Max(0, Math.Min(_scrollStartIndex, _cachedItems.Count - visibleItemCount));
-    }
-
-    private void ScrollToSelection()
-    {
-        if (_selectedIndex < 0)
-        {
-            _scrollStartIndex = 0;
-            return;
-        }
-
-        var dropdownRect = GetDropdownRect();
-        var visibleItemCount = (int)(dropdownRect.Height / ItemHeight);
-
-        _scrollStartIndex = Math.Max(0, _selectedIndex - visibleItemCount / 2);
-        _scrollStartIndex = Math.Min(_scrollStartIndex, Math.Max(0, _cachedItems.Count - visibleItemCount));
-    }
-    #endregion
-
-    #region IInputControl
-    public void InvokeCommand() => IsOpen = !IsOpen;
     #endregion
 
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -362,83 +223,6 @@ public partial class ComboBox<T> : ComboBox, IInputControl, IFocusable, IKeyboar
         {
             _selectedIndex = -1;
             SelectedItem = default;
-        }
-    }
-
-    public override void Render(SKCanvas canvas)
-    {
-        base.Render(canvas);
-        if (!IsVisible)
-            return;
-
-        RenderComboBoxButton(canvas);
-    }
-
-    private void RenderComboBoxButton(SKCanvas canvas)
-    {
-        var rect = new SKRect(
-            Position.X + VisualOffset.X,
-            Position.Y + VisualOffset.Y,
-            Position.X + VisualOffset.X + ElementSize.Width,
-            Position.Y + VisualOffset.Y + ElementSize.Height);
-
-        var displayText = SelectedItem != null
-            ? DisplayFunc(SelectedItem)
-            : (Placeholder ?? string.Empty);
-
-        var showingPlaceholder = SelectedItem == null && !string.IsNullOrEmpty(Placeholder);
-
-        if (!string.IsNullOrEmpty(displayText))
-        {
-            var originalColor = _paint.Color;
-            if (showingPlaceholder)
-                _paint.Color = PlaceholderColor;
-
-            _font.GetFontMetrics(out var fontMetrics);
-            var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
-
-            canvas.DrawText(
-                displayText,
-                rect.Left + Padding.Left,
-                rect.Top + Padding.Top + textHeight,
-                SKTextAlign.Left,
-                _font,
-                _paint);
-
-            if (showingPlaceholder)
-                _paint.Color = originalColor;
-        }
-
-        RenderArrow(canvas, rect);
-    }
-
-    internal SKRect GetDropdownRect()
-    {
-        var dropdownHeight = Math.Min(_cachedItems.Count * ItemHeight, DropdownMaxHeight);
-        var comboBoxBottom = Position.Y + VisualOffset.Y + ElementSize.Height;
-        var comboBoxTop = Position.Y + VisualOffset.Y;
-
-        _platformService ??= ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
-        var windowHeight = _platformService?.WindowSize.Height ?? 800f;
-
-        var spaceBelow = windowHeight - comboBoxBottom;
-        var opensUpward = spaceBelow < dropdownHeight && comboBoxTop > spaceBelow;
-
-        if (opensUpward)
-        {
-            return new SKRect(
-                Position.X + VisualOffset.X,
-                comboBoxTop - dropdownHeight,
-                Position.X + VisualOffset.X + ElementSize.Width,
-                comboBoxTop);
-        }
-        else
-        {
-            return new SKRect(
-                Position.X + VisualOffset.X,
-                comboBoxBottom,
-                Position.X + VisualOffset.X + ElementSize.Width,
-                comboBoxBottom + dropdownHeight);
         }
     }
 
@@ -536,11 +320,11 @@ public partial class ComboBox<T> : ComboBox, IInputControl, IFocusable, IKeyboar
 }
 
 /// <summary>
-/// Non-generic base class for ComboBox. Contains T-independent properties.
+/// Non-generic base class for ComboBox. Contains T-independent logic.
 /// </summary>
 [GenerateShadowMethods]
 [UiPropGenPadding]
-public abstract partial class ComboBox : UiElement
+public abstract partial class ComboBox : UiElement, IInputControl, IFocusable, IKeyboardInputHandler
 {
     internal const float DropdownMaxHeight = 200f;
     internal static readonly float ItemHeight = PlusUiDefaults.ItemHeight;
@@ -553,6 +337,18 @@ public abstract partial class ComboBox : UiElement
     internal SKPaint _paint = null!;
     internal int _hoveredIndex = -1;
     internal int _scrollStartIndex = 0;
+    internal int _selectedIndex = -1;
+    protected IOverlayService? _overlayService;
+    private IPlatformService? _platformService;
+
+    #region Abstract Methods
+    protected abstract int GetItemCount();
+    protected abstract string? GetDisplayText();
+    protected abstract void SelectItemAt(int index);
+    protected abstract void OnSelectedIndexChanged(int index);
+    protected abstract void OnDropdownOpened();
+    protected abstract void OnDropdownClosed();
+    #endregion
 
     #region IsOpen
     internal bool IsOpen
@@ -587,9 +383,38 @@ public abstract partial class ComboBox : UiElement
         RegisterPathBinding(path, () => IsOpen = getter());
         return this;
     }
+    #endregion
 
-    protected abstract void OnDropdownOpened();
-    protected abstract void OnDropdownClosed();
+    #region SelectedIndex
+    internal int SelectedIndex
+    {
+        get => _selectedIndex;
+        set
+        {
+            if (_selectedIndex == value)
+                return;
+
+            _selectedIndex = value;
+            OnSelectedIndexChanged(value);
+        }
+    }
+
+    public ComboBox SetSelectedIndex(int index)
+    {
+        SelectedIndex = index;
+        return this;
+    }
+
+    public ComboBox BindSelectedIndex(Expression<Func<int>> propertyExpression, Action<int> propertySetter)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => SelectedIndex = getter());
+        foreach (var segment in path)
+            RegisterSetter<int>(segment, propertySetter);
+        RegisterSetter<int>(nameof(SelectedIndex), propertySetter);
+        return this;
+    }
     #endregion
 
     #region Placeholder
@@ -771,7 +596,184 @@ public abstract partial class ComboBox : UiElement
         );
     }
 
-    protected override Margin? GetDebugPadding() => Padding;
+    #region IInputControl
+    public void InvokeCommand() => IsOpen = !IsOpen;
+    #endregion
+
+    #region IFocusable
+    bool IFocusable.IsFocusable => IsFocusable;
+    int? IFocusable.TabIndex => TabIndex;
+    bool IFocusable.TabStop => TabStop;
+    bool IFocusable.IsFocused
+    {
+        get => IsFocused;
+        set => IsFocused = value;
+    }
+    void IFocusable.OnFocus() => OnFocus();
+    void IFocusable.OnBlur()
+    {
+        OnBlur();
+        IsOpen = false;
+    }
+    #endregion
+
+    #region IKeyboardInputHandler
+    public bool HandleKeyboardInput(PlusKey key)
+    {
+        var itemCount = GetItemCount();
+
+        if (!IsOpen)
+        {
+            if (key == PlusKey.Enter || key == PlusKey.Space)
+            {
+                IsOpen = true;
+                _hoveredIndex = _selectedIndex;
+                ScrollToSelection();
+                return true;
+            }
+            if (key == PlusKey.ArrowUp || key == PlusKey.ArrowDown)
+            {
+                IsOpen = true;
+                _hoveredIndex = _selectedIndex;
+                ScrollToSelection();
+                return true;
+            }
+            return false;
+        }
+
+        switch (key)
+        {
+            case PlusKey.Escape:
+                IsOpen = false;
+                return true;
+            case PlusKey.ArrowUp:
+                if (_hoveredIndex > 0)
+                {
+                    _hoveredIndex--;
+                    EnsureHoveredItemVisible();
+                }
+                else if (_hoveredIndex < 0 && itemCount > 0)
+                {
+                    _hoveredIndex = itemCount - 1;
+                    EnsureHoveredItemVisible();
+                }
+                return true;
+            case PlusKey.ArrowDown:
+                if (_hoveredIndex < itemCount - 1)
+                {
+                    _hoveredIndex++;
+                    EnsureHoveredItemVisible();
+                }
+                else if (_hoveredIndex < 0 && itemCount > 0)
+                {
+                    _hoveredIndex = 0;
+                    EnsureHoveredItemVisible();
+                }
+                return true;
+            case PlusKey.Enter:
+            case PlusKey.Space:
+                if (_hoveredIndex >= 0 && _hoveredIndex < itemCount)
+                    SelectItemAt(_hoveredIndex);
+                IsOpen = false;
+                return true;
+            default:
+                return false;
+        }
+    }
+    #endregion
+
+    #region Navigation
+    protected void EnsureHoveredItemVisible()
+    {
+        if (_hoveredIndex < 0) return;
+
+        var itemCount = GetItemCount();
+        var dropdownRect = GetDropdownRect();
+        var visibleItemCount = (int)(dropdownRect.Height / ItemHeight);
+
+        if (_hoveredIndex < _scrollStartIndex)
+            _scrollStartIndex = _hoveredIndex;
+        else if (_hoveredIndex >= _scrollStartIndex + visibleItemCount)
+            _scrollStartIndex = _hoveredIndex - visibleItemCount + 1;
+
+        _scrollStartIndex = Math.Max(0, Math.Min(_scrollStartIndex, itemCount - visibleItemCount));
+    }
+
+    protected void ScrollToSelection()
+    {
+        if (_selectedIndex < 0)
+        {
+            _scrollStartIndex = 0;
+            return;
+        }
+
+        var itemCount = GetItemCount();
+        var dropdownRect = GetDropdownRect();
+        var visibleItemCount = (int)(dropdownRect.Height / ItemHeight);
+
+        _scrollStartIndex = Math.Max(0, _selectedIndex - visibleItemCount / 2);
+        _scrollStartIndex = Math.Min(_scrollStartIndex, Math.Max(0, itemCount - visibleItemCount));
+    }
+    #endregion
+
+    #region Accessibility
+    public override string? GetComputedAccessibilityLabel() =>
+        AccessibilityLabel ?? Placeholder ?? "Dropdown";
+
+    public override AccessibilityTrait GetComputedAccessibilityTraits()
+    {
+        var traits = base.GetComputedAccessibilityTraits();
+        if (IsOpen)
+            traits |= AccessibilityTrait.Expanded;
+        traits |= AccessibilityTrait.HasPopup;
+        return traits;
+    }
+    #endregion
+
+    #region Rendering
+    public override void Render(SKCanvas canvas)
+    {
+        base.Render(canvas);
+        if (!IsVisible)
+            return;
+
+        RenderComboBoxButton(canvas);
+    }
+
+    private void RenderComboBoxButton(SKCanvas canvas)
+    {
+        var rect = new SKRect(
+            Position.X + VisualOffset.X,
+            Position.Y + VisualOffset.Y,
+            Position.X + VisualOffset.X + ElementSize.Width,
+            Position.Y + VisualOffset.Y + ElementSize.Height);
+
+        var displayText = GetDisplayText() ?? (Placeholder ?? string.Empty);
+        var showingPlaceholder = GetDisplayText() == null && !string.IsNullOrEmpty(Placeholder);
+
+        if (!string.IsNullOrEmpty(displayText))
+        {
+            var originalColor = _paint.Color;
+            if (showingPlaceholder)
+                _paint.Color = PlaceholderColor;
+
+            _font.GetFontMetrics(out var fontMetrics);
+            var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
+
+            canvas.DrawText(
+                displayText,
+                rect.Left + Padding.Left,
+                rect.Top + Padding.Top + textHeight,
+                SKTextAlign.Left,
+                _font,
+                _paint);
+
+            if (showingPlaceholder)
+                _paint.Color = originalColor;
+        }
+
+        RenderArrow(canvas, rect);
+    }
 
     protected void RenderArrow(SKCanvas canvas, SKRect rect)
     {
@@ -802,6 +804,41 @@ public abstract partial class ComboBox : UiElement
 
         canvas.DrawPath(arrowPath, arrowPaint);
     }
+    #endregion
+
+    #region Layout
+    internal SKRect GetDropdownRect()
+    {
+        var itemCount = GetItemCount();
+        var dropdownHeight = Math.Min(itemCount * ItemHeight, DropdownMaxHeight);
+        var comboBoxBottom = Position.Y + VisualOffset.Y + ElementSize.Height;
+        var comboBoxTop = Position.Y + VisualOffset.Y;
+
+        _platformService ??= ServiceProviderService.ServiceProvider?.GetService<IPlatformService>();
+        var windowHeight = _platformService?.WindowSize.Height ?? 800f;
+
+        var spaceBelow = windowHeight - comboBoxBottom;
+        var opensUpward = spaceBelow < dropdownHeight && comboBoxTop > spaceBelow;
+
+        if (opensUpward)
+        {
+            return new SKRect(
+                Position.X + VisualOffset.X,
+                comboBoxTop - dropdownHeight,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                comboBoxTop);
+        }
+        else
+        {
+            return new SKRect(
+                Position.X + VisualOffset.X,
+                comboBoxBottom,
+                Position.X + VisualOffset.X + ElementSize.Width,
+                comboBoxBottom + dropdownHeight);
+        }
+    }
+
+    protected override Margin? GetDebugPadding() => Padding;
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
     {
@@ -825,6 +862,7 @@ public abstract partial class ComboBox : UiElement
         }
         return null;
     }
+    #endregion
 
     protected override void Dispose(bool disposing)
     {
