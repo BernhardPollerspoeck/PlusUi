@@ -91,4 +91,21 @@ public class PlusUiConfiguration
     /// Default is false (opt-in).
     /// </summary>
     public bool RespectReducedMotion { get; set; } = false;
+
+    // Window Persistence Configuration
+
+    /// <summary>
+    /// Gets or sets a value indicating whether window position and size should be remembered.
+    /// When true, the window position and size will be saved to a local file when the app closes
+    /// and restored when the app starts again.
+    /// Default is false (opt-in).
+    /// </summary>
+    public bool RememberWindowPosition { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the application identifier used for storing window settings.
+    /// If not set, the assembly name will be used.
+    /// This affects where the settings file is stored.
+    /// </summary>
+    public string? ApplicationId { get; set; }
 }

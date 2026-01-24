@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlusUi.core;
+using PlusUi.Demo.Pages.EntryDemo;
 using PlusUi.Demo.Pages.RichTextLabelDemo;
 
 namespace PlusUi.Demo.Pages.Main;
@@ -48,6 +49,9 @@ public partial class MainPageViewModel(INavigationService navigation) : Observab
     {
         switch (controlName)
         {
+            case "Entry":
+                navigation.NavigateTo<EntryPage>();
+                break;
             case "RichTextLabel":
                 navigation.NavigateTo<RichTextLabelPage>();
                 break;

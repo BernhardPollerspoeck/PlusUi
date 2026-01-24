@@ -10,6 +10,8 @@ public class KeyboardTextField : UITextField, IKeyboardHandler, IUITextFieldDele
 
     public event EventHandler<PlusKey>? KeyInput;
     public event EventHandler<char>? CharInput;
+    public event EventHandler<bool>? ShiftStateChanged;
+    public event EventHandler<bool>? CtrlStateChanged;
 
     public KeyboardTextField()
     {

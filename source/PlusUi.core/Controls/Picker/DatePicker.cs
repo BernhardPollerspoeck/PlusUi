@@ -628,7 +628,7 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
         _isSelected = isSelected;
     }
 
-    public void HandleInput(PlusKey key)
+    public void HandleInput(PlusKey key, bool shift, bool ctrl)
     {
         if (key == PlusKey.Backspace)
         {
@@ -646,17 +646,19 @@ public partial class DatePicker : UiElement, IInputControl, ITextInputControl, I
 
     public void HandleInput(char chr)
     {
-        // Accept digits and date separators
         if (!char.IsDigit(chr) && chr != '.' && chr != '/' && chr != '-')
             return;
 
         _inputBuffer += chr;
 
-        // Try to parse when buffer matches common date lengths
         if (_inputBuffer.Length >= 8)
         {
             TryParseAndSetDate();
         }
+    }
+
+    public void HandleClick(float localX, float localY)
+    {
     }
 
     private void TryParseAndSetDate()

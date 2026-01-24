@@ -23,6 +23,7 @@ internal class WindowManager(
     PlusUiNavigationService plusUiNavigationService,
     NavigationContainer navigationContainer,
     IAccessibilityService accessibilityService,
+    WindowSettingsService windowSettingsService,
     IHostApplicationLifetime appLifetime,
     ILogger<WindowManager> logger)
     : IHostedService
@@ -37,26 +38,45 @@ internal class WindowManager(
     private IMouse? _mouse;
     private IKeyboard? _keyboard;
     private bool _isClosing;
+    private Vector2D<int> _lastNormalPosition;
+    private Vector2D<int> _lastNormalSize;
     #endregion
 
     #region IHostedService
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        var savedSettings = windowSettingsService.Load();
+
+        var size = savedSettings != null
+            ? new Vector2D<int>(savedSettings.Width, savedSettings.Height)
+            : new Vector2D<int>(uiOptions.Value.Size.Width, uiOptions.Value.Size.Height);
+
+        var position = savedSettings != null
+            ? new Vector2D<int>(savedSettings.X, savedSettings.Y)
+            : new Vector2D<int>(uiOptions.Value.Position.Width, uiOptions.Value.Position.Height);
+
+        var windowState = savedSettings is { IsMaximized: true }
+            ? Silk.NET.Windowing.WindowState.Maximized
+            : (Silk.NET.Windowing.WindowState)uiOptions.Value.WindowState;
+
         var options = WindowOptions.Default with
         {
-            Size = new(uiOptions.Value.Size.Width, uiOptions.Value.Size.Height),
+            Size = size,
             Title = uiOptions.Value.Title,
-            Position = new(uiOptions.Value.Position.Width, uiOptions.Value.Position.Height),
-            WindowState = (Silk.NET.Windowing.WindowState)uiOptions.Value.WindowState,
+            Position = position,
+            WindowState = windowState,
             WindowBorder = (Silk.NET.Windowing.WindowBorder)uiOptions.Value.WindowBorder,
             TopMost = uiOptions.Value.IsWindowTopMost,
             TransparentFramebuffer = uiOptions.Value.IsWindowTransparent,
-            VSync = true,             // Reduce CPU usage by syncing to display refresh rate
-            FramesPerSecond = 60      // Continuous 60 FPS rendering (simple and stable)
+            VSync = true,
+            FramesPerSecond = 60
         };
 
         _window = Window.Create(options);
         platformService.SetWindow(_window);
+
+        _lastNormalPosition = position;
+        _lastNormalSize = size;
 
         _window.Closing += HandleWindowClosing;
         _window.Render += HandleWindowRender;
@@ -64,6 +84,7 @@ internal class WindowManager(
         _window.Load += HandleWindowLoad;
         _window.StateChanged += HandleWindowStateChanged;
         _window.FocusChanged += HandleWindowFocusChanged;
+        _window.Move += HandleWindowMove;
 
         _window.Run();
 
@@ -134,6 +155,19 @@ internal class WindowManager(
         // Set closing flag immediately to stop render loop
         _isClosing = true;
 
+        // Save window position and size if enabled
+        if (_window != null && uiOptions.Value.RememberWindowPosition)
+        {
+            var isMaximized = _window.WindowState == WindowState.Maximized;
+            var settings = new WindowSettings(
+                _lastNormalPosition.X,
+                _lastNormalPosition.Y,
+                _lastNormalSize.X,
+                _lastNormalSize.Y,
+                isMaximized);
+            windowSettingsService.Save(settings);
+        }
+
         // Unsubscribe from input events first to prevent ObjectDisposedException
         if (_mouse is not null)
         {
@@ -187,7 +221,10 @@ internal class WindowManager(
         CreateSurface(newSize);
         navigationContainer.CurrentPage.InvalidateMeasure();
 
-        // Request render to display resized content
+        if (_window?.WindowState == WindowState.Normal)
+        {
+            _lastNormalSize = newSize;
+        }
     }
 
     private void HandleWindowStateChanged(WindowState state)
@@ -208,6 +245,14 @@ internal class WindowManager(
         // Request render when window regains focus (content might have changed)
         if (focused)
         {
+        }
+    }
+
+    private void HandleWindowMove(Vector2D<int> position)
+    {
+        if (_window?.WindowState == WindowState.Normal)
+        {
+            _lastNormalPosition = position;
         }
     }
     #endregion

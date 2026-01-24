@@ -575,7 +575,7 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         _isSelected = isSelected;
     }
 
-    public void HandleInput(PlusKey key)
+    public void HandleInput(PlusKey key, bool shift, bool ctrl)
     {
         if (key == PlusKey.Backspace)
         {
@@ -593,16 +593,13 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
 
     public void HandleInput(char chr)
     {
-        // Accept digits and colon
         if (!char.IsDigit(chr) && chr != ':')
             return;
 
         _inputBuffer += chr;
 
-        // Try to parse when buffer matches common time lengths
         if (_inputBuffer.Length >= 4 && !_inputBuffer.Contains(':'))
         {
-            // Insert colon for formats like "0930" -> "09:30"
             _inputBuffer = _inputBuffer.Insert(2, ":");
         }
 
@@ -610,6 +607,10 @@ public partial class TimePicker : UiElement, IInputControl, ITextInputControl, I
         {
             TryParseAndSetTime();
         }
+    }
+
+    public void HandleClick(float localX, float localY)
+    {
     }
 
     private void TryParseAndSetTime()
