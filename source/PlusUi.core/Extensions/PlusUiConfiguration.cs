@@ -14,6 +14,13 @@ public class PlusUiConfiguration
     public bool IsWindowTransparent { get; set; } = false;
     public bool LoadImagesSynchronously { get; set; } = false;
 
+    /// <summary>
+    /// Gets or sets the path to the window icon file (SVG or PNG format).
+    /// The icon will be displayed in the window title bar and taskbar.
+    /// If null, the default system icon is used.
+    /// </summary>
+    public string? WindowIcon { get; set; }
+
     // Navigation Configuration
 
     /// <summary>

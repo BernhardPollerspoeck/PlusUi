@@ -9,6 +9,8 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using SkiaSharp;
+using Svg.Skia;
+using System.Runtime.InteropServices;
 using MouseButton = Silk.NET.Input.MouseButton;
 using WindowState = Silk.NET.Windowing.WindowState;
 
@@ -148,7 +150,7 @@ internal class WindowManager(
 
         SetupInputHandling();
 
-        // Request initial render after load
+        SetWindowIcon();
     }
     private void HandleWindowClosing()
     {
@@ -366,6 +368,79 @@ internal class WindowManager(
         if (key == Key.ControlLeft || key == Key.ControlRight)
         {
             inputService.SetCtrlPressed(false);
+        }
+    }
+
+    private void SetWindowIcon()
+    {
+        var iconPath = uiOptions.Value.WindowIcon;
+        if (string.IsNullOrEmpty(iconPath) || _window is null)
+            return;
+
+        try
+        {
+            SKBitmap? bitmap = null;
+
+            if (iconPath.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+            {
+                using var svg = new SKSvg();
+                svg.Load(iconPath);
+                if (svg.Picture is null) return;
+
+                var bounds = svg.Picture.CullRect;
+                var size = 64;
+                var scale = size / Math.Max(bounds.Width, bounds.Height);
+
+                bitmap = new SKBitmap(size, size);
+                using var canvas = new SKCanvas(bitmap);
+                canvas.Clear(SKColors.Transparent);
+                canvas.Scale(scale);
+                canvas.Translate(-bounds.Left, -bounds.Top);
+                canvas.DrawPicture(svg.Picture);
+            }
+            else if (iconPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+            {
+                using var stream = File.OpenRead(iconPath);
+                bitmap = SKBitmap.Decode(stream);
+            }
+
+            if (bitmap is null) return;
+
+            var pixels = bitmap.Pixels;
+            var pixelData = new byte[bitmap.Width * bitmap.Height * 4];
+
+            for (var i = 0; i < pixels.Length; i++)
+            {
+                pixelData[i * 4 + 0] = pixels[i].Red;
+                pixelData[i * 4 + 1] = pixels[i].Green;
+                pixelData[i * 4 + 2] = pixels[i].Blue;
+                pixelData[i * 4 + 3] = pixels[i].Alpha;
+            }
+
+            unsafe
+            {
+                var glfw = Glfw.GetApi();
+                var nativeWindow = _window.Native?.Glfw;
+                if (nativeWindow is null) return;
+
+                fixed (byte* ptr = pixelData)
+                {
+                    var image = new Silk.NET.GLFW.Image
+                    {
+                        Width = bitmap.Width,
+                        Height = bitmap.Height,
+                        Pixels = ptr
+                    };
+                    glfw.SetWindowIcon((WindowHandle*)nativeWindow.Value, 1, &image);
+                }
+            }
+
+            bitmap.Dispose();
+            logger.LogDebug("Window icon set from {IconPath}", iconPath);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to set window icon from {IconPath}", iconPath);
         }
     }
     #endregion

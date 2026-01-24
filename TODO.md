@@ -4,7 +4,7 @@ TODO
 
 | Section | Description | Done | Total | Progress | Remaining |
 |---------|-------------|------|-------|----------|-----------|
-| 0 | Random stuff | 8 | 11 | 🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 73% | ~3 weeks |
+| 0 | Random stuff | 10 | 14 | 🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜ 71% | ~3 weeks |
 | 0.5 | App Default Style | 0 | 3 | ⬜⬜⬜ 0% | ~2 days |
 | 1 | DebugServer: Tree | 9 | 9 | 🟩🟩🟩🟩🟩🟩🟩🟩🟩 100% | ✅ Done |
 | 2 | DebugServer: Property Grid | 5 | 5 | 🟩🟩🟩🟩🟩 100% | ✅ Done |
@@ -14,7 +14,7 @@ TODO
 | 6 | DebugServer: Screenshot | 6 | 6 | 🟩🟩🟩🟩🟩🟩 100% | ✅ Done |
 | 7 | DebugServer: Logging Cleanup | 3 | 3 | 🟩🟩🟩 100% | ✅ Done |
 | 8 | DebugServer: Layout Vis | 2 | 2 | 🟩🟩 100% | ✅ Done |
-| **Total** | | **43** | **55** | **78%** | **~4 weeks** |
+| **Total** | | **45** | **58** | **78%** | **~4 weeks** |
 
 ---
 
@@ -51,6 +51,11 @@ TODO
 - [x] [x] 999.9 4️⃣ ensure all not public api surfaces are internal only
 - [x] [x] 999.10 5️⃣ return ServiceProviderService.ServiceProvider?.GetService<IPaintRegistryService>() wirft Exception in UiElment beim stoppen
 - [x] [x] 999.11 6️⃣ Remove remaining on-demand service resolves (ServiceProvider?.GetService<T>()) - cache in constructor instead
+- [x] [x] 999.12 4️⃣ Refactor ComboBox to move more T-independent code to non-generic base class
+- [x] [x] 999.13 5️⃣ Fix failing layout tests (Button height, Grid width, ItemsList)
+- [ ] [ ] 999.14 6️⃣ Define more properties via UiPropGen source generator (see duplicated-properties-report.md)
+- [ ] [ ] 999.15 7️⃣ Build-time SVG to ICO conversion for .exe icons (MSBuild task or dotnet tool)
+- [ ] [ ] 999.16 3️⃣ Logo rework: Plus sign looks bad at small sizes (taskbar/titlebar icon)
 
 ### 0.5 App Default Style
 - [ ] [ ] 0.5.1 5️⃣ Evaluate default values from DebugServer (analyze current styles and derive sensible defaults)

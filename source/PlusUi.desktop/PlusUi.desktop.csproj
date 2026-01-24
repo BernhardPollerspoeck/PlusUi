@@ -21,6 +21,7 @@
     <PackageReference Include="Silk.NET.Input" Version="$(SilkNetVersion)" />
     <PackageReference Include="Silk.NET.OpenGL" Version="$(SilkNetVersion)" />
     <PackageReference Include="Silk.NET.Windowing" Version="$(SilkNetVersion)" />
+    <PackageReference Include="Svg.Skia" Version="2.0.0.4" />
   </ItemGroup>
 
  <ItemGroup>

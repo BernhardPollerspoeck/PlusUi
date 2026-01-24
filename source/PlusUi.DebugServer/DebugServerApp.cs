@@ -12,6 +12,9 @@ public class DebugServerApp : IAppConfiguration
         configuration.Size = new SizeI(1400, 900);
         configuration.EnableNavigationStack = false;
         configuration.PreservePageState = false;
+        configuration.WindowIcon = "plusui.svg";
+        configuration.RememberWindowPosition = true;
+        configuration.ApplicationId = "PlusUi.DebugServer";
     }
 
     public void ConfigureApp(IPlusUiAppBuilder builder)

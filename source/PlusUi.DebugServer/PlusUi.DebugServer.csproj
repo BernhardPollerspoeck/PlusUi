@@ -6,6 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
+		<ApplicationIcon>app.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -20,6 +21,10 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="Assets\*.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\gfx\plusui.svg" Link="plusui.svg" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 </Project>

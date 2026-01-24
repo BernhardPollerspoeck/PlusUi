@@ -13,4 +13,8 @@
     <ProjectReference Include="..\PlusUi.Demo\PlusUi.Demo.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\gfx\plusui.svg" Link="plusui.svg" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
