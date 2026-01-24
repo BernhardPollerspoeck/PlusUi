@@ -1,10 +1,11 @@
 using PlusUi.core;
+using PrereleaseVideo.ViewModels;
 
 public class FluentApiPage(
-    PlaceholderViewModel vm,
+    FluentApiViewModel vm,
     INavigationService navigationService,
     TimeProvider timeProvider)
-    : PlaceholderPage<StylingPage>(vm, navigationService, timeProvider)
+    : PlaceholderPage<FluentApiViewModel, StylingPage>(vm, navigationService, timeProvider)
 {
     protected override string SectionTitle => "5. Fluent API";
 }

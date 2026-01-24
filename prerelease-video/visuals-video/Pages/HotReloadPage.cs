@@ -1,10 +1,11 @@
 using PlusUi.core;
+using PrereleaseVideo.ViewModels;
 
 public class HotReloadPage(
-    PlaceholderViewModel vm,
+    HotReloadViewModel vm,
     INavigationService navigationService,
     TimeProvider timeProvider)
-    : PlaceholderPage<DebugServerPage>(vm, navigationService, timeProvider)
+    : PlaceholderPage<HotReloadViewModel, DebugServerPage>(vm, navigationService, timeProvider)
 {
     protected override string SectionTitle => "9. Hot Reload";
 }

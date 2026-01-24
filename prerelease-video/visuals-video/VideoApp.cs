@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core;
 using PlusUi.h264;
+using PrereleaseVideo.ViewModels;
 
 public class VideoApp : IVideoAppConfiguration
 {
@@ -15,18 +16,17 @@ public class VideoApp : IVideoAppConfiguration
 
     public void ConfigureApp(IPlusUiAppBuilder builder)
     {
-        // Pages
-        builder.AddPage<IntroPage>().WithViewModel<PlaceholderViewModel>();
-        builder.AddPage<PlatformsPage>().WithViewModel<PlaceholderViewModel>();
-        builder.AddPage<ControlsPage>().WithViewModel<PlaceholderViewModel>();
-        builder.AddPage<DataBindingPage>().WithViewModel<PlaceholderViewModel>();
-        builder.AddPage<FluentApiPage>().WithViewModel<PlaceholderViewModel>();
-        builder.AddPage<StylingPage>().WithViewModel<PlaceholderViewModel>();
-        builder.AddPage<ThemingPage>().WithViewModel<PlaceholderViewModel>();
-        builder.AddPage<AccessibilityPage>().WithViewModel<PlaceholderViewModel>();
-        builder.AddPage<HotReloadPage>().WithViewModel<PlaceholderViewModel>();
-        builder.AddPage<DebugServerPage>().WithViewModel<PlaceholderViewModel>();
-        builder.AddPage<OutroPage>().WithViewModel<PlaceholderViewModel>();
+        builder.AddPage<IntroPage>().WithViewModel<IntroViewModel>();
+        builder.AddPage<PlatformsPage>().WithViewModel<PlatformsViewModel>();
+        builder.AddPage<ControlsPage>().WithViewModel<ControlsViewModel>();
+        builder.AddPage<DataBindingPage>().WithViewModel<DataBindingViewModel>();
+        builder.AddPage<FluentApiPage>().WithViewModel<FluentApiViewModel>();
+        builder.AddPage<StylingPage>().WithViewModel<StylingViewModel>();
+        builder.AddPage<ThemingPage>().WithViewModel<ThemingViewModel>();
+        builder.AddPage<AccessibilityPage>().WithViewModel<AccessibilityViewModel>();
+        builder.AddPage<HotReloadPage>().WithViewModel<HotReloadViewModel>();
+        builder.AddPage<DebugServerPage>().WithViewModel<DebugServerViewModel>();
+        builder.AddPage<OutroPage>().WithViewModel<OutroViewModel>();
     }
 
     public UiPageElement GetRootPage(IServiceProvider serviceProvider)

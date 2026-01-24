@@ -1,10 +1,11 @@
 using PlusUi.core;
+using PrereleaseVideo.ViewModels;
 
 public class StylingPage(
-    PlaceholderViewModel vm,
+    StylingViewModel vm,
     INavigationService navigationService,
     TimeProvider timeProvider)
-    : PlaceholderPage<ThemingPage>(vm, navigationService, timeProvider)
+    : PlaceholderPage<StylingViewModel, ThemingPage>(vm, navigationService, timeProvider)
 {
     protected override string SectionTitle => "6. Styling & Animations";
 }

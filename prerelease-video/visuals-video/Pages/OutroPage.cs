@@ -1,6 +1,7 @@
 using PlusUi.core;
+using PrereleaseVideo.ViewModels;
 
-public class OutroPage(PlaceholderViewModel vm) : UiPageElement(vm)
+public class OutroPage(OutroViewModel vm) : UiPageElement(vm)
 {
     protected override UiElement Build()
     {

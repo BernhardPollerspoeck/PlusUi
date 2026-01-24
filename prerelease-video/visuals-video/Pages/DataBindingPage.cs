@@ -1,10 +1,11 @@
 using PlusUi.core;
+using PrereleaseVideo.ViewModels;
 
 public class DataBindingPage(
-    PlaceholderViewModel vm,
+    DataBindingViewModel vm,
     INavigationService navigationService,
     TimeProvider timeProvider)
-    : PlaceholderPage<FluentApiPage>(vm, navigationService, timeProvider)
+    : PlaceholderPage<DataBindingViewModel, FluentApiPage>(vm, navigationService, timeProvider)
 {
     protected override string SectionTitle => "4. Data Binding";
 }

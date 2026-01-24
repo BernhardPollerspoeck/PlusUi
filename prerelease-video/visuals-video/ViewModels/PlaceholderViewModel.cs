@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
+namespace PrereleaseVideo.ViewModels;
+
 public partial class PlaceholderViewModel : ObservableObject
 {
     public string SectionTitle { get; set; } = "Section";

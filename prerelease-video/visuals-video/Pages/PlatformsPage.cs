@@ -1,10 +1,11 @@
 using PlusUi.core;
+using PrereleaseVideo.ViewModels;
 
 public class PlatformsPage(
-    PlaceholderViewModel vm,
+    PlatformsViewModel vm,
     INavigationService navigationService,
     TimeProvider timeProvider)
-    : PlaceholderPage<ControlsPage>(vm, navigationService, timeProvider)
+    : PlaceholderPage<PlatformsViewModel, ControlsPage>(vm, navigationService, timeProvider)
 {
     protected override string SectionTitle => "2. Platforms";
 }

@@ -1,10 +1,11 @@
 using PlusUi.core;
+using PrereleaseVideo.ViewModels;
 
 public class ControlsPage(
-    PlaceholderViewModel vm,
+    ControlsViewModel vm,
     INavigationService navigationService,
     TimeProvider timeProvider)
-    : PlaceholderPage<DataBindingPage>(vm, navigationService, timeProvider)
+    : PlaceholderPage<ControlsViewModel, DataBindingPage>(vm, navigationService, timeProvider)
 {
     protected override string SectionTitle => "3. Controls";
 }

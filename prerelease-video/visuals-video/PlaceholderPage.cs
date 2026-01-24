@@ -1,9 +1,11 @@
 using PlusUi.core;
+using PrereleaseVideo.ViewModels;
 
-public abstract class PlaceholderPage<TNextPage>(
-    PlaceholderViewModel vm,
+public abstract class PlaceholderPage<TViewModel, TNextPage>(
+    TViewModel vm,
     INavigationService navigationService,
     TimeProvider timeProvider) : UiPageElement(vm)
+    where TViewModel : PlaceholderViewModel
     where TNextPage : UiPageElement
 {
     private bool _initialized;
@@ -19,7 +21,6 @@ public abstract class PlaceholderPage<TNextPage>(
 
     protected override UiElement Build()
     {
-        // Check if we should navigate to next page
         if (_initialized)
         {
             var elapsed = timeProvider.GetUtcNow().TimeOfDay - vm.StartTime;
