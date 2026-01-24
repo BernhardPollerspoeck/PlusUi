@@ -25,6 +25,7 @@ public class PlusUiApp(string[] args)
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<DesktopKeyboardHandler>());
         builder.Services.AddSingleton<DesktopHapticService>();
         builder.Services.AddSingleton<IHapticService>(sp => sp.GetRequiredService<DesktopHapticService>());
+        builder.Services.AddSingleton<WindowSettingsService>();
         builder.Services.AddHostedService<WindowManager>();
 
         // Register platform-specific accessibility bridge

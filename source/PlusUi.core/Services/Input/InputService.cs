@@ -27,6 +27,7 @@ public class InputService
     private const double DoubleTapThresholdMs = 300;
     private const float SwipeThreshold = 50f;
     private bool _isCtrlPressed;
+    private bool _isShiftPressed;
 
     public InputService(
         NavigationContainer navigationContainer,
@@ -46,6 +47,8 @@ public class InputService
         _logger = logger;
         _keyboardHandler.KeyInput += HandleKeyInput;
         _keyboardHandler.CharInput += HandleCharInput;
+        _keyboardHandler.ShiftStateChanged += (_, pressed) => SetShiftPressed(pressed);
+        _keyboardHandler.CtrlStateChanged += (_, pressed) => SetCtrlPressed(pressed);
     }
 
     private void LogEvent(string eventType, object control, string trigger)
@@ -182,21 +185,31 @@ public class InputService
             inputControl.InvokeCommand();
         }
 
-        if (hitControl is ITextInputControl textInputControl
-            && textInputControl != _textInputControl)
+        if (hitControl is ITextInputControl textInputControl)
         {
-            _textInputControl?.SetSelectionStatus(false);
-            _textInputControl = textInputControl;
-            _textInputControl.SetSelectionStatus(true);
-            
-            // Pass keyboard configuration if the control is an Entry
-            if (textInputControl is Entry entry)
+            if (textInputControl != _textInputControl)
             {
-                _keyboardHandler.Show(entry.Keyboard, entry.ReturnKey, entry.IsPassword);
+                _textInputControl?.SetSelectionStatus(false);
+                _textInputControl = textInputControl;
+                _textInputControl.SetSelectionStatus(true);
+
+                // Pass keyboard configuration if the control is an Entry
+                if (textInputControl is Entry entry)
+                {
+                    _keyboardHandler.Show(entry.Keyboard, entry.ReturnKey, entry.IsPassword);
+                }
+                else
+                {
+                    _keyboardHandler.Show();
+                }
             }
-            else
+
+            // Position cursor at click location
+            if (hitControl is UiElement element)
             {
-                _keyboardHandler.Show();
+                var localX = location.X - element.Position.X;
+                var localY = location.Y - element.Position.Y;
+                textInputControl.HandleClick(localX, localY);
             }
         }
         else if (_textInputControl != null && _textInputControl != hitControl)
@@ -372,15 +385,18 @@ public class InputService
             }
         }
 
-        // Enter/Space to activate (unless in text input for Space)
-        if (key == PlusKey.Enter || (key == PlusKey.Space && _textInputControl == null))
+        // Forward to text input control first (for keys it might handle)
+        if (_textInputControl != null)
         {
-            ActivateFocusedElement();
+            _textInputControl.HandleInput(key, _isShiftPressed, _isCtrlPressed);
             return;
         }
 
-        // Forward to text input control
-        _textInputControl?.HandleInput(key);
+        // Enter/Space to activate focused element (when no text input is active)
+        if (key == PlusKey.Enter || key == PlusKey.Space)
+        {
+            ActivateFocusedElement();
+        }
     }
 
     /// <summary>
@@ -572,6 +588,11 @@ public class InputService
     public void SetCtrlPressed(bool isPressed)
     {
         _isCtrlPressed = isPressed;
+    }
+
+    public void SetShiftPressed(bool isPressed)
+    {
+        _isShiftPressed = isPressed;
     }
 
     public void LongPress(Vector2 location)

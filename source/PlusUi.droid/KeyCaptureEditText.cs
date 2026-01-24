@@ -15,6 +15,8 @@ public class KeyCaptureEditText : EditText, IKeyboardHandler
 
     public event EventHandler<PlusKey>? KeyInput;
     public event EventHandler<char>? CharInput;
+    public event EventHandler<bool>? ShiftStateChanged;
+    public event EventHandler<bool>? CtrlStateChanged;
 
 
     public KeyCaptureEditText(Context context) : base(context)

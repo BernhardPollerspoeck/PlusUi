@@ -10,6 +10,8 @@ public class HeadlessKeyboardHandler : IKeyboardHandler
 {
     public event EventHandler<PlusKey>? KeyInput;
     public event EventHandler<char>? CharInput;
+    public event EventHandler<bool>? ShiftStateChanged;
+    public event EventHandler<bool>? CtrlStateChanged;
 
     // Show/Hide are no-ops in headless environment
     public void Show() { }

@@ -38,7 +38,9 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
                                         new Button()
                                             .SetText(name)
                                             .SetMargin(new Margin(4))
-                                            .SetHorizontalAlignment(HorizontalAlignment.Stretch)))),
+                                            .SetHorizontalAlignment(HorizontalAlignment.Stretch)
+                                            .SetCommand(vm.NavigateToDemoCommand)
+                                            .SetCommandParameter(name)))),
                 row: 0, column: 0)
             .AddChild(
                 new VStack()

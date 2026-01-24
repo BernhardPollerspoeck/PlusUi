@@ -12,6 +12,8 @@ public class WebKeyboardHandler(IJSRuntime jsRuntime) : IKeyboardHandler
 {
     public event EventHandler<PlusKey>? KeyInput;
     public event EventHandler<char>? CharInput;
+    public event EventHandler<bool>? ShiftStateChanged;
+    public event EventHandler<bool>? CtrlStateChanged;
 
     private KeyboardType _currentKeyboardType = KeyboardType.Default;
     private ReturnKeyType _currentReturnKeyType = ReturnKeyType.Default;
