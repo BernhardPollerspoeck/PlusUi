@@ -1,10 +1,14 @@
 # 1. Intro
 
-**Visual:** Fluent API code scrolling elegantly in the background
+## Narration
 
-**Narration:**
-
-> "You build an app. It runs on Windows. Great.
+> "Hi, I'm Bernhard Pollerspöck - independent developer, programming since 1998, working with Xamarin and MAUI for the last 8 years.
+>
+> Today I'm excited to announce the prerelease of a project I've been building for almost a year: PlusUi - a cross-platform UI framework for .NET.
+>
+> But before I show you what it can do, let me tell you why I built it.
+>
+> You build an app. It runs on Windows. Great.
 >
 > Now it needs to run on Mac. And Linux. And in the browser. And on mobile.
 >
@@ -16,14 +20,18 @@
 >
 > You file bug reports. You wait for fixes. You write workarounds for workarounds. You spend more time fighting the framework than building your app.
 >
-> After years of dealing with the constant issues of the leading .NET cross-platform framework, I started asking myself a different question:
+> After years of workarounds, I decided to try something different.
 >
-> What if consistency wasn't just a goal - but the absolute priority?
->
-> What if your UI looked exactly the same on every single platform? Pixel for pixel. No surprises. No platform-specific quirks.
->
-> One codebase. 30 controls. 8 platforms. And your UI looks identical everywhere.
+> What if I built it from scratch? My own architecture. No XAML. And the same look and feel - everywhere.
 >
 > This is PlusUi."
 
-**Visual (End):** Logo reveal, beat, transition to Platforms
+## Visuals
+
+- Dunkler Hintergrund (#1E1E1E oder ähnlich)
+- PlusUi Logo mittig, zentriert
+- Ruhig, minimalistisch - keine oder nur sehr subtile Animation (leichtes Atmen/Pulsieren optional)
+- Logo bleibt die ganze Section sichtbar
+- Narration + Sprecher als Overlay im finalen Render
+
+**Übergang zu Section 2:** Fade oder sanfter Slide
