@@ -84,7 +84,7 @@ internal class PerformanceView : UserControl
         return border;
     }
 
-    private Border CreateStatCard(string title, System.Linq.Expressions.Expression<Func<string>> valueBinding, Color accentColor)
+    private Border CreateStatCard(string title, System.Linq.Expressions.Expression<Func<string?>> valueBinding, Color accentColor)
     {
         var border = new Border()
             .SetBackground(new Color(45, 45, 45))
@@ -104,7 +104,7 @@ internal class PerformanceView : UserControl
         return border;
     }
 
-    private HStack CreateBreakdownRow(string label, System.Linq.Expressions.Expression<Func<string>> valueBinding)
+    private HStack CreateBreakdownRow(string label, System.Linq.Expressions.Expression<Func<string?>> valueBinding)
     {
         return new HStack()
             .SetSpacing(16)
