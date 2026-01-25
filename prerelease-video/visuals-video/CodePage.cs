@@ -8,29 +8,28 @@ public abstract class CodePage<TViewModel, TNextPage>(
     where TViewModel : PlaceholderViewModel
     where TNextPage : UiPageElement
 {
-    private bool _initialized;
+    private TimeSpan _startTime;
 
     protected abstract string SectionTitle { get; }
     protected abstract UiElement BuildCodeContent();
 
-    public override void OnNavigatedTo(object? parameter)
+    public override void Appearing()
     {
         vm.SectionTitle = SectionTitle;
-        vm.StartTime = timeProvider.GetUtcNow().TimeOfDay;
-        _initialized = true;
+        _startTime = timeProvider.GetUtcNow().TimeOfDay;
+    }
+
+    protected override void PostRender()
+    {
+        var elapsed = timeProvider.GetUtcNow().TimeOfDay - _startTime;
+        if (elapsed >= vm.Duration)
+        {
+            navigationService.NavigateTo<TNextPage>();
+        }
     }
 
     protected override UiElement Build()
     {
-        if (_initialized)
-        {
-            var elapsed = timeProvider.GetUtcNow().TimeOfDay - vm.StartTime;
-            if (elapsed >= vm.Duration)
-            {
-                navigationService.NavigateTo<TNextPage>();
-            }
-        }
-
         return new Grid()
             .AddRow(Row.Auto)
             .AddRow(Row.Star)
