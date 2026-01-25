@@ -33,37 +33,30 @@ public abstract class CodePage<TViewModel, TNextPage>(
         return new Grid()
             .AddRow(Row.Auto)
             .AddRow(Row.Star)
+            .AddColumn(Column.Auto)
             .AddColumn(Column.Star)
+            .AddColumn(Column.Auto)
             .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
-            .AddChild(BuildHeader(), 0, 0)
-            .AddChild(BuildCodeContent()
-                .SetVerticalAlignment(VerticalAlignment.Center)
-                .SetHorizontalAlignment(HorizontalAlignment.Center), 1, 0);
-    }
-
-    private UiElement BuildHeader()
-    {
-        return new HStack(
-            new Image()
+            .AddChild(new Image()
                 .SetImageSource("plusui.png")
                 .SetDesiredHeight(192)
-                .SetDesiredWidth(192),
-            new Label()
+                .SetDesiredWidth(192)
+                .SetMargin(new Margin(24)), 0, 0)
+            .AddChild(new Label()
                 .BindText(() => vm.SectionTitle)
-                .SetTextSize(32)
+                .SetTextSize(120)
                 .SetTextColor(Colors.White)
-                .SetMargin(new Margin(16, 0, 0, 0))
-        )
-        .SetSpacing(0)
-        .SetMargin(new Margin(24))
-        .SetVerticalAlignment(VerticalAlignment.Center);
+                .SetVerticalAlignment(VerticalAlignment.Center)
+                .SetHorizontalAlignment(HorizontalAlignment.Center), 0, 1)
+            .AddChild(BuildCodeContent()
+                .SetVerticalAlignment(VerticalAlignment.Center), 1, 1);
     }
 
     protected static RichTextLabel CodeBlock(params TextRun[] runs)
     {
         var label = new RichTextLabel()
             .SetFontFamily("Consolas")
-            .SetTextSize(100)
+            .SetTextSize(18)
             .SetTextColor(Colors.White);
         foreach (var run in runs)
         {
@@ -75,6 +68,7 @@ public abstract class CodePage<TViewModel, TNextPage>(
     protected static TextRun Comment(string text) => new TextRun(text).SetColor(new Color(106, 153, 85));
     protected static TextRun Keyword(string text) => new TextRun(text).SetColor(new Color(86, 156, 214));
     protected static TextRun Type(string text) => new TextRun(text).SetColor(new Color(78, 201, 176));
+    protected static TextRun Enum(string text) => new TextRun(text).SetColor(new Color(184, 215, 163));
     protected static TextRun String(string text) => new TextRun(text).SetColor(new Color(206, 145, 120));
     protected static TextRun Method(string text) => new TextRun(text).SetColor(new Color(220, 220, 170));
     protected static TextRun Variable(string text) => new TextRun(text).SetColor(new Color(156, 220, 254));

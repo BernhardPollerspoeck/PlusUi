@@ -19,7 +19,7 @@ public class FluentApiPage(
             CodeBlock(Code("        "), Keyword("return new "), Type("VStack"), Code("(")),
             CodeBlock(Code("            "), Keyword("new "), Type("Label"), Code("()")),
             CodeBlock(Code("                ."), Method("SetText"), Code("("), String("\"Welcome to PlusUi\""), Code(")")),
-            CodeBlock(Code("                ."), Method("SetTextColor"), Code("(Colors.White),")),
+            CodeBlock(Code("                ."), Method("SetTextColor"), Code("("), Type("Colors"), Code(".White),")),
 
             CodeBlock(Code("            "), Keyword("new "), Type("Entry"), Code("()")),
             CodeBlock(Code("                ."), Method("BindText"), Code("(() => "), Variable("vm"), Code(".Name, v => "), Variable("vm"), Code(".Name = v)")),

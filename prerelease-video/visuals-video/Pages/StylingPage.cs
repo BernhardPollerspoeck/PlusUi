@@ -14,14 +14,14 @@ public class StylingPage(
         return new VStack(
             CodeBlock(Comment("// Gradient Background")),
             CodeBlock(Keyword("new "), Type("Solid"), Code("()")),
-            CodeBlock(Code("    ."), Method("SetBackground"), Code("("), Keyword("new "), Type("LinearGradient"), Code("(Colors.Blue, Colors.Purple, 45))")),
+            CodeBlock(Code("    ."), Method("SetBackground"), Code("("), Keyword("new "), Type("LinearGradient"), Code("("), Type("Colors"), Code(".Blue, "), Type("Colors"), Code(".Purple, 45))")),
             CodeBlock(Code("    ."), Method("SetCornerRadius"), Code("(12)")),
 
             new Solid().SetDesiredHeight(24),
 
             CodeBlock(Comment("// Shadow")),
             CodeBlock(Keyword("new "), Type("Solid"), Code("()")),
-            CodeBlock(Code("    ."), Method("SetShadowColor"), Code("(Colors.Black)")),
+            CodeBlock(Code("    ."), Method("SetShadowColor"), Code("("), Type("Colors"), Code(".Black)")),
             CodeBlock(Code("    ."), Method("SetShadowBlur"), Code("(8)")),
             CodeBlock(Code("    ."), Method("SetShadowOffset"), Code("("), Keyword("new "), Type("Point"), Code("(2, 4))")),
 
@@ -29,17 +29,17 @@ public class StylingPage(
 
             CodeBlock(Comment("// Border")),
             CodeBlock(Keyword("new "), Type("Border"), Code("()")),
-            CodeBlock(Code("    ."), Method("SetStrokeColor"), Code("(Colors.Red)")),
+            CodeBlock(Code("    ."), Method("SetStrokeColor"), Code("("), Type("Colors"), Code(".Red)")),
             CodeBlock(Code("    ."), Method("SetStrokeThickness"), Code("(2)")),
-            CodeBlock(Code("    ."), Method("SetStrokeType"), Code("(StrokeType.Dashed)")),
+            CodeBlock(Code("    ."), Method("SetStrokeType"), Code("("), Enum("StrokeType"), Code(".Dashed)")),
 
             new Solid().SetDesiredHeight(24),
 
             CodeBlock(Comment("// Dynamic styling")),
             CodeBlock(Keyword("new "), Type("Solid"), Code("()")),
             CodeBlock(Code("    ."), Method("BindBackground"), Code("(() => "), Variable("vm"), Code(".IsActive")),
-            CodeBlock(Code("        ? "), Keyword("new "), Type("SolidColorBackground"), Code("(Colors.Green)")),
-            CodeBlock(Code("        : "), Keyword("new "), Type("SolidColorBackground"), Code("(Colors.Gray))"))
+            CodeBlock(Code("        ? "), Keyword("new "), Type("SolidColorBackground"), Code("("), Type("Colors"), Code(".Green)")),
+            CodeBlock(Code("        : "), Keyword("new "), Type("SolidColorBackground"), Code("("), Type("Colors"), Code(".Gray))"))
         )
         .SetSpacing(8);
     }
