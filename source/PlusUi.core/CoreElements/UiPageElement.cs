@@ -121,8 +121,13 @@ public abstract partial class UiPageElement : UiLayoutElement<UiPageElement>
         _tree.UpdateBindings(propertyName);
     }
 
+    protected virtual void PreRender() { }
+    protected virtual void PostRender() { }
+
     public override void Render(SKCanvas canvas)
     {
+        PreRender();
+
         // Check if we need visual transformations for transitions
         var hasOffset = VisualOffset.X != 0 || VisualOffset.Y != 0;
         var hasOpacity = Opacity < 1f;
@@ -162,6 +167,8 @@ public abstract partial class UiPageElement : UiLayoutElement<UiPageElement>
         {
             canvas.Restore();
         }
+
+        PostRender();
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
