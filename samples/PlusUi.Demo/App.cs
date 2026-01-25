@@ -15,6 +15,8 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         configuration.LoadImagesSynchronously = loadImagesSynchronously;
         configuration.EnableNavigationStack = true;
         configuration.RememberWindowPosition = true;
+        configuration.ApplicationId = "PlusUi.Demo";
+        configuration.WindowIcon = "plusui.svg";
     }
 
     public void ConfigureApp(IPlusUiAppBuilder builder)

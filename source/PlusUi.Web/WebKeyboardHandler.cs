@@ -75,6 +75,18 @@ public class WebKeyboardHandler(IJSRuntime jsRuntime) : IKeyboardHandler
     /// </summary>
     internal void OnKeyDown(string key, string code)
     {
+        // Track modifier key states
+        if (key == "Shift")
+        {
+            ShiftStateChanged?.Invoke(this, true);
+            return;
+        }
+        if (key == "Control")
+        {
+            CtrlStateChanged?.Invoke(this, true);
+            return;
+        }
+
         var plusKey = MapBrowserKeyToPlusKey(key, code);
         if (plusKey != PlusKey.Unknown)
         {
@@ -93,8 +105,10 @@ public class WebKeyboardHandler(IJSRuntime jsRuntime) : IKeyboardHandler
     /// </summary>
     internal void OnKeyUp(string key, string code)
     {
-        // Currently not used, but available for future implementation
-        // Could be used for key repeat handling or modifier key tracking
+        if (key == "Shift")
+            ShiftStateChanged?.Invoke(this, false);
+        else if (key == "Control")
+            CtrlStateChanged?.Invoke(this, false);
     }
 
     /// <summary>

@@ -33,4 +33,20 @@ public class HeadlessKeyboardHandler : IKeyboardHandler
     {
         CharInput?.Invoke(this, c);
     }
+
+    /// <summary>
+    /// Raises a shift state changed event programmatically.
+    /// </summary>
+    internal void RaiseShiftStateChanged(bool pressed)
+    {
+        ShiftStateChanged?.Invoke(this, pressed);
+    }
+
+    /// <summary>
+    /// Raises a ctrl state changed event programmatically.
+    /// </summary>
+    internal void RaiseCtrlStateChanged(bool pressed)
+    {
+        CtrlStateChanged?.Invoke(this, pressed);
+    }
 }

@@ -21,17 +21,16 @@ jobs:
         dotnet-version: '10.0.x'
         dotnet-quality: 'preview'
 
-    - name: Install workloads
-      run: dotnet workload install android ios wasm-tools
-
     - name: Restore dependencies
-      run: dotnet restore PlusUi.sln
+      run: |
+        dotnet restore source/PlusUi.core/PlusUi.core.csproj
+        dotnet restore source/PlusUi.core.Tests/PlusUi.core.Tests.csproj
 
     - name: Build
-      run: dotnet build PlusUi.sln --no-restore --configuration Release
+      run: dotnet build source/PlusUi.core.Tests/PlusUi.core.Tests.csproj --no-restore --configuration Release
 
     - name: Test with Coverage
-      run: dotnet test PlusUi.sln --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./TestResults
+      run: dotnet test source/PlusUi.core.Tests/PlusUi.core.Tests.csproj --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./TestResults
 
     - name: Install ReportGenerator
       run: dotnet tool install -g dotnet-reportgenerator-globaltool

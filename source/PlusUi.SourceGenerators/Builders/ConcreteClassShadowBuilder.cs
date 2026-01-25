@@ -13,6 +13,9 @@ internal static class ConcreteClassShadowBuilder
     {
         var sb = new StringBuilder();
 
+        sb.AppendLine("#nullable enable");
+        sb.AppendLine();
+
         if (!string.IsNullOrEmpty(namespaceName))
         {
             sb.AppendLine($"namespace {namespaceName};");
@@ -172,12 +175,15 @@ internal static class ConcreteClassShadowBuilder
         return false;
     }
 
+    private static readonly SymbolDisplayFormat NullableFormat = SymbolDisplayFormat.FullyQualifiedFormat
+        .WithMiscellaneousOptions(SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier);
+
     private static MethodInfo CreateMethodInfo(IMethodSymbol methodSymbol)
     {
         var name = methodSymbol.Name;
         var parameters = string.Join(", ", methodSymbol.Parameters.Select(p =>
         {
-            var paramType = p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var paramType = p.Type.ToDisplayString(NullableFormat);
             var paramName = p.Name;
 
             if (p.HasExplicitDefaultValue)
@@ -207,7 +213,7 @@ internal static class ConcreteClassShadowBuilder
         {
             string stringValue => $"\"{stringValue}\"",
             bool boolValue => boolValue ? "true" : "false",
-            _ when parameter.Type.TypeKind == TypeKind.Enum => $"{parameter.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{value}",
+            _ when parameter.Type.TypeKind == TypeKind.Enum => $"{parameter.Type.ToDisplayString(NullableFormat)}.{value}",
             _ => value.ToString()
         };
     }
