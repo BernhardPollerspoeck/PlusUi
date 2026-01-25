@@ -7,47 +7,41 @@ public class DataBindingPage(
     TimeProvider timeProvider)
     : CodePage<DataBindingViewModel, FluentApiPage>(vm, navigationService, timeProvider)
 {
-    protected override string SectionTitle => "4. Data Binding";
+    protected override string SectionTitle => "Data Binding";
 
     protected override UiElement BuildCodeContent()
     {
         return new VStack(
-            CodeLine("// Type-safe binding", isComment: true),
-            CodeLine("new Label()"),
-            CodeLine("    .BindText(() => vm.Username)"),
-            Spacer(),
-            CodeLine("// Mit Formatter", isComment: true),
-            CodeLine("new Label()"),
-            CodeLine("    .BindText(() => vm.ItemCount, c => $\"You have {c} items in your cart\")"),
-            Spacer(),
-            CodeLine("// Two-way binding", isComment: true),
-            CodeLine("new Entry()"),
-            CodeLine("    .BindText(() => vm.SearchQuery, v => vm.SearchQuery = v)"),
-            Spacer(),
-            CodeLine("// Command binding", isComment: true),
-            CodeLine("new Button()"),
-            CodeLine("    .SetText(\"Save\")"),
-            CodeLine("    .BindCommand(() => vm.SaveCommand)"),
-            Spacer(),
-            CodeLine("// Visibility binding", isComment: true),
-            CodeLine("new Label()"),
-            CodeLine("    .SetText(\"Error!\")"),
-            CodeLine("    .BindIsVisible(() => vm.HasError)")
+            CodeBlock(Comment("// Type-safe binding")),
+            CodeBlock(Keyword("new "), Type("Label"), Code("()")),
+            CodeBlock(Code("    ."), Method("BindText"), Code("(() => "), Variable("vm"), Code(".Username)")),
+
+            new Solid().SetDesiredHeight(24),
+
+            CodeBlock(Comment("// With formatter")),
+            CodeBlock(Keyword("new "), Type("Label"), Code("()")),
+            CodeBlock(Code("    ."), Method("BindText"), Code("(() => "), Variable("vm"), Code(".ItemCount, c => "), String("$\"You have {c} items\""), Code(")")),
+
+            new Solid().SetDesiredHeight(24),
+
+            CodeBlock(Comment("// Two-way binding")),
+            CodeBlock(Keyword("new "), Type("Entry"), Code("()")),
+            CodeBlock(Code("    ."), Method("BindText"), Code("(() => "), Variable("vm"), Code(".SearchQuery, v => "), Variable("vm"), Code(".SearchQuery = v)")),
+
+            new Solid().SetDesiredHeight(24),
+
+            CodeBlock(Comment("// Command binding")),
+            CodeBlock(Keyword("new "), Type("Button"), Code("()")),
+            CodeBlock(Code("    ."), Method("SetText"), Code("("), String("\"Save\""), Code(")")),
+            CodeBlock(Code("    ."), Method("BindCommand"), Code("(() => "), Variable("vm"), Code(".SaveCommand)")),
+
+            new Solid().SetDesiredHeight(24),
+
+            CodeBlock(Comment("// Visibility binding")),
+            CodeBlock(Keyword("new "), Type("Label"), Code("()")),
+            CodeBlock(Code("    ."), Method("SetText"), Code("("), String("\"Error!\""), Code(")")),
+            CodeBlock(Code("    ."), Method("BindIsVisible"), Code("(() => "), Variable("vm"), Code(".HasError)"))
         )
-        .SetSpacing(4);
-    }
-
-    private static Label CodeLine(string text, bool isComment = false)
-    {
-        return new Label()
-            .SetText(text)
-            .SetTextSize(20)
-            .SetTextColor(isComment ? new Color(106, 153, 85) : Colors.White)
-            .SetFontFamily("Consolas");
-    }
-
-    private static Solid Spacer()
-    {
-        return new Solid().SetDesiredHeight(12);
+        .SetSpacing(8);
     }
 }

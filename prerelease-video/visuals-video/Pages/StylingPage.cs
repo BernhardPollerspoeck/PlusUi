@@ -7,50 +7,40 @@ public class StylingPage(
     TimeProvider timeProvider)
     : CodePage<StylingViewModel, ThemingPage>(vm, navigationService, timeProvider)
 {
-    protected override string SectionTitle => "6. Styling";
+    protected override string SectionTitle => "Styling";
 
     protected override UiElement BuildCodeContent()
     {
         return new VStack(
-            CodeLine("// Gradient Background", isComment: true),
-            CodeLine("new Solid()"),
-            CodeLine("    .SetBackground(new LinearGradient(Colors.Blue, Colors.Purple, 45))"),
-            CodeLine("    .SetCornerRadius(12)"),
-            Spacer(),
-            CodeLine("// Shadow", isComment: true),
-            CodeLine("new Solid()"),
-            CodeLine("    .SetBackground(new SolidColorBackground(Colors.White))"),
-            CodeLine("    .SetShadowColor(Colors.Black)"),
-            CodeLine("    .SetShadowBlur(8)"),
-            CodeLine("    .SetShadowOffset(new Point(2, 4))"),
-            Spacer(),
-            CodeLine("// Border (solid, dashed, dotted)", isComment: true),
-            CodeLine("new Border()"),
-            CodeLine("    .SetStrokeColor(Colors.Red)"),
-            CodeLine("    .SetStrokeThickness(2)"),
-            CodeLine("    .SetStrokeType(StrokeType.Dashed)"),
-            CodeLine("    .SetCornerRadius(8)"),
-            Spacer(),
-            CodeLine("// Dynamic styling via binding", isComment: true),
-            CodeLine("new Solid()"),
-            CodeLine("    .BindBackground(() => vm.IsActive"),
-            CodeLine("        ? new SolidColorBackground(Colors.Green)"),
-            CodeLine("        : new SolidColorBackground(Colors.Gray))")
+            CodeBlock(Comment("// Gradient Background")),
+            CodeBlock(Keyword("new "), Type("Solid"), Code("()")),
+            CodeBlock(Code("    ."), Method("SetBackground"), Code("("), Keyword("new "), Type("LinearGradient"), Code("(Colors.Blue, Colors.Purple, 45))")),
+            CodeBlock(Code("    ."), Method("SetCornerRadius"), Code("(12)")),
+
+            new Solid().SetDesiredHeight(24),
+
+            CodeBlock(Comment("// Shadow")),
+            CodeBlock(Keyword("new "), Type("Solid"), Code("()")),
+            CodeBlock(Code("    ."), Method("SetShadowColor"), Code("(Colors.Black)")),
+            CodeBlock(Code("    ."), Method("SetShadowBlur"), Code("(8)")),
+            CodeBlock(Code("    ."), Method("SetShadowOffset"), Code("("), Keyword("new "), Type("Point"), Code("(2, 4))")),
+
+            new Solid().SetDesiredHeight(24),
+
+            CodeBlock(Comment("// Border")),
+            CodeBlock(Keyword("new "), Type("Border"), Code("()")),
+            CodeBlock(Code("    ."), Method("SetStrokeColor"), Code("(Colors.Red)")),
+            CodeBlock(Code("    ."), Method("SetStrokeThickness"), Code("(2)")),
+            CodeBlock(Code("    ."), Method("SetStrokeType"), Code("(StrokeType.Dashed)")),
+
+            new Solid().SetDesiredHeight(24),
+
+            CodeBlock(Comment("// Dynamic styling")),
+            CodeBlock(Keyword("new "), Type("Solid"), Code("()")),
+            CodeBlock(Code("    ."), Method("BindBackground"), Code("(() => "), Variable("vm"), Code(".IsActive")),
+            CodeBlock(Code("        ? "), Keyword("new "), Type("SolidColorBackground"), Code("(Colors.Green)")),
+            CodeBlock(Code("        : "), Keyword("new "), Type("SolidColorBackground"), Code("(Colors.Gray))"))
         )
-        .SetSpacing(4);
-    }
-
-    private static Label CodeLine(string text, bool isComment = false)
-    {
-        return new Label()
-            .SetText(text)
-            .SetTextSize(18)
-            .SetTextColor(isComment ? new Color(106, 153, 85) : Colors.White)
-            .SetFontFamily("Consolas");
-    }
-
-    private static Solid Spacer()
-    {
-        return new Solid().SetDesiredHeight(12);
+        .SetSpacing(8);
     }
 }

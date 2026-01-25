@@ -7,55 +7,32 @@ public class FluentApiPage(
     TimeProvider timeProvider)
     : CodePage<FluentApiViewModel, StylingPage>(vm, navigationService, timeProvider)
 {
-    protected override string SectionTitle => "5. Fluent API";
+    protected override string SectionTitle => "Fluent API";
 
     protected override UiElement BuildCodeContent()
     {
         return new VStack(
-            CodeLine("public class MainPage(MainPageViewModel vm) : UiPageElement(vm)"),
-            CodeLine("{"),
-            CodeLine("    protected override UiElement Build()"),
-            CodeLine("    {"),
-            CodeLine("        return new VStack("),
-            CodeLine("            new Label()"),
-            CodeLine("                .SetText(\"Welcome to PlusUi\")"),
-            CodeLine("                .SetTextSize(32)"),
-            CodeLine("                .SetTextColor(Colors.White)"),
-            CodeLine("                .SetHorizontalTextAlignment(HorizontalTextAlignment.Center),"),
-            Spacer(),
-            CodeLine("            new Entry()"),
-            CodeLine("                .SetPlaceholder(\"Enter your name...\")"),
-            CodeLine("                .BindText(() => vm.Name, v => vm.Name = v)"),
-            CodeLine("                .SetPadding(new Margin(12, 8))"),
-            CodeLine("                .SetCornerRadius(8),"),
-            Spacer(),
-            CodeLine("            new Button()"),
-            CodeLine("                .SetText(\"Click Me!\")"),
-            CodeLine("                .SetPadding(new Margin(20, 10))"),
-            CodeLine("                .SetCornerRadius(8)"),
-            CodeLine("                .SetCommand(vm.SubmitCommand)"),
-            CodeLine("        )"),
-            CodeLine("        .SetSpacing(16)"),
-            CodeLine("        .SetPadding(new Margin(24))"),
-            CodeLine("        .SetHorizontalAlignment(HorizontalAlignment.Center)"),
-            CodeLine("        .SetVerticalAlignment(VerticalAlignment.Center);"),
-            CodeLine("    }"),
-            CodeLine("}")
+            CodeBlock(Keyword("public class "), Type("MainPage"), Code("("), Type("MainPageViewModel"), Code(" "), Variable("vm"), Code(") : "), Type("UiPageElement"), Code("("), Variable("vm"), Code(")")),
+            CodeBlock(Code("{")),
+            CodeBlock(Code("    "), Keyword("protected override "), Type("UiElement"), Code(" Build()")),
+            CodeBlock(Code("    {")),
+            CodeBlock(Code("        "), Keyword("return new "), Type("VStack"), Code("(")),
+            CodeBlock(Code("            "), Keyword("new "), Type("Label"), Code("()")),
+            CodeBlock(Code("                ."), Method("SetText"), Code("("), String("\"Welcome to PlusUi\""), Code(")")),
+            CodeBlock(Code("                ."), Method("SetTextColor"), Code("(Colors.White),")),
+
+            CodeBlock(Code("            "), Keyword("new "), Type("Entry"), Code("()")),
+            CodeBlock(Code("                ."), Method("BindText"), Code("(() => "), Variable("vm"), Code(".Name, v => "), Variable("vm"), Code(".Name = v)")),
+            CodeBlock(Code("                ."), Method("SetCornerRadius"), Code("(8),")),
+
+            CodeBlock(Code("            "), Keyword("new "), Type("Button"), Code("()")),
+            CodeBlock(Code("                ."), Method("SetText"), Code("("), String("\"Click Me!\""), Code(")")),
+            CodeBlock(Code("                ."), Method("SetCommand"), Code("("), Variable("vm"), Code(".SubmitCommand)")),
+            CodeBlock(Code("        )")),
+            CodeBlock(Code("        ."), Method("SetSpacing"), Code("(16);")),
+            CodeBlock(Code("    }")),
+            CodeBlock(Code("}"))
         )
-        .SetSpacing(2);
-    }
-
-    private static Label CodeLine(string text)
-    {
-        return new Label()
-            .SetText(text)
-            .SetTextSize(16)
-            .SetTextColor(Colors.White)
-            .SetFontFamily("Consolas");
-    }
-
-    private static Solid Spacer()
-    {
-        return new Solid().SetDesiredHeight(8);
+        .SetSpacing(4);
     }
 }

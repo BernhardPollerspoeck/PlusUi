@@ -31,7 +31,7 @@ public abstract class PlaceholderPage<TViewModel, TNextPage>(
     {
         return new VStack(
             new Label()
-                .SetText(vm.SectionTitle)
+                .BindText(() => vm.SectionTitle)
                 .SetTextSize(64)
                 .SetTextColor(Colors.White)
                 .SetHorizontalTextAlignment(HorizontalTextAlignment.Center)

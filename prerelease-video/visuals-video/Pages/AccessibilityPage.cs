@@ -12,47 +12,42 @@ public class AccessibilityPage(
     protected override UiElement BuildCodeContent()
     {
         return new VStack(
-            CodeLine("// Screen reader support", isComment: true),
-            CodeLine("new Button()"),
-            CodeLine("    .SetIcon(\"delete.svg\")"),
-            CodeLine("    .SetAccessibilityLabel(\"Delete item\")"),
-            CodeLine("    .SetAccessibilityHint(\"Removes this item from your cart\")"),
-            Spacer(),
-            CodeLine("// Keyboard navigation", isComment: true),
-            CodeLine("new Entry()"),
-            CodeLine("    .SetPlaceholder(\"First name\")"),
-            CodeLine("    .SetTabIndex(1)"),
-            Spacer(),
-            CodeLine("new Entry()"),
-            CodeLine("    .SetPlaceholder(\"Last name\")"),
-            CodeLine("    .SetTabIndex(2)"),
-            Spacer(),
-            CodeLine("// Focus ring customization", isComment: true),
-            CodeLine("new Button()"),
-            CodeLine("    .SetFocusRingColor(Colors.Blue)"),
-            CodeLine("    .SetFocusRingWidth(3)"),
-            CodeLine("    .SetFocusRingOffset(2)"),
-            Spacer(),
-            CodeLine("// High contrast mode", isComment: true),
-            CodeLine("new Button()"),
-            CodeLine("    .SetText(\"Submit\")"),
-            CodeLine("    .SetHighContrastBackground(new SolidColorBackground(Colors.Black))"),
-            CodeLine("    .SetHighContrastForeground(Colors.White)")
+            CodeBlock(Comment("// Screen reader support\n")),
+            CodeBlock(Keyword("new "), Type("Button"), Code("()\n")),
+            CodeBlock(Code("    ."), Method("SetIcon"), Code("("), String("\"delete.svg\""), Code(")\n")),
+            CodeBlock(Code("    ."), Method("SetAccessibilityLabel"), Code("("), String("\"Delete item\""), Code(")\n")),
+            CodeBlock(Code("    ."), Method("SetAccessibilityHint"), Code("("), String("\"Removes this item from your cart\""), Code(")")),
+
+            new Solid().SetDesiredHeight(16),
+
+            CodeBlock(Comment("// Keyboard navigation\n")),
+            CodeBlock(Keyword("new "), Type("Entry"), Code("()\n")),
+            CodeBlock(Code("    ."), Method("SetPlaceholder"), Code("("), String("\"First name\""), Code(")\n")),
+            CodeBlock(Code("    ."), Method("SetTabIndex"), Code("(1)")),
+
+            new Solid().SetDesiredHeight(8),
+
+            CodeBlock(Keyword("new "), Type("Entry"), Code("()\n")),
+            CodeBlock(Code("    ."), Method("SetPlaceholder"), Code("("), String("\"Last name\""), Code(")\n")),
+            CodeBlock(Code("    ."), Method("SetTabIndex"), Code("(2)")),
+
+            new Solid().SetDesiredHeight(16),
+
+            CodeBlock(Comment("// Focus ring customization\n")),
+            CodeBlock(Keyword("new "), Type("Button"), Code("()\n")),
+            CodeBlock(Code("    ."), Method("SetFocusRingColor"), Code("(Colors.Blue)\n")),
+            CodeBlock(Code("    ."), Method("SetFocusRingWidth"), Code("(3)\n")),
+            CodeBlock(Code("    ."), Method("SetFocusRingOffset"), Code("(2)")),
+
+            new Solid().SetDesiredHeight(16),
+
+            CodeBlock(Comment("// High contrast mode\n")),
+            CodeBlock(Keyword("new "), Type("Button"), Code("()\n")),
+            CodeBlock(Code("    ."), Method("SetText"), Code("("), String("\"Submit\""), Code(")\n")),
+            CodeBlock(Code("    ."), Method("SetHighContrastBackground"), Code("("), Keyword("new "), Type("SolidColorBackground"), Code("(Colors.Black))\n")),
+            CodeBlock(Code("    ."), Method("SetHighContrastForeground"), Code("(Colors.White)"))
         )
-        .SetSpacing(4);
-    }
-
-    private static Label CodeLine(string text, bool isComment = false)
-    {
-        return new Label()
-            .SetText(text)
-            .SetTextSize(18)
-            .SetTextColor(isComment ? new Color(106, 153, 85) : Colors.White)
-            .SetFontFamily("Consolas");
-    }
-
-    private static Solid Spacer()
-    {
-        return new Solid().SetDesiredHeight(12);
+        .SetSpacing(4)
+        .SetHorizontalAlignment(HorizontalAlignment.Center);
     }
 }
