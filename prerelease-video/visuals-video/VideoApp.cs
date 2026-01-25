@@ -11,7 +11,7 @@ public class VideoApp : IVideoAppConfiguration
         config.Height = 1080;
         config.OutputFilePath = "prerelease-video.mp4";
         config.FrameRate = 60;
-        config.Duration = TimeSpan.FromMinutes(20);
+        config.Duration = TimeSpan.FromSeconds(165);
     }
 
     public void ConfigureApp(IPlusUiAppBuilder builder)
