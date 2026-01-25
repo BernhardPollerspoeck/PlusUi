@@ -11,22 +11,19 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
             new Label()
                 .SetText("Welcome to PlusUi")
                 .SetTextSize(32)
-                .SetTextColor(SKColors.White)
+                .SetTextColor(Colors.White)
                 .SetHorizontalTextAlignment(HorizontalTextAlignment.Center),
 
             new Entry()
                 .SetPlaceholder("Enter your name...")
-                .BindText(nameof(vm.Name), () => vm.Name, v => vm.Name = v)
+                .BindText(() => vm.Name, v => vm.Name = v)
                 .SetPadding(new Margin(12, 8))
-                .SetBackground(new SolidColorBackground(SKColors.DarkSlateGray))
                 .SetCornerRadius(8),
 
             new Button()
                 .SetText("Click Me!")
                 .SetPadding(new Margin(20, 10))
-                .SetBackground(new SolidColorBackground(SKColors.DodgerBlue))
                 .SetCornerRadius(8)
-                .SetShadow(new Shadow(SKColors.Black.WithAlpha(100), 4, 2, 2))
                 .SetCommand(vm.SubmitCommand)
         )
         .SetSpacing(16)
@@ -62,7 +59,7 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 >
 > And IntelliSense becomes your best friend. Type a dot after any control and see every option. What properties does a Button have? Just look. No switching to documentation. No guessing.
 >
-> The pattern is consistent across the entire framework: every `Set` method has a matching `Bind` method. `SetText`, `BindText`. `SetVisibility`, `BindVisibility`. `SetBackground`, `BindBackground`. Whether you're setting a static value or binding to your ViewModel - same readable, chainable style.
+> The pattern is consistent across the entire framework: every `Set` method has a matching `Bind` method. `SetText`, `BindText`. `SetIsVisible`, `BindIsVisible`. `SetBackground`, `BindBackground`. Whether you're setting a static value or binding to your ViewModel - same readable, chainable style.
 >
 > And because it's just C#, you can do what you'd normally do with code. Have a button style you use everywhere? Extract it to a method. Call it wherever you need it. Need ten cards with the same layout but different data? Write a method, call it in a loop. No templates, no styles resources, no control templates - just methods. The refactoring tools you already use just work.
 >
@@ -70,6 +67,42 @@ public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
 >
 > You want a VStack with a Label, an Entry, and a Button? You write exactly that. And when you read it back a month later, you'll still understand it."
 
-**Visual:**
+## Visuals
 
-> TODO - Show code being written with IntelliSense, then the resulting UI
+- Dunkler Hintergrund (#1E1E1E)
+- Code-Block groß und lesbar (Syntax Highlighting)
+- Sprecher in Ecke
+
+```csharp
+public class MainPage(MainPageViewModel vm) : UiPageElement(vm)
+{
+    protected override UiElement Build()
+    {
+        return new VStack(
+            new Label()
+                .SetText("Welcome to PlusUi")
+                .SetTextSize(32)
+                .SetTextColor(Colors.White)
+                .SetHorizontalTextAlignment(HorizontalTextAlignment.Center),
+
+            new Entry()
+                .SetPlaceholder("Enter your name...")
+                .BindText(() => vm.Name, v => vm.Name = v)
+                .SetPadding(new Margin(12, 8))
+                .SetCornerRadius(8),
+
+            new Button()
+                .SetText("Click Me!")
+                .SetPadding(new Margin(20, 10))
+                .SetCornerRadius(8)
+                .SetCommand(vm.SubmitCommand)
+        )
+        .SetSpacing(16)
+        .SetPadding(new Margin(24))
+        .SetHorizontalAlignment(HorizontalAlignment.Center)
+        .SetVerticalAlignment(VerticalAlignment.Center);
+    }
+}
+```
+
+**Übergang zu Section 6:** Slide (Page Transition)

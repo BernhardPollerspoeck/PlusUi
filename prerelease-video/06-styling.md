@@ -37,6 +37,37 @@
 >
 > And if your user has 'reduce motion' enabled in their system settings? PlusUi respects that too."
 
-**Visual:**
+## Visuals
 
-> TODO - Show styling examples (gradients, shadows, borders) and page transitions
+- Dunkler Hintergrund (#1E1E1E)
+- Code-Block groß und lesbar (Syntax Highlighting)
+- Sprecher in Ecke
+
+```csharp
+// Gradient Background
+new Solid()
+    .SetBackground(new LinearGradient(Colors.Blue, Colors.Purple, 45))
+    .SetCornerRadius(12)
+
+// Shadow
+new Solid()
+    .SetBackground(new SolidColorBackground(Colors.White))
+    .SetShadowColor(Colors.Black)
+    .SetShadowBlur(8)
+    .SetShadowOffset(new Point(2, 4))
+
+// Border (solid, dashed, dotted)
+new Border()
+    .SetStrokeColor(Colors.Red)
+    .SetStrokeThickness(2)
+    .SetStrokeType(StrokeType.Dashed)
+    .SetCornerRadius(8)
+
+// Dynamic styling via binding
+new Solid()
+    .BindBackground(() => vm.IsActive
+        ? new SolidColorBackground(Colors.Green)
+        : new SolidColorBackground(Colors.Gray))
+```
+
+**Übergang zu Section 7:** Slide (Page Transition)

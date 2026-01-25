@@ -26,6 +26,39 @@
 >
 > Building accessible apps shouldn't require a separate effort. It shouldn't be a checklist you go through at the end. It's part of how you build. And PlusUi makes that easy."
 
-**Visual:**
+## Visuals
 
-> TODO - Show keyboard navigation, focus ring, screen reader demo
+- Dunkler Hintergrund (#1E1E1E)
+- Code-Block groß und lesbar (Syntax Highlighting)
+- Sprecher in Ecke
+
+```csharp
+// Screen reader support
+new Button()
+    .SetIcon("delete.svg")
+    .SetAccessibilityLabel("Delete item")
+    .SetAccessibilityHint("Removes this item from your cart")
+
+// Keyboard navigation
+new Entry()
+    .SetPlaceholder("First name")
+    .SetTabIndex(1)
+
+new Entry()
+    .SetPlaceholder("Last name")
+    .SetTabIndex(2)
+
+// Focus ring customization
+new Button()
+    .SetFocusRingColor(Colors.Blue)
+    .SetFocusRingWidth(3)
+    .SetFocusRingOffset(2)
+
+// High contrast mode
+new Button()
+    .SetText("Submit")
+    .SetHighContrastBackground(new SolidColorBackground(Colors.Black))
+    .SetHighContrastForeground(Colors.White)
+```
+
+**Übergang zu Section 9:** Slide (Page Transition)

@@ -25,6 +25,55 @@
 >
 > Define once. Override per theme. Override per page. Switch whenever you want."
 
-**Visual:**
+## Visuals
 
-> TODO - Show theme switching in action, light/dark toggle
+- Dunkler Hintergrund (#1E1E1E)
+- Code-Block groß und lesbar (Syntax Highlighting)
+- Sprecher in Ecke
+
+```csharp
+// App-wide styles (in your Style class)
+public class AppStyle(IThemeService themeService) : Style(themeService)
+{
+    public AppStyle Configure()
+    {
+        // Base style for all Buttons
+        AddStyle<Button>(b => b
+            .SetCornerRadius(8)
+            .SetPadding(new Margin(16, 8)));
+
+        // Theme overrides
+        AddStyle<Button>(Theme.Dark, b => b
+            .SetBackground(new SolidColorBackground(Colors.DarkGray))
+            .SetTextColor(Colors.White));
+
+        AddStyle<Button>(Theme.Light, b => b
+            .SetBackground(new SolidColorBackground(Colors.LightGray))
+            .SetTextColor(Colors.Black));
+
+        // Custom theme
+        AddStyle<Button>("corporate-blue", b => b
+            .SetBackground(new SolidColorBackground(Colors.Navy))
+            .SetTextColor(Colors.White));
+
+        return this;
+    }
+}
+
+// Per-page style override
+public class SettingsPage(SettingsViewModel vm) : UiPageElement(vm)
+{
+    public override Style? PageStyle => new Style(ThemeService)
+        .AddStyle<Button>(b => b
+            .SetCornerRadius(16)
+            .SetBackground(new SolidColorBackground(Colors.Orange)));
+
+    protected override UiElement Build() => ...
+}
+
+// Switch theme at runtime
+themeService.SetTheme(Theme.Dark);
+themeService.SetTheme("corporate-blue");
+```
+
+**Übergang zu Section 8:** Slide (Page Transition)

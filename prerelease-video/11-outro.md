@@ -18,9 +18,17 @@
 >
 > Thanks for watching. Now go build something."
 
-**Visual:**
+## Visuals
 
-> TODO - Show links/logos for GitHub, Docs, Discord, NuGet
+- Dunkler Hintergrund (#1E1E1E)
+- PlusUi Logo zentriert (wie Intro)
+- Links darunter, erscheinen nacheinander:
+
+```
+GitHub    Docs    Discord    NuGet
+```
+
+- Sprecher in Ecke
 
 **Links:**
 

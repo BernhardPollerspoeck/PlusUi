@@ -56,6 +56,22 @@
 >
 > You focus on your app. The controls just work."
 
-**Visual:**
+## Visuals
 
-> TODO - Show quick montage of different controls in action
+- Dunkler Hintergrund (#1E1E1E)
+- Highlights als Liste, zentriert:
+
+```
+Controls that matter:
+
+DataGrid (11 column types)
+ItemsList (virtualized)
+TreeView
+DatePicker / TimePicker
+
+... and 25 more
+```
+
+- Sprecher in Ecke
+
+**Übergang zu Section 4:** Slide (Page Transition)

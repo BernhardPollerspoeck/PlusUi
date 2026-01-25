@@ -33,6 +33,16 @@
 >
 > This kind of tooling? Other .NET UI frameworks don't have it. We do. On day one."
 
-**Visual:**
+## Visuals
 
-> TODO - Show Debug Server in action: UI tree, property editing, performance graphs, screenshots
+- Dunkler Hintergrund (#1E1E1E)
+- Screenshots vom Debug Server, wechselnd passend zur Narration:
+
+1. **UI Tree + Property Grid** - "Live UI tree... click on an element..."
+2. **Performance Graphs** - "Performance monitoring. Four live graphs..."
+3. **Screenshot Feature** - "Need a screenshot? Take one..."
+4. **Logging View** - "Application logs stream in real time..."
+
+- Sprecher in Ecke
+
+**Übergang zu Section 11:** Slide (Page Transition)

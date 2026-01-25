@@ -33,6 +33,23 @@
 >
 > Eight platforms. Your design - not the platform's interpretation of it."
 
-**Visual:**
+## Visuals
 
-> TODO - Show same app running on different platforms, side by side or sequential
+- Dunkler Hintergrund (#1E1E1E)
+- 3x3 Grid Layout:
+
+```
+┌─────────┬─────────┬─────────┐
+│ Windows │  macOS  │  Linux  │
+├─────────┼─────────┼─────────┤
+│   Web   │   iOS   │ Android │
+├─────────┼─────────┼─────────┤
+│Headless │  Video  │ Sprecher│
+└─────────┴─────────┴─────────┘
+```
+
+- Squares erscheinen nacheinander in Narration-Reihenfolge
+- Platform-Icon + Name pro Square
+- Sprecher rechts unten (Overlay im finalen Render)
+
+**Übergang zu Section 3:** Slide (Page Transition)

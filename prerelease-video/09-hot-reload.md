@@ -12,6 +12,17 @@
 >
 > It works with your pages, your controls, your user controls. The iteration speed you've always wanted."
 
-**Visual:**
+## Visuals
 
-> TODO - Show live code editing with UI updating in real time
+- Dunkler Hintergrund (#1E1E1E)
+- "Hot Reload" groß, rot, zentriert
+- Darunter:
+
+```
+Fastest inner dev loop for UI iteration
+Built on .NET Hot Reload
+```
+
+- Sprecher in Ecke
+
+**Übergang zu Section 10:** Slide (Page Transition)

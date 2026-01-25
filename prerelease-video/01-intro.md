@@ -34,4 +34,4 @@
 - Logo bleibt die ganze Section sichtbar
 - Narration + Sprecher als Overlay im finalen Render
 
-**Übergang zu Section 2:** Fade oder sanfter Slide
+**Übergang zu Section 2:** Slide (Page Transition)

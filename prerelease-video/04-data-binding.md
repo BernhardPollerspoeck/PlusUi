@@ -8,7 +8,7 @@
 >
 > In PlusUi, binding is type-safe. You write an expression. The compiler knows what you mean. Your IDE knows what you mean. Autocomplete works. Refactoring works.
 >
-> Every control that displays data has a `Bind` method. `BindText`, `BindValue`, `BindCommand`, `BindVisibility` - you bind directly to your ViewModel properties using lambda expressions.
+> Every control that displays data has a `Bind` method. `BindText`, `BindValue`, `BindCommand`, `BindIsVisible` - you bind directly to your ViewModel properties using lambda expressions.
 >
 > Change a property in your ViewModel? The UI updates automatically. User types in a text field? Your ViewModel gets the new value. Two-way binding, built in.
 >
@@ -20,6 +20,34 @@
 >
 > Type-safe binding with inline formatting. The way it should be."
 
-**Visual:**
+## Visuals
 
-> TODO - Show binding code example, then demonstrate live update in UI
+- Dunkler Hintergrund (#1E1E1E)
+- Code-Block groß und lesbar (Syntax Highlighting)
+- Sprecher in Ecke
+
+```csharp
+// Type-safe binding
+new Label()
+    .BindText(() => vm.Username)
+
+// Mit Formatter
+new Label()
+    .BindText(() => vm.ItemCount, c => $"You have {c} items in your cart")
+
+// Two-way binding
+new Entry()
+    .BindText(() => vm.SearchQuery, v => vm.SearchQuery = v)
+
+// Command binding
+new Button()
+    .SetText("Save")
+    .BindCommand(() => vm.SaveCommand)
+
+// Visibility binding
+new Label()
+    .SetText("Error!")
+    .BindIsVisible(() => vm.HasError)
+```
+
+**Übergang zu Section 5:** Slide (Page Transition)
