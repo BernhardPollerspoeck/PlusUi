@@ -427,6 +427,23 @@ public partial class RichTextLabel : UiElement
         InvalidateMeasure();
     }
 
+    private static string CleanText(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+
+        text = text.Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
+
+        var sb = new System.Text.StringBuilder(text.Length);
+        foreach (var ch in text)
+        {
+            if (ch >= ' ' && ch != '\x7F')
+            {
+                sb.Append(ch);
+            }
+        }
+        return sb.ToString();
+    }
+
     private List<WrappedLine> BuildLines(float maxWidth)
     {
         if (_cachedLines != null && Math.Abs(_cachedMaxWidth - maxWidth) < 0.01f)
@@ -455,7 +472,7 @@ public partial class RichTextLabel : UiElement
             var ascent = metrics.Ascent;
             var descent = metrics.Descent;
 
-            var text = run.Text ?? string.Empty;
+            var text = CleanText(run.Text ?? string.Empty);
             if (string.IsNullOrEmpty(text))
             {
                 continue;
