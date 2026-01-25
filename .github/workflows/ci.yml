@@ -28,7 +28,7 @@ jobs:
       run: dotnet restore PlusUi.sln
 
     - name: Build
-      run: dotnet build PlusUi.sln --no-restore --configuration Release
+      run: dotnet build PlusUi.sln --no-restore --configuration Release /p:BuildInParallel=false /m:1
 
     - name: Test with Coverage
       run: dotnet test PlusUi.sln --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./TestResults
