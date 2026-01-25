@@ -3,7 +3,7 @@
   <path d="M45 75 L100 30 L155 75"
         fill="none"
         stroke="#000"
-        stroke-width="18"
+        stroke-width="24"
         stroke-linecap="square"
         stroke-linejoin="miter"/>
   <path d="M45 75 L100 30 L155 75"
@@ -16,7 +16,7 @@
   <!-- Plus -->
   <path d="M100 85 L100 175 M55 130 L145 130"
         stroke="#000"
-        stroke-width="24"
+        stroke-width="33"
         stroke-linecap="square"/>
   <path d="M100 85 L100 175 M55 130 L145 130"
         stroke="#FFFFFF"
