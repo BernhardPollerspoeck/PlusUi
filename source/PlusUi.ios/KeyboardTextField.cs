@@ -109,11 +109,24 @@ public class KeyboardTextField : UITextField, IKeyboardHandler, IUITextFieldDele
 
     public override void PressesBegan(NSSet<UIPress> presses, UIPressesEvent evt)
     {
-        // Handle hardware keyboard keys for Tab navigation
         foreach (var press in presses)
         {
             if (press?.Key?.KeyCode != null)
             {
+                // Track modifier key states
+                if (press.Key.KeyCode == UIKeyboardHidUsage.KeyboardLeftShift ||
+                    press.Key.KeyCode == UIKeyboardHidUsage.KeyboardRightShift)
+                {
+                    ShiftStateChanged?.Invoke(this, true);
+                    return;
+                }
+                if (press.Key.KeyCode == UIKeyboardHidUsage.KeyboardLeftControl ||
+                    press.Key.KeyCode == UIKeyboardHidUsage.KeyboardRightControl)
+                {
+                    CtrlStateChanged?.Invoke(this, true);
+                    return;
+                }
+
                 var plusKey = press.Key.KeyCode switch
                 {
                     UIKeyboardHidUsage.KeyboardTab when press.Key.ModifierFlags.HasFlag(UIKeyModifierFlags.Shift) => PlusKey.ShiftTab,
@@ -135,5 +148,29 @@ public class KeyboardTextField : UITextField, IKeyboardHandler, IUITextFieldDele
         }
 
         base.PressesBegan(presses, evt);
+    }
+
+    public override void PressesEnded(NSSet<UIPress> presses, UIPressesEvent evt)
+    {
+        foreach (var press in presses)
+        {
+            if (press?.Key?.KeyCode != null)
+            {
+                if (press.Key.KeyCode == UIKeyboardHidUsage.KeyboardLeftShift ||
+                    press.Key.KeyCode == UIKeyboardHidUsage.KeyboardRightShift)
+                {
+                    ShiftStateChanged?.Invoke(this, false);
+                    return;
+                }
+                if (press.Key.KeyCode == UIKeyboardHidUsage.KeyboardLeftControl ||
+                    press.Key.KeyCode == UIKeyboardHidUsage.KeyboardRightControl)
+                {
+                    CtrlStateChanged?.Invoke(this, false);
+                    return;
+                }
+            }
+        }
+
+        base.PressesEnded(presses, evt);
     }
 }

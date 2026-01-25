@@ -344,13 +344,13 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable, IScro
         }
     }
 
-    public new Entry SetMaxLines(int? maxLines)
+    public Entry SetMaxLines(int? maxLines)
     {
         MaxLines = maxLines;
         return this;
     }
 
-    public new Entry BindMaxLines(Expression<Func<int?>> propertyExpression)
+    public Entry BindMaxLines(Expression<Func<int?>> propertyExpression)
     {
         var path = ExpressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();

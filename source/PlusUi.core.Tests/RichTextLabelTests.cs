@@ -19,8 +19,8 @@ public sealed class RichTextLabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
 
         // Assert
-        Assert.IsTrue(label.ElementSize.Width > 0);
-        Assert.IsTrue(label.ElementSize.Height > 0);
+        Assert.IsGreaterThan(0, label.ElementSize.Width);
+        Assert.IsGreaterThan(0, label.ElementSize.Height);
     }
 
     [TestMethod]
@@ -38,8 +38,8 @@ public sealed class RichTextLabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
 
         // Assert
-        Assert.IsTrue(label.ElementSize.Width > 0);
-        Assert.IsTrue(label.ElementSize.Height > 0);
+        Assert.IsGreaterThan(0, label.ElementSize.Width);
+        Assert.IsGreaterThan(0, label.ElementSize.Height);
     }
 
     [TestMethod]
@@ -67,7 +67,7 @@ public sealed class RichTextLabelTests
         mixedLabel.Measure(availableSize);
 
         // Assert - mixed should have height >= the large label
-        Assert.IsTrue(mixedLabel.ElementSize.Height >= largeLabel.ElementSize.Height,
+        Assert.IsGreaterThanOrEqualTo(largeLabel.ElementSize.Height, mixedLabel.ElementSize.Height,
             $"Mixed height ({mixedLabel.ElementSize.Height}) should be >= large height ({largeLabel.ElementSize.Height})");
     }
 
@@ -91,7 +91,7 @@ public sealed class RichTextLabelTests
             .AddRun(new TextRun("Test"));
         singleLineLabel.Measure(new Size(400, 50));
 
-        Assert.IsTrue(label.ElementSize.Height > singleLineLabel.ElementSize.Height,
+        Assert.IsGreaterThan(singleLineLabel.ElementSize.Height, label.ElementSize.Height,
             "Wrapped text should have greater height than single line");
     }
 
@@ -114,8 +114,8 @@ public sealed class RichTextLabelTests
         unlimitedLabel.Measure(availableSize);
         limitedLabel.Measure(availableSize);
 
-        // Assert - limited should have smaller height
-        Assert.IsTrue(limitedLabel.ElementSize.Height <= unlimitedLabel.ElementSize.Height,
+        // Assert - limited should have smaller or equal height
+        Assert.IsLessThanOrEqualTo(unlimitedLabel.ElementSize.Height, limitedLabel.ElementSize.Height,
             $"Limited height ({limitedLabel.ElementSize.Height}) should be <= unlimited height ({unlimitedLabel.ElementSize.Height})");
     }
 
@@ -134,7 +134,7 @@ public sealed class RichTextLabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
 
         // Assert
-        Assert.IsTrue(label.ElementSize.Width > 0);
+        Assert.IsGreaterThan(0, label.ElementSize.Width);
     }
 
     [TestMethod]
@@ -152,7 +152,7 @@ public sealed class RichTextLabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
 
         // Assert
-        Assert.IsTrue(label.ElementSize.Width > 0);
+        Assert.IsGreaterThan(0, label.ElementSize.Width);
     }
 
     [TestMethod]
@@ -170,7 +170,7 @@ public sealed class RichTextLabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
 
         // Assert
-        Assert.IsTrue(label.ElementSize.Width > 0);
+        Assert.IsGreaterThan(0, label.ElementSize.Width);
     }
 
     [TestMethod]
@@ -224,7 +224,7 @@ public sealed class RichTextLabelTests
         label.Measure(new Size(200, 50));
 
         // Assert
-        Assert.IsTrue(label.ElementSize.Width > 0);
+        Assert.IsGreaterThan(0, label.ElementSize.Width);
     }
 
     [TestMethod]
@@ -245,8 +245,8 @@ public sealed class RichTextLabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
 
         // Assert
-        Assert.IsTrue(label.ElementSize.Width > 0);
-        Assert.IsTrue(label.ElementSize.Height > 0);
+        Assert.IsGreaterThan(0, label.ElementSize.Width);
+        Assert.IsGreaterThan(0, label.ElementSize.Height);
     }
 
     [TestMethod]
@@ -266,8 +266,8 @@ public sealed class RichTextLabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
 
         // Assert
-        Assert.IsTrue(label.ElementSize.Width > 0);
-        Assert.IsTrue(label.ElementSize.Height > 0);
+        Assert.IsGreaterThan(0, label.ElementSize.Width);
+        Assert.IsGreaterThan(0, label.ElementSize.Height);
     }
 
     [TestMethod]
@@ -286,7 +286,7 @@ public sealed class RichTextLabelTests
         label.Arrange(new Rect(new Point(0, 0), availableSize));
 
         // Assert - should not crash and have some size
-        Assert.IsTrue(label.ElementSize.Width > 0);
+        Assert.IsGreaterThan(0, label.ElementSize.Width);
     }
 
     [TestMethod]
@@ -436,10 +436,7 @@ public sealed class RichTextLabelTests
             .AddRun(new TextRun("Test"));
         label.Measure(new Size(200, 50));
 
-        // Act
+        // Act & Assert - should not throw
         label.Dispose();
-
-        // Assert - should not throw
-        Assert.IsTrue(true);
     }
 }

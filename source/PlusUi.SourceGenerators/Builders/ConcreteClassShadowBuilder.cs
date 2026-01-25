@@ -13,6 +13,9 @@ internal static class ConcreteClassShadowBuilder
     {
         var sb = new StringBuilder();
 
+        sb.AppendLine("#nullable enable");
+        sb.AppendLine();
+
         if (!string.IsNullOrEmpty(namespaceName))
         {
             sb.AppendLine($"namespace {namespaceName};");

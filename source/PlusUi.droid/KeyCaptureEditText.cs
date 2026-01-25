@@ -115,6 +115,18 @@ public class KeyCaptureEditText : EditText, IKeyboardHandler
 
     public override bool OnKeyDown(Keycode keyCode, KeyEvent? e)
     {
+        // Track modifier key states
+        if (keyCode == Keycode.ShiftLeft || keyCode == Keycode.ShiftRight)
+        {
+            ShiftStateChanged?.Invoke(this, true);
+            return true;
+        }
+        if (keyCode == Keycode.CtrlLeft || keyCode == Keycode.CtrlRight)
+        {
+            CtrlStateChanged?.Invoke(this, true);
+            return true;
+        }
+
         // Handle Tab navigation for hardware keyboards
         if (e != null)
         {
@@ -140,6 +152,21 @@ public class KeyCaptureEditText : EditText, IKeyboardHandler
         return base.OnKeyDown(keyCode, e);
     }
 
+    public override bool OnKeyUp(Keycode keyCode, KeyEvent? e)
+    {
+        if (keyCode == Keycode.ShiftLeft || keyCode == Keycode.ShiftRight)
+        {
+            ShiftStateChanged?.Invoke(this, false);
+            return true;
+        }
+        if (keyCode == Keycode.CtrlLeft || keyCode == Keycode.CtrlRight)
+        {
+            CtrlStateChanged?.Invoke(this, false);
+            return true;
+        }
+
+        return base.OnKeyUp(keyCode, e);
+    }
 }
 
 
