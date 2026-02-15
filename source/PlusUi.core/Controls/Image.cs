@@ -210,9 +210,10 @@ public partial class Image : UiElement
         if (disposing)
         {
             StopAnimation();
-            _animatedImageInfo?.Dispose();
-            _svgImageInfo?.Dispose();
+            _animatedImageInfo = null;
+            _svgImageInfo = null;
             _renderedSvgImage?.Dispose();
+            _renderedSvgImage = null;
         }
         base.Dispose(disposing);
     }

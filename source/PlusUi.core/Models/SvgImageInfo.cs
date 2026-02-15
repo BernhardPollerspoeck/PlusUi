@@ -22,6 +22,8 @@ public class SvgImageInfo : IDisposable
     /// </summary>
     public float Height { get; }
 
+    public bool IsDisposed { get; private set; }
+
     public SvgImageInfo(SKPicture picture, float width, float height)
     {
         Picture = picture;
@@ -69,6 +71,8 @@ public class SvgImageInfo : IDisposable
 
     public void Dispose()
     {
+        if (IsDisposed) return;
+        IsDisposed = true;
         Picture?.Dispose();
         GC.SuppressFinalize(this);
     }

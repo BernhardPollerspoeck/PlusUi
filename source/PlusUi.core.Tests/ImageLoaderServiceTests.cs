@@ -202,6 +202,55 @@ public sealed class ImageLoaderServiceTests
     }
 
     [TestMethod]
+    public void TestImageLoader_SvgCache_DisposedSvgInfo_SecondLoadStillUsable()
+    {
+        // Arrange - Create a temp SVG file (white rect on transparent background)
+        var tempPath = Path.Combine(Path.GetTempPath(), "dispose_bug_test.svg");
+        try
+        {
+            File.WriteAllText(tempPath,
+                """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect fill="white" width="24" height="24"/></svg>""");
+
+            var source = $"file:{tempPath}";
+
+            // Act - Load SVG, then dispose it (simulating what Image.Dispose does)
+            var (_, _, svgImage) = _imageLoaderService.LoadImage(source);
+            Assert.IsNotNull(svgImage, "First load should return SvgImageInfo");
+
+            // Verify first render works and produces white pixels
+            var firstRender = svgImage.RenderToImage(10, 10);
+            Assert.IsNotNull(firstRender, "First render should succeed");
+            using var firstBitmap = SKBitmap.FromImage(firstRender);
+            var firstPixel = firstBitmap.GetPixel(5, 5);
+            Assert.AreEqual(SKColors.White, firstPixel, "First render should produce white pixels");
+
+            // This simulates what Image.Dispose() does with the shared cached resource
+            svgImage.Dispose();
+
+            // Load the same SVG again - cache returns the same (now disposed) instance
+            var (_, _, svgImage2) = _imageLoaderService.LoadImage(source);
+            Assert.IsNotNull(svgImage2, "Second load should return SvgImageInfo from cache");
+
+            // BUG: After dispose, the cached SvgImageInfo has a disposed SKPicture.
+            // RenderToImage should still produce valid pixels, but the SKPicture is gone.
+            var secondRender = svgImage2.RenderToImage(10, 10);
+            Assert.IsNotNull(secondRender, "Second render should succeed");
+            using var secondBitmap = SKBitmap.FromImage(secondRender);
+            var secondPixel = secondBitmap.GetPixel(5, 5);
+            Assert.AreEqual(SKColors.White, secondPixel,
+                "Second render after dispose should still produce white pixels - " +
+                "BUG: Image.Dispose() disposes shared cached SvgImageInfo, corrupting it for subsequent users");
+        }
+        finally
+        {
+            if (File.Exists(tempPath))
+            {
+                File.Delete(tempPath);
+            }
+        }
+    }
+
+    [TestMethod]
     public void TestImageLoader_WeakReferenceCache_AllowsGarbageCollection()
     {
         // Arrange - Create a temp file
