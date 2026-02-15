@@ -34,8 +34,11 @@ internal class VideoOverlayFilterBuilder
             videoParts.Add(videoChain);
 
             var dest = overlay.DestRect;
+            var enableExpr = overlay.Duration is { } dur
+                ? $"between(t,{startSec},{(overlay.StartTime + dur).TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)})"
+                : $"gte(t,{startSec})";
             videoParts.Add(
-                $"[{baseLabel}][{ovLabel}]overlay={dest.X}:{dest.Y}:enable='gte(t,{startSec})'[{nextBaseLabel}]");
+                $"[{baseLabel}][{ovLabel}]overlay={dest.X}:{dest.Y}:enable='{enableExpr}'[{nextBaseLabel}]");
 
             baseLabel = nextBaseLabel;
 
@@ -72,6 +75,25 @@ internal class VideoOverlayFilterBuilder
         var dest = overlay.DestRect;
         filters.Add($"scale={dest.Width}:{dest.Height}");
 
+        if (overlay.FadeInDuration is { TotalSeconds: > 0 } || overlay.FadeOutDuration is { TotalSeconds: > 0 })
+        {
+            filters.Add("format=yuva420p");
+        }
+
+        if (overlay.FadeInDuration is { TotalSeconds: > 0 } fadeIn)
+        {
+            var fadeInStart = overlay.StartTime.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture);
+            filters.Add($"fade=t=in:st={fadeInStart}:d={fadeIn.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)}:alpha=1");
+        }
+
+        if (overlay is { FadeOutDuration.TotalSeconds: > 0, Duration.TotalSeconds: > 0 })
+        {
+            var fadeOutSec = overlay.FadeOutDuration!.Value.TotalSeconds;
+            var fadeOutStart = (overlay.StartTime.TotalSeconds + overlay.Duration!.Value.TotalSeconds - fadeOutSec)
+                .ToString("F3", CultureInfo.InvariantCulture);
+            filters.Add($"fade=t=out:st={fadeOutStart}:d={fadeOutSec.ToString("F3", CultureInfo.InvariantCulture)}:alpha=1");
+        }
+
         return $"[{inputIdx}:v]{string.Join(",", filters)}[{outputLabel}]";
     }
 
@@ -98,6 +120,20 @@ internal class VideoOverlayFilterBuilder
         {
             var vol = overlay.Volume.ToString("F2", CultureInfo.InvariantCulture);
             filters.Add($"volume={vol}");
+        }
+
+        if (overlay.FadeInDuration is { TotalSeconds: > 0 } fadeIn)
+        {
+            var fadeInStart = overlay.StartTime.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture);
+            filters.Add($"afade=t=in:st={fadeInStart}:d={fadeIn.TotalSeconds.ToString("F3", CultureInfo.InvariantCulture)}");
+        }
+
+        if (overlay is { FadeOutDuration.TotalSeconds: > 0, Duration.TotalSeconds: > 0 })
+        {
+            var fadeOutSec = overlay.FadeOutDuration!.Value.TotalSeconds;
+            var fadeOutStart = (overlay.StartTime.TotalSeconds + overlay.Duration!.Value.TotalSeconds - fadeOutSec)
+                .ToString("F3", CultureInfo.InvariantCulture);
+            filters.Add($"afade=t=out:st={fadeOutStart}:d={fadeOutSec.ToString("F3", CultureInfo.InvariantCulture)}");
         }
 
         if (filters.Count == 0)
