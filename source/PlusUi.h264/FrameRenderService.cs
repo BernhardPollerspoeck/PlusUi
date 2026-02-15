@@ -16,8 +16,10 @@ internal class FrameRenderService(
     IOptions<VideoConfiguration> videoOptions,
     ICommandLineService commandLineService,
     AudioSequenceConverter audioSequenceConverter,
+    VideoOverlayFilterBuilder videoOverlayFilterBuilder,
     VideoRenderingProgressService progressService,
-    IAudioSequenceProvider? audioSequenceProvider = null)
+    IAudioSequenceProvider? audioSequenceProvider = null,
+    IVideoOverlayProvider? videoOverlayProvider = null)
     : BackgroundService
 {
     private int _processedFrameCount = 0;
@@ -41,7 +43,7 @@ internal class FrameRenderService(
     private async Task RenderFrames(CancellationToken stoppingToken)
     {
         progressService.ReportMessage("Configuring video encoder...", MessageType.Warning);
-        
+
         var videoFramesSource = new RawVideoPipeSource(GenerateVideoFrames(stoppingToken))
         {
             FrameRate = videoOptions.Value.FrameRate,
@@ -50,22 +52,73 @@ internal class FrameRenderService(
         var arguments = FFMpegArguments
             .FromPipeInput(videoFramesSource);
 
-        var complexFilter = (string?)null;
+        var audioSequence = new List<AudioDefinition>();
+        var videoOverlays = new List<VideoOverlayDefinition>();
+        int inputIndex = 1;
+
         if (audioSequenceProvider is not null)
         {
             progressService.ReportMessage("Adding audio to video...", MessageType.Info);
-            var audioSequence = audioSequenceProvider.GetAudioSequence().ToList();
+            audioSequence = audioSequenceProvider.GetAudioSequence().ToList();
 
             foreach (var audioFile in audioSequence)
             {
                 arguments.AddFileInput(audioFile.FilePath);
                 progressService.ReportMessage($"- Added audio file: {audioFile.FilePath}", MessageType.Info);
+                inputIndex++;
             }
-            complexFilter = audioSequenceConverter.GetComplexFilter(audioSequence);
         }
 
+        var overlayFirstInputIndex = inputIndex;
+        if (videoOverlayProvider is not null)
+        {
+            progressService.ReportMessage("Adding video overlays...", MessageType.Info);
+            videoOverlays = videoOverlayProvider.GetVideoOverlays().ToList();
+
+            foreach (var overlay in videoOverlays)
+            {
+                arguments.AddFileInput(overlay.FilePath);
+                progressService.ReportMessage($"- Added video overlay: {overlay.FilePath}", MessageType.Info);
+                inputIndex++;
+            }
+        }
+
+        var hasOverlays = videoOverlays.Count > 0;
+        var hasAudio = audioSequence.Count > 0 || videoOverlays.Any(o => o.Volume > 0f);
+
+        var complexFilterParts = new List<string>();
+        string? videoMapArg = null;
+
+        if (hasOverlays)
+        {
+            var overlayResult = videoOverlayFilterBuilder.BuildFilters(
+                videoOverlays,
+                overlayFirstInputIndex,
+                videoOptions.Value.Width,
+                videoOptions.Value.Height);
+
+            complexFilterParts.Add(overlayResult.VideoFilter);
+            videoMapArg = "[vout]";
+
+            if (hasAudio)
+            {
+                var audioFilter = audioSequenceConverter.GetComplexFilter(
+                    audioSequence,
+                    overlayResult.AudioLabels,
+                    overlayResult.AudioFilter);
+                complexFilterParts.Add(audioFilter);
+            }
+        }
+        else if (hasAudio)
+        {
+            var audioFilter = audioSequenceConverter.GetComplexFilter(audioSequence);
+            complexFilterParts.Add(audioFilter);
+        }
+
+        var complexFilter = string.Join(";", complexFilterParts.Where(p => !string.IsNullOrEmpty(p)));
+
         progressService.ReportMessage("Starting video encoding process", MessageType.Success);
-        
+
         await arguments
             .OutputToFile(
                 videoOptions.Value.OutputFilePath,
@@ -77,21 +130,36 @@ internal class FrameRenderService(
                         .WithConstantRateFactor(23)
                         .WithVideoBitrate(2000)
                         .ForcePixelFormat("yuv420p")
-                        .WithFramerate(videoOptions.Value.FrameRate)
-                        .WithVideoFilters(filterOptions => filterOptions
+                        .WithFramerate(videoOptions.Value.FrameRate);
+
+                    if (!hasOverlays)
+                    {
+                        options.WithVideoFilters(filterOptions => filterOptions
                             .Scale(videoOptions.Value.Width, videoOptions.Value.Height));
-                    if (audioSequenceProvider is not null)
+                    }
+
+                    if (!string.IsNullOrEmpty(complexFilter))
+                    {
+                        options.WithCustomArgument($"-filter_complex \"{complexFilter}\"");
+
+                        var mapParts = new List<string>();
+                        mapParts.Add(videoMapArg is not null ? $"\"{videoMapArg}\"" : "0:v");
+                        if (hasAudio) mapParts.Add("\"[aout]\"");
+
+                        options.WithCustomArgument($"-map {string.Join(" -map ", mapParts)}");
+                    }
+
+                    if (hasAudio)
                     {
                         options
                             .WithAudioCodec("aac")
-                            .WithAudioBitrate(128)
-                            .WithCustomArgument($"-filter_complex \"{complexFilter}\"")
-                            .WithCustomArgument("-map 0:v -map \"[aout]\"");
+                            .WithAudioBitrate(128);
                     }
+
                     options.WithFastStart();
                 })
             .ProcessAsynchronously();
-            
+
         progressService.ReportEncodingComplete();
     }
 

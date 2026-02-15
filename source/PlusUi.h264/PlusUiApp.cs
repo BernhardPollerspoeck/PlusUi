@@ -36,6 +36,7 @@ public class PlusUiApp(string[] args)
         // Register services
         builder.Services.AddSingleton<FrameInformationService>();
         builder.Services.AddSingleton<AudioSequenceConverter>();
+        builder.Services.AddSingleton<VideoOverlayFilterBuilder>();
         builder.Services.AddSingleton<VideoTimeProvider>();
         builder.Services.AddSingleton<TimeProvider>(sp => sp.GetRequiredService<VideoTimeProvider>());
         
