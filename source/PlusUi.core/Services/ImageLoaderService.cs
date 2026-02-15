@@ -51,7 +51,11 @@ internal class ImageLoaderService(IOptions<PlusUiConfiguration> configuration, I
         // Try to get from SVG cache first
         if (isSvg && _svgImageCache.TryGetValue(imageSource, out var svgWeakRef) && svgWeakRef.TryGetTarget(out var cachedSvgImage))
         {
-            return (null, null, cachedSvgImage);
+            if (!cachedSvgImage.IsDisposed)
+            {
+                return (null, null, cachedSvgImage);
+            }
+            _svgImageCache.TryRemove(imageSource, out _);
         }
 
         // Try to get from animated cache
