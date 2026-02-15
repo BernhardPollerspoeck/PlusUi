@@ -30,26 +30,12 @@ public abstract class CodePage<TViewModel, TNextPage>(
 
     protected override UiElement Build()
     {
-        return new Grid()
-            .AddRow(Row.Auto)
-            .AddRow(Row.Star)
-            .AddColumn(Column.Auto)
-            .AddColumn(Column.Star)
-            .AddColumn(Column.Auto)
-            .SetBackground(new SolidColorBackground(new Color(30, 30, 30)))
-            .AddChild(new Image()
-                .SetImageSource("plusui.png")
-                .SetDesiredHeight(192)
-                .SetDesiredWidth(192)
-                .SetMargin(new Margin(24)), 0, 0)
-            .AddChild(new Label()
-                .BindText(() => vm.SectionTitle)
-                .SetTextSize(120)
-                .SetTextColor(Colors.White)
-                .SetVerticalAlignment(VerticalAlignment.Center)
-                .SetHorizontalAlignment(HorizontalAlignment.Center), 0, 1)
-            .AddChild(BuildCodeContent()
-                .SetVerticalAlignment(VerticalAlignment.Center), 1, 1);
+        return new VStack(
+            BuildCodeContent()
+        )
+        .SetVerticalAlignment(VerticalAlignment.Center)
+        .SetMargin(new Margin(60, 40, 350, 40))
+        .SetBackground(new SolidColorBackground(new Color(30, 30, 30)));
     }
 
     protected static RichTextLabel CodeBlock(params TextRun[] runs)
