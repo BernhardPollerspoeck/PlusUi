@@ -2,23 +2,44 @@ namespace PlusUi.h264;
 
 internal class AudioSequenceConverter
 {
-    public string GetComplexFilter(IEnumerable<AudioDefinition> audioDefinitions)
+    public string GetComplexFilter(
+        IEnumerable<AudioDefinition> audioDefinitions,
+        List<string>? additionalAudioLabels = null,
+        string? additionalAudioFilter = null)
     {
-        if (audioDefinitions == null || !audioDefinitions.Any())
-        {
-            return string.Empty;
-        }
         var filterParts = new List<string>();
-        var delayParts = new List<string>();
+        var mixLabels = new List<string>();
         int index = 0;
-        foreach (var audio in audioDefinitions)
+
+        if (audioDefinitions != null)
         {
-            var delay = (int)audio.StartTime.TotalMilliseconds;
-            filterParts.Add($"[{index + 1}:a]adelay={delay}|{delay}[a{index}]");
-            delayParts.Add($"[a{index}]");
-            index++;
+            foreach (var audio in audioDefinitions)
+            {
+                var delay = (int)audio.StartTime.TotalMilliseconds;
+                var volFilter = Math.Abs(audio.Volume - 1.0f) > 0.001f
+                    ? $",volume={audio.Volume:F2}"
+                    : "";
+                filterParts.Add($"[{index + 1}:a]adelay={delay}|{delay}{volFilter}[a{index}]");
+                mixLabels.Add($"[a{index}]");
+                index++;
+            }
         }
-        var mixPart = string.Join("", delayParts);
-        return $"{string.Join(";", filterParts)};{mixPart}amix=inputs={index}[aout]";
+
+        if (!string.IsNullOrEmpty(additionalAudioFilter))
+        {
+            filterParts.Add(additionalAudioFilter);
+        }
+
+        if (additionalAudioLabels is not null)
+        {
+            mixLabels.AddRange(additionalAudioLabels);
+        }
+
+        if (mixLabels.Count == 0)
+            return string.Empty;
+
+        var mixPart = string.Join("", mixLabels);
+        var totalInputs = mixLabels.Count;
+        return $"{string.Join(";", filterParts)};{mixPart}amix=inputs={totalInputs}[aout]";
     }
 }

@@ -8,4 +8,5 @@ public interface IVideoAppConfiguration
     void ConfigureApp(IPlusUiAppBuilder builder);
     UiPageElement GetRootPage(IServiceProvider serviceProvider);
     IAudioSequenceProvider? GetAudioSequenceProvider(IServiceProvider serviceProvider);
+    IVideoOverlayProvider? GetVideoOverlayProvider(IServiceProvider serviceProvider);
 }

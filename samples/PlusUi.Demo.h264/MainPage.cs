@@ -36,7 +36,7 @@ public class MainPage(
                 .AddChild(new TestControl(vm)
                 , column: 1)
                 .SetDesiredHeight(100)
-                .SetHorizontalAlignment(HorizontalAlignment.Center)
+                .SetHorizontalAlignment(HorizontalAlignment.Left)
 
             ;
     }
