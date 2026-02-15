@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="..\..\gfx\plusui.png" Link="plusui.png" />
+    <EmbeddedResource Include="Assets\*.svg" />
   </ItemGroup>
 
 </Project>
