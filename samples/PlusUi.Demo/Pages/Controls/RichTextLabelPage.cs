@@ -1,42 +1,49 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using PlusUi.core;
+using PlusUi.Demo.Pages.Shared;
 
-namespace PlusUi.Demo.Pages.RichTextLabelDemo;
+namespace PlusUi.Demo.Pages.Controls;
 
-public class RichTextLabelPage(RichTextLabelPageViewModel vm) : UiPageElement(vm)
+public partial class RichTextLabelPageViewModel(INavigationService navigation) : DemoPageViewModel(navigation)
 {
-    protected override UiElement Build()
+    [ObservableProperty]
+    private string _dynamicText = "Dynamic";
+
+    [ObservableProperty]
+    private Color _highlightColor = Colors.Yellow;
+
+    [RelayCommand]
+    private void ToggleHighlight()
     {
-        return new ScrollView(
-                new VStack()
-                    .SetSpacing(24)
-                    .SetMargin(new Margin(40))
-                    .AddChild(BuildHeader())
-                    .AddChild(BuildBasicExample())
-                    .AddChild(BuildSyntaxHighlightingExample())
-                    .AddChild(BuildMixedFontSizesExample())
-                    .AddChild(BuildColorfulExample())
-                    .AddChild(BuildDataBindingExample())
-                    .AddChild(BuildWrappingExample())
-                    .AddChild(BuildBackButton()))
-            .SetCanScrollHorizontally(false);
+        HighlightColor = HighlightColor == Colors.Yellow
+            ? Colors.Cyan
+            : Colors.Yellow;
     }
 
-    private UiElement BuildHeader()
+    [RelayCommand]
+    private void UpdateText()
     {
-        return new VStack()
-            .SetSpacing(8)
-            .AddChild(
-                new RichTextLabel()
-                    .SetTextSize(32)
-                    .AddRun(new TextRun("Rich").SetColor(new Color(255, 100, 100)))
-                    .AddRun(new TextRun("Text").SetColor(new Color(100, 255, 100)))
-                    .AddRun(new TextRun("Label").SetColor(new Color(100, 100, 255))))
-            .AddChild(
-                new Label()
-                    .SetText("Display multiple styled text segments inline - for syntax highlighting, mixed formatting, and rich text display.")
-                    .SetTextColor(PlusUiDefaults.TextSecondary)
-                    .SetTextWrapping(TextWrapping.WordWrap));
+        DynamicText = DynamicText == "Dynamic" ? "Updated" : "Dynamic";
     }
+}
+
+public class RichTextLabelPage(RichTextLabelPageViewModel vm) : DemoPage(vm)
+{
+    protected override string ControlName => "RichTextLabel";
+
+    protected override string Description =>
+        "Display multiple styled text segments inline - for syntax highlighting, mixed formatting, and rich text display.";
+
+    protected override IEnumerable<UiElement> BuildSections() =>
+    [
+        BuildBasicExample(),
+        BuildSyntaxHighlightingExample(),
+        BuildMixedFontSizesExample(),
+        BuildColorfulExample(),
+        BuildDataBindingExample(),
+        BuildWrappingExample(),
+    ];
 
     private UiElement BuildBasicExample()
     {
@@ -333,20 +340,12 @@ public class RichTextLabelPage(RichTextLabelPageViewModel vm) : UiPageElement(vm
                                     .AddRun(new TextRun("after two lines because we set MaxLines=2. All the extra content that would appear on line three or beyond will simply not be rendered.")))));
     }
 
-    private UiElement BuildSectionTitle(string title)
+    private static UiElement BuildSectionTitle(string title)
     {
         return new Label()
             .SetText(title)
             .SetTextSize(18)
             .SetFontWeight(FontWeight.SemiBold)
             .SetTextColor(PlusUiDefaults.AccentPrimary);
-    }
-
-    private UiElement BuildBackButton()
-    {
-        return new Button()
-            .SetText("Back to Controls")
-            .SetHorizontalAlignment(HorizontalAlignment.Left)
-            .SetCommand(vm.GoBackCommand);
     }
 }

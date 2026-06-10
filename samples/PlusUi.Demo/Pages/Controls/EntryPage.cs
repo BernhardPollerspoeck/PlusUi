@@ -1,41 +1,65 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using PlusUi.core;
+using PlusUi.Demo.Pages.Shared;
 
-namespace PlusUi.Demo.Pages.EntryDemo;
+namespace PlusUi.Demo.Pages.Controls;
 
-public class EntryPage(EntryPageViewModel vm) : UiPageElement(vm)
+public partial class EntryPageViewModel(INavigationService navigation) : DemoPageViewModel(navigation)
 {
-    protected override UiElement Build()
+    [ObservableProperty]
+    private string _username = "";
+
+    [ObservableProperty]
+    private string _password = "";
+
+    [ObservableProperty]
+    private string _email = "";
+
+    [ObservableProperty]
+    private string _notes = "This is a multi-line\ntext entry.\n\nYou can type multiple lines here!";
+
+    [ObservableProperty]
+    private string _searchQuery = "";
+
+    [ObservableProperty]
+    private int _characterCount;
+
+    [ObservableProperty]
+    private string _boundText = "Edit me!";
+
+    partial void OnBoundTextChanged(string value)
     {
-        return new ScrollView(
-                new VStack()
-                    .SetSpacing(24)
-                    .SetMargin(new Margin(40))
-                    .AddChild(BuildHeader())
-                    .AddChild(BuildBasicExamples())
-                    .AddChild(BuildMultiLineExample())
-                    .AddChild(BuildKeyboardTypesExample())
-                    .AddChild(BuildDataBindingExample())
-                    .AddChild(BuildInteractiveExample())
-                    .AddChild(BuildBackButton()))
-            .SetCanScrollHorizontally(false);
+        CharacterCount = value.Length;
     }
 
-    private UiElement BuildHeader()
+    [RelayCommand]
+    private void ClearAll()
     {
-        return new VStack()
-            .SetSpacing(8)
-            .AddChild(
-                new Label()
-                    .SetText("Entry Control")
-                    .SetTextSize(32)
-                    .SetFontWeight(FontWeight.Bold)
-                    .SetTextColor(PlusUiDefaults.AccentPrimary))
-            .AddChild(
-                new Label()
-                    .SetText("A versatile text input control with cursor navigation, text selection, copy/paste support, and multi-line capability.")
-                    .SetTextColor(PlusUiDefaults.TextSecondary)
-                    .SetTextWrapping(TextWrapping.WordWrap));
+        Username = "";
+        Password = "";
+        Email = "";
+        Notes = "";
+        SearchQuery = "";
+        BoundText = "";
     }
+}
+
+public class EntryPage(EntryPageViewModel vm) : DemoPage(vm)
+{
+    protected override string ControlName => "Entry";
+
+    protected override string Description =>
+        "A versatile text input control with cursor navigation, text selection, copy/paste support, and multi-line capability.";
+
+    protected override IEnumerable<UiElement> BuildSections() =>
+    [
+        BuildBasicExamples(),
+        BuildMultiLineExample(),
+        BuildKeyboardTypesExample(),
+        BuildDataBindingExample(),
+        BuildInteractiveExample(),
+    ];
 
     private UiElement BuildBasicExamples()
     {
@@ -290,20 +314,12 @@ public class EntryPage(EntryPageViewModel vm) : UiPageElement(vm)
                     .SetTextColor(PlusUiDefaults.TextSecondary));
     }
 
-    private UiElement BuildSectionTitle(string title)
+    private static UiElement BuildSectionTitle(string title)
     {
         return new Label()
             .SetText(title)
             .SetTextSize(18)
             .SetFontWeight(FontWeight.SemiBold)
             .SetTextColor(PlusUiDefaults.AccentPrimary);
-    }
-
-    private UiElement BuildBackButton()
-    {
-        return new Button()
-            .SetText("Back to Controls")
-            .SetHorizontalAlignment(HorizontalAlignment.Left)
-            .SetCommand(vm.GoBackCommand);
     }
 }
