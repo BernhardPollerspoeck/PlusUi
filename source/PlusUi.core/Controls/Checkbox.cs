@@ -177,6 +177,8 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
         {
             StrokeWidth = 2,
             Style = SKPaintStyle.Stroke,
+            StrokeJoin = SKStrokeJoin.Round,
+            StrokeCap = SKStrokeCap.Round,
             IsAntialias = true,
             Color = Color
         };
@@ -191,10 +193,17 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
 
         if (IsChecked)
         {
+            // Balanced, proportional checkmark: short left arm down to a vertex at ~42% width,
+            // long right arm up to ~78%. (Earlier the vertex sat at 33% making it look lopsided.)
+            var x = Position.X + VisualOffset.X;
+            var y = Position.Y + VisualOffset.Y;
+            var w = ElementSize.Width;
+            var h = ElementSize.Height;
+
             var checkPath = new SKPath();
-            checkPath.MoveTo(Position.X + VisualOffset.X + 4, Position.Y + VisualOffset.Y + (ElementSize.Height / 2));
-            checkPath.LineTo(Position.X + VisualOffset.X + (ElementSize.Width / 3), Position.Y + VisualOffset.Y + ElementSize.Height - 4);
-            checkPath.LineTo(Position.X + VisualOffset.X + ElementSize.Width - 4, Position.Y + VisualOffset.Y + 4);
+            checkPath.MoveTo(x + (w * 0.22f), y + (h * 0.52f));
+            checkPath.LineTo(x + (w * 0.42f), y + (h * 0.70f));
+            checkPath.LineTo(x + (w * 0.78f), y + (h * 0.30f));
             canvas.DrawPath(checkPath, strokePaint);
         }
     }

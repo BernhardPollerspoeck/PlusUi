@@ -161,6 +161,9 @@ public partial class ComboBox<T> : ComboBox, IDebugInspectable
     public new ComboBox<T> SetSelectedIndex(int index)
     {
         base.SetSelectedIndex(index);
+        // Fire the selection-changed callback on every selection path (mouse/dropdown click
+        // routes through here); previously only the keyboard path (SelectItemAt) fired it.
+        _onSelectionChanged?.Invoke(SelectedItem);
         return this;
     }
 

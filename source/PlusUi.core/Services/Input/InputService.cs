@@ -22,12 +22,16 @@ public class InputService
 
     // Gesture detection
     private Vector2 _mouseDownPosition;
+    private UiElement? _mouseDownHitControl;
+    private DateTimeOffset _mouseDownTime;
     private DateTime _lastTapTime;
     private UiElement? _lastTapElement;
     private const double DoubleTapThresholdMs = 300;
     private const float SwipeThreshold = 50f;
     private bool _isCtrlPressed;
     private bool _isShiftPressed;
+    private const double LongPressThresholdMs = 500;
+    private readonly TimeProvider _timeProvider;
 
     public InputService(
         NavigationContainer navigationContainer,
@@ -36,6 +40,7 @@ public class InputService
         IKeyboardHandler keyboardHandler,
         IFocusManager focusManager,
         ITooltipService tooltipService,
+        TimeProvider? timeProvider = null,
         ILogger<InputService>? logger = null)
     {
         _navigationContainer = navigationContainer;
@@ -44,6 +49,7 @@ public class InputService
         _keyboardHandler = keyboardHandler;
         _tooltipService = tooltipService;
         _focusManager = focusManager;
+        _timeProvider = timeProvider ?? TimeProvider.System;
         _logger = logger;
         _keyboardHandler.KeyInput += HandleKeyInput;
         _keyboardHandler.CharInput += HandleCharInput;
@@ -71,6 +77,7 @@ public class InputService
         _isMousePressed = true;
         _lastMousePosition = location;
         _mouseDownPosition = location;
+        _mouseDownTime = _timeProvider.GetUtcNow();
 
         // Check if we're starting a scroll or drag operation
         var currentPopup = _popupService.CurrentPopup;
@@ -79,6 +86,10 @@ public class InputService
             not null => currentPopup.HitTest(new(location.X, location.Y)),
             _ => _navigationContainer.CurrentPage.HitTest(new(location.X, location.Y))
         };
+
+        // Remember where the press started so gestures (swipe) are matched against the
+        // control under the START point, not wherever the pointer happens to be released.
+        _mouseDownHitControl = hitControl;
 
         // Check for draggable control first (higher priority than scrollable)
         if (hitControl is IDraggableControl dragControl)
@@ -231,7 +242,9 @@ public class InputService
         var swipeDirection = DetectSwipeDirection(deltaX, deltaY);
         if (swipeDirection != SwipeDirection.None)
         {
-            var swipeControl = FindGestureControl<ISwipeGestureControl>(hitControl);
+            // Match the swipe against the control where the drag STARTED, so a swipe that
+            // ends outside the control is still recognized.
+            var swipeControl = FindGestureControl<ISwipeGestureControl>(_mouseDownHitControl ?? hitControl);
             if (swipeControl != null && (swipeControl.AllowedDirections & swipeDirection) != 0)
             {
                 swipeControl.OnSwipe(swipeDirection);
@@ -249,6 +262,22 @@ public class InputService
             if (doubleTapControl != null)
             {
                 doubleTapControl.OnDoubleTap();
+                _lastTapTime = DateTime.MinValue;
+                _lastTapElement = null;
+                return;
+            }
+        }
+
+        // Gesture detection: LongPress. Fires when the press was held past the threshold
+        // without significant movement. Matched against the control where the press STARTED.
+        var heldMs = (_timeProvider.GetUtcNow() - _mouseDownTime).TotalMilliseconds;
+        var movedSquared = (deltaX * deltaX) + (deltaY * deltaY);
+        if (heldMs >= LongPressThresholdMs && movedSquared < SwipeThreshold * SwipeThreshold)
+        {
+            var longPressControl = FindGestureControl<ILongPressGestureControl>(_mouseDownHitControl ?? hitControl);
+            if (longPressControl != null)
+            {
+                longPressControl.OnLongPress();
                 _lastTapTime = DateTime.MinValue;
                 _lastTapElement = null;
                 return;

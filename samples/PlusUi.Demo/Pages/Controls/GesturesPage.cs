@@ -13,7 +13,7 @@ public partial class GesturesPageViewModel(INavigationService navigation) : Demo
     [RelayCommand] private void Tap() => LastGesture = "Tapped";
     [RelayCommand] private void DoubleTap() => LastGesture = "Double-tapped";
     [RelayCommand] private void LongPress() => LastGesture = "Long-pressed";
-    [RelayCommand] private void Swipe() => LastGesture = "Swiped";
+    [RelayCommand] private void Swipe(SwipeDirection direction) => LastGesture = $"Swiped {direction}";
 }
 
 public class GesturesPage(GesturesPageViewModel vm) : DemoPage(vm)
@@ -26,17 +26,22 @@ public class GesturesPage(GesturesPageViewModel vm) : DemoPage(vm)
     protected override IEnumerable<UiElement> BuildSections() =>
     [
         Section("Tap & double-tap",
-            new TapGestureDetector(Box("Tap me")).SetCommand(vm.TapCommand),
-            new DoubleTapGestureDetector(Box("Double-tap me")).SetCommand(vm.DoubleTapCommand)),
+            new HStack()
+                .SetSpacing(12)
+                .AddChild(new TapGestureDetector(Box("Tap me")).SetCommand(vm.TapCommand))
+                .AddChild(new DoubleTapGestureDetector(Box("Double-tap me")).SetCommand(vm.DoubleTapCommand))),
 
-        Section("Long press & swipe",
-            new LongPressGestureDetector(Box("Long-press me")).SetCommand(vm.LongPressCommand),
-            new SwipeGestureDetector(Box("Swipe me horizontally"))
-                .SetAllowedDirections(SwipeDirection.Left | SwipeDirection.Right)
+        Section("Long press",
+            new LongPressGestureDetector(Box("Long-press me")).SetCommand(vm.LongPressCommand)),
+
+        Section("Swipe (any direction)",
+            Note("Swipe across the square - the detected direction is shown below."),
+            new SwipeGestureDetector(Box("Swipe me"))
+                .SetAllowedDirections(SwipeDirection.All)
                 .SetCommand(vm.SwipeCommand)),
 
         Section("Last gesture",
-            new Label().BindText(() => vm.LastGesture)),
+            new Label().BindText(() => vm.LastGesture).SetFontWeight(FontWeight.Bold)),
     ];
 
     private static UiElement Box(string text) =>
@@ -44,6 +49,10 @@ public class GesturesPage(GesturesPageViewModel vm) : DemoPage(vm)
             .SetBackground(PlusUiDefaults.BackgroundControl)
             .SetCornerRadius(8)
             .SetStrokeThickness(0)
+            .SetDesiredSize(new Size(150, 110))
             .SetHorizontalAlignment(HorizontalAlignment.Left)
-            .AddChild(new Label().SetText(text).SetMargin(new Margin(20)));
+            .AddChild(new Label()
+                .SetText(text)
+                .SetHorizontalAlignment(HorizontalAlignment.Center)
+                .SetVerticalAlignment(VerticalAlignment.Center));
 }

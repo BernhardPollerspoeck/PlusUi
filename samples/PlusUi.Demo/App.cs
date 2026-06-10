@@ -29,7 +29,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.WithViewModel<DemoPageViewModel>();
 
         builder.AddPage<LabelPage>();
-        builder.AddPage<ButtonPage>();
+        builder.AddPage<ButtonPage>().WithViewModel<ButtonPageViewModel>();
         builder.AddPage<CheckboxPage>().WithViewModel<CheckboxPageViewModel>();
         builder.AddPage<TogglePage>().WithViewModel<TogglePageViewModel>();
         builder.AddPage<RadioButtonPage>();
@@ -60,7 +60,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<TimePickerPage>();
         builder.AddPage<ItemsListPage>();
         builder.AddPage<TreeViewPage>();
-        builder.AddPage<DataGridPage>();
+        builder.AddPage<DataGridPage>().WithViewModel<DataGridPageViewModel>();
     }
 
     public UiPageElement GetRootPage(IServiceProvider serviceProvider)

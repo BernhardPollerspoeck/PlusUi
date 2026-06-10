@@ -1058,14 +1058,21 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
             var element = _visibleItemElements[i];
             var node = visibleNodes[i];
 
-            // X position: depth * indentation + expander space (if has children)
-            var indentX = node.Depth * _indentation + (node.HasChildren ? _expanderSize : 0);
+            // X position: depth * indentation + expander gutter (reserved for every row so
+            // leaf children line up one full level past their parent, not under its text)
+            var indentX = node.Depth * _indentation + _expanderSize;
+
+            // Vertically center the item content in the row so it lines up with the
+            // row-centered expander icon (instead of sitting at the top of the row).
+            var rowTop = positionY + (i * _itemHeight);
+            var elementHeight = element.ElementSize.Height;
+            var elementY = rowTop + Math.Max(0, (_itemHeight - elementHeight) / 2);
 
             var elementBounds = new Rect(
                 positionX + indentX,
-                positionY + (i * _itemHeight),
+                elementY,
                 ElementSize.Width - indentX,
-                _itemHeight);
+                elementHeight > 0 ? elementHeight : _itemHeight);
 
             element.Arrange(elementBounds);
         }

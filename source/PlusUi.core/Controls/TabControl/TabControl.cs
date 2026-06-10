@@ -715,12 +715,33 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
             : new Size(availableForContent.Width - _headerWidth, availableForContent.Height);
 
         // Use snapshot to avoid collection modified exception during shutdown
+        float maxContentWidth = 0;
+        float maxContentHeight = 0;
         foreach (var tab in _tabs.ToList())
         {
-            tab.Content?.Measure(contentAvailable, dontStretch);
+            if (tab.Content is null) continue;
+            tab.Content.Measure(contentAvailable, dontStretch);
+            // Include the content's own margin so the natural size reserves room for it
+            // (otherwise the content gets clipped at the bottom/right by its margin).
+            maxContentWidth = Math.Max(maxContentWidth, tab.Content.ElementSize.Width + tab.Content.Margin.Horizontal);
+            maxContentHeight = Math.Max(maxContentHeight, tab.Content.ElementSize.Height + tab.Content.Margin.Vertical);
         }
 
-        return new Size(availableForContent.Width, availableForContent.Height);
+        // Return the natural size (header + content). Only fill the available extent when it is
+        // FINITE (a bounded container); inside an unbounded container (e.g. a vertical ScrollView
+        // measuring with float.MaxValue) filling would explode the layout. To actually fill a
+        // bounded container, set the TabControl's alignment to Stretch (handled by the wrapper).
+        const float unbounded = 1e6f;
+        if (isHorizontal)
+        {
+            var width = availableForContent.Width < unbounded ? availableForContent.Width : maxContentWidth;
+            return new Size(width, _headerHeight + maxContentHeight);
+        }
+        else
+        {
+            var height = availableForContent.Height < unbounded ? availableForContent.Height : maxContentHeight;
+            return new Size(_headerWidth + maxContentWidth, height);
+        }
     }
 
     private void MeasureHorizontalTabs(Size availableSize)

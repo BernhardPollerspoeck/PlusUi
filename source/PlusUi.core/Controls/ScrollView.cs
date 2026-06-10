@@ -107,7 +107,7 @@ public partial class ScrollView : UiLayoutElement, IScrollableControl
         get => field;
         set
         {
-            var maxOffset = Math.Max(0, _content.ElementSize.Width - ElementSize.Width);
+            var maxOffset = Math.Max(0, _content.ElementSize.Width + _content.Margin.Horizontal - ElementSize.Width);
             field = Math.Clamp(value, 0, maxOffset);
             InvalidateMeasure();
         }
@@ -134,7 +134,7 @@ public partial class ScrollView : UiLayoutElement, IScrollableControl
         get => field;
         set
         {
-            var maxOffset = Math.Max(0, _content.ElementSize.Height - ElementSize.Height);
+            var maxOffset = Math.Max(0, _content.ElementSize.Height + _content.Margin.Vertical - ElementSize.Height);
             field = Math.Clamp(value, 0, maxOffset);
             InvalidateMeasure();
         }

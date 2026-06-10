@@ -274,6 +274,13 @@ public partial class VStack : UiLayoutElement
             }
             isFirst = false;
 
+            // Resolve horizontal (cross-axis) stretch now that the stack's final width is known:
+            // a HorizontalAlignment.Stretch child fills the stack width instead of its natural width.
+            if (child.HorizontalAlignment == HorizontalAlignment.Stretch)
+            {
+                child.Measure(new Size(ElementSize.Width, child.ElementSize.Height + child.Margin.Vertical), false);
+            }
+
             var childLeftBound = child.HorizontalAlignment switch
             {
                 HorizontalAlignment.Center => x + ((ElementSize.Width - child.ElementSize.Width) / 2),

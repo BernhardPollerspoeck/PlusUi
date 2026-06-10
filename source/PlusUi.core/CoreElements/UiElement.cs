@@ -520,12 +520,16 @@ public abstract partial class UiElement : IDisposable
     }
     public virtual void InvalidateMeasure()
     {
-        NeedsMeasure = true;
-        if (Parent is { NeedsMeasure: false })
-        {
-            Parent?.InvalidateMeasure();
-        }
-        InvalidateArrange(); // Size changes require position recalculation
+        // Mark this node and ALL ancestors dirty via a DIRECT (non-virtual) walk to the root.
+        // The previous early-stop ("only propagate while the parent is clean") assumed
+        // "dirty implies ancestors dirty", but Measure(dontStretch:true) leaves a node dirty
+        // WITHOUT propagating - so a clean ancestor could short-circuit the next frame's
+        // re-measure cascade, leaving deep changes (e.g. TreeView expand) unrendered until an
+        // unrelated event re-invalidated a wider subtree.
+        // Walking directly (rather than recursing through the virtual InvalidateMeasure) also
+        // avoids an infinite parent<->child cycle with container overrides that invalidate
+        // their children.
+        ForceInvalidateMeasureToRoot();
     }
 
     public void InvalidateArrange()

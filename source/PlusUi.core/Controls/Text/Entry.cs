@@ -1109,11 +1109,30 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable, IScro
         _scrollbar.SetVisualOffset(originalOffset);
     }
 
+    private float ComputeSingleLineBaselineY(float textHeight, SKFontMetrics fontMetrics)
+        // Vertically center the text within the control height (ascent is negative in Skia).
+        => Position.Y + VisualOffset.Y + ((ElementSize.Height - textHeight) / 2) - fontMetrics.Ascent;
+
+    /// <summary>Height of the single-line text glyph box (ascent + descent). Internal for tests.</summary>
+    internal float GetTextBlockHeight()
+    {
+        Font.GetFontMetrics(out var m);
+        return m.Descent - m.Ascent;
+    }
+
+    /// <summary>Absolute Y of the TOP of the single-line text glyph box. Internal for tests.</summary>
+    internal float GetSingleLineTextTop()
+    {
+        Font.GetFontMetrics(out var m);
+        var textHeight = m.Descent - m.Ascent;
+        return ComputeSingleLineBaselineY(textHeight, m) + m.Ascent;
+    }
+
     private void RenderSingleLine(SKCanvas canvas, SKRect rect)
     {
         Font.GetFontMetrics(out var fontMetrics);
         var textHeight = fontMetrics.Descent - fontMetrics.Ascent;
-        var baselineY = Position.Y + VisualOffset.Y + Padding.Top + textHeight + fontMetrics.Ascent / 4;
+        var baselineY = ComputeSingleLineBaselineY(textHeight, fontMetrics);
 
         var text = Text ?? string.Empty;
         var hasText = !string.IsNullOrEmpty(text);

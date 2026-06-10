@@ -77,6 +77,20 @@ public partial class Separator : UiElement
         set
         {
             field = value;
+            // Keep the stretch alignment consistent with the orientation. Without this,
+            // `new Separator().SetOrientation(Vertical)` keeps the constructor's horizontal
+            // stretch (set while Orientation was still the default Horizontal), which makes a
+            // vertical separator stretch horizontally (pushing siblings) and grab full height.
+            if (value == Orientation.Horizontal)
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch;
+                VerticalAlignment = VerticalAlignment.Undefined;
+            }
+            else
+            {
+                VerticalAlignment = VerticalAlignment.Stretch;
+                HorizontalAlignment = HorizontalAlignment.Undefined;
+            }
             InvalidateMeasure();
         }
     } = Orientation.Horizontal;
@@ -134,9 +148,14 @@ public partial class Separator : UiElement
         }
         else
         {
+            // When measured for natural size (dontStretch), a vertical separator has no
+            // intrinsic height - return Thickness instead of greedily claiming the full
+            // available height (which blows up the layout inside an unbounded ScrollView).
+            // When stretching is allowed, fill the available height as before.
+            var height = dontStretch ? Thickness : availableSize.Height;
             return new Size(
                 Math.Min(Thickness, availableSize.Width),
-                Math.Min(availableSize.Height, availableSize.Height));
+                Math.Min(height, availableSize.Height));
         }
     }
 

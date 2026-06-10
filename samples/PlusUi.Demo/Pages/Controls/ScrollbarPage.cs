@@ -13,11 +13,20 @@ public class ScrollbarPage(DemoPageViewModel vm) : DemoPage(vm)
 
     protected override IEnumerable<UiElement> BuildSections() =>
     [
-        Section("Scrollbar in context",
-            Note("A height-limited list shows the Scrollbar on its right edge. Hover and drag the thumb."),
+        Section("Vertical scrollbar",
+            Note("A height-limited list shows the vertical Scrollbar on its right edge. Hover and drag the thumb."),
             new ItemsList<string>()
                 .SetItemsSource(Enumerable.Range(1, 40).Select(i => $"Item {i}").ToList())
                 .SetItemTemplate((item, _) => new Label().SetText(item).SetMargin(new Margin(8, 4)))
                 .SetDesiredHeight(180)),
+
+        Section("Horizontal scrollbar",
+            Note("A width-limited horizontal list shows the horizontal Scrollbar along its bottom edge."),
+            new ItemsList<string>()
+                .SetOrientation(Orientation.Horizontal)
+                .SetItemsSource(Enumerable.Range(1, 30).Select(i => $"Col {i}").ToList())
+                .SetItemTemplate((item, _) => new Label().SetText(item).SetMargin(new Margin(12, 10)))
+                .SetDesiredWidth(380)
+                .SetDesiredHeight(56)),
     ];
 }

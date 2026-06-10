@@ -154,6 +154,16 @@ public partial class HStack : UiLayoutElement
         var height = Children.Count > 0
             ? Children.Max(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom)
             : 0;
+
+        // Resolve cross-axis (vertical) stretch: a VerticalAlignment.Stretch child should fill
+        // the row's content height, not the (possibly unbounded) available height. Re-measure
+        // such children with the computed row height so e.g. a vertical Separator renders at the
+        // height of its siblings instead of grabbing the full available height.
+        foreach (var child in Children.Where(c => c.VerticalAlignment is VerticalAlignment.Stretch).ToList())
+        {
+            child.Measure(new Size(child.ElementSize.Width, Math.Max(0, height - child.Margin.Vertical)), false);
+        }
+
         return new Size(width, height);
     }
 

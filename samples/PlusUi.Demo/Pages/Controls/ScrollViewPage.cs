@@ -20,7 +20,7 @@ public class ScrollViewPage(DemoPageViewModel vm) : DemoPage(vm)
 
         Section("Horizontal scroll",
             Note("A wide row scrolls sideways when vertical scrolling is disabled."),
-            new ScrollView(BuildColumns(12))
+            new ScrollView(BuildColumns(30))
                 .SetCanScrollVertically(false)
                 .SetDesiredHeight(80)),
     ];
@@ -37,7 +37,7 @@ public class ScrollViewPage(DemoPageViewModel vm) : DemoPage(vm)
     {
         var stack = new HStack().SetSpacing(8);
         for (var i = 1; i <= count; i++)
-            stack.AddChild(Tile($"Col {i}"));
+            stack.AddChild(Tile($"Column {i}"));
         return stack;
     }
 }

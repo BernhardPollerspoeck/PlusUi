@@ -1,4 +1,5 @@
 using System.Linq;
+using SkiaSharp;
 using PlusUi.core;
 using PlusUi.Demo.Pages.Shared;
 
@@ -33,9 +34,14 @@ public class TreeViewPage(DemoPageViewModel vm) : DemoPage(vm)
                         new TreeNode("Potato")),
                 })
                 .SetChildrenSelector<TreeNode>(n => n.Children.Cast<object>())
-                .SetItemTemplate((item, _) => new Label().SetText(((TreeNode)item).Name))
+                .SetItemTemplate((item, _) => new Label()
+                    .SetText(((TreeNode)item).Name)
+                    .SetVerticalAlignment(VerticalAlignment.Center))
                 .SetAutoExpandInitialLevels(true)
                 .SetItemHeight(30)
+                .SetIndentation(28)
+                .SetShowLines(true)
+                .SetLineColor(new SKColor(120, 120, 120))
                 .SetDesiredHeight(260)),
     ];
 }
