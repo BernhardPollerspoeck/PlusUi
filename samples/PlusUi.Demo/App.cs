@@ -49,6 +49,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<LineGraphPage>();
         builder.AddPage<ScrollbarPage>();
         builder.AddPage<GesturesPage>().WithViewModel<GesturesPageViewModel>();
+        builder.AddPage<HoverPage>().WithViewModel<HoverPageViewModel>();
         builder.AddPage<UserControlPage>();
         builder.AddPage<VStackPage>();
         builder.AddPage<HStackPage>();

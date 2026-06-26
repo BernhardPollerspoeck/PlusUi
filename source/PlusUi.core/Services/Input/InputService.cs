@@ -32,6 +32,7 @@ public class InputService
     private bool _isShiftPressed;
     private const double LongPressThresholdMs = 500;
     private readonly TimeProvider _timeProvider;
+    private readonly IPlatformCursorService? _cursorService;
 
     public InputService(
         NavigationContainer navigationContainer,
@@ -41,7 +42,8 @@ public class InputService
         IFocusManager focusManager,
         ITooltipService tooltipService,
         TimeProvider? timeProvider = null,
-        ILogger<InputService>? logger = null)
+        ILogger<InputService>? logger = null,
+        IPlatformCursorService? cursorService = null)
     {
         _navigationContainer = navigationContainer;
         _popupService = popupService;
@@ -51,10 +53,65 @@ public class InputService
         _focusManager = focusManager;
         _timeProvider = timeProvider ?? TimeProvider.System;
         _logger = logger;
+        _cursorService = cursorService;
         _keyboardHandler.KeyInput += HandleKeyInput;
         _keyboardHandler.CharInput += HandleCharInput;
         _keyboardHandler.ShiftStateChanged += (_, pressed) => SetShiftPressed(pressed);
         _keyboardHandler.CtrlStateChanged += (_, pressed) => SetCtrlPressed(pressed);
+        _navigationContainer.PageChanged += OnPageChanged;
+    }
+
+    private void OnPageChanged(object? sender, PageChangedEventArgs e) => ClearTransientState();
+
+    /// <summary>
+    /// Releases every element reference the input pipeline holds (hovered element, active text
+    /// input, drag/scroll targets, last-tap and mouse-down elements). Called automatically on every
+    /// page change so a navigated-away page is not kept alive by the <see cref="InputService"/>.
+    /// </summary>
+    public void ClearTransientState()
+    {
+        if (_hoveredElement != null)
+        {
+            if (_hoveredElement is IHoverableControl hoverable)
+            {
+                hoverable.IsHovered = false;
+            }
+            _tooltipService.OnHoverLeave(_hoveredElement);
+            _hoveredElement = null;
+            _cursorService?.SetCursor(CursorType.Default);
+        }
+
+        if (_textInputControl != null)
+        {
+            _textInputControl.SetSelectionStatus(false);
+            _textInputControl = null;
+            _keyboardHandler.Hide();
+        }
+
+        if (_activeDragControl != null)
+        {
+            _activeDragControl.IsDragging = false;
+            _activeDragControl = null;
+        }
+
+        if (_activeScrollControl != null)
+        {
+            _activeScrollControl.IsScrolling = false;
+            _activeScrollControl = null;
+        }
+
+        _mouseDownHitControl = null;
+        _lastTapElement = null;
+        _isMousePressed = false;
+        _didDragOrScroll = false;
+    }
+
+    private static void ExecuteCommand(System.Windows.Input.ICommand? command)
+    {
+        if (command?.CanExecute(null) ?? false)
+        {
+            command.Execute(null);
+        }
     }
 
     private void LogEvent(string eventType, object control, string trigger)
@@ -569,6 +626,11 @@ public class InputService
             // Notify tooltip service of hover leave
             _tooltipService.OnHoverLeave(oldElement);
 
+            if (oldElement != null)
+            {
+                ExecuteCommand(oldElement.OnHoverExitCommand);
+            }
+
             _hoveredElement = hitElement;
 
             if (_hoveredElement is IHoverableControl newHoverable)
@@ -578,6 +640,14 @@ public class InputService
 
             // Notify tooltip service of hover enter
             _tooltipService.OnHoverEnter(_hoveredElement);
+
+            if (hitElement != null)
+            {
+                ExecuteCommand(hitElement.OnHoverEnterCommand);
+            }
+
+            // Apply the hovered element's cursor (or reset to default when nothing is hovered).
+            _cursorService?.SetCursor(hitElement?.Cursor ?? CursorType.Default);
         }
     }
     

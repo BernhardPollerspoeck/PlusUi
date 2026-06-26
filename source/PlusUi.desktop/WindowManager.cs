@@ -21,6 +21,7 @@ internal class WindowManager(
     RenderService renderService,
     InputService inputService,
     DesktopKeyboardHandler desktopKeyboardHandler,
+    DesktopCursorService cursorService,
     DesktopPlatformService platformService,
     PlusUiNavigationService plusUiNavigationService,
     NavigationContainer navigationContainer,
@@ -299,6 +300,7 @@ internal class WindowManager(
             _mouse.MouseDown += HandleMouseDown;
             _mouse.MouseUp += HandleMouseUp;
             _mouse.Scroll += HandleMouseScroll;
+            cursorService.SetMouse(_mouse);
         }
 
         // Setup keyboard if available

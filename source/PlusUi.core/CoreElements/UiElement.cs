@@ -43,6 +43,8 @@ namespace PlusUi.core;
 [UiPropGenFocusedBackground]
 [UiPropGenHighContrastBackground]
 [UiPropGenDesiredSize]
+[UiPropGenOnHoverCommands]
+[UiPropGenCursor]
 public abstract partial class UiElement : IDisposable
 {
     #region Fields
@@ -141,6 +143,7 @@ public abstract partial class UiElement : IDisposable
     /// </summary>
     internal ContextMenu? ContextMenu { get; set; }
     #endregion
+
 
     #region Focus
     /// <summary>

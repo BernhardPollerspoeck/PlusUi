@@ -44,6 +44,7 @@ public partial class MainPageViewModel : ObservableObject
             ["LineGraph"] = () => navigation.NavigateTo<LineGraphPage>(),
             ["Scrollbar"] = () => navigation.NavigateTo<ScrollbarPage>(),
             ["Gestures"] = () => navigation.NavigateTo<GesturesPage>(),
+            ["Hover & Cursor"] = () => navigation.NavigateTo<HoverPage>(),
             ["UserControl"] = () => navigation.NavigateTo<UserControlPage>(),
             ["Grid"] = () => navigation.NavigateTo<GridPage>(),
             ["HStack"] = () => navigation.NavigateTo<HStackPage>(),
@@ -65,7 +66,7 @@ public partial class MainPageViewModel : ObservableObject
         AddGroup("Navigation & Menus", "TabControl", "Menu", "ContextMenu", "Toolbar");
         AddGroup("Indicators", "ActivityIndicator", "ProgressBar", "LineGraph", "Tooltip");
         AddGroup("Graphics & Media", "Image", "Solid");
-        AddGroup("Advanced", "Gestures", "UserControl", "Scrollbar");
+        AddGroup("Advanced", "Gestures", "Hover & Cursor", "UserControl", "Scrollbar");
     }
 
     private void AddGroup(string title, params string[] names)
