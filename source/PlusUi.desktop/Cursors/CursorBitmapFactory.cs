@@ -101,15 +101,16 @@ internal sealed class CursorBitmapFactory
     // Classic pointer arrow with the tip at the top-left — that tip is the hotspot.
     private static void DrawArrow(SKCanvas canvas)
     {
-        using var path = new SKPath();
-        path.MoveTo(2, 1);
-        path.LineTo(2, 22);
-        path.LineTo(7.5f, 17);
-        path.LineTo(11, 26);
-        path.LineTo(14, 24.7f);
-        path.LineTo(10.5f, 16);
-        path.LineTo(17, 16);
-        path.Close();
+        using var builder = new SKPathBuilder();
+        builder.MoveTo(2, 1);
+        builder.LineTo(2, 22);
+        builder.LineTo(7.5f, 17);
+        builder.LineTo(11, 26);
+        builder.LineTo(14, 24.7f);
+        builder.LineTo(10.5f, 16);
+        builder.LineTo(17, 16);
+        builder.Close();
+        using var path = builder.Detach();
 
         using var outline = new SKPaint { Color = SKColors.White, IsStroke = true, StrokeWidth = 2.4f, IsAntialias = true, StrokeJoin = SKStrokeJoin.Round };
         using var fill = new SKPaint { Color = PlusUiDefaults.AccentPrimary, IsAntialias = true };
@@ -219,18 +220,18 @@ internal sealed class CursorBitmapFactory
     {
         const float len = 11f;
         const float head = 4f;
-        var path = new SKPath();
-        path.MoveTo(-len, 0);
-        path.LineTo(len, 0);
-        path.MoveTo(-len, 0);
-        path.LineTo(-len + head, -head);
-        path.MoveTo(-len, 0);
-        path.LineTo(-len + head, head);
-        path.MoveTo(len, 0);
-        path.LineTo(len - head, -head);
-        path.MoveTo(len, 0);
-        path.LineTo(len - head, head);
-        return path;
+        using var builder = new SKPathBuilder();
+        builder.MoveTo(-len, 0);
+        builder.LineTo(len, 0);
+        builder.MoveTo(-len, 0);
+        builder.LineTo(-len + head, -head);
+        builder.MoveTo(-len, 0);
+        builder.LineTo(-len + head, head);
+        builder.MoveTo(len, 0);
+        builder.LineTo(len - head, -head);
+        builder.MoveTo(len, 0);
+        builder.LineTo(len - head, head);
+        return builder.Detach();
     }
 
     private static RawImage ToRawImage(SKBitmap bitmap) => new(Size, Size, new Memory<byte>(bitmap.Bytes));

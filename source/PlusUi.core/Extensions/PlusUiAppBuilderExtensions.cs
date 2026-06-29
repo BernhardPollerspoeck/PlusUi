@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PlusUi.core.CoreElements;
 using PlusUi.core.Services;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PlusUi.core;
 
@@ -10,21 +11,21 @@ namespace PlusUi.core;
 /// </summary>
 public static class PlusUiAppBuilderExtensions
 {
-    public static IPlusUiAppBuilder AddPage<TPage>(this IPlusUiAppBuilder builder)
+    public static IPlusUiAppBuilder AddPage<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TPage>(this IPlusUiAppBuilder builder)
         where TPage : UiPageElement
     {
         builder.Services.AddTransient<TPage>();
         return builder;
     }
 
-    public static IPlusUiAppBuilder WithViewModel<TViewModel>(this IPlusUiAppBuilder builder)
+    public static IPlusUiAppBuilder WithViewModel<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TViewModel>(this IPlusUiAppBuilder builder)
         where TViewModel : class, INotifyPropertyChanged
     {
         builder.Services.AddTransient<TViewModel>();
         return builder;
     }
 
-    public static IPlusUiAppBuilder AddPopup<TPopup>(this IPlusUiAppBuilder builder)
+    public static IPlusUiAppBuilder AddPopup<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TPopup>(this IPlusUiAppBuilder builder)
        where TPopup : UiPopupElement
     {
         builder.Services.AddTransient<TPopup>();

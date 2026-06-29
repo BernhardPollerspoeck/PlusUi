@@ -200,10 +200,11 @@ public partial class Checkbox : UiElement, IToggleButtonControl, IFocusable
             var w = ElementSize.Width;
             var h = ElementSize.Height;
 
-            var checkPath = new SKPath();
-            checkPath.MoveTo(x + (w * 0.22f), y + (h * 0.52f));
-            checkPath.LineTo(x + (w * 0.42f), y + (h * 0.70f));
-            checkPath.LineTo(x + (w * 0.78f), y + (h * 0.30f));
+            using var checkBuilder = new SKPathBuilder();
+            checkBuilder.MoveTo(x + (w * 0.22f), y + (h * 0.52f));
+            checkBuilder.LineTo(x + (w * 0.42f), y + (h * 0.70f));
+            checkBuilder.LineTo(x + (w * 0.78f), y + (h * 0.30f));
+            using var checkPath = checkBuilder.Detach();
             canvas.DrawPath(checkPath, strokePaint);
         }
     }

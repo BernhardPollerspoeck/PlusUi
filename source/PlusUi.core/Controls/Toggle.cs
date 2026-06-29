@@ -97,7 +97,7 @@ public partial class Toggle : UiElement, IToggleButtonControl, IFocusable
         var getter = propertyExpression.Compile();
         RegisterPathBinding(path, () => IsOn = toControl != null ? toControl(getter()) : (bool)(object)getter()!);
         Action<bool> wrappedSetter = controlValue => propertySetter(toSource != null ? toSource(controlValue) : (T)(object)controlValue);
-        foreach (var segment in path)
+        foreach (var segment in path.Segments)
         {
             RegisterSetter<bool>(segment, wrappedSetter);
         }

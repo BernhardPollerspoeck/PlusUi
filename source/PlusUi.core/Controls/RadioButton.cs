@@ -419,7 +419,7 @@ public partial class RadioButton : UiElement, IInputControl, IFocusable
         {
             var textX = Position.X + VisualOffset.X + CircleSize + CircleTextSpacing;
             var textY = centerY + TextSize / 3; // Approximate vertical centering
-            canvas.DrawText(Text, textX, textY, _font, _textPaint);
+            canvas.DrawText(Text, textX, textY, SKTextAlign.Left, _font, _textPaint);
         }
     }
 

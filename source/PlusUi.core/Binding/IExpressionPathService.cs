@@ -7,5 +7,5 @@ namespace PlusUi.core.Binding;
 /// </summary>
 internal interface IExpressionPathService
 {
-    string[] GetPropertyPath<T>(Expression<Func<T>> expression);
+    BindingPath GetPropertyPath<T>(Expression<Func<T>> expression);
 }

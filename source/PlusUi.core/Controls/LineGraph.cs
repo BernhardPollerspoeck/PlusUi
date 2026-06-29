@@ -276,8 +276,8 @@ public partial class LineGraph : UiElement
         }
 
         // Build path for line
-        var path = new SKPath();
-        var fillPath = new SKPath();
+        using var pathBuilder = new SKPathBuilder();
+        using var fillBuilder = new SKPathBuilder();
 
         var pointCount = DataPoints.Count;
         var xStep = graphRect.Width / (pointCount - 1);
@@ -290,20 +290,23 @@ public partial class LineGraph : UiElement
 
             if (i == 0)
             {
-                path.MoveTo(x, y);
-                fillPath.MoveTo(x, graphRect.Bottom);
-                fillPath.LineTo(x, y);
+                pathBuilder.MoveTo(x, y);
+                fillBuilder.MoveTo(x, graphRect.Bottom);
+                fillBuilder.LineTo(x, y);
             }
             else
             {
-                path.LineTo(x, y);
-                fillPath.LineTo(x, y);
+                pathBuilder.LineTo(x, y);
+                fillBuilder.LineTo(x, y);
             }
         }
 
         // Close fill path
-        fillPath.LineTo(graphRect.Right, graphRect.Bottom);
-        fillPath.Close();
+        fillBuilder.LineTo(graphRect.Right, graphRect.Bottom);
+        fillBuilder.Close();
+
+        using var path = pathBuilder.Detach();
+        using var fillPath = fillBuilder.Detach();
 
         // Draw fill if FillColor is set
         if (FillColor.HasValue)

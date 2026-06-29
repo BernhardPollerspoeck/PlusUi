@@ -128,22 +128,23 @@ internal partial class DatePickerCalendarOverlay(DatePicker datePicker) : UiElem
         };
 
         var arrowSize = 8f;
-        var arrowPath = new SKPath();
+        using var arrowBuilder = new SKPathBuilder();
 
         if (isLeft)
         {
-            arrowPath.MoveTo(centerX + arrowSize / 2, centerY - arrowSize / 2);
-            arrowPath.LineTo(centerX - arrowSize / 2, centerY);
-            arrowPath.LineTo(centerX + arrowSize / 2, centerY + arrowSize / 2);
+            arrowBuilder.MoveTo(centerX + arrowSize / 2, centerY - arrowSize / 2);
+            arrowBuilder.LineTo(centerX - arrowSize / 2, centerY);
+            arrowBuilder.LineTo(centerX + arrowSize / 2, centerY + arrowSize / 2);
         }
         else
         {
-            arrowPath.MoveTo(centerX - arrowSize / 2, centerY - arrowSize / 2);
-            arrowPath.LineTo(centerX + arrowSize / 2, centerY);
-            arrowPath.LineTo(centerX - arrowSize / 2, centerY + arrowSize / 2);
+            arrowBuilder.MoveTo(centerX - arrowSize / 2, centerY - arrowSize / 2);
+            arrowBuilder.LineTo(centerX + arrowSize / 2, centerY);
+            arrowBuilder.LineTo(centerX - arrowSize / 2, centerY + arrowSize / 2);
         }
-        arrowPath.Close();
+        arrowBuilder.Close();
 
+        using var arrowPath = arrowBuilder.Detach();
         canvas.DrawPath(arrowPath, arrowPaint);
     }
 

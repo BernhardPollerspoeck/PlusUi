@@ -6,6 +6,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
+
+  </PropertyGroup>
+
+  <!-- Native AOT publish: opt in with `dotnet publish ... -p:Aot=true`.
+       PublishAot/RuntimeIdentifier stay csproj-local so they are NOT propagated
+       to the netstandard2.0 source generator (avoids NETSDK1207). -->
+  <PropertyGroup Condition="'$(Aot)' == 'true'">
+    <PublishAot>true</PublishAot>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>

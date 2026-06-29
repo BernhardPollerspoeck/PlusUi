@@ -19,28 +19,28 @@
   <!-- Centralized Package Versions -->
   <PropertyGroup>
     <!-- SkiaSharp -->
-    <SkiaSharpVersion>3.119.1</SkiaSharpVersion>
+    <SkiaSharpVersion>4.148.0</SkiaSharpVersion>
 
     <!-- Silk.NET -->
-    <SilkNetVersion>2.22.0</SilkNetVersion>
+    <SilkNetVersion>2.23.0</SilkNetVersion>
 
     <!-- Microsoft Extensions -->
-    <MicrosoftExtensionsHostingVersion>10.0.0-*</MicrosoftExtensionsHostingVersion>
-    <MicrosoftAspNetCoreComponentsVersion>10.0.0-*</MicrosoftAspNetCoreComponentsVersion>
+    <MicrosoftExtensionsHostingVersion>10.0.9</MicrosoftExtensionsHostingVersion>
+    <MicrosoftAspNetCoreComponentsVersion>10.0.9</MicrosoftAspNetCoreComponentsVersion>
 
     <!-- Roslyn/CodeAnalysis -->
-    <MicrosoftCodeAnalysisVersion>4.14.0</MicrosoftCodeAnalysisVersion>
-    <MicrosoftCodeAnalysisAnalyzersVersion>3.11.0</MicrosoftCodeAnalysisAnalyzersVersion>
+    <MicrosoftCodeAnalysisVersion>5.3.0</MicrosoftCodeAnalysisVersion>
+    <MicrosoftCodeAnalysisAnalyzersVersion>5.3.0</MicrosoftCodeAnalysisAnalyzersVersion>
 
     <!-- Testing -->
-    <MicrosoftNETTestSdkVersion>18.0.0</MicrosoftNETTestSdkVersion>
-    <MSTestVersion>4.0.1</MSTestVersion>
-    <CoverletVersion>6.0.4</CoverletVersion>
+    <MicrosoftNETTestSdkVersion>18.7.0</MicrosoftNETTestSdkVersion>
+    <MSTestVersion>4.2.3</MSTestVersion>
+    <CoverletVersion>10.0.1</CoverletVersion>
 
     <!-- Other -->
-    <SvgSkiaVersion>2.0.0.4</SvgSkiaVersion>
-    <FFMpegCoreVersion>5.3.0</FFMpegCoreVersion>
-    <SpectreConsoleVersion>0.53.0</SpectreConsoleVersion>
+    <SvgSkiaVersion>5.1.1</SvgSkiaVersion>
+    <FFMpegCoreVersion>5.4.0</FFMpegCoreVersion>
+    <SpectreConsoleVersion>0.57.1</SpectreConsoleVersion>
   </PropertyGroup>
 
 </Project>

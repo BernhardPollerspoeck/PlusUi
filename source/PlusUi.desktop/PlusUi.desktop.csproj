@@ -19,9 +19,11 @@
 
   <ItemGroup>
     <PackageReference Include="Silk.NET.Input" Version="$(SilkNetVersion)" />
+    <PackageReference Include="Silk.NET.Input.Glfw" Version="$(SilkNetVersion)" />
     <PackageReference Include="Silk.NET.OpenGL" Version="$(SilkNetVersion)" />
     <PackageReference Include="Silk.NET.Windowing" Version="$(SilkNetVersion)" />
-    <PackageReference Include="Svg.Skia" Version="2.0.0.4" />
+    <PackageReference Include="Silk.NET.Windowing.Glfw" Version="$(SilkNetVersion)" />
+    <PackageReference Include="Svg.Skia" Version="$(SvgSkiaVersion)" />
   </ItemGroup>
 
  <ItemGroup>

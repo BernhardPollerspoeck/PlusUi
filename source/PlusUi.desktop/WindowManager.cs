@@ -5,9 +5,11 @@ using PlusUi.core;
 using PlusUi.core.Services.Accessibility;
 using Silk.NET.GLFW;
 using Silk.NET.Input;
+using Silk.NET.Input.Glfw;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
+using Silk.NET.Windowing.Glfw;
 using SkiaSharp;
 using Svg.Skia;
 using System.Runtime.InteropServices;
@@ -32,6 +34,7 @@ internal class WindowManager(
     : IHostedService
 {
     #region fields
+    private static bool _silkPlatformsRegistered;
     private IWindow? _window;
     private GL? _glContext;
     private GRContext? _grContext;
@@ -48,6 +51,15 @@ internal class WindowManager(
     #region IHostedService
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        // Explicitly register the GLFW windowing/input platforms so Silk.NET does not rely on
+        // its reflection-based platform discovery, which does not work under Native AOT.
+        if (!_silkPlatformsRegistered)
+        {
+            GlfwWindowing.RegisterPlatform();
+            GlfwInput.RegisterPlatform();
+            _silkPlatformsRegistered = true;
+        }
+
         var savedSettings = windowSettingsService.Load();
 
         var size = savedSettings != null

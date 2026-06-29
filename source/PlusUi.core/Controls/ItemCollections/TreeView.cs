@@ -1211,23 +1211,24 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
                 float expanderY = (float)(baseY + nodeY + (_itemHeight - _expanderSize) / 2);
 
                 // Draw triangle expander
-                using var path = new SKPath();
+                using var builder = new SKPathBuilder();
                 if (node.IsExpanded)
                 {
                     // Down arrow
-                    path.MoveTo(expanderX + 2, expanderY + 4);
-                    path.LineTo(expanderX + _expanderSize - 2, expanderY + 4);
-                    path.LineTo(expanderX + _expanderSize / 2, expanderY + _expanderSize - 4);
-                    path.Close();
+                    builder.MoveTo(expanderX + 2, expanderY + 4);
+                    builder.LineTo(expanderX + _expanderSize - 2, expanderY + 4);
+                    builder.LineTo(expanderX + _expanderSize / 2, expanderY + _expanderSize - 4);
+                    builder.Close();
                 }
                 else
                 {
                     // Right arrow
-                    path.MoveTo(expanderX + 4, expanderY + 2);
-                    path.LineTo(expanderX + _expanderSize - 4, expanderY + _expanderSize / 2);
-                    path.LineTo(expanderX + 4, expanderY + _expanderSize - 2);
-                    path.Close();
+                    builder.MoveTo(expanderX + 4, expanderY + 2);
+                    builder.LineTo(expanderX + _expanderSize - 4, expanderY + _expanderSize / 2);
+                    builder.LineTo(expanderX + 4, expanderY + _expanderSize - 2);
+                    builder.Close();
                 }
+                using var path = builder.Detach();
                 canvas.DrawPath(path, expanderPaint);
             }
         }

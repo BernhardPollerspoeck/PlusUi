@@ -942,7 +942,7 @@ public partial class TabControl : UiLayoutElement, IInputControl, IFocusable, IK
                 textX = renderRect.Left + TabIndicatorHeight + TabPadding.Left;
             }
 
-            canvas.DrawText(tab.Header, textX, textY, _headerFont, paint);
+            canvas.DrawText(tab.Header, textX, textY, SKTextAlign.Left, _headerFont, paint);
         }
     }
 

@@ -2,17 +2,21 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlusUi.core;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace PlusUi.desktop;
 
 internal record WindowSettings(int X, int Y, int Width, int Height, bool IsMaximized);
+
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(WindowSettings))]
+internal partial class WindowSettingsJsonContext : JsonSerializerContext;
 
 internal class WindowSettingsService(
     IOptions<PlusUiConfiguration> config,
     ILogger<WindowSettingsService> logger)
 {
     private const string SettingsFileName = "window-settings.json";
-    private readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
 
     public WindowSettings? Load()
     {
@@ -26,7 +30,7 @@ internal class WindowSettingsService(
         try
         {
             var json = File.ReadAllText(filePath);
-            return JsonSerializer.Deserialize<WindowSettings>(json);
+            return JsonSerializer.Deserialize(json, WindowSettingsJsonContext.Default.WindowSettings);
         }
         catch (Exception ex)
         {
@@ -50,7 +54,7 @@ internal class WindowSettingsService(
                 Directory.CreateDirectory(directory);
             }
 
-            var json = JsonSerializer.Serialize(settings, _jsonOptions);
+            var json = JsonSerializer.Serialize(settings, WindowSettingsJsonContext.Default.WindowSettings);
             File.WriteAllText(filePath, json);
         }
         catch (Exception ex)

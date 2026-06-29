@@ -658,15 +658,15 @@ public abstract partial class UiElement : IDisposable
         UpdateBindings(propertyName);
     }
 
-    protected void RegisterPathBinding(string[] pathSegments, Action updateAction)
+    protected void RegisterPathBinding(BindingPath path, Action updateAction)
     {
-        var tracker = new PathBindingTracker(pathSegments, updateAction);
+        var tracker = new PathBindingTracker(path, updateAction);
         tracker.SetContext(Context);
         _pathBindings.Add(tracker);
 
         // Also register with the old binding system for manual UpdateBindings() calls
         // This ensures backward compatibility with tests and scenarios not using INotifyPropertyChanged
-        foreach (var segment in pathSegments)
+        foreach (var segment in path.Segments)
         {
             RegisterBinding(segment, updateAction);
         }

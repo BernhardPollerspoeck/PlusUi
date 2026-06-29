@@ -783,21 +783,22 @@ public abstract partial class ComboBox : UiElement, IInputControl, IFocusable, I
             Style = SKPaintStyle.Fill
         };
 
-        var arrowPath = new SKPath();
+        using var arrowBuilder = new SKPathBuilder();
         if (IsOpen)
         {
-            arrowPath.MoveTo(arrowCenterX - ArrowSize / 2, arrowCenterY + ArrowSize / 4);
-            arrowPath.LineTo(arrowCenterX + ArrowSize / 2, arrowCenterY + ArrowSize / 4);
-            arrowPath.LineTo(arrowCenterX, arrowCenterY - ArrowSize / 4);
+            arrowBuilder.MoveTo(arrowCenterX - ArrowSize / 2, arrowCenterY + ArrowSize / 4);
+            arrowBuilder.LineTo(arrowCenterX + ArrowSize / 2, arrowCenterY + ArrowSize / 4);
+            arrowBuilder.LineTo(arrowCenterX, arrowCenterY - ArrowSize / 4);
         }
         else
         {
-            arrowPath.MoveTo(arrowCenterX - ArrowSize / 2, arrowCenterY - ArrowSize / 4);
-            arrowPath.LineTo(arrowCenterX + ArrowSize / 2, arrowCenterY - ArrowSize / 4);
-            arrowPath.LineTo(arrowCenterX, arrowCenterY + ArrowSize / 4);
+            arrowBuilder.MoveTo(arrowCenterX - ArrowSize / 2, arrowCenterY - ArrowSize / 4);
+            arrowBuilder.LineTo(arrowCenterX + ArrowSize / 2, arrowCenterY - ArrowSize / 4);
+            arrowBuilder.LineTo(arrowCenterX, arrowCenterY + ArrowSize / 4);
         }
-        arrowPath.Close();
+        arrowBuilder.Close();
 
+        using var arrowPath = arrowBuilder.Detach();
         canvas.DrawPath(arrowPath, arrowPaint);
     }
     #endregion

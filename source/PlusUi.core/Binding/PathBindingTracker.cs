@@ -1,9 +1,8 @@
 using System.ComponentModel;
-using System.Reflection;
 
 namespace PlusUi.core.Binding;
 
-internal class PathBindingTracker(string[] pathSegments, Action updateAction) : IDisposable
+internal class PathBindingTracker(BindingPath path, Action updateAction) : IDisposable
 {
     private readonly List<(INotifyPropertyChanged obj, PropertyChangedEventHandler handler)> _subscriptions = [];
     private object? _rootContext;
@@ -19,12 +18,12 @@ internal class PathBindingTracker(string[] pathSegments, Action updateAction) : 
 
     private void SubscribeToPath()
     {
-        if (pathSegments.Length == 0 || _rootContext == null)
+        if (path.Segments.Length == 0 || _rootContext == null)
             return;
 
         object? current = _rootContext;
 
-        for (int i = 0; i < pathSegments.Length; i++)
+        for (int i = 0; i < path.Segments.Length; i++)
         {
             if (current == null)
                 break;
@@ -32,11 +31,11 @@ internal class PathBindingTracker(string[] pathSegments, Action updateAction) : 
             if (current is INotifyPropertyChanged notifier)
             {
                 var segmentIndex = i;
-                var isLeaf = i == pathSegments.Length - 1;
+                var isLeaf = i == path.Segments.Length - 1;
 
                 void handler(object? s, PropertyChangedEventArgs e)
                 {
-                    if (e.PropertyName == pathSegments[segmentIndex])
+                    if (e.PropertyName == path.Segments[segmentIndex])
                     {
                         if (isLeaf)
                         {
@@ -54,9 +53,9 @@ internal class PathBindingTracker(string[] pathSegments, Action updateAction) : 
                 _subscriptions.Add((notifier, handler));
             }
 
-            if (i < pathSegments.Length - 1)
+            if (i < path.Segments.Length - 1)
             {
-                current = GetPropertyValue(current, pathSegments[i]);
+                current = GetSegmentValue(current, i);
             }
         }
     }
@@ -70,19 +69,19 @@ internal class PathBindingTracker(string[] pathSegments, Action updateAction) : 
             _subscriptions.RemoveAt(i);
         }
 
-        if (index >= pathSegments.Length)
+        if (index >= path.Segments.Length)
             return;
 
         object? current = _rootContext;
         for (int i = 0; i < index && current != null; i++)
         {
-            current = GetPropertyValue(current, pathSegments[i]);
+            current = GetSegmentValue(current, i);
         }
 
         if (current == null)
             return;
 
-        for (int i = index; i < pathSegments.Length; i++)
+        for (int i = index; i < path.Segments.Length; i++)
         {
             if (current == null)
                 break;
@@ -90,11 +89,11 @@ internal class PathBindingTracker(string[] pathSegments, Action updateAction) : 
             if (current is INotifyPropertyChanged notifier)
             {
                 var segmentIndex = i;
-                var isLeaf = i == pathSegments.Length - 1;
+                var isLeaf = i == path.Segments.Length - 1;
 
                 void handler(object? s, PropertyChangedEventArgs e)
                 {
-                    if (e.PropertyName == pathSegments[segmentIndex])
+                    if (e.PropertyName == path.Segments[segmentIndex])
                     {
                         if (isLeaf)
                         {
@@ -112,9 +111,9 @@ internal class PathBindingTracker(string[] pathSegments, Action updateAction) : 
                 _subscriptions.Add((notifier, handler));
             }
 
-            if (i < pathSegments.Length - 1)
+            if (i < path.Segments.Length - 1)
             {
-                current = GetPropertyValue(current, pathSegments[i]);
+                current = GetSegmentValue(current, i);
             }
         }
     }
@@ -128,13 +127,19 @@ internal class PathBindingTracker(string[] pathSegments, Action updateAction) : 
         _subscriptions.Clear();
     }
 
-    private static object? GetPropertyValue(object? obj, string propertyName)
+    /// <summary>
+    /// Reads the value of segment <paramref name="segmentIndex"/> from <paramref name="obj"/> using the
+    /// expression-derived accessor. Reflection-free, so it stays Native-AOT / trimming safe.
+    /// Returns null when the segment has no accessor (e.g. complex expressions) or the object type
+    /// does not match, mirroring the previous reflection-based "property not found" behavior.
+    /// </summary>
+    private object? GetSegmentValue(object? obj, int segmentIndex)
     {
         if (obj == null)
             return null;
 
-        var property = obj.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
-        return property?.GetValue(obj);
+        var accessor = path.SegmentAccessors[segmentIndex];
+        return accessor?.Invoke(obj);
     }
 
     public void Dispose()

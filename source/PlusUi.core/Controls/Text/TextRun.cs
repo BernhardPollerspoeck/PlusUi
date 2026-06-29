@@ -13,7 +13,7 @@ namespace PlusUi.core;
 public class TextRun
 {
     private readonly IExpressionPathService _expressionPathService;
-    private readonly List<(string[] path, Action update)> _bindings = [];
+    private readonly List<(BindingPath path, Action update)> _bindings = [];
     private RichTextLabel? _parent;
 
     public string Text { get; private set; }
@@ -148,7 +148,7 @@ public class TextRun
         return this;
     }
 
-    internal IEnumerable<(string[] path, Action update)> GetBindings() => _bindings;
+    internal IEnumerable<(BindingPath path, Action update)> GetBindings() => _bindings;
 
     internal void UpdateBindings()
     {
@@ -162,7 +162,7 @@ public class TextRun
     {
         foreach (var (path, update) in _bindings)
         {
-            if (path.Contains(propertyName))
+            if (path.Segments.Contains(propertyName))
             {
                 update();
             }

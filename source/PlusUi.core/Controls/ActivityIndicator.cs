@@ -174,14 +174,15 @@ public partial class ActivityIndicator : UiElement
         };
 
         // Draw spinning arc (270 degrees)
-        using var path = new SKPath();
+        using var builder = new SKPathBuilder();
         var rect = new SKRect(
             centerX - radius,
             centerY - radius,
             centerX + radius,
             centerY + radius);
 
-        path.AddArc(rect, rotationDegrees, 270);
+        builder.AddArc(rect, rotationDegrees, 270);
+        using var path = builder.Detach();
         canvas.DrawPath(path, paint);
     }
 

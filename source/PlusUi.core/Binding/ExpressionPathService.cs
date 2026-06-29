@@ -4,25 +4,60 @@ namespace PlusUi.core.Binding;
 
 internal class ExpressionPathService : IExpressionPathService
 {
-    public string[] GetPropertyPath<T>(Expression<Func<T>> expression)
+    public BindingPath GetPropertyPath<T>(Expression<Func<T>> expression)
     {
         // First try to get a direct property chain (e.g., obj.Prop1.Prop2)
-        var chainPath = GetPropertyChain(expression.Body);
-        if (chainPath.Length > 0)
+        var chain = GetPropertyChain(expression.Body);
+        if (chain.Count > 0)
         {
-            return chainPath;
+            var segments = new string[chain.Count];
+            var accessors = new Func<object, object?>?[chain.Count];
+            for (int i = 0; i < chain.Count; i++)
+            {
+                segments[i] = chain[i].Member.Name;
+
+                // Only the non-leaf segments are traversed to reach the next object in the chain.
+                if (i < chain.Count - 1)
+                {
+                    accessors[i] = BuildAccessor(chain[i]);
+                }
+            }
+
+            return new BindingPath(segments, accessors);
         }
 
         // For complex expressions (conditionals, method calls, etc.),
-        // collect all unique member names from the entire expression tree
+        // collect all unique member names from the entire expression tree.
+        // These cannot be traversed as a simple chain, so no accessors are produced.
         var allMembers = new HashSet<string>();
         CollectAllMemberNames(expression.Body, allMembers);
-        return [.. allMembers];
+        var names = new string[allMembers.Count];
+        allMembers.CopyTo(names);
+        return new BindingPath(names, new Func<object, object?>?[names.Length]);
     }
 
-    private static string[] GetPropertyChain(Expression? current)
+    /// <summary>
+    /// Builds a reflection-free accessor that reads the member represented by <paramref name="memberNode"/>
+    /// from the parent object. The member metadata comes from the user's own expression, so no runtime
+    /// member lookup (GetProperty) is performed and trimming keeps the member rooted.
+    /// </summary>
+    private static Func<object, object?> BuildAccessor(MemberExpression memberNode)
     {
-        var members = new List<string>();
+        var parentType = memberNode.Expression!.Type;
+        var param = Expression.Parameter(typeof(object), "obj");
+
+        var typedAccess = Expression.MakeMemberAccess(Expression.Convert(param, parentType), memberNode.Member);
+        var body = Expression.Condition(
+            Expression.TypeIs(param, parentType),
+            Expression.Convert(typedAccess, typeof(object)),
+            Expression.Constant(null, typeof(object)));
+
+        return Expression.Lambda<Func<object, object?>>(body, param).Compile();
+    }
+
+    private static List<MemberExpression> GetPropertyChain(Expression? current)
+    {
+        var nodes = new List<MemberExpression>();
         bool endsAtClosure = false;
 
         while (current != null)
@@ -30,7 +65,7 @@ internal class ExpressionPathService : IExpressionPathService
             switch (current)
             {
                 case MemberExpression memberExpr:
-                    members.Insert(0, memberExpr.Member.Name);
+                    nodes.Insert(0, memberExpr);
                     current = memberExpr.Expression;
                     // Check if next step is a ConstantExpression (closure/DisplayClass)
                     if (current is ConstantExpression)
@@ -55,12 +90,12 @@ internal class ExpressionPathService : IExpressionPathService
         // the first member is the closure field (e.g., "vm") that captures the ViewModel - skip it.
         // For expressions like () => vm.Checked: ["vm", "Checked"] -> ["Checked"]
         // For expressions like () => isVisible: ["isVisible"] -> ["isVisible"] (keep single member)
-        if (endsAtClosure && members.Count > 1)
+        if (endsAtClosure && nodes.Count > 1)
         {
-            members.RemoveAt(0);
+            nodes.RemoveAt(0);
         }
 
-        return [.. members];
+        return nodes;
     }
 
     private static void CollectAllMemberNames(Expression? expression, HashSet<string> members)

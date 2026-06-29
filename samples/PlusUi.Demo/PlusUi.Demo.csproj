@@ -10,10 +10,11 @@
   <ItemGroup>
     <EmbeddedResource Include="..\..\gfx\plusui.png" Link="plusui.png" />
     <EmbeddedResource Include="..\..\gfx\plusui.svg" Link="plusui.svg" />
+    <EmbeddedResource Include="..\..\gfx\loading.gif" Link="loading.gif" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
   </ItemGroup>
 
   <ItemGroup>

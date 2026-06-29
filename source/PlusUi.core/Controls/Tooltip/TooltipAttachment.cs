@@ -42,7 +42,7 @@ public class TooltipAttachment
     {
         var path = _expressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();
-        RegisterBinding(path, () => Content = getter());
+        RegisterBinding(path.Segments, () => Content = getter());
         return this;
     }
     #endregion
@@ -69,7 +69,7 @@ public class TooltipAttachment
     {
         var path = _expressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();
-        RegisterBinding(path, () => Placement = getter());
+        RegisterBinding(path.Segments, () => Placement = getter());
         return this;
     }
     #endregion
@@ -96,7 +96,7 @@ public class TooltipAttachment
     {
         var path = _expressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();
-        RegisterBinding(path, () => ShowDelay = Math.Max(0, getter()));
+        RegisterBinding(path.Segments, () => ShowDelay = Math.Max(0, getter()));
         return this;
     }
     #endregion
@@ -123,7 +123,7 @@ public class TooltipAttachment
     {
         var path = _expressionPathService.GetPropertyPath(propertyExpression);
         var getter = propertyExpression.Compile();
-        RegisterBinding(path, () => HideDelay = Math.Max(0, getter()));
+        RegisterBinding(path.Segments, () => HideDelay = Math.Max(0, getter()));
         return this;
     }
     #endregion

@@ -687,7 +687,7 @@ public partial class RichTextLabel : UiElement
 
             foreach (var fragment in line.Fragments)
             {
-                canvas.DrawText(fragment.Text, x, baseline, fragment.Font, fragment.Paint);
+                canvas.DrawText(fragment.Text, x, baseline, SKTextAlign.Left, fragment.Font, fragment.Paint);
                 x += fragment.Width;
             }
 

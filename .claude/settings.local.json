@@ -8,7 +8,11 @@
       "WebFetch(domain:github.com)",
       "WebSearch",
       "Bash(dotnet nuget list:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "PowerShell(dotnet build *)",
+      "Read(//e/Gewerbe/Pollerspoeck/LLM-Marketplace/plugins/**)",
+      "WebFetch(domain:devblogs.microsoft.com)",
+      "WebFetch(domain:platform.uno)"
     ],
     "deny": [],
     "ask": []

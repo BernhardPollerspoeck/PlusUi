@@ -13,6 +13,9 @@ public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontR
     private bool _initialized = false;
     private readonly object _initLock = new();
 
+    // OpenType weight axis tag; FontWeight enum values are the design weights (100..900).
+    private static readonly SKFourByteTag WeightAxisTag = SKFourByteTag.Parse("wght");
+
     /// <summary>
     /// The default font family name used by PlusUi.
     /// </summary>
@@ -116,23 +119,29 @@ public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontR
     {
         EnsureInitialized();
 
-        // If no font family specified, use default
-        if (string.IsNullOrEmpty(fontFamily))
-        {
-            return _defaultTypeface;
-        }
+        // Treat "no family" as the default Inter family so weight derivation applies there too
+        // (the common case is SetFontWeight(...) without an explicit family).
+        var fontFamilyName = string.IsNullOrEmpty(fontFamily) ? DefaultFontFamily : fontFamily;
 
-        var key = GetFontKey(fontFamily, fontWeight, fontStyle);
+        var key = GetFontKey(fontFamilyName, fontWeight, fontStyle);
         if (_fontCache.TryGetValue(key, out var typeface))
         {
             return typeface;
         }
 
-        // Try to find closest match
+        // Derive a weight-specific instance from a variable base font (e.g. the embedded Inter
+        // Variable) by setting its 'wght' axis, instead of falling back to the regular weight.
+        if (TryCreateWeightedTypeface(fontFamilyName, fontWeight, out var weighted))
+        {
+            _fontCache[key] = weighted;
+            return weighted;
+        }
+
+        // Closest-match fallbacks for non-variable / separately-registered fonts:
         // 1. Try same family with regular weight
         if (fontWeight != FontWeight.Regular)
         {
-            var regularKey = GetFontKey(fontFamily, FontWeight.Regular, fontStyle);
+            var regularKey = GetFontKey(fontFamilyName, FontWeight.Regular, fontStyle);
             if (_fontCache.TryGetValue(regularKey, out typeface))
             {
                 return typeface;
@@ -142,7 +151,7 @@ public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontR
         // 2. Try same family with normal style
         if (fontStyle != FontStyle.Normal)
         {
-            var normalKey = GetFontKey(fontFamily, fontWeight, FontStyle.Normal);
+            var normalKey = GetFontKey(fontFamilyName, fontWeight, FontStyle.Normal);
             if (_fontCache.TryGetValue(normalKey, out typeface))
             {
                 return typeface;
@@ -152,7 +161,7 @@ public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontR
         // 3. Try same family with regular weight and normal style
         if (fontWeight != FontWeight.Regular || fontStyle != FontStyle.Normal)
         {
-            var baseKey = GetFontKey(fontFamily, FontWeight.Regular, FontStyle.Normal);
+            var baseKey = GetFontKey(fontFamilyName, FontWeight.Regular, FontStyle.Normal);
             if (_fontCache.TryGetValue(baseKey, out typeface))
             {
                 return typeface;
@@ -161,6 +170,52 @@ public class FontRegistryService(IServiceProvider serviceProvider, ILogger<FontR
 
         // Fallback to default font (Inter) if no match found
         return _defaultTypeface;
+    }
+
+    /// <summary>
+    /// Derives a weight-specific typeface from the family's variable base font by setting the
+    /// OpenType 'wght' axis. Returns false for non-variable fonts so the caller can fall back.
+    /// </summary>
+    private bool TryCreateWeightedTypeface(string fontFamily, FontWeight fontWeight, out SKTypeface result)
+    {
+        result = null!;
+
+        // Use the family's regular/normal face as the variable base.
+        var baseKey = GetFontKey(fontFamily, FontWeight.Regular, FontStyle.Normal);
+        if (!_fontCache.TryGetValue(baseKey, out var baseFace) || baseFace is null)
+        {
+            return false;
+        }
+
+        // Only variable fonts expose design axes that can be re-weighted.
+        // Note: an empty span returns 0 even for variable fonts, so probe with a real buffer.
+        Span<SKFontVariationAxis> axisProbe = new SKFontVariationAxis[1];
+        if (baseFace.GetVariationDesignParameters(axisProbe) <= 0)
+        {
+            return false;
+        }
+
+        try
+        {
+            Span<SKFontVariationPositionCoordinate> coordinates =
+            [
+                new() { Axis = WeightAxisTag, Value = (int)fontWeight }
+            ];
+
+            var clone = baseFace.Clone(coordinates);
+            if (clone is null)
+            {
+                return false;
+            }
+
+            result = clone;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger?.LogWarning(ex, "Failed to derive weight {FontWeight} from variable font {FontFamily}", fontWeight, fontFamily);
+            return false;
+        }
     }
 
     private static string GetFontKey(string fontFamily, FontWeight fontWeight, FontStyle fontStyle)

@@ -1155,11 +1155,11 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable, IScro
                 Color = PlaceholderColor,
                 IsAntialias = true
             };
-            canvas.DrawText(displayText, textX, baselineY, Font, placeholderPaint);
+            canvas.DrawText(displayText, textX, baselineY, SKTextAlign.Left, Font, placeholderPaint);
         }
         else if (hasText)
         {
-            canvas.DrawText(displayText, textX, baselineY, Font, Paint);
+            canvas.DrawText(displayText, textX, baselineY, SKTextAlign.Left, Font, Paint);
         }
 
         if (_isSelected)
@@ -1206,11 +1206,11 @@ public partial class Entry : UiTextElement, ITextInputControl, IFocusable, IScro
                     Color = PlaceholderColor,
                     IsAntialias = true
                 };
-                canvas.DrawText(lineText, textX, baselineY, Font, placeholderPaint);
+                canvas.DrawText(lineText, textX, baselineY, SKTextAlign.Left, Font, placeholderPaint);
             }
             else if (hasText)
             {
-                canvas.DrawText(lineText, textX, baselineY, Font, Paint);
+                canvas.DrawText(lineText, textX, baselineY, SKTextAlign.Left, Font, Paint);
             }
 
             if (_isSelected && lineIndex == cursorLine)
