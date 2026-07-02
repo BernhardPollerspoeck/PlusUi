@@ -14,6 +14,8 @@ public class WebKeyboardHandler(IJSRuntime jsRuntime) : IKeyboardHandler
     public event EventHandler<char>? CharInput;
     public event EventHandler<bool>? ShiftStateChanged;
     public event EventHandler<bool>? CtrlStateChanged;
+    public event EventHandler<PlusKey>? RawKeyDown;
+    public event EventHandler<PlusKey>? RawKeyUp;
 
     private KeyboardType _currentKeyboardType = KeyboardType.Default;
     private ReturnKeyType _currentReturnKeyType = ReturnKeyType.Default;
@@ -75,6 +77,13 @@ public class WebKeyboardHandler(IJSRuntime jsRuntime) : IKeyboardHandler
     /// </summary>
     internal void OnKeyDown(string key, string code)
     {
+        // Raw, unfiltered key-down for the global input bus (full key set incl. modifiers).
+        var rawKey = MapCodeToRawPlusKey(code);
+        if (rawKey != PlusKey.Unknown)
+        {
+            RawKeyDown?.Invoke(this, rawKey);
+        }
+
         // Track modifier key states
         if (key == "Shift")
         {
@@ -105,10 +114,69 @@ public class WebKeyboardHandler(IJSRuntime jsRuntime) : IKeyboardHandler
     /// </summary>
     internal void OnKeyUp(string key, string code)
     {
+        // Raw, unfiltered key-up for the global input bus.
+        var rawKey = MapCodeToRawPlusKey(code);
+        if (rawKey != PlusKey.Unknown)
+        {
+            RawKeyUp?.Invoke(this, rawKey);
+        }
+
         if (key == "Shift")
             ShiftStateChanged?.Invoke(this, false);
         else if (key == "Control")
             CtrlStateChanged?.Invoke(this, false);
+    }
+
+    /// <summary>
+    /// Maps a browser <c>KeyboardEvent.code</c> (physical, layout-independent) to the full
+    /// <see cref="PlusKey"/> set for the raw global input bus.
+    /// </summary>
+    private static PlusKey MapCodeToRawPlusKey(string code)
+    {
+        // Letters: "KeyA".."KeyZ"
+        if (code.Length == 4 && code.StartsWith("Key", StringComparison.Ordinal))
+        {
+            var c = code[3];
+            if (c is >= 'A' and <= 'Z')
+                return PlusKey.A + (c - 'A');
+        }
+
+        // Digits: "Digit0".."Digit9"
+        if (code.Length == 6 && code.StartsWith("Digit", StringComparison.Ordinal))
+        {
+            var d = code[5];
+            if (d is >= '0' and <= '9')
+                return PlusKey.D0 + (d - '0');
+        }
+
+        // Function keys: "F1".."F12"
+        if (code.Length is 2 or 3 && code[0] == 'F' && int.TryParse(code.AsSpan(1), out var fn) && fn is >= 1 and <= 12)
+        {
+            return PlusKey.F1 + (fn - 1);
+        }
+
+        return code switch
+        {
+            "Space" => PlusKey.Space,
+            "Enter" or "NumpadEnter" => PlusKey.Enter,
+            "Tab" => PlusKey.Tab,
+            "Escape" => PlusKey.Escape,
+            "Backspace" => PlusKey.Backspace,
+            "Delete" => PlusKey.Delete,
+            "Home" => PlusKey.Home,
+            "End" => PlusKey.End,
+            "ArrowUp" => PlusKey.ArrowUp,
+            "ArrowDown" => PlusKey.ArrowDown,
+            "ArrowLeft" => PlusKey.ArrowLeft,
+            "ArrowRight" => PlusKey.ArrowRight,
+            "ShiftLeft" => PlusKey.LeftShift,
+            "ShiftRight" => PlusKey.RightShift,
+            "ControlLeft" => PlusKey.LeftCtrl,
+            "ControlRight" => PlusKey.RightCtrl,
+            "AltLeft" => PlusKey.LeftAlt,
+            "AltRight" => PlusKey.RightAlt,
+            _ => PlusKey.Unknown
+        };
     }
 
     /// <summary>

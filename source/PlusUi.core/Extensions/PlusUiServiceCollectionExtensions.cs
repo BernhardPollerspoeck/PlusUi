@@ -25,6 +25,8 @@ public static class PlusUiServiceCollectionExtensions
         services.AddSingleton<ICommandLineService>(sp => new CommandLineService(args));
         services.AddSingleton<ServiceProviderService>();
         services.AddSingleton<RenderService>();
+        services.AddSingleton<GlobalInputService>();
+        services.AddSingleton<IGlobalInputService>(sp => sp.GetRequiredService<GlobalInputService>());
         services.AddSingleton<InputService>();
 
         services.AddSingleton<Style>();

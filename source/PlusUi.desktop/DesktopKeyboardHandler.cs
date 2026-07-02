@@ -13,6 +13,8 @@ public class DesktopKeyboardHandler : IKeyboardHandler
     public event EventHandler<char>? CharInput;
     public event EventHandler<bool>? ShiftStateChanged;
     public event EventHandler<bool>? CtrlStateChanged;
+    public event EventHandler<PlusKey>? RawKeyDown;
+    public event EventHandler<PlusKey>? RawKeyUp;
 
     public void SetKeyboard(IKeyboard keyboard)
     {
@@ -47,6 +49,13 @@ public class DesktopKeyboardHandler : IKeyboardHandler
 
     private void HandleKeyboardInput(IKeyboard keyboard, Key key, int keyCode)
     {
+        // Raw, unfiltered key-down for the global input bus (full key set incl. modifiers).
+        var rawKey = MapToPlusKey(key);
+        if (rawKey != PlusKey.Unknown)
+        {
+            RawKeyDown?.Invoke(this, rawKey);
+        }
+
         // Track modifier key states
         if (key == Key.ShiftLeft || key == Key.ShiftRight)
         {
@@ -90,6 +99,13 @@ public class DesktopKeyboardHandler : IKeyboardHandler
 
     private void HandleKeyboardUp(IKeyboard keyboard, Key key, int keyCode)
     {
+        // Raw, unfiltered key-up for the global input bus.
+        var rawKey = MapToPlusKey(key);
+        if (rawKey != PlusKey.Unknown)
+        {
+            RawKeyUp?.Invoke(this, rawKey);
+        }
+
         // Track modifier key release
         if (key == Key.ShiftLeft || key == Key.ShiftRight)
         {
@@ -110,4 +126,34 @@ public class DesktopKeyboardHandler : IKeyboardHandler
 
         CharInput?.Invoke(this, chr);
     }
+
+    /// <summary>
+    /// Maps a Silk.NET key to the full <see cref="PlusKey"/> set for the raw global input bus.
+    /// </summary>
+    private static PlusKey MapToPlusKey(Key key) => key switch
+    {
+        >= Key.A and <= Key.Z => PlusKey.A + (key - Key.A),
+        >= Key.Number0 and <= Key.Number9 => PlusKey.D0 + (key - Key.Number0),
+        >= Key.Keypad0 and <= Key.Keypad9 => PlusKey.D0 + (key - Key.Keypad0),
+        >= Key.F1 and <= Key.F12 => PlusKey.F1 + (key - Key.F1),
+        Key.Space => PlusKey.Space,
+        Key.Enter or Key.KeypadEnter => PlusKey.Enter,
+        Key.Tab => PlusKey.Tab,
+        Key.Escape => PlusKey.Escape,
+        Key.Backspace => PlusKey.Backspace,
+        Key.Delete => PlusKey.Delete,
+        Key.Home => PlusKey.Home,
+        Key.End => PlusKey.End,
+        Key.Up => PlusKey.ArrowUp,
+        Key.Down => PlusKey.ArrowDown,
+        Key.Left => PlusKey.ArrowLeft,
+        Key.Right => PlusKey.ArrowRight,
+        Key.ShiftLeft => PlusKey.LeftShift,
+        Key.ShiftRight => PlusKey.RightShift,
+        Key.ControlLeft => PlusKey.LeftCtrl,
+        Key.ControlRight => PlusKey.RightCtrl,
+        Key.AltLeft => PlusKey.LeftAlt,
+        Key.AltRight => PlusKey.RightAlt,
+        _ => PlusKey.Unknown
+    };
 }

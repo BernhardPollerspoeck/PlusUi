@@ -25,6 +25,8 @@ public sealed class InputServiceTests
         public event EventHandler<char> CharInput { add { } remove { } }
         public event EventHandler<bool>? ShiftStateChanged { add { } remove { } }
         public event EventHandler<bool>? CtrlStateChanged { add { } remove { } }
+        public event EventHandler<PlusKey>? RawKeyDown { add { } remove { } }
+        public event EventHandler<PlusKey>? RawKeyUp { add { } remove { } }
         public void Show() { }
         public void Hide() { }
         public void Show(KeyboardType keyboardType, ReturnKeyType returnKeyType, bool isPassword) { }
@@ -51,11 +53,18 @@ public sealed class InputServiceTests
         public int HideCount { get; private set; }
         public event EventHandler<PlusKey> KeyInput { add { } remove { } }
         public event EventHandler<char> CharInput { add { } remove { } }
-        public event EventHandler<bool>? ShiftStateChanged { add { } remove { } }
-        public event EventHandler<bool>? CtrlStateChanged { add { } remove { } }
+        public event EventHandler<bool>? ShiftStateChanged;
+        public event EventHandler<bool>? CtrlStateChanged;
+        public event EventHandler<PlusKey>? RawKeyDown;
+        public event EventHandler<PlusKey>? RawKeyUp;
         public void Show() => ShowCount++;
         public void Hide() => HideCount++;
         public void Show(KeyboardType keyboardType, ReturnKeyType returnKeyType, bool isPassword) => ShowCount++;
+
+        public void RaiseRawKeyDown(PlusKey key) => RawKeyDown?.Invoke(this, key);
+        public void RaiseRawKeyUp(PlusKey key) => RawKeyUp?.Invoke(this, key);
+        public void RaiseShift(bool pressed) => ShiftStateChanged?.Invoke(this, pressed);
+        public void RaiseCtrl(bool pressed) => CtrlStateChanged?.Invoke(this, pressed);
     }
 
     /// <summary>Minimal hoverable element with no font/render dependencies.</summary>
@@ -369,5 +378,55 @@ public sealed class InputServiceTests
 
         Assert.AreEqual(CursorType.Default, cursor.Current,
             "Clearing transient state should reset the cursor to default.");
+    }
+
+    // Global input bus: pointer, scroll and raw keyboard are broadcast (with modifier state),
+    // independently of hit-testing/focus.
+    [TestMethod]
+    public void GlobalInputService_BroadcastsPointerScrollAndRawKey()
+    {
+        var sp = ServiceProviderService.ServiceProvider!;
+        var config = sp.GetRequiredService<PlusUiConfiguration>();
+        var nav = new NavigationContainer(config);
+        var page = new InputTestPage(new Vm(), new Solid(100, 100));
+        nav.Push(page);
+        page.BuildPage();
+        page.Measure(new Size(400, 400));
+        page.Arrange(new Rect(0, 0, 400, 400));
+
+        var keyboard = new TrackingKeyboardHandler();
+        var bus = new GlobalInputService();
+        var input = new InputService(
+            nav,
+            new PlusUiPopupService(sp),
+            new OverlayService(),
+            keyboard,
+            sp.GetRequiredService<IFocusManager>(),
+            sp.GetRequiredService<ITooltipService>(),
+            globalInput: bus);
+
+        PointerInputEvent? down = null;
+        ScrollInputEvent? scroll = null;
+        KeyInputEvent? keyDown = null;
+        bus.PointerDown += e => down = e;
+        bus.Scrolled += e => scroll = e;
+        bus.KeyDown += e => keyDown = e;
+
+        input.MouseDown(new Vector2(10, 20));
+        input.MouseWheel(new Vector2(30, 40), 1f, -2f);
+        keyboard.RaiseShift(true);
+        keyboard.RaiseRawKeyDown(PlusKey.W);
+
+        Assert.IsNotNull(down, "PointerDown should be broadcast.");
+        Assert.AreEqual(PointerButton.Left, down.Value.Button);
+        Assert.AreEqual(10f, down.Value.Position.X);
+
+        Assert.IsNotNull(scroll, "Scrolled should be broadcast.");
+        Assert.AreEqual(-2f, scroll.Value.DeltaY);
+
+        Assert.IsNotNull(keyDown, "Raw KeyDown should be broadcast with the full key set.");
+        Assert.AreEqual(PlusKey.W, keyDown.Value.Key);
+        Assert.IsTrue(keyDown.Value.Modifiers.HasFlag(KeyModifiers.Shift),
+            "Modifier state should be stamped onto raw key events.");
     }
 }

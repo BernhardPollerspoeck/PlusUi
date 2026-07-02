@@ -12,6 +12,8 @@ public class KeyboardTextField : UITextField, IKeyboardHandler, IUITextFieldDele
     public event EventHandler<char>? CharInput;
     public event EventHandler<bool>? ShiftStateChanged;
     public event EventHandler<bool>? CtrlStateChanged;
+    public event EventHandler<PlusKey>? RawKeyDown;
+    public event EventHandler<PlusKey>? RawKeyUp;
 
     public KeyboardTextField()
     {
@@ -113,6 +115,13 @@ public class KeyboardTextField : UITextField, IKeyboardHandler, IUITextFieldDele
         {
             if (press?.Key?.KeyCode != null)
             {
+                // Raw, unfiltered key-down for the global input bus (full key set incl. modifiers).
+                var rawKey = MapHidUsageToRawPlusKey(press.Key.KeyCode);
+                if (rawKey != PlusKey.Unknown)
+                {
+                    RawKeyDown?.Invoke(this, rawKey);
+                }
+
                 // Track modifier key states
                 if (press.Key.KeyCode == UIKeyboardHidUsage.KeyboardLeftShift ||
                     press.Key.KeyCode == UIKeyboardHidUsage.KeyboardRightShift)
@@ -156,6 +165,13 @@ public class KeyboardTextField : UITextField, IKeyboardHandler, IUITextFieldDele
         {
             if (press?.Key?.KeyCode != null)
             {
+                // Raw, unfiltered key-up for the global input bus.
+                var rawKey = MapHidUsageToRawPlusKey(press.Key.KeyCode);
+                if (rawKey != PlusKey.Unknown)
+                {
+                    RawKeyUp?.Invoke(this, rawKey);
+                }
+
                 if (press.Key.KeyCode == UIKeyboardHidUsage.KeyboardLeftShift ||
                     press.Key.KeyCode == UIKeyboardHidUsage.KeyboardRightShift)
                 {
@@ -172,5 +188,43 @@ public class KeyboardTextField : UITextField, IKeyboardHandler, IUITextFieldDele
         }
 
         base.PressesEnded(presses, evt);
+    }
+
+    /// <summary>
+    /// Maps a UIKit HID usage to the full <see cref="PlusKey"/> set for the raw global input bus.
+    /// </summary>
+    private static PlusKey MapHidUsageToRawPlusKey(UIKeyboardHidUsage usage)
+    {
+        if (usage >= UIKeyboardHidUsage.KeyboardA && usage <= UIKeyboardHidUsage.KeyboardZ)
+            return PlusKey.A + (int)(usage - UIKeyboardHidUsage.KeyboardA);
+        // HID orders the number row as 1-9 then 0.
+        if (usage >= UIKeyboardHidUsage.Keyboard1 && usage <= UIKeyboardHidUsage.Keyboard9)
+            return PlusKey.D1 + (int)(usage - UIKeyboardHidUsage.Keyboard1);
+        if (usage >= UIKeyboardHidUsage.KeyboardF1 && usage <= UIKeyboardHidUsage.KeyboardF12)
+            return PlusKey.F1 + (int)(usage - UIKeyboardHidUsage.KeyboardF1);
+
+        return usage switch
+        {
+            UIKeyboardHidUsage.Keyboard0 => PlusKey.D0,
+            UIKeyboardHidUsage.KeyboardSpacebar => PlusKey.Space,
+            UIKeyboardHidUsage.KeyboardReturnOrEnter or UIKeyboardHidUsage.KeypadEnter => PlusKey.Enter,
+            UIKeyboardHidUsage.KeyboardTab => PlusKey.Tab,
+            UIKeyboardHidUsage.KeyboardEscape => PlusKey.Escape,
+            UIKeyboardHidUsage.KeyboardDeleteOrBackspace => PlusKey.Backspace,
+            UIKeyboardHidUsage.KeyboardDeleteForward => PlusKey.Delete,
+            UIKeyboardHidUsage.KeyboardHome => PlusKey.Home,
+            UIKeyboardHidUsage.KeyboardEnd => PlusKey.End,
+            UIKeyboardHidUsage.KeyboardUpArrow => PlusKey.ArrowUp,
+            UIKeyboardHidUsage.KeyboardDownArrow => PlusKey.ArrowDown,
+            UIKeyboardHidUsage.KeyboardLeftArrow => PlusKey.ArrowLeft,
+            UIKeyboardHidUsage.KeyboardRightArrow => PlusKey.ArrowRight,
+            UIKeyboardHidUsage.KeyboardLeftShift => PlusKey.LeftShift,
+            UIKeyboardHidUsage.KeyboardRightShift => PlusKey.RightShift,
+            UIKeyboardHidUsage.KeyboardLeftControl => PlusKey.LeftCtrl,
+            UIKeyboardHidUsage.KeyboardRightControl => PlusKey.RightCtrl,
+            UIKeyboardHidUsage.KeyboardLeftAlt => PlusKey.LeftAlt,
+            UIKeyboardHidUsage.KeyboardRightAlt => PlusKey.RightAlt,
+            _ => PlusKey.Unknown
+        };
     }
 }

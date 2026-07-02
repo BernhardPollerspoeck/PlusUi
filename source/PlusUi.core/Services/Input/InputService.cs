@@ -33,6 +33,7 @@ public class InputService
     private const double LongPressThresholdMs = 500;
     private readonly TimeProvider _timeProvider;
     private readonly IPlatformCursorService? _cursorService;
+    private readonly GlobalInputService? _globalInput;
 
     public InputService(
         NavigationContainer navigationContainer,
@@ -43,7 +44,8 @@ public class InputService
         ITooltipService tooltipService,
         TimeProvider? timeProvider = null,
         ILogger<InputService>? logger = null,
-        IPlatformCursorService? cursorService = null)
+        IPlatformCursorService? cursorService = null,
+        GlobalInputService? globalInput = null)
     {
         _navigationContainer = navigationContainer;
         _popupService = popupService;
@@ -54,12 +56,32 @@ public class InputService
         _timeProvider = timeProvider ?? TimeProvider.System;
         _logger = logger;
         _cursorService = cursorService;
+        _globalInput = globalInput;
         _keyboardHandler.KeyInput += HandleKeyInput;
         _keyboardHandler.CharInput += HandleCharInput;
         _keyboardHandler.ShiftStateChanged += (_, pressed) => SetShiftPressed(pressed);
         _keyboardHandler.CtrlStateChanged += (_, pressed) => SetCtrlPressed(pressed);
+        _keyboardHandler.RawKeyDown += HandleRawKeyDown;
+        _keyboardHandler.RawKeyUp += HandleRawKeyUp;
         _navigationContainer.PageChanged += OnPageChanged;
     }
+
+    /// <summary>
+    /// Current modifier state, used to stamp global input events.
+    /// </summary>
+    private KeyModifiers CurrentModifiers()
+    {
+        var modifiers = KeyModifiers.None;
+        if (_isShiftPressed) modifiers |= KeyModifiers.Shift;
+        if (_isCtrlPressed) modifiers |= KeyModifiers.Ctrl;
+        return modifiers;
+    }
+
+    private void HandleRawKeyDown(object? sender, PlusKey key)
+        => _globalInput?.RaiseKeyDown(new KeyInputEvent(key, CurrentModifiers(), isRepeat: false));
+
+    private void HandleRawKeyUp(object? sender, PlusKey key)
+        => _globalInput?.RaiseKeyUp(new KeyInputEvent(key, CurrentModifiers(), isRepeat: false));
 
     private void OnPageChanged(object? sender, PageChangedEventArgs e) => ClearTransientState();
 
@@ -136,6 +158,9 @@ public class InputService
         _mouseDownPosition = location;
         _mouseDownTime = _timeProvider.GetUtcNow();
 
+        _globalInput?.RaisePointerDown(
+            new PointerInputEvent(new Point(location.X, location.Y), PointerButton.Left, CurrentModifiers()));
+
         // Check if we're starting a scroll or drag operation
         var currentPopup = _popupService.CurrentPopup;
         var hitControl = (currentPopup) switch
@@ -170,6 +195,9 @@ public class InputService
             return;
         }
         _isMousePressed = false;
+
+        _globalInput?.RaisePointerUp(
+            new PointerInputEvent(new Point(location.X, location.Y), PointerButton.Left, CurrentModifiers()));
 
         // Track if actual dragging/scrolling movement happened
         var skipClick = _didDragOrScroll;
@@ -348,6 +376,12 @@ public class InputService
     public void RightClick(Vector2 location)
     {
         var point = new Point(location.X, location.Y);
+
+        // Broadcast a right-button press/release to the global bus. Platforms deliver a right
+        // click as a single event (no separate down/up), so surface it as a paired down+up.
+        _globalInput?.RaisePointerDown(new PointerInputEvent(point, PointerButton.Right, CurrentModifiers()));
+        _globalInput?.RaisePointerUp(new PointerInputEvent(point, PointerButton.Right, CurrentModifiers()));
+
         var hitControl = HitTestAll(point);
 
         // Check for context menu first
@@ -581,6 +615,9 @@ public class InputService
         // Update hover state
         UpdateHoverState(location);
 
+        _globalInput?.RaisePointerMoved(
+            new PointerInputEvent(new Point(location.X, location.Y), PointerButton.None, CurrentModifiers()));
+
         _lastMousePosition = location;
     }
 
@@ -654,6 +691,9 @@ public class InputService
     public void MouseWheel(Vector2 location, float deltaX, float deltaY)
     {
         var point = new Point(location.X, location.Y);
+
+        _globalInput?.RaiseScrolled(new ScrollInputEvent(point, deltaX, deltaY, CurrentModifiers()));
+
         var hitControl = HitTestAll(point);
 
         // Pinch gesture (Ctrl + MouseWheel on desktop)

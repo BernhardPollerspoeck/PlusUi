@@ -12,6 +12,8 @@ public class HeadlessKeyboardHandler : IKeyboardHandler
     public event EventHandler<char>? CharInput;
     public event EventHandler<bool>? ShiftStateChanged;
     public event EventHandler<bool>? CtrlStateChanged;
+    public event EventHandler<PlusKey>? RawKeyDown;
+    public event EventHandler<PlusKey>? RawKeyUp;
 
     // Show/Hide are no-ops in headless environment
     public void Show() { }
@@ -48,5 +50,21 @@ public class HeadlessKeyboardHandler : IKeyboardHandler
     internal void RaiseCtrlStateChanged(bool pressed)
     {
         CtrlStateChanged?.Invoke(this, pressed);
+    }
+
+    /// <summary>
+    /// Raises a raw key-down event programmatically.
+    /// </summary>
+    internal void RaiseRawKeyDown(PlusKey key)
+    {
+        RawKeyDown?.Invoke(this, key);
+    }
+
+    /// <summary>
+    /// Raises a raw key-up event programmatically.
+    /// </summary>
+    internal void RaiseRawKeyUp(PlusKey key)
+    {
+        RawKeyUp?.Invoke(this, key);
     }
 }

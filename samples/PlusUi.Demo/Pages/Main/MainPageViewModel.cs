@@ -35,6 +35,7 @@ public partial class MainPageViewModel : ObservableObject
             ["Border"] = () => navigation.NavigateTo<BorderPage>(),
             ["Image"] = () => navigation.NavigateTo<ImagePage>(),
             ["Solid"] = () => navigation.NavigateTo<SolidPage>(),
+            ["GameCanvas"] = () => navigation.NavigateTo<GameCanvasPage>(),
             ["Link"] = () => navigation.NavigateTo<LinkPage>(),
             ["TabControl"] = () => navigation.NavigateTo<TabControlPage>(),
             ["Menu"] = () => navigation.NavigateTo<MenuPage>(),
@@ -65,7 +66,7 @@ public partial class MainPageViewModel : ObservableObject
         AddGroup("Layout", "Border", "Grid", "HStack", "VStack", "UniformGrid", "ScrollView", "Separator");
         AddGroup("Navigation & Menus", "TabControl", "Menu", "ContextMenu", "Toolbar");
         AddGroup("Indicators", "ActivityIndicator", "ProgressBar", "LineGraph", "Tooltip");
-        AddGroup("Graphics & Media", "Image", "Solid");
+        AddGroup("Graphics & Media", "Image", "Solid", "GameCanvas");
         AddGroup("Advanced", "Gestures", "Hover & Cursor", "UserControl", "Scrollbar");
     }
 

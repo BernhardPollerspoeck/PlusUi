@@ -47,6 +47,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<ToolbarPage>();
         builder.AddPage<TooltipPage>();
         builder.AddPage<LineGraphPage>();
+        builder.AddPage<GameCanvasPage>().WithViewModel<GameCanvasPageViewModel>();
         builder.AddPage<ScrollbarPage>();
         builder.AddPage<GesturesPage>().WithViewModel<GesturesPageViewModel>();
         builder.AddPage<HoverPage>().WithViewModel<HoverPageViewModel>();

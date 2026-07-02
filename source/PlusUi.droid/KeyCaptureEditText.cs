@@ -17,6 +17,8 @@ public class KeyCaptureEditText : EditText, IKeyboardHandler
     public event EventHandler<char>? CharInput;
     public event EventHandler<bool>? ShiftStateChanged;
     public event EventHandler<bool>? CtrlStateChanged;
+    public event EventHandler<PlusKey>? RawKeyDown;
+    public event EventHandler<PlusKey>? RawKeyUp;
 
 
     public KeyCaptureEditText(Context context) : base(context)
@@ -115,6 +117,13 @@ public class KeyCaptureEditText : EditText, IKeyboardHandler
 
     public override bool OnKeyDown(Keycode keyCode, KeyEvent? e)
     {
+        // Raw, unfiltered key-down for the global input bus (full key set incl. modifiers).
+        var rawKey = MapKeycodeToRawPlusKey(keyCode);
+        if (rawKey != PlusKey.Unknown)
+        {
+            RawKeyDown?.Invoke(this, rawKey);
+        }
+
         // Track modifier key states
         if (keyCode == Keycode.ShiftLeft || keyCode == Keycode.ShiftRight)
         {
@@ -154,6 +163,13 @@ public class KeyCaptureEditText : EditText, IKeyboardHandler
 
     public override bool OnKeyUp(Keycode keyCode, KeyEvent? e)
     {
+        // Raw, unfiltered key-up for the global input bus.
+        var rawKey = MapKeycodeToRawPlusKey(keyCode);
+        if (rawKey != PlusKey.Unknown)
+        {
+            RawKeyUp?.Invoke(this, rawKey);
+        }
+
         if (keyCode == Keycode.ShiftLeft || keyCode == Keycode.ShiftRight)
         {
             ShiftStateChanged?.Invoke(this, false);
@@ -166,6 +182,43 @@ public class KeyCaptureEditText : EditText, IKeyboardHandler
         }
 
         return base.OnKeyUp(keyCode, e);
+    }
+
+    /// <summary>
+    /// Maps an Android <see cref="Keycode"/> to the full <see cref="PlusKey"/> set for the raw
+    /// global input bus.
+    /// </summary>
+    private static PlusKey MapKeycodeToRawPlusKey(Keycode keyCode)
+    {
+        if (keyCode >= Keycode.A && keyCode <= Keycode.Z)
+            return PlusKey.A + (keyCode - Keycode.A);
+        if (keyCode >= Keycode.Num0 && keyCode <= Keycode.Num9)
+            return PlusKey.D0 + (keyCode - Keycode.Num0);
+        if (keyCode >= Keycode.F1 && keyCode <= Keycode.F12)
+            return PlusKey.F1 + (keyCode - Keycode.F1);
+
+        return keyCode switch
+        {
+            Keycode.Space => PlusKey.Space,
+            Keycode.Enter or Keycode.NumpadEnter => PlusKey.Enter,
+            Keycode.Tab => PlusKey.Tab,
+            Keycode.Escape => PlusKey.Escape,
+            Keycode.Del => PlusKey.Backspace,
+            Keycode.ForwardDel => PlusKey.Delete,
+            Keycode.MoveHome => PlusKey.Home,
+            Keycode.MoveEnd => PlusKey.End,
+            Keycode.DpadUp => PlusKey.ArrowUp,
+            Keycode.DpadDown => PlusKey.ArrowDown,
+            Keycode.DpadLeft => PlusKey.ArrowLeft,
+            Keycode.DpadRight => PlusKey.ArrowRight,
+            Keycode.ShiftLeft => PlusKey.LeftShift,
+            Keycode.ShiftRight => PlusKey.RightShift,
+            Keycode.CtrlLeft => PlusKey.LeftCtrl,
+            Keycode.CtrlRight => PlusKey.RightCtrl,
+            Keycode.AltLeft => PlusKey.LeftAlt,
+            Keycode.AltRight => PlusKey.RightAlt,
+            _ => PlusKey.Unknown
+        };
     }
 }
 
