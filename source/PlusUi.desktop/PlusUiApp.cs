@@ -23,6 +23,8 @@ public class PlusUiApp(string[] args)
         builder.Services.AddSingleton<IPlatformService>(sp => sp.GetRequiredService<DesktopPlatformService>());
         builder.Services.AddSingleton<DesktopKeyboardHandler>();
         builder.Services.AddSingleton<IKeyboardHandler>(sp => sp.GetRequiredService<DesktopKeyboardHandler>());
+        builder.Services.AddSingleton<DesktopClipboardService>();
+        builder.Services.AddSingleton<IClipboardService>(sp => sp.GetRequiredService<DesktopClipboardService>());
         builder.Services.AddSingleton<DesktopHapticService>();
         builder.Services.AddSingleton<IHapticService>(sp => sp.GetRequiredService<DesktopHapticService>());
         builder.Services.AddSingleton<DesktopCursorService>();

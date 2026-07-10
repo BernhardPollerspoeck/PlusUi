@@ -9,6 +9,8 @@ public class DesktopKeyboardHandler : IKeyboardHandler
     private bool _isShiftPressed;
     private bool _isCtrlPressed;
 
+    internal IKeyboard? Keyboard => _keyboard;
+
     public event EventHandler<PlusKey>? KeyInput;
     public event EventHandler<char>? CharInput;
     public event EventHandler<bool>? ShiftStateChanged;

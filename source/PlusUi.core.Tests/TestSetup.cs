@@ -52,6 +52,10 @@ public static class TestSetup
         services.AddSingleton<FocusManager>();
         services.AddSingleton<IFocusManager>(sp => sp.GetRequiredService<FocusManager>());
 
+        // Clipboard
+        services.AddSingleton<FakeClipboardService>();
+        services.AddSingleton<IClipboardService>(sp => sp.GetRequiredService<FakeClipboardService>());
+
         // Accessibility
         services.AddSingleton<IAccessibilityBridge, NoOpAccessibilityBridge>();
         services.AddSingleton<AccessibilityService>();

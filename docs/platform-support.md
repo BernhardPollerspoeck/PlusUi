@@ -58,12 +58,13 @@ PlusUi supports multiple platforms through a single codebase.
 | Dark Mode Detection | ✅ | ✅ | ⚠️ | ✅ | ✅ | ✅ | N/A |
 | System Tray | ✅ | ✅ | ✅ | N/A | N/A | N/A | N/A |
 | File Dialogs | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | N/A |
-| Clipboard | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | N/A |
+| Clipboard | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | N/A |
 | Drag and Drop | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | N/A |
 
 **Legend:**
 - ✅ Fully supported
 - ⚠️ Partial support or platform limitations
+- ❌ Not yet implemented
 - N/A Not applicable to this platform
 
 ---
