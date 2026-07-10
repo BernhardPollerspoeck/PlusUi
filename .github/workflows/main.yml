@@ -7,45 +7,43 @@ on:
         description: "Version (e.g., 1.2.3.4)"
         required: true
         default: "10.0.0.0"
+
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-    
-    
+
     - name: Checkout
-      uses: actions/checkout@v2
-    
+      uses: actions/checkout@v4
+
     - name: Verify commit exists in origin/master
       run: |
         git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
         git branch --remote --contains $(git rev-parse HEAD) | grep origin/master
-   
+
     - name: Setup .NET 10
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
-        dotnet-quality: 'preview'
-
-    - name: Install workloads
-      run: dotnet workload install android ios wasm-tools
 
     - name: Set VERSION variable from input
       run: echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
 
     - name: Restore
-      run: dotnet restore PlusUi.sln
+      run: |
+        dotnet restore source/PlusUi.core/PlusUi.core.csproj
+        dotnet restore source/PlusUi.desktop/PlusUi.desktop.csproj
 
     - name: Build
-      run: dotnet build PlusUi.sln --no-restore --configuration Release /p:Version=${VERSION}
-
-    - name: Replace template version placeholder
       run: |
-        find templates/plusui-app -name "*.csproj" -exec sed -i "s/PLUSUI_VERSION/${VERSION}/g" {} \;
+        dotnet build source/PlusUi.core/PlusUi.core.csproj --no-restore --configuration Release /p:Version=${VERSION}
+        dotnet build source/PlusUi.desktop/PlusUi.desktop.csproj --no-restore --configuration Release /p:Version=${VERSION}
 
     - name: Pack
-      run: dotnet pack PlusUi.sln --no-build --no-restore --configuration Release /p:Version=${VERSION} --output .
-    
+      run: |
+        dotnet pack source/PlusUi.core/PlusUi.core.csproj --no-build --configuration Release /p:Version=${VERSION} --output ./artifacts
+        dotnet pack source/PlusUi.desktop/PlusUi.desktop.csproj --no-build --configuration Release /p:Version=${VERSION} --output ./artifacts
+
     - name: Push
-      run: dotnet nuget push **.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+      run: dotnet nuget push "./artifacts/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
