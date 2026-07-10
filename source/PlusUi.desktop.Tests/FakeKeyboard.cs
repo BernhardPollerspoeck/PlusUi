@@ -5,7 +5,15 @@ namespace PlusUi.desktop.Tests;
 #pragma warning disable CS0067
 internal class FakeKeyboard : IKeyboard
 {
-    public string ClipboardText { get; set; } = string.Empty;
+    private string clipboardText = string.Empty;
+    public Exception? ClipboardGetException { get; set; }
+    public Exception? ClipboardSetException { get; set; }
+
+    public string ClipboardText
+    {
+        get => ClipboardGetException is not null ? throw ClipboardGetException : clipboardText;
+        set => clipboardText = ClipboardSetException is not null ? throw ClipboardSetException : value;
+    }
     public IReadOnlyList<Key> SupportedKeys => [];
     public string Name => "FakeKeyboard";
     public int Index => 0;
