@@ -1,6 +1,7 @@
 using PlusUi.core.Attributes;
 using PlusUi.core.Services.DebugBridge;
 using SkiaSharp;
+using System.ComponentModel;
 
 namespace PlusUi.core;
 
@@ -41,7 +42,37 @@ public abstract partial class UserControl : UiElement<UserControl>, IDebugInspec
     public override AccessibilityRole AccessibilityRole => AccessibilityRole.Container;
 
     private UiElement _content = new NullElement();
+    private readonly INotifyPropertyChanged? _ownViewModel;
     protected abstract UiElement Build();
+
+    protected UserControl()
+    {
+    }
+
+    /// <summary>
+    /// Creates a UserControl with its own view model. The view model becomes the binding
+    /// context of the composed content and is not replaced by page context propagation.
+    /// </summary>
+    protected UserControl(INotifyPropertyChanged viewModel)
+    {
+        _ownViewModel = viewModel;
+        Context = viewModel;
+    }
+
+    /// <summary>
+    /// Forwards the context to the composed content so bindings inside Build() resolve.
+    /// A view model passed to the constructor always wins over propagated contexts.
+    /// </summary>
+    public override INotifyPropertyChanged? Context
+    {
+        get => base.Context;
+        internal set
+        {
+            var effectiveContext = _ownViewModel ?? value;
+            base.Context = effectiveContext;
+            _content.Context = effectiveContext;
+        }
+    }
 
     /// <summary>
     /// Returns the content element for debug inspection.
@@ -51,9 +82,11 @@ public abstract partial class UserControl : UiElement<UserControl>, IDebugInspec
 
     public override void BuildContent()
     {
+        _content.Context = null;
         _content = Build();
         _content.BuildContent();
         _content.Parent = this;
+        _content.Context = Context;
         InvalidateMeasure();
     }
 

@@ -137,12 +137,14 @@ public partial class HStack : UiLayoutElement
                 childAvailableSize.Height);
         }
 
-        // Measure stretching children - they share the remaining space
+        // Measure stretching children - they share the remaining space.
+        // Pass dontStretch through: a natural-size pass must not leave children "clean"
+        // at a height that is not the final one, or later measures with the real height skip.
         var stretchingChildren = Children.Where(c => c.HorizontalAlignment is HorizontalAlignment.Stretch).ToList();
         if (stretchingChildren.Count > 0)
         {
             var stretchWidth = childAvailableSize.Width / stretchingChildren.Count;
-            stretchingChildren.ForEach(child => child.Measure(new Size(stretchWidth, childAvailableSize.Height), false));
+            stretchingChildren.ForEach(child => child.Measure(new Size(stretchWidth, childAvailableSize.Height), dontStretch));
         }
 
         var width = Children.Sum(c => c.ElementSize.Width + c.Margin.Left + c.Margin.Right);
@@ -156,12 +158,25 @@ public partial class HStack : UiLayoutElement
             : 0;
 
         // Resolve cross-axis (vertical) stretch: a VerticalAlignment.Stretch child should fill
-        // the row's content height, not the (possibly unbounded) available height. Re-measure
-        // such children with the computed row height so e.g. a vertical Separator renders at the
+        // the row's final content height, not the (possibly unbounded) available height. Re-measure
+        // such children with the resolved row height so e.g. a vertical Separator renders at the
         // height of its siblings instead of grabbing the full available height.
-        foreach (var child in Children.Where(c => c.VerticalAlignment is VerticalAlignment.Stretch).ToList())
+        if (!dontStretch)
         {
-            child.Measure(new Size(child.ElementSize.Width, Math.Max(0, height - child.Margin.Vertical)), false);
+            var resolvedHeight = height;
+            if (VerticalAlignment == VerticalAlignment.Stretch && availableSize.Height < float.MaxValue && DesiredSize?.Height is null or <= 0)
+            {
+                resolvedHeight = Math.Max(resolvedHeight, Math.Max(0, availableSize.Height - Margin.Vertical));
+            }
+            if (DesiredSize?.Height > 0)
+            {
+                resolvedHeight = DesiredSize.Value.Height;
+            }
+
+            foreach (var child in Children.Where(c => c.VerticalAlignment is VerticalAlignment.Stretch).ToList())
+            {
+                child.Measure(new Size(child.ElementSize.Width, Math.Max(0, resolvedHeight - child.Margin.Vertical)), false);
+            }
         }
 
         return new Size(width, height);
@@ -264,7 +279,12 @@ public partial class HStack : UiLayoutElement
                 VerticalAlignment.Bottom => y + ElementSize.Height - child.ElementSize.Height,
                 _ => y,
             };
-            child.Arrange(new Rect(x, childTopBound, child.ElementSize.Width, child.ElementSize.Height));
+            // Stretch children fill the stack height; cross-axis stretch is already resolved in
+            // MeasureInternal, the bounds just must not exceed the stack (never a taller ancestor)
+            var childBoundsHeight = child.VerticalAlignment == VerticalAlignment.Stretch
+                ? ElementSize.Height
+                : child.ElementSize.Height;
+            child.Arrange(new Rect(x, childTopBound, child.ElementSize.Width, childBoundsHeight));
             x += child.ElementSize.Width + child.Margin.Left + child.Margin.Right;
         }
         return new Point(positionX, positionY);

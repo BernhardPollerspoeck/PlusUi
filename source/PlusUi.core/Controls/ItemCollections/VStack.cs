@@ -138,12 +138,14 @@ public partial class VStack : UiLayoutElement
                 Math.Max(0, childAvailableSize.Height - (result.Height + child.Margin.Vertical)));
         }
 
-        // Measure stretching children - they share the remaining space
+        // Measure stretching children - they share the remaining space.
+        // Pass dontStretch through: a natural-size pass must not leave children "clean"
+        // at a width that is not the final one, or later measures with the real width skip.
         var stretchingChildren = Children.Where(c => c.VerticalAlignment is VerticalAlignment.Stretch).ToList();
         if (stretchingChildren.Count > 0)
         {
             var stretchHeight = childAvailableSize.Height / stretchingChildren.Count;
-            stretchingChildren.ForEach(child => child.Measure(new Size(childAvailableSize.Width, stretchHeight), false));
+            stretchingChildren.ForEach(child => child.Measure(new Size(childAvailableSize.Width, stretchHeight), dontStretch));
         }
 
         var width = Children.Count > 0
@@ -164,6 +166,34 @@ public partial class VStack : UiLayoutElement
         if (DesiredSize?.Height > 0)
         {
             height = DesiredSize.Value.Height;
+        }
+
+        // Resolve cross-axis (horizontal) stretch during measure (mirrors HStack): a
+        // HorizontalAlignment.Stretch child fills the stack's final content width - not the
+        // width of an earlier, wider measure pass and not only when ArrangeInternal happens
+        // to run (it is skipped for clean subtrees, which used to collapse such children).
+        if (!dontStretch)
+        {
+            var resolvedWidth = width;
+            if (HorizontalAlignment == HorizontalAlignment.Stretch && availableSize.Width < float.MaxValue && DesiredSize?.Width is null or <= 0)
+            {
+                resolvedWidth = Math.Max(resolvedWidth, Math.Max(0, availableSize.Width - Margin.Horizontal));
+            }
+
+            foreach (var child in Children.Where(c => c.HorizontalAlignment is HorizontalAlignment.Stretch).ToList())
+            {
+                child.Measure(new Size(resolvedWidth, child.ElementSize.Height + child.Margin.Vertical), false);
+            }
+
+            // Stretched children may have re-wrapped their content; refresh the height sum
+            if (DesiredSize?.Height is null or <= 0)
+            {
+                height = Children.Sum(c => c.ElementSize.Height + c.Margin.Top + c.Margin.Bottom);
+                if (Children.Count > 1)
+                {
+                    height += (Children.Count - 1) * Spacing;
+                }
+            }
         }
 
         return new Size(width, height);
@@ -274,23 +304,21 @@ public partial class VStack : UiLayoutElement
             }
             isFirst = false;
 
-            // Resolve horizontal (cross-axis) stretch now that the stack's final width is known:
-            // a HorizontalAlignment.Stretch child fills the stack width instead of its natural width.
-            if (child.HorizontalAlignment == HorizontalAlignment.Stretch)
-            {
-                child.Measure(new Size(ElementSize.Width, child.ElementSize.Height + child.Margin.Vertical), false);
-            }
-
             var childLeftBound = child.HorizontalAlignment switch
             {
                 HorizontalAlignment.Center => x + ((ElementSize.Width - child.ElementSize.Width) / 2),
                 HorizontalAlignment.Right => x + ElementSize.Width - child.ElementSize.Width,
                 _ => x,
             };
+            // Stretch children fill the stack width; cross-axis stretch is already resolved in
+            // MeasureInternal, the bounds just must not exceed the stack (never a wider ancestor)
+            var childBoundsWidth = child.HorizontalAlignment == HorizontalAlignment.Stretch
+                ? ElementSize.Width
+                : child.ElementSize.Width;
             child.Arrange(new Rect(
                 childLeftBound,
                 y,
-                child.ElementSize.Width,
+                childBoundsWidth,
                 child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom));
             y += child.ElementSize.Height + child.Margin.Top + child.Margin.Bottom;
         }
