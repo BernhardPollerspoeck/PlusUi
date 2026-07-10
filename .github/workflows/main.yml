@@ -12,6 +12,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write # required for NuGet Trusted Publishing (OIDC)
     steps:
 
     - name: Checkout
@@ -45,5 +48,11 @@ jobs:
         dotnet pack source/PlusUi.core/PlusUi.core.csproj --no-build --configuration Release /p:Version=${VERSION} --output ./artifacts
         dotnet pack source/PlusUi.desktop/PlusUi.desktop.csproj --no-build --configuration Release /p:Version=${VERSION} --output ./artifacts
 
+    - name: NuGet login (Trusted Publishing)
+      uses: NuGet/login@v1
+      id: nuget-login
+      with:
+        user: Poller
+
     - name: Push
-      run: dotnet nuget push "./artifacts/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+      run: dotnet nuget push "./artifacts/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --skip-duplicate
