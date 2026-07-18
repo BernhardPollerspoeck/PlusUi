@@ -458,7 +458,18 @@ public class InputService
     {
         var focused = _focusManager.FocusedElement;
 
-        // Tab always navigates focus
+        // The focused element gets first refusal on every key, including Tab: a control such as
+        // CodeEditor needs Tab to indent. Controls that do not claim the key fall through to the
+        // focus navigation below, so Tab still moves focus everywhere else.
+        if (focused is IKeyboardInputHandler keyboardHandler)
+        {
+            if (keyboardHandler.HandleKeyboardInput(key))
+            {
+                return; // Control handled the key
+            }
+        }
+
+        // Tab navigates focus unless the focused control claimed it above
         if (key == PlusKey.Tab)
         {
             _focusManager.MoveFocus(FocusNavigationDirection.Next);
@@ -470,15 +481,6 @@ public class InputService
             _focusManager.MoveFocus(FocusNavigationDirection.Previous);
             SyncTextInputWithFocus();
             return;
-        }
-
-        // If focused element handles keyboard input specially, let it handle arrow keys
-        if (focused is IKeyboardInputHandler keyboardHandler)
-        {
-            if (keyboardHandler.HandleKeyboardInput(key))
-            {
-                return; // Control handled the key
-            }
         }
 
         // Arrow keys for focus navigation (only if not handled by control and not in text input)

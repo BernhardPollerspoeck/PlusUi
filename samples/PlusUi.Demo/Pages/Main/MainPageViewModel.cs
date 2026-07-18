@@ -24,6 +24,7 @@ public partial class MainPageViewModel : ObservableObject
             ["Label"] = () => navigation.NavigateTo<LabelPage>(),
             ["RichTextLabel"] = () => navigation.NavigateTo<RichTextLabelPage>(),
             ["Entry"] = () => navigation.NavigateTo<EntryPage>(),
+            ["CodeEditor"] = () => navigation.NavigateTo<CodeEditorPage>(),
             ["Button"] = () => navigation.NavigateTo<ButtonPage>(),
             ["Checkbox"] = () => navigation.NavigateTo<CheckboxPage>(),
             ["RadioButton"] = () => navigation.NavigateTo<RadioButtonPage>(),
@@ -60,7 +61,7 @@ public partial class MainPageViewModel : ObservableObject
             ["DataGrid"] = () => navigation.NavigateTo<DataGridPage>(),
         };
 
-        AddGroup("Text", "Label", "RichTextLabel", "Link", "Entry");
+        AddGroup("Text", "Label", "RichTextLabel", "Link", "Entry", "CodeEditor");
         AddGroup("Buttons & Selection", "Button", "Checkbox", "RadioButton", "Toggle", "Slider");
         AddGroup("Pickers & Lists", "ComboBox", "DatePicker", "TimePicker", "ItemsList", "TreeView", "DataGrid");
         AddGroup("Layout", "Border", "Grid", "HStack", "VStack", "UniformGrid", "ScrollView", "Separator");

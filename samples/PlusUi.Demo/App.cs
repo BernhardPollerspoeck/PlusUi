@@ -24,6 +24,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<MainPage>().WithViewModel<MainPageViewModel>();
         builder.AddPage<EntryPage>().WithViewModel<EntryPageViewModel>();
         builder.AddPage<RichTextLabelPage>().WithViewModel<RichTextLabelPageViewModel>();
+        builder.AddPage<CodeEditorPage>().WithViewModel<CodeEditorPageViewModel>();
 
         // Shared view model for simple demo pages that only need back-navigation.
         builder.WithViewModel<DemoPageViewModel>();
