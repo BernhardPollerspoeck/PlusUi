@@ -1266,4 +1266,133 @@ public class TreeViewTests
     }
 
     #endregion
+
+    #region Bug: Measure-cached Children diverge from freshly computed visible nodes
+
+    private static List<object> CreateFlatItems(int count) =>
+        Enumerable.Range(0, count)
+            .Select(i => new Category { Name = $"Item{i}" })
+            .Cast<object>()
+            .ToList();
+
+    private static TreeView CreateTreeViewWithTemplate(List<object> items) =>
+        new TreeView()
+            .SetItemHeight(32f)
+            .SetChildrenSelector<Category>(c => c.SubCategories.Cast<object>())
+            .SetItemTemplate((item, depth) => new Label().SetText(((Category)item).Name))
+            .SetItemsSource(items);
+
+    private static List<string> GetChildLabelTexts(TreeView treeView) =>
+        treeView.Children.OfType<Label>().Select(l => l.Text).ToList();
+
+    private static List<string> GetVisibleNodeNames(TreeView treeView, float viewportHeight) =>
+        treeView.GetVisibleNodes(treeView.ScrollOffset, viewportHeight)
+            .Select(n => ((Category)n.Item).Name)
+            .ToList();
+
+    [TestMethod]
+    public void TreeView_ScrollOffsetProperty_NextMeasureRebuildsChildren()
+    {
+        // Arrange - 20 items, viewport shows 5 (160 / 32)
+        var treeView = CreateTreeViewWithTemplate(CreateFlatItems(20));
+
+        treeView.Measure(new Size(200, 160));
+        treeView.Arrange(new Rect(0, 0, 200, 160));
+
+        CollectionAssert.AreEqual(
+            new[] { "Item0", "Item1", "Item2", "Item3", "Item4" },
+            GetChildLabelTexts(treeView),
+            "Sanity: initial measure should create elements for the first 5 items");
+
+        // Act - scroll via the public property (e.g. from a binding or programmatic scroll),
+        // then run the next frame's layout pass
+        treeView.ScrollOffset = 160f;
+        treeView.Measure(new Size(200, 160));
+        treeView.Arrange(new Rect(0, 0, 200, 160));
+
+        // Assert - the cached item elements (path A) must match the nodes that
+        // Arrange/Render/HitTest compute freshly (path B)
+        var expected = GetVisibleNodeNames(treeView, (float)treeView.ElementSize.Height);
+        var actual = GetChildLabelTexts(treeView);
+        CollectionAssert.AreEqual(expected, actual,
+            $"Children must represent the same nodes Render/HitTest use. " +
+            $"Visible nodes: [{string.Join(", ", expected)}], cached children: [{string.Join(", ", actual)}]");
+    }
+
+    [TestMethod]
+    public void TreeView_ScrollOffsetProperty_HitTestMatchesRenderedRow()
+    {
+        // Arrange
+        var treeView = CreateTreeViewWithTemplate(CreateFlatItems(20));
+
+        treeView.Measure(new Size(200, 160));
+        treeView.Arrange(new Rect(0, 0, 200, 160));
+
+        treeView.ScrollOffset = 160f;
+        treeView.Measure(new Size(200, 160));
+        treeView.Arrange(new Rect(0, 0, 200, 160));
+
+        // Act - click on the first visible row
+        treeView.HitTest(new Point(50, 16));
+
+        // Assert - the item that HitTest resolves for row 0 must be the same item
+        // whose element is rendered in row 0
+        var renderedRow0Text = GetChildLabelTexts(treeView).FirstOrDefault();
+        var hoveredName = ((Category?)treeView.HoveredItem)?.Name;
+        Assert.AreEqual(renderedRow0Text, hoveredName,
+            "HitTest must resolve the same item that is displayed in the clicked row");
+    }
+
+    [TestMethod]
+    public void TreeView_CollapseNode_ReclampsScrollOffset()
+    {
+        // Arrange - one root with 20 children
+        var root = new Category
+        {
+            Name = "Root",
+            SubCategories = Enumerable.Range(0, 20).Select(i => new Category { Name = $"Child{i}" }).ToList()
+        };
+        var treeView = CreateTreeViewWithTemplate([root]);
+
+        treeView.Measure(new Size(200, 160));
+        treeView.Arrange(new Rect(0, 0, 200, 160));
+
+        treeView.ExpandNode(root);
+        // TotalHeight = 21 * 32 = 672, max offset = 672 - 160 = 512
+        treeView.HandleScroll(0, 512);
+        Assert.AreEqual(512f, treeView.ScrollOffset, "Sanity: scrolled to bottom");
+
+        // Act - collapsing shrinks TotalHeight to 32
+        treeView.CollapseNode(root);
+
+        // Assert - offset must be re-clamped, otherwise the viewport points past the content
+        var maxValidOffset = Math.Max(0f, treeView.TotalHeight - (float)treeView.ElementSize.Height);
+        Assert.IsLessThanOrEqualTo(maxValidOffset, treeView.ScrollOffset,
+            $"ScrollOffset ({treeView.ScrollOffset}) must be clamped to the new content height " +
+            $"(TotalHeight={treeView.TotalHeight}, viewport={treeView.ElementSize.Height})");
+        Assert.IsTrue(treeView.GetVisibleNodes(treeView.ScrollOffset, (float)treeView.ElementSize.Height).Any(),
+            "After collapse the viewport must not be empty while content exists");
+    }
+
+    [TestMethod]
+    public void TreeView_DesiredSizeTallerThanAvailable_ChildrenMatchArrangedViewport()
+    {
+        // Arrange - DesiredSize.Height (640) exceeds available height (160).
+        // MeasureInternal uses DesiredSize as viewport while ElementSize is clamped to 160,
+        // so path A and path B answer "how many rows are visible" differently.
+        var treeView = CreateTreeViewWithTemplate(CreateFlatItems(20));
+        treeView.SetDesiredSize(new Size(200, 640));
+
+        // Act
+        treeView.Measure(new Size(200, 160));
+        treeView.Arrange(new Rect(0, 0, 200, 160));
+
+        // Assert
+        var visibleCount = treeView.GetVisibleNodes(treeView.ScrollOffset, (float)treeView.ElementSize.Height).Count();
+        Assert.AreEqual(visibleCount, treeView.Children.Count,
+            $"Children count ({treeView.Children.Count}) must equal the visible node count ({visibleCount}) " +
+            $"computed from ElementSize.Height ({treeView.ElementSize.Height})");
+    }
+
+    #endregion
 }
