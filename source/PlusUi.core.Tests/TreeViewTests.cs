@@ -1283,7 +1283,7 @@ public class TreeViewTests
             .SetItemsSource(items);
 
     private static List<string> GetChildLabelTexts(TreeView treeView) =>
-        treeView.Children.OfType<Label>().Select(l => l.Text).ToList();
+        treeView.Children.OfType<Label>().Select(l => l.Text ?? string.Empty).ToList();
 
     private static List<string> GetVisibleNodeNames(TreeView treeView, float viewportHeight) =>
         treeView.GetVisibleNodes(treeView.ScrollOffset, viewportHeight)

@@ -567,6 +567,8 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
         {
             PerformAutoExpandInitialLevels();
         }
+
+        ClampScrollOffset();
     }
 
     /// <summary>
@@ -703,7 +705,14 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
         if (_expandedKeys != null && _keySelector != null)
             _expandedKeys.Remove(_keySelector(item));
         node.UpdateExpandedHeight(_itemHeight);
+        ClampScrollOffset();
         InvalidateMeasure();
+    }
+
+    private void ClampScrollOffset()
+    {
+        var maxOffset = Math.Max(0, TotalHeight - ElementSize.Height);
+        _scrollOffset = Math.Clamp(_scrollOffset, 0, (float)maxOffset);
     }
 
     public void ExpandWhere(Func<object, bool> predicate)
@@ -840,7 +849,12 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
         set
         {
             var maxOffset = Math.Max(0, TotalHeight - ElementSize.Height);
-            _scrollOffset = Math.Clamp(value, 0, maxOffset);
+            var clamped = Math.Clamp(value, 0, (float)maxOffset);
+            if (clamped == _scrollOffset)
+                return;
+
+            _scrollOffset = clamped;
+            InvalidateMeasure();
         }
     }
 
@@ -855,7 +869,6 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
     public void HandleScroll(float deltaX, float deltaY)
     {
         ScrollOffset += deltaY;
-        InvalidateMeasure();
     }
 
     #endregion
@@ -931,8 +944,9 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
         float relativeY = (float)(point.Y - actualY);
         float relativeX = (float)(point.X - actualX);
 
-        // Find which visible node was hit based on Y position
-        var visibleNodes = GetVisibleNodes(_scrollOffset, (float)ElementSize.Height).ToList();
+        // Find which visible node was hit based on Y position, using the same
+        // snapshot the rendered rows came from
+        var visibleNodes = _visibleNodesSnapshot;
         int hitIndex = (int)(relativeY / _itemHeight);
         TreeViewNode? hitNode = null;
 
@@ -1002,6 +1016,7 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
     #region Layout
 
     private readonly List<UiElement> _visibleItemElements = [];
+    private readonly List<TreeViewNode> _visibleNodesSnapshot = [];
 
     /// <inheritdoc />
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)
@@ -1009,20 +1024,29 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
         // Clear old children
         Children.Clear();
         _visibleItemElements.Clear();
+        _visibleNodesSnapshot.Clear();
 
         // Subtract own margin from available size
         var availableForContent = new Size(
             Math.Max(0, availableSize.Width - Margin.Horizontal),
             Math.Max(0, availableSize.Height - Margin.Vertical));
 
-        var width = DesiredSize?.Width > 0 ? DesiredSize.Value.Width : availableForContent.Width;
-        var height = DesiredSize?.Height > 0 ? DesiredSize.Value.Height : availableForContent.Height;
+        // Clamp DesiredSize to the available space so the viewport used here always
+        // matches the ElementSize that Arrange/Render/HitTest will operate on
+        var width = DesiredSize?.Width > 0
+            ? Math.Min(DesiredSize.Value.Width, availableSize.Width)
+            : availableForContent.Width;
+        var height = DesiredSize?.Height > 0
+            ? Math.Min(DesiredSize.Value.Height, availableSize.Height)
+            : availableForContent.Height;
 
-        // Get visible nodes and create elements for them
-        var visibleNodes = GetVisibleNodes(_scrollOffset, (float)height);
+        _scrollOffset = Math.Clamp(_scrollOffset, 0, Math.Max(0, TotalHeight - (float)height));
 
-        foreach (var node in visibleNodes)
+        // Snapshot the visible nodes; Arrange/Render/HitTest must consume this same
+        // snapshot so chrome and item elements can never diverge
+        foreach (var node in GetVisibleNodes(_scrollOffset, (float)height))
         {
+            _visibleNodesSnapshot.Add(node);
             if (_itemTemplate != null)
             {
                 var element = _itemTemplate(node.Item, node.Depth);
@@ -1052,7 +1076,7 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
         };
 
         // Arrange visible item elements sequentially
-        var visibleNodes = GetVisibleNodes(_scrollOffset, (float)ElementSize.Height).ToList();
+        var visibleNodes = _visibleNodesSnapshot;
         for (int i = 0; i < _visibleItemElements.Count && i < visibleNodes.Count; i++)
         {
             var element = _visibleItemElements[i];
@@ -1113,8 +1137,8 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
         // Render background
         base.Render(canvas);
 
-        // Render visible nodes
-        var visibleNodes = GetVisibleNodes(_scrollOffset, (float)ElementSize.Height).ToList();
+        // Render visible nodes from the measure-time snapshot
+        var visibleNodes = _visibleNodesSnapshot;
 
         // Draw selection highlight
         if (_selectedItem != null)
