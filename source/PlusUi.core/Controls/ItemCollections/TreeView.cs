@@ -1040,7 +1040,13 @@ public partial class TreeView : UiLayoutElement<TreeView>, IScrollableControl, I
             ? Math.Min(DesiredSize.Value.Height, availableSize.Height)
             : availableForContent.Height;
 
-        _scrollOffset = Math.Clamp(_scrollOffset, 0, Math.Max(0, TotalHeight - (float)height));
+        // Only clamp on real passes: probe passes (dontStretch) may carry a foreign
+        // viewport size (e.g. the full grid instead of this cell) and would destroy
+        // a legitimate scroll offset
+        if (!dontStretch)
+        {
+            _scrollOffset = Math.Clamp(_scrollOffset, 0, Math.Max(0, TotalHeight - (float)height));
+        }
 
         // Snapshot the visible nodes; Arrange/Render/HitTest must consume this same
         // snapshot so chrome and item elements can never diverge
