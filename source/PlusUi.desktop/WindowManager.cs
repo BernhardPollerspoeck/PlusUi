@@ -49,6 +49,9 @@ internal class WindowManager(
     private bool _isClosing;
     private Vector2D<int> _lastNormalPosition;
     private Vector2D<int> _lastNormalSize;
+
+    /// <summary>The size the current surface was built for. See <see cref="HandleWindowRender"/>.</summary>
+    private Vector2D<int> _surfaceSize;
     #endregion
 
     #region IHostedService
@@ -134,6 +137,19 @@ internal class WindowManager(
         {
             logger.LogWarning("Render skipped: GL context, canvas, GR context, or window is not initialized.");
             return;
+        }
+
+        // The surface has to match the window we are about to draw into, and this is the only
+        // place that is certain of both. Relying on the Resize event alone leaves a gap: a
+        // size change that does not raise it - or raises it late - has the renderer drawing
+        // the previous layout into a surface of the previous size. Nothing looks broken, the
+        // window simply keeps its old contents until some unrelated event happens to
+        // invalidate the tree, which is why it appears to "fix itself" on the next hover.
+        if (_window.Size != _surfaceSize)
+        {
+            _surface?.Dispose();
+            CreateSurface(_window.Size);
+            navigationContainer.CurrentPage.InvalidateMeasure();
         }
 
         renderService.Render(
@@ -298,6 +314,8 @@ internal class WindowManager(
     #region private methods
     private void CreateSurface(Vector2D<int> size)
     {
+        _surfaceSize = size;
+
         var frameBufferInfo = new GRGlFramebufferInfo(0, 0x8058); // 0x8058 is GL_RGBA8
         var backendRenderTarget = new GRBackendRenderTarget(
             size.X,
