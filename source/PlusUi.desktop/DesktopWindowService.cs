@@ -125,6 +125,8 @@ public sealed class DesktopWindowService : IWindowService
         _window.Size = new Vector2D<int>(w, h);
     }
 
+    public void Close() => _window?.Close();
+
     public unsafe void SetSizeLimits(float? minWidth, float? minHeight, float? maxWidth, float? maxHeight)
     {
         // GLFW_DONT_CARE. Passing it for a bound removes that bound rather than pinning it

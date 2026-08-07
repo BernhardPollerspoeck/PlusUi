@@ -52,6 +52,7 @@ new Button()
 | `MoveTo(x, y)` | `void` | Moves the window; size, border and borderless state untouched. |
 | `Resize(w, h)` | `void` | Resizes it; position untouched. Sizes below 1px are ignored. |
 | `SetSizeLimits(minW, minH, maxW, maxH)` | `void` | Bounds on the window size; `null` drops a bound. |
+| `Close()` | `void` | Closes the window, ending the application. |
 | `GetDisplays()` | `IReadOnlyList<DisplayInfo>` | Connected displays, in system order. |
 | `VirtualDesktopBounds` | `Rect` | Bounding rectangle across all displays. |
 
@@ -100,7 +101,10 @@ Calling `EnterBorderless` while already borderless **re-targets** the window and
 
 ## Windows with their own chrome
 
-Setting `WindowBorder.Hidden` removes the system title bar, and with it the two things that bar provided: a close button and a way to move and resize the window. Rebuild both, or the user ends up with a window nailed to the screen at a fixed size.
+Setting `WindowBorder.Hidden` removes the system title bar, and with it the three things that bar provided: a close button, and a way to move and to resize the window. Rebuild all three, or the user ends up with a window nailed to the screen at a fixed size that cannot be closed.
+
+{: .warning }
+> Use `windowService.Close()` for the close button, not `IHostApplicationLifetime.StopApplication()`. The desktop head runs the window loop inside `StartAsync`, so the host never finishes starting and never observes a stop request — the window has to close first for that loop to return. A close button wired to `StopApplication` simply does nothing.
 
 ```csharp
 // Drag: accumulate the pointer delta onto the current position.

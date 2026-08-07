@@ -49,6 +49,13 @@ internal sealed class NoOpWindowService(IPlatformService platformService) : IWin
         // Intentionally empty.
     }
 
+    public void Close()
+    {
+        // Intentionally empty. Platforms without a window have nothing to close, and ending
+        // the process from here would turn a chrome button into an application kill switch on
+        // hosts that never asked for one.
+    }
+
     public IReadOnlyList<DisplayInfo> GetDisplays()
     {
         var size = platformService.WindowSize;

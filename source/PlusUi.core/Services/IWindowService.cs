@@ -104,6 +104,18 @@ public interface IWindowService
     void SetSizeLimits(float? minWidth, float? minHeight, float? maxWidth, float? maxHeight);
 
     /// <summary>
+    /// Closes the window, which ends the application.
+    /// <para>
+    /// The third thing a hidden title bar takes away, after moving and resizing — and the one
+    /// with no workaround. <c>IHostApplicationLifetime.StopApplication</c> does not serve here:
+    /// the desktop head runs the window loop inside <c>StartAsync</c>, so the host never
+    /// finishes starting and never gets to observe a stop request. The window has to close
+    /// first for that loop to return, which is exactly what this does.
+    /// </para>
+    /// </summary>
+    void Close();
+
+    /// <summary>
     /// The connected displays, in the order reported by the system.
     /// <para>
     /// Platforms without a window concept return a single entry describing the drawing

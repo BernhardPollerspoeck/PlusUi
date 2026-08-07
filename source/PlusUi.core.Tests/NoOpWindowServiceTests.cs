@@ -62,6 +62,7 @@ public class NoOpWindowServiceTests
         service.MoveTo(120, 80);
         service.Resize(800, 600);
         service.SetSizeLimits(480, 340, null, null);
+        service.Close();
     }
 
     [TestMethod]
