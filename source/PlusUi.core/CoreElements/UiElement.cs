@@ -512,6 +512,12 @@ public abstract partial class UiElement : IDisposable
             ElementSize = new Size(desiredWidth, desiredHeight);
 
             NeedsMeasure = dontStretch;//if we ignore stretching it is a pure calculation pass. so we need to remeasure again
+
+            // A measure pass may have changed ElementSize or rebuilt children (virtualizing
+            // controls recreate their item elements in MeasureInternal), so the element MUST
+            // be re-arranged even if the invalidation originated in a sibling subtree -
+            // otherwise fresh children keep Position (0,0) and render outside the clip.
+            NeedsArrange = true;
         }
         return ElementSize;
     }
