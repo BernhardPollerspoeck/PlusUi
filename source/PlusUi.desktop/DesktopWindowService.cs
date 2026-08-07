@@ -109,6 +109,22 @@ public sealed class DesktopWindowService : IWindowService
         _window.Position = new Vector2D<int>((int)MathF.Round(x), (int)MathF.Round(y));
     }
 
+    public void Resize(float width, float height)
+    {
+        if (_window is null)
+            return;
+
+        var w = (int)MathF.Round(width);
+        var h = (int)MathF.Round(height);
+
+        // Dropped rather than clamped. A drag handle pulled past the opposite edge produces
+        // these constantly, and a window collapsed to nothing has no edge left to grab.
+        if (w < 1 || h < 1)
+            return;
+
+        _window.Size = new Vector2D<int>(w, h);
+    }
+
     public unsafe IReadOnlyList<DisplayInfo> GetDisplays()
     {
         // GLFW is only initialized once the window exists. Before that there is nothing

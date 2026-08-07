@@ -48,6 +48,9 @@ new Button()
 | `IsBorderless` | `bool` | Whether `EnterBorderless` is currently in effect. |
 | `EnterBorderless(Rect bounds, bool topMost)` | `void` | Undecorated window at `bounds`. Ignored if already borderless. |
 | `RestoreNormal()` | `void` | Restores position, size, border, window state and top-most. |
+| `Bounds` | `Rect` | Current position and size, in screen coordinates. |
+| `MoveTo(x, y)` | `void` | Moves the window; size, border and borderless state untouched. |
+| `Resize(w, h)` | `void` | Resizes it; position untouched. Sizes below 1px are ignored. |
 | `GetDisplays()` | `IReadOnlyList<DisplayInfo>` | Connected displays, in system order. |
 | `VirtualDesktopBounds` | `Rect` | Bounding rectangle across all displays. |
 
@@ -93,6 +96,25 @@ Calling `EnterBorderless` while already borderless **re-targets** the window and
 > `PointerDown`/`PointerUp` pair with `PointerButton.Middle`. It is raised on the global bus
 > only — it does no hit testing, changes no focus and fires no click, because PlusUi controls
 > have no middle-button behaviour to inherit.
+
+## Windows with their own chrome
+
+Setting `WindowBorder.Hidden` removes the system title bar, and with it the two things that bar provided: a close button and a way to move and resize the window. Rebuild both, or the user ends up with a window nailed to the screen at a fixed size.
+
+```csharp
+// Drag: accumulate the pointer delta onto the current position.
+windowService.MoveTo(
+    windowService.Bounds.X + deltaX,
+    windowService.Bounds.Y + deltaY);
+
+// Resize grip in the bottom-right corner.
+windowService.Resize(
+    pointer.X - windowService.Bounds.X,
+    pointer.Y - windowService.Bounds.Y);
+```
+
+{: .warning }
+> Pointer positions arrive in layout units, window geometry is in screen coordinates. On a display scaled above 100% the two differ, and using the raw delta makes the window lag behind or outrun the cursor. Multiply by `IPlatformService.DisplayDensity`.
 
 ## Displays
 

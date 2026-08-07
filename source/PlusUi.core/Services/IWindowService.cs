@@ -72,6 +72,21 @@ public interface IWindowService
     void MoveTo(float x, float y);
 
     /// <summary>
+    /// Resizes the window, leaving its position, border and borderless state alone.
+    /// <para>
+    /// The other half of what a hidden border takes away. Without a system frame there are no
+    /// edges to drag, so a window that hides its chrome is stuck at whatever size it started
+    /// at — which is bearable for a dialog and not for anything the user works in.
+    /// </para>
+    /// <para>
+    /// Sizes below one pixel are ignored rather than clamped: a resize handle dragged past the
+    /// opposite edge produces negative values every time, and a window that collapses to
+    /// nothing cannot be dragged back open.
+    /// </para>
+    /// </summary>
+    void Resize(float width, float height);
+
+    /// <summary>
     /// The connected displays, in the order reported by the system.
     /// <para>
     /// Platforms without a window concept return a single entry describing the drawing

@@ -53,6 +53,17 @@ public class NoOpWindowServiceTests
     }
 
     [TestMethod]
+    public void MoveToAndResize_DoNotThrow()
+    {
+        // The point of the no-op: an application with its own window chrome calls these on
+        // every drag, and must not have to ask first whether it is on a desktop.
+        var service = new NoOpWindowService(new FakePlatformService());
+
+        service.MoveTo(120, 80);
+        service.Resize(800, 600);
+    }
+
+    [TestMethod]
     public void GetDisplays_ReturnsExactlyOneEntry_DescribingTheSurface()
     {
         // Arrange - a caller on mobile still asks "what am I drawing on?"

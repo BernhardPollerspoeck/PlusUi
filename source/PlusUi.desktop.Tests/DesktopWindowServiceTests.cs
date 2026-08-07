@@ -59,6 +59,25 @@ public class DesktopWindowServiceTests
     }
 
     [TestMethod]
+    public void MoveToAndResize_WithoutWindow_DoNotThrow()
+    {
+        var service = new DesktopWindowService();
+
+        service.MoveTo(120, 80);
+        service.Resize(800, 600);
+    }
+
+    [TestMethod]
+    public void Resize_WithoutWindow_IgnoresDegenerateSizes()
+    {
+        // A drag handle pulled past the opposite edge produces these on every frame.
+        var service = new DesktopWindowService();
+
+        service.Resize(0, 400);
+        service.Resize(400, -200);
+    }
+
+    [TestMethod]
     public void GetDisplays_WithoutWindow_IsEmpty()
     {
         // Deliberately different from NoOpWindowService: on desktop an empty list means
