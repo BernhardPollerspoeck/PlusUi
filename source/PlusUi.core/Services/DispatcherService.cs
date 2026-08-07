@@ -19,16 +19,18 @@ public sealed class DispatcherService(ILogger<DispatcherService>? logger = null)
     {
         ArgumentNullException.ThrowIfNull(work);
 
-        // Running inline when already on the UI thread keeps Post usable as "make sure this
-        // happens on the UI thread" without the caller having to know where it is. It also
-        // preserves ordering: a queued item followed by an inline one would otherwise run in
-        // the wrong order.
-        if (IsOnUiThread && _pending.IsEmpty)
-        {
-            Execute(work);
-            return;
-        }
-
+        // Always queued, never run inline - not even when the caller is already on the UI
+        // thread.
+        //
+        // An earlier version took that shortcut, and it defeated the entire purpose. The
+        // render thread IS the UI thread, so a Post from inside a draw callback ran the work
+        // immediately, in the middle of the render pass: the one place this class exists to
+        // move work out of. Resizing the window from there disposes the surface the current
+        // draw is writing into, and the next canvas call throws ObjectDisposedException.
+        //
+        // "Post" means later. Code that wants "now, if I am on the right thread" can check
+        // IsOnUiThread and call directly - and then it is that code's decision, made where the
+        // consequences are visible, rather than a silent optimization in here.
         _pending.Enqueue(work);
     }
 

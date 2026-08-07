@@ -194,7 +194,19 @@ public partial class Border : UiLayoutElement
 
     public override void Render(SKCanvas canvas)
     {
-        // Draw stroke border BEFORE base.Render() so it appears behind content
+        // base.Render() (UiLayoutElement) handles background and children rendering with VisualOffset
+        base.Render(canvas);
+
+        // Stroke AFTER the base, not before.
+        //
+        // Drawing it first put it behind the content, which sounds harmless and is not: the
+        // base draws the Background across the whole element, so a Border with both a
+        // background and a stroke painted over its own outline every time. The border simply
+        // never appeared, with nothing to suggest why - the properties were set, the colour
+        // was right, and the result was a plain rectangle.
+        //
+        // An outline belongs on top in any case. That is what makes it frame the content
+        // rather than hide behind it.
         if (StrokeThickness > 0 && StrokeColor != SKColors.Transparent)
         {
             var strokeRect = new SKRect(
@@ -212,9 +224,6 @@ public partial class Border : UiLayoutElement
                 canvas.DrawRect(strokeRect, StrokePaint);
             }
         }
-
-        // base.Render() (UiLayoutElement) handles background and children rendering with VisualOffset
-        base.Render(canvas);
     }
 
     public override Size MeasureInternal(Size availableSize, bool dontStretch = false)

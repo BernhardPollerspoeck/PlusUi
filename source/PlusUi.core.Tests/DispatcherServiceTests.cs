@@ -31,13 +31,20 @@ public class DispatcherServiceTests
     }
 
     [TestMethod]
-    public void Post_OnUiThread_RunsImmediately()
+    public void Post_OnUiThread_StillWaitsForTheDrain()
     {
+        // The property the whole class rests on. The render thread is the UI thread, so
+        // running inline "because we are already there" would execute the work inside the
+        // draw callback it was posted from - which is exactly the place Post exists to escape.
         var dispatcher = new DispatcherService();
         dispatcher.MarkUiThread();
 
         var ran = false;
         dispatcher.Post(() => ran = true);
+
+        Assert.IsFalse(ran, "Post must never run inline, not even on the UI thread");
+
+        dispatcher.Drain();
 
         Assert.IsTrue(ran);
     }
@@ -75,9 +82,11 @@ public class DispatcherServiceTests
     }
 
     [TestMethod]
-    public void Post_OnUiThreadWithQueueNotEmpty_KeepsOrder()
+    public void Post_FromMixedThreads_KeepsPostOrder()
     {
-        // The inline shortcut must not let a later item overtake an earlier queued one.
+        // One queue for everyone, so work runs in the order it was posted regardless of who
+        // posted it. A shortcut for the UI thread would let a later item overtake an earlier
+        // one from a background thread.
         var dispatcher = new DispatcherService();
         var order = new List<int>();
 
