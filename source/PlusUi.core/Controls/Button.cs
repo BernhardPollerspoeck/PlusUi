@@ -341,7 +341,16 @@ public partial class Button : UiTextElement, IInputControl, IHoverableControl, I
         if (hasText)
         {
             var textX = currentX + textWidth / 2;
-            var textY = centerY + (TextSize / 2);
+
+            // Baseline from the font metrics, not from TextSize.
+            //
+            // TextSize is the em size; the line a glyph actually occupies runs from the
+            // ascent to the descent and sits asymmetrically around the baseline. Using
+            // TextSize/2 puts the baseline a couple of pixels too low at ordinary sizes -
+            // close enough to look intentional next to a word, and plainly crooked on a
+            // single glyph such as a close cross, where nothing beside it hides the error.
+            Font.GetFontMetrics(out var buttonMetrics);
+            var textY = centerY - ((buttonMetrics.Ascent + buttonMetrics.Descent) / 2f);
             canvas.DrawText(
                 Text!,
                 textX,

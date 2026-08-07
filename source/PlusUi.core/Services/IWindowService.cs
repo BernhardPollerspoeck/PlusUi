@@ -87,6 +87,23 @@ public interface IWindowService
     void Resize(float width, float height);
 
     /// <summary>
+    /// Constrains how far the window can be resized. Pass <c>null</c> for a limit that should
+    /// not apply.
+    /// <para>
+    /// Enforced by the window system itself, which is the difference that matters: a limit an
+    /// application checks in its own resize handler only holds while the user drags <b>that</b>
+    /// handle. It does nothing for the system's own edges, for a maximize, for a snap gesture,
+    /// or for a window restored to a size saved by an older version — and those are exactly
+    /// the paths that produce a layout nobody has ever seen.
+    /// </para>
+    /// </summary>
+    /// <param name="minWidth">Smallest allowed width, or null for no lower bound.</param>
+    /// <param name="minHeight">Smallest allowed height, or null for no lower bound.</param>
+    /// <param name="maxWidth">Largest allowed width, or null for no upper bound.</param>
+    /// <param name="maxHeight">Largest allowed height, or null for no upper bound.</param>
+    void SetSizeLimits(float? minWidth, float? minHeight, float? maxWidth, float? maxHeight);
+
+    /// <summary>
     /// The connected displays, in the order reported by the system.
     /// <para>
     /// Platforms without a window concept return a single entry describing the drawing

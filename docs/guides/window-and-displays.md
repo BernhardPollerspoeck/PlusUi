@@ -51,6 +51,7 @@ new Button()
 | `Bounds` | `Rect` | Current position and size, in screen coordinates. |
 | `MoveTo(x, y)` | `void` | Moves the window; size, border and borderless state untouched. |
 | `Resize(w, h)` | `void` | Resizes it; position untouched. Sizes below 1px are ignored. |
+| `SetSizeLimits(minW, minH, maxW, maxH)` | `void` | Bounds on the window size; `null` drops a bound. |
 | `GetDisplays()` | `IReadOnlyList<DisplayInfo>` | Connected displays, in system order. |
 | `VirtualDesktopBounds` | `Rect` | Bounding rectangle across all displays. |
 
@@ -115,6 +116,15 @@ windowService.Resize(
 
 {: .warning }
 > Pointer positions arrive in layout units, window geometry is in screen coordinates. On a display scaled above 100% the two differ, and using the raw delta makes the window lag behind or outrun the cursor. Multiply by `IPlatformService.DisplayDensity`.
+
+Set the bounds once, and let the window system hold them:
+
+```csharp
+windowService.SetSizeLimits(minWidth: 480, minHeight: 340, maxWidth: null, maxHeight: null);
+```
+
+{: .tip }
+> Clamping inside your own resize handler is not the same thing. It holds only while the user drags *your* handle — not for a maximize, a snap gesture, or a window restored to a size saved by an older build. Those are the paths that produce a layout nobody has ever seen.
 
 ## Displays
 

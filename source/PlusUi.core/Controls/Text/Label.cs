@@ -77,7 +77,7 @@ public partial class Label : UiTextElement
             canvas.DrawText(
                 truncatedText,
                 x,
-                Position.Y + VisualOffset.Y + TextSize,
+                Position.Y + VisualOffset.Y + TextSize + GetVerticalTextOffset(ElementSize.Height, 1),
                 (SKTextAlign)HorizontalTextAlignment,
                 Font,
                 Paint);
@@ -100,7 +100,8 @@ public partial class Label : UiTextElement
                 }
             }
 
-            var y = Position.Y + VisualOffset.Y + TextSize;
+            var y = Position.Y + VisualOffset.Y + TextSize
+                    + GetVerticalTextOffset(ElementSize.Height, lines.Count);
             foreach (var line in lines)
             {
                 // Calculate X position based on text alignment

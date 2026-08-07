@@ -65,6 +65,8 @@ public class DesktopWindowServiceTests
 
         service.MoveTo(120, 80);
         service.Resize(800, 600);
+        service.SetSizeLimits(480, 340, 1920, 1080);
+        service.SetSizeLimits(null, null, null, null);
     }
 
     [TestMethod]

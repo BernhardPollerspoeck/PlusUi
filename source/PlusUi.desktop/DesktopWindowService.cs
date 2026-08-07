@@ -125,6 +125,24 @@ public sealed class DesktopWindowService : IWindowService
         _window.Size = new Vector2D<int>(w, h);
     }
 
+    public unsafe void SetSizeLimits(float? minWidth, float? minHeight, float? maxWidth, float? maxHeight)
+    {
+        // GLFW_DONT_CARE. Passing it for a bound removes that bound rather than pinning it
+        // to zero or to some arbitrary large number.
+        const int dontCare = -1;
+
+        var handle = _window?.Native?.Glfw;
+        if (handle is null)
+            return;
+
+        static int Limit(float? value) => value is > 0 ? (int)MathF.Round(value.Value) : dontCare;
+
+        Glfw.GetApi().SetWindowSizeLimits(
+            (WindowHandle*)handle.Value,
+            Limit(minWidth), Limit(minHeight),
+            Limit(maxWidth), Limit(maxHeight));
+    }
+
     public unsafe IReadOnlyList<DisplayInfo> GetDisplays()
     {
         // GLFW is only initialized once the window exists. Before that there is nothing

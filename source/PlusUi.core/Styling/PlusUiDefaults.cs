@@ -267,6 +267,7 @@ public static class PlusUiDefaults
 
     /// <summary>Default horizontal text alignment.</summary>
     public const HorizontalTextAlignment HorizontalTextAlignment = core.HorizontalTextAlignment.Left;
+    public const VerticalTextAlignment VerticalTextAlignment = core.VerticalTextAlignment.Top;
 
     /// <summary>Default text wrapping mode.</summary>
     public const TextWrapping TextWrapping = core.TextWrapping.NoWrap;

@@ -44,6 +44,11 @@ internal sealed class NoOpWindowService(IPlatformService platformService) : IWin
         // Intentionally empty.
     }
 
+    public void SetSizeLimits(float? minWidth, float? minHeight, float? maxWidth, float? maxHeight)
+    {
+        // Intentionally empty.
+    }
+
     public IReadOnlyList<DisplayInfo> GetDisplays()
     {
         var size = platformService.WindowSize;

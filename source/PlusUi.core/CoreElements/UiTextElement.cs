@@ -34,6 +34,7 @@ public abstract partial class UiTextElement : UiElement
         FontWeight = PlusUiDefaults.FontWeight;
         FontStyle = PlusUiDefaults.FontStyle;
         HorizontalTextAlignment = PlusUiDefaults.HorizontalTextAlignment;
+        VerticalTextAlignment = PlusUiDefaults.VerticalTextAlignment;
         TextWrapping = PlusUiDefaults.TextWrapping;
         TextTruncation = PlusUiDefaults.TextTruncation;
 
@@ -305,6 +306,64 @@ public abstract partial class UiTextElement : UiElement
         var getter = propertyExpression.Compile();
         RegisterPathBinding(path, () => HorizontalTextAlignment = getter());
         return this;
+    }
+    #endregion
+
+    #region VerticalTextAlignment
+    internal VerticalTextAlignment VerticalTextAlignment
+    {
+        get => field;
+        set
+        {
+            if (field == value) return;
+            field = value;
+            InvalidateMeasure();
+        }
+    }
+    public UiTextElement SetVerticalTextAlignment(VerticalTextAlignment alignment)
+    {
+        VerticalTextAlignment = alignment;
+        return this;
+    }
+    public UiTextElement BindVerticalTextAlignment(Expression<Func<VerticalTextAlignment>> propertyExpression)
+    {
+        var path = ExpressionPathService.GetPropertyPath(propertyExpression);
+        var getter = propertyExpression.Compile();
+        RegisterPathBinding(path, () => VerticalTextAlignment = getter());
+        return this;
+    }
+
+    /// <summary>
+    /// How far down to shift the text block so it lands where
+    /// <see cref="VerticalTextAlignment"/> asks for.
+    /// </summary>
+    /// <param name="availableHeight">Height the element was actually given.</param>
+    /// <param name="lineCount">Number of rendered lines; treated as at least one.</param>
+    /// <remarks>
+    /// Measured from the font metrics rather than from <c>TextSize</c>. The two are not the
+    /// same: <c>TextSize</c> is the em size, while the space a line actually occupies runs
+    /// from the ascent to the descent and is typically a fifth larger. Centring with the em
+    /// size looks almost right and is consistently off by a couple of pixels — which is
+    /// exactly the kind of wrong that survives review and shows up on a glyph like a close
+    /// cross, where there is nothing else nearby to compare against.
+    /// </remarks>
+    internal float GetVerticalTextOffset(float availableHeight, int lineCount)
+    {
+        if (VerticalTextAlignment == VerticalTextAlignment.Top)
+            return 0f;
+
+        Font.GetFontMetrics(out var metrics);
+
+        var textHeight = (metrics.Descent - metrics.Ascent) * Math.Max(1, lineCount);
+        var slack = availableHeight - textHeight;
+
+        // Text taller than its element stays put. Shifting it would push the first line out
+        // of the top of the clip rectangle, so the reader loses the beginning instead of the
+        // end - the opposite of what every other overflow in the framework does.
+        if (slack <= 0f)
+            return 0f;
+
+        return VerticalTextAlignment == VerticalTextAlignment.Center ? slack / 2f : slack;
     }
     #endregion
 
