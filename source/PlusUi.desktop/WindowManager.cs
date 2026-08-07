@@ -344,6 +344,10 @@ internal class WindowManager(
         {
             inputService.RightClick(_mouse.Position / renderService.DisplayDensity);
         }
+        else if (button == MouseButton.Middle)
+        {
+            inputService.MiddleDown(_mouse.Position / renderService.DisplayDensity);
+        }
     }
 
     private void HandleMouseUp(IMouse mouse, MouseButton button)
@@ -353,6 +357,10 @@ internal class WindowManager(
         if (button == MouseButton.Left)
         {
             inputService.MouseUp(_mouse.Position / renderService.DisplayDensity);
+        }
+        else if (button == MouseButton.Middle)
+        {
+            inputService.MiddleUp(_mouse.Position / renderService.DisplayDensity);
         }
     }
 

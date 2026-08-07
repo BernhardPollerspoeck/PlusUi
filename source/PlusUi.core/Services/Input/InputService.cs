@@ -373,6 +373,24 @@ public class InputService
         _lastTapElement = hitControl;
     }
 
+    /// <summary>
+    /// Middle button pressed. Raised on the global bus only.
+    /// <para>
+    /// No hit test, no focus change, no click: PlusUi controls have no middle-button
+    /// behaviour, and inventing one here would apply it to every control in every
+    /// application. The button exists for canvases and viewers that want it — panning being
+    /// the usual reason — and those read the global bus anyway.
+    /// </para>
+    /// </summary>
+    public void MiddleDown(Vector2 location)
+        => _globalInput?.RaisePointerDown(
+            new PointerInputEvent(new Point(location.X, location.Y), PointerButton.Middle, CurrentModifiers()));
+
+    /// <summary>Middle button released. Global bus only; see <see cref="MiddleDown"/>.</summary>
+    public void MiddleUp(Vector2 location)
+        => _globalInput?.RaisePointerUp(
+            new PointerInputEvent(new Point(location.X, location.Y), PointerButton.Middle, CurrentModifiers()));
+
     public void RightClick(Vector2 location)
     {
         var point = new Point(location.X, location.Y);

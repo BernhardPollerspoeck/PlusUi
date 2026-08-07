@@ -47,12 +47,17 @@ public sealed class DesktopWindowService : IWindowService
 
     public void EnterBorderless(Rect bounds, bool topMost)
     {
-        // Ignoring the second call is what keeps RestoreNormal honest: a re-entry would
-        // otherwise save the overlay state as the state to return to.
-        if (_window is null || _previous is not null)
+        if (_window is null)
             return;
 
-        _previous = new PreviousState(
+        // Saved only on the way in. A second call re-targets the window and deliberately
+        // keeps the original state, so RestoreNormal still returns to where the user had it
+        // - saving again would record the overlay as the place to go back to.
+        //
+        // Re-targeting matters: moving the window out of the way, doing something to the
+        // screen underneath it, then covering the desktop is one continuous operation. Going
+        // through RestoreNormal in between would flash the window back at its old position.
+        _previous ??= new PreviousState(
             _window.Position,
             _window.Size,
             _window.WindowBorder,
@@ -88,6 +93,20 @@ public sealed class DesktopWindowService : IWindowService
         _window.WindowState = previous.State;
 
         _previous = null;
+    }
+
+    public Rect Bounds => _window is null
+        ? Rect.Empty
+        : new Rect(_window.Position.X, _window.Position.Y, _window.Size.X, _window.Size.Y);
+
+    public void MoveTo(float x, float y)
+    {
+        if (_window is null)
+            return;
+
+        // Only the position. Notably _previous is left untouched, so dragging a borderless
+        // window around does not become the state RestoreNormal returns to.
+        _window.Position = new Vector2D<int>((int)MathF.Round(x), (int)MathF.Round(y));
     }
 
     public unsafe IReadOnlyList<DisplayInfo> GetDisplays()

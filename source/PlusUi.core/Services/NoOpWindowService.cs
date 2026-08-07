@@ -25,6 +25,20 @@ internal sealed class NoOpWindowService(IPlatformService platformService) : IWin
         // Intentionally empty.
     }
 
+    public Rect Bounds
+    {
+        get
+        {
+            var size = platformService.WindowSize;
+            return new Rect(0, 0, size.Width, size.Height);
+        }
+    }
+
+    public void MoveTo(float x, float y)
+    {
+        // Intentionally empty.
+    }
+
     public IReadOnlyList<DisplayInfo> GetDisplays()
     {
         var size = platformService.WindowSize;

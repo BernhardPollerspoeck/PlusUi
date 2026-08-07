@@ -76,7 +76,7 @@ windowService.RestoreNormal();
 
 `RestoreNormal` remembers the previous state itself — position, size, border style, window state and the top-most flag are captured on the way in. The caller does not have to store anything.
 
-Calling `EnterBorderless` while already borderless is **ignored**. Without that, a second call would save the overlay geometry as the state to return to, and `RestoreNormal` would have nothing useful to restore.
+Calling `EnterBorderless` while already borderless **re-targets** the window and keeps the state saved on the first call, so `RestoreNormal` still returns to where the user had it. That makes "move out of the way, do something to the screen, then cover the desktop" one continuous operation instead of a round trip through `RestoreNormal` that flashes the window back at its old position.
 
 {: .tip }
 > Always give the user a keyboard way out. A borderless, top-most window covering every display is exactly the situation where a mis-placed button leaves no route back. Subscribe to `IGlobalInputService.KeyDown` and restore on `Escape`.
@@ -87,6 +87,12 @@ Calling `EnterBorderless` while already borderless is **ignored**. Without that,
 > If you need a see-through overlay rather than an opaque one, inset the bounds slightly so the window no longer exactly matches the display, and check whether the compositor keeps composing it.
 
 ---
+
+{: .tip }
+> For a canvas that pans, the middle mouse button arrives on `IGlobalInputService` as a
+> `PointerDown`/`PointerUp` pair with `PointerButton.Middle`. It is raised on the global bus
+> only — it does no hit testing, changes no focus and fires no click, because PlusUi controls
+> have no middle-button behaviour to inherit.
 
 ## Displays
 

@@ -37,8 +37,10 @@ public interface IWindowService
     /// </para>
     /// <para>
     /// Bounds are in screen coordinates, not layout units. Calling this while already
-    /// borderless is ignored, so the saved previous state is never overwritten with the
-    /// overlay state.
+    /// borderless re-targets the window and keeps the originally saved state, so
+    /// <see cref="RestoreNormal"/> still returns to where the user had it. That allows
+    /// moving the window out of the way and covering the screen as one continuous
+    /// operation, without flashing it back at its old position in between.
     /// </para>
     /// </summary>
     /// <param name="bounds">Target rectangle in screen coordinates.</param>
@@ -51,6 +53,23 @@ public interface IWindowService
     /// anything. Does nothing without a preceding switch.
     /// </summary>
     void RestoreNormal();
+
+    /// <summary>
+    /// The window's current position and size in screen coordinates.
+    /// </summary>
+    Rect Bounds { get; }
+
+    /// <summary>
+    /// Moves the window, leaving its size, border and borderless state alone.
+    /// <para>
+    /// This is what a window with its own chrome needs: once the title bar is hidden, the
+    /// operating system no longer offers a way to drag the window, so the application has to
+    /// move it. Deliberately separate from <see cref="EnterBorderless"/> — moving is not a
+    /// mode change, and routing it through one would make every drag look like the start of
+    /// an overlay and destroy the state <see cref="RestoreNormal"/> returns to.
+    /// </para>
+    /// </summary>
+    void MoveTo(float x, float y);
 
     /// <summary>
     /// The connected displays, in the order reported by the system.
