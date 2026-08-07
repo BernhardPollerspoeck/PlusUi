@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlusUi.core;
+using PlusUi.core.Services;
 using PlusUi.core.Services.Accessibility;
 using Silk.NET.GLFW;
 using Silk.NET.Input;
@@ -30,6 +31,7 @@ internal class WindowManager(
     NavigationContainer navigationContainer,
     IAccessibilityService accessibilityService,
     WindowSettingsService windowSettingsService,
+    DispatcherService dispatcher,
     IHostApplicationLifetime appLifetime,
     ILogger<WindowManager> logger)
     : IHostedService
@@ -97,6 +99,13 @@ internal class WindowManager(
 
         _window.Closing += HandleWindowClosing;
         _window.Render += HandleWindowRender;
+
+        // Update, not Render. Silk raises Update before the frame is drawn and outside the
+        // element-tree walk, which is what makes it safe for dispatched work to navigate,
+        // resize or move the window. Draining inside Render would let that work mutate the
+        // very tree being rendered - and a resize from there disposes the surface the current
+        // draw is writing into.
+        _window.Update += HandleWindowUpdate;
         _window.Resize += HandleWindowResize;
         _window.Load += HandleWindowLoad;
         _window.StateChanged += HandleWindowStateChanged;
@@ -133,8 +142,20 @@ internal class WindowManager(
             _grContext,
             new(_window.Size.X, _window.Size.Y));
     }
+    private void HandleWindowUpdate(double delta)
+    {
+        if (_isClosing)
+            return;
+
+        dispatcher.Drain();
+    }
+
     private void HandleWindowLoad()
     {
+        // From inside the loop, so the dispatcher learns the thread that actually runs it
+        // rather than the one that happened to construct the host.
+        dispatcher.MarkUiThread();
+
         if (_window is null)
         {
             logger.LogError("Window is not initialized during load.");

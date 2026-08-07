@@ -74,6 +74,12 @@ public static class PlusUiServiceCollectionExtensions
         // than per platform so app code can always resolve it without a platform switch.
         services.AddSingleton<IWindowService, NoOpWindowService>();
 
+        // UI-thread dispatch. Registered here rather than per platform so background code can
+        // always get back to the UI thread; heads that have a frame loop drive it by calling
+        // MarkUiThread and Drain.
+        services.AddSingleton<DispatcherService>();
+        services.AddSingleton<IDispatcher>(sp => sp.GetRequiredService<DispatcherService>());
+
         services.AddSingleton(sp =>
         {
             var configuration = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value;
