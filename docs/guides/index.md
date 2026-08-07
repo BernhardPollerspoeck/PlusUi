@@ -17,6 +17,7 @@ In-depth guides for building great PlusUi applications.
 | [Theming](theming.html) | Styles, colors, fonts, custom themes |
 | [Best Practices](best-practices.html) | Patterns, performance, do's and don'ts |
 | [Headless Mode](headless.html) | Automated testing, screenshots, CI/CD |
+| [Window & Displays](window-and-displays.html) | Borderless overlays, monitor enumeration, DPI |
 
 ## Quick Tips
 

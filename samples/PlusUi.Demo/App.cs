@@ -17,6 +17,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         configuration.RememberWindowPosition = true;
         configuration.ApplicationId = "PlusUi.Demo";
         configuration.WindowIcon = "plusui.svg";
+        configuration.IsWindowTransparent = true;
     }
 
     public void ConfigureApp(IPlusUiAppBuilder builder)
@@ -52,6 +53,7 @@ public class App(bool loadImagesSynchronously = false) : IAppConfiguration
         builder.AddPage<ScrollbarPage>();
         builder.AddPage<GesturesPage>().WithViewModel<GesturesPageViewModel>();
         builder.AddPage<HoverPage>().WithViewModel<HoverPageViewModel>();
+        builder.AddPage<WindowPage>().WithViewModel<WindowPageViewModel>();
         builder.AddPage<UserControlPage>();
         builder.AddPage<VStackPage>();
         builder.AddPage<HStackPage>();

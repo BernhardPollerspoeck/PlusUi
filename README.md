@@ -6,6 +6,16 @@ A fully cross-platform UI Framework for .NET, delivering consistent user experie
 
 **[Documentation](https://plusui.qsp.app)** | **[NuGet Packages](https://www.nuget.org/profiles/BernhardPollerspoeck)**
 
+## Project Status
+
+PlusUi is **in production use** — it is not an experiment still looking for its first real workload.
+
+Development is currently strongly **demand-driven**: things get built when a real application needs them. That keeps the framework focused and free of speculative API, but it also means the gaps sit wherever nobody has happened to need something yet.
+
+So if you run into a missing feature, an awkward API, or something that simply isn't there — **please open an issue and tell us**. That is by far the fastest route onto the roadmap, and it is genuinely wanted input rather than a nuisance: a reported need is exactly what turns into the next feature. New users are very welcome.
+
+**[→ Open an issue](https://github.com/BernhardPollerspoeck/PlusUi/issues)**
+
 ## Supported Platforms
 
 | Platform | Package | Status | NuGet |

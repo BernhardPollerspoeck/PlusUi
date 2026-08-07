@@ -25,6 +25,7 @@ internal class WindowManager(
     DesktopKeyboardHandler desktopKeyboardHandler,
     DesktopCursorService cursorService,
     DesktopPlatformService platformService,
+    DesktopWindowService windowService,
     PlusUiNavigationService plusUiNavigationService,
     NavigationContainer navigationContainer,
     IAccessibilityService accessibilityService,
@@ -89,6 +90,7 @@ internal class WindowManager(
 
         _window = Window.Create(options);
         platformService.SetWindow(_window);
+        windowService.SetWindow(_window);
 
         _lastNormalPosition = position;
         _lastNormalSize = size;

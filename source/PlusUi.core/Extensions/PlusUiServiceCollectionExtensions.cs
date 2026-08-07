@@ -70,6 +70,10 @@ public static class PlusUiServiceCollectionExtensions
         services.AddSingleton<IAccessibilityService>(sp => sp.GetRequiredService<AccessibilityService>());
         services.AddSingleton<IAccessibilitySettingsService, AccessibilitySettingsService>();
 
+        // Window control - no-op by default, desktop overrides it. Registered here rather
+        // than per platform so app code can always resolve it without a platform switch.
+        services.AddSingleton<IWindowService, NoOpWindowService>();
+
         services.AddSingleton(sp =>
         {
             var configuration = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PlusUiConfiguration>>().Value;
