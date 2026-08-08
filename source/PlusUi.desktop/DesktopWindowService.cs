@@ -33,8 +33,35 @@ public sealed class DesktopWindowService : IWindowService
         WindowState State,
         bool TopMost);
 
+    /// <summary>The limits last handed to <see cref="SetSizeLimits"/>, null meaning unbounded.</summary>
+    internal readonly record struct SizeLimits(
+        float? MinWidth,
+        float? MinHeight,
+        float? MaxWidth,
+        float? MaxHeight)
+    {
+        /// <summary>
+        /// The nearest size to <paramref name="width"/> × <paramref name="height"/> that the
+        /// limits allow. A minimum wins over a maximum where the two contradict, because the
+        /// minimum is the one that keeps a layout usable.
+        /// </summary>
+        public (float Width, float Height) Clamp(float width, float height)
+        {
+            if (MaxWidth is > 0 && width > MaxWidth) width = MaxWidth.Value;
+            if (MaxHeight is > 0 && height > MaxHeight) height = MaxHeight.Value;
+            if (MinWidth is > 0 && width < MinWidth) width = MinWidth.Value;
+            if (MinHeight is > 0 && height < MinHeight) height = MinHeight.Value;
+
+            return (width, height);
+        }
+    }
+
     private IWindow? _window;
     private PreviousState? _previous;
+    private SizeLimits _limits;
+
+    /// <summary>The limits currently in force. For tests — the window itself is not needed to decide them.</summary>
+    internal SizeLimits CurrentLimits => _limits;
 
     /// <summary>
     /// Sets the window reference (called by WindowManager after the window is created).
@@ -114,6 +141,17 @@ public sealed class DesktopWindowService : IWindowService
         if (_window is null)
             return;
 
+        // Clamped here rather than left to GLFW, because GLFW cannot always do it. Its size
+        // limits are enforced through the window manager's interactive resize, which a
+        // borderless window does not have — GLFW_RESIZABLE is off for one, and nothing ever
+        // asks the window how small it may get. Measured: with a decorated window the limits
+        // hold, with a borderless one the same call shrinks straight past them.
+        //
+        // So the limits live here as well. An application that sets them is entitled to have
+        // them apply to its own resizes on every kind of window, not just the ones where the
+        // window manager happens to help.
+        (width, height) = _limits.Clamp(width, height);
+
         var w = (int)MathF.Round(width);
         var h = (int)MathF.Round(height);
 
@@ -133,6 +171,11 @@ public sealed class DesktopWindowService : IWindowService
         // to zero or to some arbitrary large number.
         const int dontCare = -1;
 
+        // Remembered before GLFW is asked, and remembered even when there is no window yet:
+        // these are the application's limits, and Resize below has to honour them on every
+        // path GLFW does not cover.
+        _limits = new SizeLimits(minWidth, minHeight, maxWidth, maxHeight);
+
         var handle = _window?.Native?.Glfw;
         if (handle is null)
             return;
@@ -143,6 +186,13 @@ public sealed class DesktopWindowService : IWindowService
             (WindowHandle*)handle.Value,
             Limit(minWidth), Limit(minHeight),
             Limit(maxWidth), Limit(maxHeight));
+
+        // A limit takes effect now, not at the next resize. GLFW does this itself for the
+        // windows it can, and staying silent for the others would make the same call mean two
+        // different things depending on whether the window has a border.
+        var (fittedWidth, fittedHeight) = _limits.Clamp(_window!.Size.X, _window.Size.Y);
+        if ((int)fittedWidth != _window.Size.X || (int)fittedHeight != _window.Size.Y)
+            Resize(fittedWidth, fittedHeight);
     }
 
     public unsafe IReadOnlyList<DisplayInfo> GetDisplays()

@@ -30,4 +30,11 @@
    <ProjectReference Include="..\PlusUi.core\PlusUi.core.csproj" />
  </ItemGroup>
 
+  <ItemGroup>
+    <!-- Size-limit clamping is decided without a window and applied with one. Exposing the
+         decision to the tests keeps it covered without an OpenGL context, which is the
+         difference between a unit test and a display-dependent one. -->
+    <InternalsVisibleTo Include="PlusUi.desktop.Tests" />
+  </ItemGroup>
+
 </Project>

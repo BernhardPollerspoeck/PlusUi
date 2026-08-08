@@ -73,6 +73,31 @@ public partial class WindowPageViewModel : DemoPageViewModel, IDisposable
         ReportOutcome($"display {display.Index} ({display.Name})");
     }
 
+    /// <summary>
+    /// Asks for a minimum size well above the current one, then reports the size that came
+    /// back. Worth its own button because a size limit is the kind of call that returns
+    /// quietly whether or not it did anything — reading the window afterwards is the only way
+    /// to tell, and GLFW resizes a window immediately when the new minimum exceeds it.
+    /// </summary>
+    [RelayCommand]
+    private void ApplySizeLimits()
+    {
+        var before = _windowService.Bounds;
+        _windowService.SetSizeLimits(900, 700, maxWidth: null, maxHeight: null);
+        var afterLimits = _windowService.Bounds;
+
+        _windowService.Resize(300, 200);
+        var afterShrink = _windowService.Bounds;
+
+        Status =
+            $"Asked for min 900 × 700.   " +
+            $"Before: {before.Width:0} × {before.Height:0}   ·   " +
+            $"After the limit: {afterLimits.Width:0} × {afterLimits.Height:0}   ·   " +
+            $"After Resize(300, 200): {afterShrink.Width:0} × {afterShrink.Height:0}";
+
+        Refresh();
+    }
+
     [RelayCommand]
     private void Restore()
     {
@@ -140,6 +165,15 @@ public class WindowPage(WindowPageViewModel vm) : DemoPage(vm)
                     .SetText("Restore")
                     .SetCommand(vm.RestoreCommand)),
             Note("Escape also restores, in case the window ends up somewhere the buttons are not.")),
+
+        Section("Size limits",
+            Note("Sets a minimum of 900 × 700 and then asks the window to become 300 × 200. " +
+                 "The status line reports the size after each step, because a limit that was " +
+                 "not applied looks exactly like one that was until you read the window back."),
+            new Button()
+                .SetText("Apply min 900 × 700, then shrink")
+                .SetHorizontalAlignment(HorizontalAlignment.Left)
+                .SetCommand(vm.ApplySizeLimitsCommand)),
 
         Section("Status",
             new Label()
