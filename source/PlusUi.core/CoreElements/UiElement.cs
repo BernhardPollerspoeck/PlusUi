@@ -467,9 +467,26 @@ public abstract partial class UiElement : IDisposable
     }
 
     #region Measuring
+    /// <summary>
+    /// The available size this element was last measured against, so that a different one
+    /// counts as a reason to measure again. NaN until the first pass, which never compares
+    /// equal — the initial measure therefore always runs.
+    /// </summary>
+    private float _measuredForWidth = float.NaN;
+    private float _measuredForHeight = float.NaN;
+
     public Size Measure(Size availableSize, bool dontStretch = false)
     {
-        if (NeedsMeasure || dontStretch)
+        // A changed available size is a reason to re-measure in its own right, independent of
+        // the dirty flag. Invalidation only ever travels UP to the root, so when the window
+        // resizes the page is marked dirty and no descendant is: every child returns the size
+        // it cached for the old window and the layout does not move. It then appears to fix
+        // itself the moment anything else invalidates - hovering a button, say - which is what
+        // made this look like a rendering problem rather than a measuring one.
+        var availableChanged =
+            availableSize.Width != _measuredForWidth || availableSize.Height != _measuredForHeight;
+
+        if (NeedsMeasure || dontStretch || availableChanged)
         {
             // Don't stretch to infinite/MaxValue sizes
             var canStretchWidth = !dontStretch && HorizontalAlignment == HorizontalAlignment.Stretch && availableSize.Width < float.MaxValue;
@@ -512,6 +529,15 @@ public abstract partial class UiElement : IDisposable
             ElementSize = new Size(desiredWidth, desiredHeight);
 
             NeedsMeasure = dontStretch;//if we ignore stretching it is a pure calculation pass. so we need to remeasure again
+
+            // Only recorded for real passes. A dontStretch pass deliberately leaves the element
+            // dirty because its result is a calculation rather than a layout, and remembering
+            // its available size here would let the next real pass at the same size skip.
+            if (!dontStretch)
+            {
+                _measuredForWidth = availableSize.Width;
+                _measuredForHeight = availableSize.Height;
+            }
 
             // A measure pass may have changed ElementSize or rebuilt children (virtualizing
             // controls recreate their item elements in MeasureInternal), so the element MUST
